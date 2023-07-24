@@ -3,13 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.HomeFragment">
+    tools:context=".Fragments.HomeFragment"
+    android:background="@color/background">
 
     <TextView
+        android:id="@+id/usernameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home"
         android:textSize="20pt"
         android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/logoutBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20pt"
+        android:text="N"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/usernameTextView"/>
 
 </RelativeLayout>

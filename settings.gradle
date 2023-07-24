@@ -3,6 +3,21 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                // Do not change the username below.
+                // This should always be `mapbox` (not your username).
+                username = "mapbox"
+                // Use the secret token you stored in gradle.properties as the password
+                password = "sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA"
+            }
+        }
+
     }
 }
 dependencyResolutionManagement {
@@ -10,6 +25,20 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                // Do not change the username below.
+                // This should always be `mapbox` (not your username).
+                username = "mapbox"
+                // Use the secret token you stored in gradle.properties as the password
+                password = "sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA"
+            }
+        }
     }
 }
 rootProject.name = "CareCabs"

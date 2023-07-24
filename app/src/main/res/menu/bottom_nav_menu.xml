@@ -9,4 +9,8 @@
         android:title="Home"
         android:id="@+id/home"/>
 
+    <item
+        android:title="Map"
+        android:id="@+id/map"/>
+
 </menu>

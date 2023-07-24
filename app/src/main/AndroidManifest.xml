@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,6 +17,33 @@
         android:theme="@style/Theme.CareCabs"
         tools:targetApi="31">
         <activity
+            android:name=".RegisterPWD"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterSenior"
+            android:exported="false" />
+        <activity
+            android:name=".Register"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterPassenger"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterDriver"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterUserType"
+            android:exported="false" />
+        <activity
+            android:name=".GetStarted"
+            android:exported="false" />
+        <activity
+            android:name=".MapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="false" />
+        <activity
             android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
@@ -22,12 +51,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>

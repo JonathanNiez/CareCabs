@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/dialog_shape"
+    android:layout_margin="30dp"
+    android:backgroundTint="@color/dirty_yellow"
+    >
+
+    <ImageButton
+        android:id="@+id/imgBackBtn"
+        android:layout_width="49dp"
+        android:layout_height="36dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/bit_mar" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15pt"
+        android:text="What are you?"
+        android:textColor="@color/black"
+        android:layout_below="@id/imgBackBtn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:layout_below="@+id/textView"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_marginBottom="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SENIOR CITIZEN"
+                android:textColor="@color/black"
+                android:textSize="32dp"
+                android:layout_marginBottom="20dp"/>
+
+            <ImageButton
+                android:id="@+id/seniorImgBtn"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:src="@drawable/senior"
+                android:scaleType="centerCrop"
+                android:background="@color/dirty_yellow"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="PERSON WITH DISABILITY"
+                android:textColor="@color/black"
+                android:textSize="32dp"
+                android:layout_marginBottom="20dp"/>
+
+            <ImageButton
+                android:id="@+id/pwdImgBtn"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:src="@drawable/pwd"
+                android:scaleType="centerCrop"
+                android:background="@color/dirty_yellow"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

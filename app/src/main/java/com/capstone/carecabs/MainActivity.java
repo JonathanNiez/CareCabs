@@ -5,15 +5,18 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.capstone.carecabs.Fragments.AccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
+import com.capstone.carecabs.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +32,22 @@ public class MainActivity extends AppCompatActivity {
                 showFragment(new HomeFragment());
 
             } else if (item.getItemId() == R.id.account) {
-
                 showFragment(new AccountFragment());
+            } else if (item.getItemId() == R.id.map) {
+                intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
             }
 
             return true;
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showFragment(new HomeFragment());
+
+    }
     private void showFragment(Fragment fragment) {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
