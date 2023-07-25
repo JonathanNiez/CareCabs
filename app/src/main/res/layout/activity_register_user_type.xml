@@ -9,87 +9,127 @@
 
     <ImageButton
         android:id="@+id/imgBackBtn"
-        android:layout_width="49dp"
-        android:layout_height="36dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/bit_mar" />
+        android:src="@drawable/back64"
+        android:background="@color/background"/>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15pt"
-        android:text="What are you?"
-        android:textColor="@color/black"
-        android:layout_below="@id/imgBackBtn"
-        android:layout_centerHorizontal="true"
-        />
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:layout_below="@id/imgBackBtn">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="vertical"
-            android:layout_marginBottom="40dp">
+            android:gravity="center">
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PASSENGER"
+                android:textSize="15pt"
+                android:fontFamily="@font/opensans_semibold"
+                android:text="Are you a..."
+                android:layout_marginBottom="20dp"
                 android:textColor="@color/black"
-                android:textSize="32dp"
-                android:layout_marginBottom="20dp"/>
+                />
 
-            <ImageButton
-                android:id="@+id/passengerImgBtn"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:src="@drawable/passenger"
-                android:scaleType="centerCrop"
-                android:backgroundTint="@color/gray"
-                android:background="@drawable/image_button"/>
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="40dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PASSENGER"
+                        android:textColor="@color/black"
+                        android:textSize="32dp"
+                        android:fontFamily="@font/opensans_bold"
+                        android:layout_marginBottom="20dp"/>
+
+                    <ImageButton
+                        android:id="@+id/passengerImgBtn"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:src="@drawable/passenger"
+                        android:scaleType="centerCrop"
+                        android:backgroundTint="@color/gray"
+                        android:background="@drawable/image_button"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="DRIVER"
+                        android:fontFamily="@font/opensans_bold"
+                        android:textColor="@color/black"
+                        android:textSize="32dp"
+                        android:layout_marginBottom="20dp"/>
+
+                    <ImageButton
+                        android:id="@+id/driverImgBtn"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:src="@drawable/driver"
+                        android:scaleType="centerCrop"
+                        android:backgroundTint="@color/gray"
+                        android:background="@drawable/image_button"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10pt"
+                android:fontFamily="@font/opensans_semibold"
+                android:text="Already have an Account?"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:layout_marginTop="20dp"
+                />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/loginHereBtn"
+                android:layout_width="185dp"
+                android:layout_height="78dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/opensans_bold"
+                android:background="@drawable/login_button"
+                android:text="Login here"
+                android:textColor="@color/white"
+                android:textSize="24dp" />
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="DRIVER"
-                android:textColor="@color/black"
-                android:textSize="32dp"
-                android:layout_marginBottom="20dp"/>
-
-            <ImageButton
-                android:id="@+id/driverImgBtn"
-                android:layout_width="130dp"
-                android:layout_height="130dp"
-                android:src="@drawable/driver"
-                android:scaleType="centerCrop"
-                android:backgroundTint="@color/gray"
-                android:background="@drawable/image_button"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sex_options">
+        <item>Select your sex</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+</resources>

@@ -68,8 +68,11 @@ dependencies {
 //    implementation "com.mapbox.mapboxsdk:mapbox-sdk-geojson:6.12.0"
 //    implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:6.12.0"
 
+    implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
     implementation 'com.google.firebase:firebase-analytics:21.3.0'
     implementation 'com.google.firebase:firebase-auth:22.1.0'
     implementation 'com.google.firebase:firebase-database:20.2.2'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
+
 }

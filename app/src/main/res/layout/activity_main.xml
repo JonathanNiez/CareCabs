@@ -20,6 +20,4 @@
         app:menu="@menu/bottom_nav_menu"
         android:layout_alignParentBottom="true"/>
 
-
-
 </RelativeLayout>

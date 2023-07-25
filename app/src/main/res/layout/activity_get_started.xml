@@ -13,17 +13,8 @@
         android:layout_height="300dp"
         android:src="@drawable/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"/>
+        android:layout_marginTop="130dp"/>
 
-    <TextView
-        android:id="@+id/slogan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/logo"
-        android:text="Your Daily Transportation Needs"
-        android:textSize="32dp"
-        android:textAlignment="center"
-        android:layout_centerHorizontal="true"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/getStartedBtn"
@@ -32,8 +23,9 @@
         android:background="@drawable/login_button"
         android:text="Get Started"
         android:textSize="24dp"
+        android:fontFamily="@font/opensans_bold"
         android:textColor="@color/white"
-        android:layout_below="@id/slogan"
+        android:layout_below="@id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="50dp"/>
 

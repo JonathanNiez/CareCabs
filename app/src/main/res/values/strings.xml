@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">CareCabs</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="mapbox_access_token">sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA</string>

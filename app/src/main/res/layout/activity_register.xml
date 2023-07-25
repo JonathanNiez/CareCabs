@@ -9,15 +9,14 @@
 
     <ImageButton
         android:id="@+id/imgBackBtn"
-        android:layout_width="49dp"
-        android:layout_height="36dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/bit_mar" />
+        android:src="@drawable/back64"
+        android:background="@color/background"/>
 
     <ImageView
         android:id="@+id/logo"
@@ -25,9 +24,23 @@
         android:layout_height="100dp"
         android:src="@drawable/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
+        android:layout_below="@id/imgBackBtn"
         />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register"
+        android:textAlignment="center"
+        android:layout_below="@id/logo"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/black"
+        android:textSize="10pt"
+        android:fontFamily="@font/opensans_semibold"/>
+
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -35,14 +48,15 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        android:layout_below="@id/logo">
+        android:layout_below="@id/textView">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text"
             app:endIconMode="clear_text"
-            app:hintTextColor="@color/black"
+            app:helperTextTextColor="@color/black"
+            app:helperText="Your Email"
             android:layout_marginBottom="30dp"
             >
 
@@ -52,6 +66,7 @@
                 android:layout_height="62dp"
                 android:background="@drawable/edit_text"
                 android:hint="EMAIL"
+                android:fontFamily="@font/opensans_bold"
                 android:textColor="@color/black"
                 android:textColorHint="@color/black" />
 
@@ -62,7 +77,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edit_text"
             app:endIconMode="password_toggle"
-            app:hintTextColor="@color/black"
+            app:helperTextTextColor="@color/black"
+            app:helperText="Your Password"
             android:layout_marginBottom="30dp"
             >
 
@@ -72,6 +88,7 @@
                 android:layout_height="62dp"
                 android:background="@drawable/edit_text"
                 android:hint="PASSWORD"
+                android:fontFamily="@font/opensans_bold"
                 android:inputType="textPassword"
                 android:textColor="@color/black"
                 android:textColorHint="@color/black" />
@@ -84,7 +101,7 @@
             android:background="@drawable/edit_text"
             app:endIconMode="password_toggle"
             app:hintTextColor="@color/black"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="20dp"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -93,6 +110,7 @@
                 android:layout_height="62dp"
                 android:background="@drawable/edit_text"
                 android:hint="CONFIRM PASSWORD"
+                android:fontFamily="@font/opensans_bold"
                 android:inputType="textPassword"
                 android:textColor="@color/black"
                 android:textColorHint="@color/black" />
@@ -134,10 +152,11 @@
         android:layout_height="78dp"
         android:background="@drawable/login_button"
         android:text="Next"
+        android:fontFamily="@font/opensans_bold"
         android:textSize="24dp"
         android:textColor="@color/white"
         android:layout_below="@id/linearLayout"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="10dp"/>
 
 </RelativeLayout>

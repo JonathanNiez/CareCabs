@@ -7,10 +7,12 @@
 
     <item
         android:title="Home"
+        android:icon="@drawable/home"
         android:id="@+id/home"/>
 
     <item
         android:title="Map"
+        android:icon="@drawable/map"
         android:id="@+id/map"/>
 
 </menu>
