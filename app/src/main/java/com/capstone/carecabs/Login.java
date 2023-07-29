@@ -59,9 +59,7 @@ public class Login extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail().build();
+        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -143,7 +141,7 @@ public class Login extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                 googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
+                googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
                 fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
@@ -157,79 +155,79 @@ public class Login extends AppCompatActivity {
         }
 
     }
+
     private void fireBaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
         if (googleSignInAccount != null) {
 
-            auth.signInWithCredential(credential)
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "signInWithCredential:success");
-                                currentUser = auth.getCurrentUser();
-                                userID = currentUser.getUid();
+            auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "signInWithCredential:success");
+                        currentUser = auth.getCurrentUser();
+                        userID = currentUser.getUid();
 
-                                if (currentUser != null) {
-                                    String googleEmail = googleSignInAccount.getEmail();
-                                    String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+                        if (currentUser != null) {
+                            String googleEmail = googleSignInAccount.getEmail();
+                            String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
+                            databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("driverID", userID);
-                                    registerUser.put("email", googleEmail);
-                                    registerUser.put("profilePic", googleProfilePic);
+                            Map<String, Object> registerUser = new HashMap<>();
+                            registerUser.put("driverID", userID);
+                            registerUser.put("email", googleEmail);
+                            registerUser.put("profilePic", googleProfilePic);
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                            databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
 
-                                            if (task.isSuccessful()) {
-                                                googleImgBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-                                                loginUsingTextView.setVisibility(View.VISIBLE);
-                                                loginBtn.setEnabled(true);
+                                    if (task.isSuccessful()) {
+                                        googleImgBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
+                                        loginUsingTextView.setVisibility(View.VISIBLE);
+                                        loginBtn.setEnabled(true);
 
-                                                intent = new Intent(Login.this, MainActivity.class);
-//                                                intent.putExtra("registerData", getRegisterData);
-                                                startActivity(intent);
-                                                finish();
+                                        intent = new Intent(Login.this, MainActivity.class);
+//                                      intent.putExtra("registerData", getRegisterData);
+                                        startActivity(intent);
+                                        finish();
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task.getException()));
 
-                                                googleImgBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-                                                loginUsingTextView.setVisibility(View.VISIBLE);
-                                                loginBtn.setEnabled(true);
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            progressBarLayout.setVisibility(View.GONE);
-                                            googleImgBtn.setVisibility(View.VISIBLE);
-                                            loginUsingTextView.setVisibility(View.VISIBLE);
-                                            loginBtn.setEnabled(true);
-
-                                            Log.e(TAG, e.getMessage());
-                                        }
-                                    });
+                                        googleImgBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
+                                        loginUsingTextView.setVisibility(View.VISIBLE);
+                                        loginBtn.setEnabled(true);
+                                    }
                                 }
-                            } else {
-                                Toast.makeText(Login.this, "Login failed", Toast.LENGTH_SHORT).show();
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressBarLayout.setVisibility(View.GONE);
+                                    googleImgBtn.setVisibility(View.VISIBLE);
+                                    loginUsingTextView.setVisibility(View.VISIBLE);
+                                    loginBtn.setEnabled(true);
 
-                                googleImgBtn.setVisibility(View.VISIBLE);
-                                progressBarLayout.setVisibility(View.GONE);
-                                loginUsingTextView.setVisibility(View.VISIBLE);
-                                loginBtn.setEnabled(true);
-
-                            }
+                                    Log.e(TAG, e.getMessage());
+                                }
+                            });
                         }
-                    });
+                    } else {
+                        Toast.makeText(Login.this, "Login failed", Toast.LENGTH_SHORT).show();
+
+                        googleImgBtn.setVisibility(View.VISIBLE);
+                        progressBarLayout.setVisibility(View.GONE);
+                        loginUsingTextView.setVisibility(View.VISIBLE);
+                        loginBtn.setEnabled(true);
+
+                    }
+                }
+            });
         } else {
             Log.d(TAG, "signInWithCredential:failed");
 

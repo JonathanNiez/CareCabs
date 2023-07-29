@@ -117,12 +117,14 @@ public class RegisterDriver extends AppCompatActivity {
                 userID = currentUser.getUid();
 
                 if (getRegisterData.equals("driver")) {
-                    databaseReference = FirebaseDatabase.getInstance().getReference("drivers").child(userID);
+                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
                     registerUser.put("age", StaticDataPasser.currentAge);
+                    registerUser.put("profilePic", "default");
+                    registerUser.put("isAvailable", true);
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
 

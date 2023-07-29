@@ -55,12 +55,13 @@ dependencies {
 //    implementation "com.mapbox.navigation:android:2.14.1"
 //    implementation "com.mapbox.navigation:ui-dropin:2.14.1"
 //    implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.7.0"
+//    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.7.0'
 //    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0"
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
 //    implementation 'com.mapbox.mapboxsdk:mapbox-android-core:5.0.0'
     implementation 'com.mapbox.maps:android:10.14.1'
-    implementation ('com.mapbox.maps:android:10.14.1'){
+    implementation('com.mapbox.maps:android:10.14.1') {
         exclude group: 'group_name', module: 'module_name'
     }
 
@@ -69,10 +70,12 @@ dependencies {
 //    implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:6.12.0"
 
     implementation 'org.mindrot:jbcrypt:0.4'
+    implementation 'com.github.bumptech.glide:glide:4.15.1'
     implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
     implementation 'com.google.firebase:firebase-analytics:21.3.0'
     implementation 'com.google.firebase:firebase-auth:22.1.0'
     implementation 'com.google.firebase:firebase-database:20.2.2'
     implementation 'com.google.android.gms:play-services-auth:20.6.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.25'
 
 }

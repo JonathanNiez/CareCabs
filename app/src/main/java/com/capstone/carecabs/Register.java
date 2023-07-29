@@ -99,7 +99,7 @@ public class Register extends AppCompatActivity {
                                     currentUser = auth.getCurrentUser();
                                     userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("drivers").child(userID);
+                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("drivers").child(userID);
 
                                     Map<String, Object> registerUser = new HashMap<>();
                                     registerUser.put("driverID", userID);
@@ -155,7 +155,7 @@ public class Register extends AppCompatActivity {
                                     currentUser = auth.getCurrentUser();
                                     userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
+                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
                                     Map<String, Object> registerUser = new HashMap<>();
                                     registerUser.put("userID", userID);
@@ -172,6 +172,7 @@ public class Register extends AppCompatActivity {
                                                 progressBarLayout.setVisibility(View.GONE);
 
                                                 intent = new Intent(Register.this, RegisterPWD.class);
+                                                intent.putExtra("registerData", getRegisterData);
                                                 startActivity(intent);
                                                 finish();
 
@@ -212,7 +213,7 @@ public class Register extends AppCompatActivity {
                                     currentUser = auth.getCurrentUser();
                                     userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
+                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
                                     Map<String, Object> registerUser = new HashMap<>();
                                     registerUser.put("userID", userID);
@@ -229,6 +230,7 @@ public class Register extends AppCompatActivity {
                                                 progressBarLayout.setVisibility(View.GONE);
 
                                                 intent = new Intent(Register.this, RegisterSenior.class);
+                                                intent.putExtra("registerData", getRegisterData);
                                                 startActivity(intent);
                                                 finish();
 

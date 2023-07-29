@@ -3,12 +3,14 @@
 
     <item
         android:title="Account"
+        android:icon="@drawable/account_icon"
         android:id="@+id/account"/>
 
     <item
         android:title="Home"
         android:icon="@drawable/home"
         android:id="@+id/home"/>
+
 
     <item
         android:title="Map"

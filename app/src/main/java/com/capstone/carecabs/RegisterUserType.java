@@ -70,6 +70,8 @@ public class RegisterUserType extends AppCompatActivity {
                 intent.putExtra("registerData", registerData);
                 startActivity(intent);
                 finish();
+
+                customDialog.dismiss();
             }
         });
 
@@ -81,6 +83,9 @@ public class RegisterUserType extends AppCompatActivity {
                 intent.putExtra("registerData", registerData);
                 startActivity(intent);
                 finish();
+
+                customDialog.dismiss();
+
             }
         });
 

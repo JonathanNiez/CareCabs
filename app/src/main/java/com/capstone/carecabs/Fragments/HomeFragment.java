@@ -5,7 +5,9 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.GetStarted;
+import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,16 +27,25 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeFragment extends Fragment {
 
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private TextView usernameTextView;
-    private Button logoutBtn;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "HomeFragment";
+    private ViewPager viewPager;
+    private int currentPage = 0;
+    private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
+    private Handler handler;
+    private Runnable runnable;
+    private List<Fragment> slideFragments = new ArrayList<>();
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,48 +60,57 @@ public class HomeFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
 
-        displayUserInfo();
+        viewPager = view.findViewById(R.id.viewPager);
 
-        logoutBtn = view.findViewById(R.id.logoutBtn);
-        usernameTextView = view.findViewById(R.id.usernameTextView);
+        slideFragments.add(new CarouselFragment1());
+        slideFragments.add(new CarouselFragment2());
 
-        logoutBtn.setOnClickListener(v -> {
-            logoutUser();
-        });
+        CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
+        viewPager.setAdapter(adapter);
+
+        startAutoSlide();
 
         return view;
     }
-    private void displayUserInfo(){
-        if (currentUser != null){
 
-            userID = currentUser.getUid();
+    private void startAutoSlide() {
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
-            databaseReference.addValueEventListener(new ValueEventListener() {
+        if (handler == null) {
+            handler = new Handler();
+        }
+
+        if (runnable == null) {
+            runnable = new Runnable() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        String getFirstname = snapshot.child("firstname").getValue(String.class);
-                        String getLastname = snapshot.child("lastname").getValue(String.class);
+                public void run() {
+                    currentPage = (currentPage + 1) % slideFragments.size();
+                    viewPager.setCurrentItem(currentPage, true);
+                    handler.postDelayed(this, AUTOSLIDE_DELAY);
+                }
+            };
+        }
 
-                        String fullName = String.format("%s %s", getFirstname, getLastname);
-                        usernameTextView.setText(fullName);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e(TAG, error.getMessage());
-                }
-            });
+        handler.removeCallbacks(runnable);
+        handler.postDelayed(runnable, AUTOSLIDE_DELAY);
+    }
+
+    private void stopAutoSlide() {
+        if (handler != null && runnable != null) {
+            handler.removeCallbacks(runnable);
         }
     }
 
-    private void logoutUser() {
-        auth.signOut();
-        // Optional: Navigate to the login activity or any other appropriate activity
-        // For example, if you have a main activity that handles the navigation, you can navigate to it.
-        Intent intent = new Intent(getActivity(), GetStarted.class);
-        startActivity(intent);
-        getActivity().finish(); // Optional: Finish the current activity (fragment) to prevent the user from going back after logging out
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        stopAutoSlide();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        startAutoSlide();
     }
 }

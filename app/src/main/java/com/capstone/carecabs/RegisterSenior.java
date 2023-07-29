@@ -128,12 +128,13 @@ public class RegisterSenior extends AppCompatActivity {
                 userID = currentUser.getUid();
 
                 if (getRegisterData.equals("senior")) {
-                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
+                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
                     registerUser.put("age", StaticDataPasser.currentAge);
+                    registerUser.put("profilePic", "default");
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
                     registerUser.put("userType", getRegisterData);

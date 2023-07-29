@@ -116,12 +116,14 @@ public class RegisterPWD extends AppCompatActivity {
                 currentUser = auth.getCurrentUser();
                 userID = currentUser.getUid();
 
-                if (getRegisterData.equals("users")) {
-                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
+                if (getRegisterData.equals("pwd")) {
+                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
+                    registerUser.put("profilePic", "default");
+                    registerUser.put("disability", "none");
                     registerUser.put("age", StaticDataPasser.currentAge);
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
@@ -141,6 +143,11 @@ public class RegisterPWD extends AppCompatActivity {
                                 intent = new Intent(RegisterPWD.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
+                            }else {
+                                Log.e(TAG, String.valueOf(task.getException()));
+
+                                progressBarLayout.setVisibility(View.GONE);
+                                doneBtn.setVisibility(View.VISIBLE);
                             }
                         }
                     }).addOnFailureListener(new OnFailureListener() {

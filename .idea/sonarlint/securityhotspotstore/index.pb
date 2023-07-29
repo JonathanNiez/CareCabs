@@ -2,8 +2,6 @@
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
-v
-Fapp/src/main/java/com/capstone/carecabs/Fragments/AccountFragment.java,b\8\b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47
 S
 #.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
 ]
@@ -36,20 +34,14 @@ w
 G.idea/sonarlint/issuestore/a/a/aa79778253f484a12cdff20bf8f65476d3728f8b,6\0\60d963081cf0583d9dbee32c24b187b001ad0be4
 w
 G.idea/sonarlint/issuestore/f/b/fbe448ebfc3eb2d4e308f6b8b043666f5b57235e,5\2\52114fdaa426e9b83a3c5df4e11c4f0ebbcd814b
-i
-9app/src/main/java/com/capstone/carecabs/SplashScreen.java,4\0\404fcb8b06de06c20cfb7f4ea965dec6f5de1e3e
 w
 G.idea/sonarlint/issuestore/8/8/88a9255124c95bdc913197c120a8d560edc59c8e,a\e\ae9ddf453f55affea2d6b9e3973cac1eb2efb4e1
-f
-6app/src/main/java/com/capstone/carecabs/MapActivity.kt,c\5\c5fa5469b9d76d3698def09b8f5144aa45e739c3
 
 Q.idea/sonarlint/securityhotspotstore/c/d/cdbf65452ae0542a95c06ee6fbc6469105b6f65c,f\3\f3280da16ad1c5c699cef0412b4dd7b79d506cf5
 w
 G.idea/sonarlint/issuestore/c/d/cdbf65452ae0542a95c06ee6fbc6469105b6f65c,e\1\e13c5a32600bce5c88fc4b626b69a8b5aba897d2
 w
 G.idea/sonarlint/issuestore/a/5/a5cc2925ca8258af241be7e5b0381edf30266302,e\d\ed67eb178d523a4b3f117dcbe0eda5196367ceec
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 w
 G.idea/sonarlint/issuestore/9/e/9e08934d811afe28fbc77aaa3c0d747b94348db9,0\1\0105d5a774c76db833eb83cbebde54a8abef1599
 w
@@ -69,6 +61,12 @@ Q.idea/sonarlint/securityhotspotstore/a/5/a5cc2925ca8258af241be7e5b0381edf302663
 
 Q.idea/sonarlint/securityhotspotstore/2/a/2a45a911a8f1836b0b6c5b758962572012d8f8c3,1\0\1017d171139053a6ceaff055b7159ba14e80dc44
 
-Q.idea/sonarlint/securityhotspotstore/b/8/b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47,3\8\38cc5c389b41f409e317a9fbc6fa29edddb4c6b2
-
 Q.idea/sonarlint/securityhotspotstore/8/8/88a9255124c95bdc913197c120a8d560edc59c8e,9\0\909762385fc6eb20f922a91c6865741308b57f2c
+n
+>app/src/main/java/com/capstone/carecabs/RegisterPassenger.java,b\1\b1758cfe44183216449d453e07f8cfbf0dc9c8a3
+A
+gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+i
+9app/src/main/java/com/capstone/carecabs/SplashScreen.java,4\0\404fcb8b06de06c20cfb7f4ea965dec6f5de1e3e

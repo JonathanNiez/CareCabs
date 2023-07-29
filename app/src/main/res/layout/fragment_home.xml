@@ -6,21 +6,58 @@
     tools:context=".Fragments.HomeFragment"
     android:background="@color/background">
 
-    <TextView
-        android:id="@+id/usernameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home"
-        android:textSize="20pt"
-        android:layout_centerInParent="true"/>
+    <RelativeLayout
+        android:id="@+id/upperLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/rectangle_one">
 
-    <Button
-        android:id="@+id/logoutBtn"
-        android:layout_width="wrap_content"
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/logo" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20pt"
-        android:text="N"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/usernameTextView"/>
+        android:layout_below="@id/upperLayout"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_margin="15dp"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:text="Security and Privacy"
+                    android:background="@drawable/rectangle_button"
+                    android:textColor="@color/black"
+                    android:drawableStart="@drawable/account"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
 
 </RelativeLayout>

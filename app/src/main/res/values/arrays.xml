@@ -2,9 +2,20 @@
 <resources>
 
     <string-array name="sex_options">
-        <item>Select your sex</item>
+        <item>Select your Sex</item>
         <item>Male</item>
         <item>Female</item>
+    </string-array>
+
+    <string-array name="disability_type">
+        <item>Select your Disability</item>
+        <item>Vision Impairment</item>
+        <item>Deaf or hard of hearing</item>
+        <item>Mental health conditions</item>
+        <item>Intellectual disability</item>
+        <item>Acquired brain injury</item>
+        <item>Autism spectrum disorder</item>
+        <item>Physical disability</item>
     </string-array>
 
 </resources>

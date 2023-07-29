@@ -8,8 +8,6 @@ S
 :
 
 .gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
-v
-Fapp/src/main/java/com/capstone/carecabs/Fragments/AccountFragment.java,b\8\b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47
 {
 Kapp/src/androidTest/java/com/capstone/carecabs/ExampleInstrumentedTest.java,a\a\aa79778253f484a12cdff20bf8f65476d3728f8b
 l
@@ -61,14 +59,14 @@ Q.idea/sonarlint/securityhotspotstore/a/5/a5cc2925ca8258af241be7e5b0381edf302663
 
 Q.idea/sonarlint/securityhotspotstore/2/a/2a45a911a8f1836b0b6c5b758962572012d8f8c3,1\0\1017d171139053a6ceaff055b7159ba14e80dc44
 
-Q.idea/sonarlint/securityhotspotstore/b/8/b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47,3\8\38cc5c389b41f409e317a9fbc6fa29edddb4c6b2
-
 Q.idea/sonarlint/securityhotspotstore/8/8/88a9255124c95bdc913197c120a8d560edc59c8e,9\0\909762385fc6eb20f922a91c6865741308b57f2c
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
-f
-6app/src/main/java/com/capstone/carecabs/MapActivity.kt,c\5\c5fa5469b9d76d3698def09b8f5144aa45e739c3
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
+n
+>app/src/main/java/com/capstone/carecabs/RegisterPassenger.java,b\1\b1758cfe44183216449d453e07f8cfbf0dc9c8a3
+A
+gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 i
 9app/src/main/java/com/capstone/carecabs/SplashScreen.java,4\0\404fcb8b06de06c20cfb7f4ea965dec6f5de1e3e

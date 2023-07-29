@@ -29,8 +29,12 @@ public class GetStarted extends AppCompatActivity {
         getStartedBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
             startActivity(intent);
-            finish();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override

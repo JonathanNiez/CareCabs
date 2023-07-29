@@ -17,6 +17,12 @@
         android:theme="@style/Theme.CareCabs"
         tools:targetApi="31">
         <activity
+            android:name=".LoggingIn"
+            android:exported="false" />
+        <activity
+            android:name=".LoggingOut"
+            android:exported="false" />
+        <activity
             android:name=".RegisterPWD"
             android:exported="false" />
         <activity

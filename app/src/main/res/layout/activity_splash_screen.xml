@@ -8,9 +8,9 @@
     android:background="@color/background">
 
     <ImageView
-        android:layout_width="100pt"
-        android:layout_height="100pt"
-        android:src="@drawable/logo"
-        android:layout_centerInParent="true"/>
+        android:layout_width="200pt"
+        android:layout_height="200pt"
+        android:layout_centerInParent="true"
+        android:src="@drawable/logo" />
 
 </RelativeLayout>
