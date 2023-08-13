@@ -2,8 +2,10 @@ package com.capstone.carecabs;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Login extends AppCompatActivity {
@@ -49,13 +53,18 @@ public class Login extends AppCompatActivity {
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInClient googleSignInClient;
     private String TAG = "Login";
-    private String userID;
     private static final int RC_SIGN_IN = 69;
+    private AlertDialog noInternetDialog, emailDialog;
+    private NetworkConnectivityChecker networkConnectivityChecker;
+    private AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        networkConnectivityChecker = new NetworkConnectivityChecker(this);
+        checkInternetConnection();
 
         auth = FirebaseAuth.getInstance();
 
@@ -72,17 +81,10 @@ public class Login extends AppCompatActivity {
         progressBarLayout = findViewById(R.id.progressBarLayout);
 
         registerTextView.setOnClickListener(v -> {
-            intent = new Intent(this, RegisterUserType.class);
-            startActivity(intent);
-            finish();
+            showRegisterUsingDialog();
         });
 
         googleImgBtn.setOnClickListener(v -> {
-            googleImgBtn.setVisibility(View.GONE);
-            progressBarLayout.setVisibility(View.VISIBLE);
-            loginUsingTextView.setVisibility(View.GONE);
-            loginBtn.setEnabled(false);
-
             intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, RC_SIGN_IN);
         });
@@ -102,140 +104,154 @@ public class Login extends AppCompatActivity {
 
             } else if (stringPassword.isEmpty()) {
                 password.setError("Please Enter your Password");
-
                 progressBarLayout.setVisibility(View.GONE);
                 loginBtn.setVisibility(View.VISIBLE);
 
             } else {
-                auth.signInWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            progressBarLayout.setVisibility(View.GONE);
-                            loginBtn.setVisibility(View.VISIBLE);
-
-                            intent = new Intent(Login.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-
-                            Log.i(TAG, "Login Success");
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, e.getMessage());
-
+                checkInternetConnection();
+                auth.signInWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
                         progressBarLayout.setVisibility(View.GONE);
                         loginBtn.setVisibility(View.VISIBLE);
 
+                        intent = new Intent(Login.this, LoggingIn.class);
+                        startActivity(intent);
+                        finish();
+
+                        Log.i(TAG, "Login Success");
                     }
+                }).addOnFailureListener(e -> {
+                    Log.e(TAG, e.getMessage());
+
+                    progressBarLayout.setVisibility(View.GONE);
+                    loginBtn.setVisibility(View.VISIBLE);
                 });
             }
         });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkConnectivityChecker != null) {
+            networkConnectivityChecker.unregisterNetworkCallback();
+        }
+    }
+
+    private void showRegisterUsingDialog() {
+
+        final Dialog customDialog = new Dialog(this);
+        customDialog.setContentView(R.layout.register_using_dialog);
+
+        ImageButton googleImgBtn = customDialog.findViewById(R.id.googleImgBtn);
+        ImageButton emailImgBtn = customDialog.findViewById(R.id.emailImgBtn);
+        Button cancelBtn = customDialog.findViewById(R.id.cancelBtn);
+
+        googleImgBtn.setOnClickListener(v -> {
+            intent = new Intent(Login.this, RegisterUserType.class);
+            intent.putExtra("registerType", "googleRegister");
+            startActivity(intent);
+            finish();
+
+            customDialog.dismiss();
+        });
+
+        emailImgBtn.setOnClickListener(v -> {
+            intent = new Intent(Login.this, RegisterUserType.class);
+            intent.putExtra("registerType", "emailRegister");
+            startActivity(intent);
+            finish();
+
+            customDialog.dismiss();
+        });
+
+        cancelBtn.setOnClickListener(v -> customDialog.dismiss());
+
+        customDialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
-                fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-
-                googleImgBtn.setVisibility(View.VISIBLE);
-                progressBarLayout.setVisibility(View.GONE);
-                loginUsingTextView.setVisibility(View.VISIBLE);
-                loginBtn.setEnabled(true);
-
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Handle Google Sign-In failure
             }
         }
-
     }
 
-    private void fireBaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-
-        if (googleSignInAccount != null) {
-
-            auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "signInWithCredential:success");
-                        currentUser = auth.getCurrentUser();
-                        userID = currentUser.getUid();
-
-                        if (currentUser != null) {
-                            String googleEmail = googleSignInAccount.getEmail();
-                            String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
-
-                            databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userID);
-
-                            Map<String, Object> registerUser = new HashMap<>();
-                            registerUser.put("driverID", userID);
-                            registerUser.put("email", googleEmail);
-                            registerUser.put("profilePic", googleProfilePic);
-
-                            databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-
-                                    if (task.isSuccessful()) {
-                                        googleImgBtn.setVisibility(View.VISIBLE);
-                                        progressBarLayout.setVisibility(View.GONE);
-                                        loginUsingTextView.setVisibility(View.VISIBLE);
-                                        loginBtn.setEnabled(true);
-
-                                        intent = new Intent(Login.this, MainActivity.class);
-//                                      intent.putExtra("registerData", getRegisterData);
-                                        startActivity(intent);
-                                        finish();
-
-                                    } else {
-                                        Log.e(TAG, String.valueOf(task.getException()));
-
-                                        googleImgBtn.setVisibility(View.VISIBLE);
-                                        progressBarLayout.setVisibility(View.GONE);
-                                        loginUsingTextView.setVisibility(View.VISIBLE);
-                                        loginBtn.setEnabled(true);
-                                    }
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressBarLayout.setVisibility(View.GONE);
-                                    googleImgBtn.setVisibility(View.VISIBLE);
-                                    loginUsingTextView.setVisibility(View.VISIBLE);
-                                    loginBtn.setEnabled(true);
-
-                                    Log.e(TAG, e.getMessage());
-                                }
-                            });
-                        }
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        FirebaseAuth.getInstance().fetchSignInMethodsForEmail(currentUser.getEmail())
+                .addOnCompleteListener(task -> {
+                    List<String> signInMethods = task.getResult().getSignInMethods();
+                    if (signInMethods != null && !signInMethods.isEmpty()) {
+                        showEmailAlreadyRegisteredDialog();
                     } else {
-                        Toast.makeText(Login.this, "Login failed", Toast.LENGTH_SHORT).show();
+                        auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
 
-                        googleImgBtn.setVisibility(View.VISIBLE);
-                        progressBarLayout.setVisibility(View.GONE);
-                        loginUsingTextView.setVisibility(View.VISIBLE);
-                        loginBtn.setEnabled(true);
+                        }).addOnFailureListener(e -> {
 
+                        });
                     }
-                }
-            });
-        } else {
-            Log.d(TAG, "signInWithCredential:failed");
 
-            googleImgBtn.setVisibility(View.VISIBLE);
-            progressBarLayout.setVisibility(View.GONE);
-            loginUsingTextView.setVisibility(View.VISIBLE);
-            loginBtn.setEnabled(true);
+                });
+    }
+
+    private void showEmailAlreadyRegisteredDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            emailDialog.dismiss();
+        });
+
+        builder.setView(dialogView);
+
+        emailDialog = builder.create();
+        emailDialog.show();
+    }
+
+    private void showNoInternetDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+                checkInternetConnection();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    private void checkInternetConnection() {
+        //TODO mugawas ang dialog biskang naay net
+        if (networkConnectivityChecker.isConnected()) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+            Log.e(TAG, String.valueOf(networkConnectivityChecker.isConnected()));
+        } else {
+            showNoInternetDialog();
+            Log.e(TAG, String.valueOf(networkConnectivityChecker.isConnected()));
         }
     }
-
 }

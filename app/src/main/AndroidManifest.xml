@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +18,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CareCabs"
         tools:targetApi="31">
+        <activity
+            android:name=".RegisterUsing"
+            android:exported="false" />
+        <activity
+            android:name=".RegisterUsingGoogle"
+            android:exported="false" />
         <activity
             android:name=".LoggingIn"
             android:exported="false" />

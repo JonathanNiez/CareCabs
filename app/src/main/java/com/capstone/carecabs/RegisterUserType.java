@@ -9,23 +9,39 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.TextView;
+
+import java.util.Objects;
 
 public class RegisterUserType extends AppCompatActivity {
 
     private ImageButton imgBackBtn, passengerImgBtn, driverImgBtn;
+    private TextView googleTextView;
     private Button loginHereBtn;
     private Intent intent;
     private String registerData;
-
+    private String registerType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user_type);
 
+        intent = getIntent();
+        String getRegisterType = intent.getStringExtra("registerType");
+
         imgBackBtn = findViewById(R.id.imgBackBtn);
         passengerImgBtn = findViewById(R.id.passengerImgBtn);
         driverImgBtn = findViewById(R.id.driverImgBtn);
         loginHereBtn = findViewById(R.id.loginHereBtn);
+        googleTextView = findViewById(R.id.googleTextView);
+
+        if (getRegisterType.equals("googleRegister")){
+            googleTextView.setVisibility(View.VISIBLE);
+
+            registerType = getRegisterType;
+        }else{
+            registerType = "emailRegister";
+        }
 
         loginHereBtn.setOnClickListener(v -> {
             intent = new Intent(this, Login.class);
@@ -37,6 +53,7 @@ public class RegisterUserType extends AppCompatActivity {
             intent = new Intent(this, Register.class);
             registerData = "driver";
             intent.putExtra("registerData", registerData);
+            intent.putExtra("registerType", registerType);
             startActivity(intent);
             finish();
 
@@ -68,6 +85,7 @@ public class RegisterUserType extends AppCompatActivity {
                 intent = new Intent(RegisterUserType.this, Register.class);
                 registerData = "senior";
                 intent.putExtra("registerData", registerData);
+                intent.putExtra("registerType", registerType);
                 startActivity(intent);
                 finish();
 
@@ -81,6 +99,7 @@ public class RegisterUserType extends AppCompatActivity {
                 intent = new Intent(RegisterUserType.this, Register.class);
                 registerData = "pwd";
                 intent.putExtra("registerData", registerData);
+                intent.putExtra("registerType", registerType);
                 startActivity(intent);
                 finish();
 

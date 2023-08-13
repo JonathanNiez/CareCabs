@@ -28,12 +28,12 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_below="@id/imgBackBtn"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
             android:fontFamily="@font/opensans_regular"
             android:text="Account Settings"
-            android:textSize="30dp"
-            android:layout_marginBottom="20dp"/>
+            android:textSize="30dp" />
 
         <ImageView
             android:id="@+id/profielPic"
@@ -62,14 +62,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/upperLayout"
-        android:layout_margin="5dp"
+        android:layout_margin="20dp"
         android:orientation="vertical">
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/editProfileBtn"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:background="@drawable/rectangle_button"
+            android:background="@color/background"
             android:drawableEnd="@drawable/right_arrow"
             android:fontFamily="@font/opensans_semibold"
             android:padding="10dp"
@@ -78,11 +78,17 @@
             android:textColor="@color/black"
             android:textSize="20dp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@color/gray" />
+
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/changePasswordBtn"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:background="@drawable/rectangle_button"
+            android:background="@color/background"
             android:drawableEnd="@drawable/right_arrow"
             android:fontFamily="@font/opensans_semibold"
             android:padding="10dp"
@@ -95,7 +101,7 @@
             android:id="@+id/optionsBtn"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:background="@drawable/rectangle_button"
+            android:background="@color/background"
             android:drawableEnd="@drawable/right_arrow"
             android:fontFamily="@font/opensans_semibold"
             android:padding="10dp"
@@ -108,7 +114,7 @@
             android:id="@+id/signOutBtn"
             android:layout_width="match_parent"
             android:layout_height="76dp"
-            android:background="@drawable/rectangle_button"
+            android:background="@color/background"
             android:drawableEnd="@drawable/logout32"
             android:fontFamily="@font/opensans_semibold"
             android:padding="10dp"

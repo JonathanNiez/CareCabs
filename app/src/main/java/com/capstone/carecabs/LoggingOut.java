@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoggingOut extends AppCompatActivity {
-
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private static final long SPLASH_SCREEN_DELAY = 2000; // 2 seconds
@@ -24,10 +23,13 @@ public class LoggingOut extends AppCompatActivity {
         currentUser = auth.getCurrentUser();
 
         new Handler().postDelayed(() -> {
+
             auth.signOut();
+
             Intent intent = new Intent(LoggingOut.this, Login.class);
             startActivity(intent);
             finish();
+
         }, SPLASH_SCREEN_DELAY);
     }
 }

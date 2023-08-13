@@ -24,10 +24,16 @@ public class GetStarted extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
 
+        if (currentUser != null){
+            intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
         getStartedBtn = findViewById(R.id.getStartedBtn);
 
         getStartedBtn.setOnClickListener(v -> {
-            intent = new Intent(this, RegisterUserType.class);
+            intent = new Intent(this, Login.class);
             startActivity(intent);
         });
     }
@@ -35,15 +41,5 @@ public class GetStarted extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (currentUser != null){
-            intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".RegisterUserType">
+    tools:context=".RegisterUsingGoogle">
 
     <ImageButton
         android:id="@+id/imgBackBtn"
@@ -24,7 +24,6 @@
         android:id="@+id/googleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:text="You are Signing-in \nusing Google"
         android:fontFamily="@font/opensans_semibold"
         android:textColor="@color/black"
