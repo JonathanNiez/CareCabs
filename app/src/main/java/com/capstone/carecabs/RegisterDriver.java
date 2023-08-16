@@ -1,6 +1,5 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -11,17 +10,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.capstone.carecabs.Static.StaticDataPasser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -127,31 +122,26 @@ public class RegisterDriver extends AppCompatActivity {
                     registerUser.put("isAvailable", true);
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
+                    registerUser.put("userType", "Driver");
 
-                    databaseReference.updateChildren(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-
-                                StaticDataPasser.selectedSex = null;
-                                StaticDataPasser.currentAge = 0;
-                                StaticDataPasser.currentBirthDate = null;
-
-                                intent = new Intent(RegisterDriver.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+                    databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            Log.e(TAG, e.getMessage());
+                            StaticDataPasser.selectedSex = null;
+                            StaticDataPasser.currentAge = 0;
+                            StaticDataPasser.currentBirthDate = null;
+
+                            intent = new Intent(RegisterDriver.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
+                    }).addOnFailureListener(e -> {
+                        progressBarLayout.setVisibility(View.GONE);
+                        doneBtn.setVisibility(View.VISIBLE);
+
+                        Log.e(TAG, e.getMessage());
                     });
                 }
             }
@@ -181,21 +171,18 @@ public class RegisterDriver extends AppCompatActivity {
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        selectedDate = Calendar.getInstance();
-                        selectedDate.set(year, monthOfYear, dayOfMonth);
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    selectedDate = Calendar.getInstance();
+                    selectedDate.set(year1, monthOfYear, dayOfMonth);
 
-                        // Update the birthdateTextView with the selected date in a desired format
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        birthdateTextView.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
-                        //TODO: date and time
-                        StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    // Update the birthdateTextView with the selected date in a desired format
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    birthdateTextView.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
+                    //TODO: date and time
+                    StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
 
-                        // Calculate the age and display it
-                        calculateAge();
-                    }
+                    // Calculate the age and display it
+                    calculateAge();
                 }, year, month, day);
         datePickerDialog.show();
     }

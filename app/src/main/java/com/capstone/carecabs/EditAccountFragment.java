@@ -25,9 +25,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.Fragments.HomeFragment;
-import com.capstone.carecabs.Static.StaticDataPasser;
-import com.google.android.material.textfield.TextInputLayout;
+import com.capstone.carecabs.Fragments.AccountFragment;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -85,7 +84,7 @@ public class EditAccountFragment extends Fragment {
         });
 
         imgBackBtn.setOnClickListener(v -> {
-            backToHomeFragment();
+            backToAccountFragment();
         });
 
 
@@ -339,10 +338,10 @@ public class EditAccountFragment extends Fragment {
         }
     }
 
-    private void backToHomeFragment() {
+    private void backToAccountFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new HomeFragment());
+        fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

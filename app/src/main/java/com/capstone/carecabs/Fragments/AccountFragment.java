@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.EditAccountFragment;
 import com.capstone.carecabs.LoggingOut;
@@ -33,16 +37,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class AccountFragment extends Fragment {
-    private Button signOutBtn, editProfileBtn, changePasswordBtn;
+    private Button signOutBtn, editProfileBtn, changePasswordBtn, secuAndPriBtn;
     private ImageButton imgBackBtn;
     private ImageView profilePic;
-    private TextView fullNameTextView;
+    private TextView fullNameTextView, userTypeTextView, ageTextView, statusTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
     private String TAG = "AccountFragment";
     private String userID;
     private Intent intent;
+    private AlertDialog signOutDialog, loadingDialog;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,11 +61,15 @@ public class AccountFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
         fullNameTextView = view.findViewById(R.id.fullNameTextView);
+        userTypeTextView = view.findViewById(R.id.userTypeTextView);
+        ageTextView = view.findViewById(R.id.ageTextView);
+        statusTextView = view.findViewById(R.id.statusTextView);
         changePasswordBtn = view.findViewById(R.id.changePasswordBtn);
         signOutBtn = view.findViewById(R.id.signOutBtn);
         editProfileBtn = view.findViewById(R.id.editProfileBtn);
         profilePic = view.findViewById(R.id.profielPic);
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
+        secuAndPriBtn = view.findViewById(R.id.secAndPriBtn);
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -70,12 +80,20 @@ public class AccountFragment extends Fragment {
             goToEditAccountFragment();
         });
 
+        secuAndPriBtn.setOnClickListener(v -> {
+
+        });
+
+        changePasswordBtn.setOnClickListener(v -> {
+
+        });
+
         imgBackBtn.setOnClickListener(v -> {
             backToHomeFragment();
         });
 
         signOutBtn.setOnClickListener(v -> {
-            logoutUser();
+            showSignOutDialog();
         });
 
         return view;
@@ -89,6 +107,7 @@ public class AccountFragment extends Fragment {
 
     private void loadUserProfileInfo() {
 
+        showLoadingDialog();
         if (currentUser != null) {
             userID = currentUser.getUid();
 
@@ -99,14 +118,17 @@ public class AccountFragment extends Fragment {
 
                     if (snapshot.exists()) {
 
-                        String getFirstname, getLastname, getProfilePic, fullName;
+
+                        String getFirstname, getLastname, getProfilePic, fullName, getUserType, getAge;
 
                         DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
 
                         if (snapshot.child("driver").hasChild(userID)) {
 
                             driverSnapshot = snapshot.child("driver").child(userID);
+                            getUserType = driverSnapshot.child("userType").getValue(String.class);
                             getFirstname = driverSnapshot.child("firstname").getValue(String.class);
+                            getAge = String.valueOf(driverSnapshot.child("age").getValue());
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
@@ -118,11 +140,17 @@ public class AccountFragment extends Fragment {
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
                             fullNameTextView.setText(fullName);
+                            userTypeTextView.setText(getUserType);
+                            ageTextView.setText("Age: " + getAge);
+
+                            closeLoadingDialog();
 
                         } else if (snapshot.child("senior").hasChild(userID)) {
                             buildAndDisplayNotification();
 
                             seniorSnapshot = snapshot.child("senior").child(userID);
+                            getAge = String.valueOf(seniorSnapshot.child("age").getValue());
+                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
                             getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
                             getLastname = seniorSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
@@ -134,11 +162,17 @@ public class AccountFragment extends Fragment {
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
                             fullNameTextView.setText(fullName);
+                            userTypeTextView.setText(getUserType);
+                            ageTextView.setText("Age: " + getAge);
+
+                            closeLoadingDialog();
+
 
                         } else if (snapshot.child("pwd").hasChild(userID)) {
-                            buildAndDisplayNotification();
 
                             pwdSnapshot = snapshot.child("pwd").child(userID);
+                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
+                            getAge = String.valueOf(pwdSnapshot.child("age").getValue());
                             getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
                             getLastname = pwdSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
@@ -151,6 +185,11 @@ public class AccountFragment extends Fragment {
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
                             fullNameTextView.setText(fullName);
+                            userTypeTextView.setText(getUserType);
+                            ageTextView.setText("Age: " + getAge);
+
+                            closeLoadingDialog();
+
                         }
                     } else {
                         Log.e(TAG, "Not Exist");
@@ -166,6 +205,48 @@ public class AccountFragment extends Fragment {
         } else {
             intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
+        }
+    }
+
+    private void showSignOutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
+
+        Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+        signOutBtn.setOnClickListener(v -> {
+            logoutUser();
+
+        });
+
+        cancelBtn.setOnClickListener(v -> {
+            if (signOutDialog != null && signOutDialog.isShowing()) {
+                signOutDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        signOutDialog = builder.create();
+        signOutDialog.show();
+    }
+
+    private void showLoadingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.loading_dialog, null);
+
+        builder.setView(dialogView);
+
+        loadingDialog = builder.create();
+        loadingDialog.show();
+    }
+
+    private void closeLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
         }
     }
 

@@ -1,4 +1,4 @@
-package com.capstone.carecabs.Static;
+package com.capstone.carecabs.Utility;
 
 public class StaticDataPasser {
 

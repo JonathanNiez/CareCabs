@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dirty_yellow">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:fontFamily="@font/opensans_semibold"
+        android:text="Sign Out"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="30dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dp"
+        android:fontFamily="@font/opensans_semibold"
+        android:layout_below="@id/textView"
+        android:text="Are you sure you want to Sign out?"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="25dp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/signOutBtn"
+            android:layout_width="120dp"
+            android:layout_height="70dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/login_button"
+            android:backgroundTint="@color/red"
+            android:text="Sign Out"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/opensans_semibold"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/cancelBtn"
+            android:layout_width="120dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/login_button"
+            android:text="Cancel"
+            android:textSize="20dp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/opensans_semibold"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

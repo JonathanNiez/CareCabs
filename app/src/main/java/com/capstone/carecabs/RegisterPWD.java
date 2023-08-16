@@ -1,6 +1,5 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -18,10 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.capstone.carecabs.Static.StaticDataPasser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -127,37 +123,31 @@ public class RegisterPWD extends AppCompatActivity {
                     registerUser.put("age", StaticDataPasser.currentAge);
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
-                    registerUser.put("userType", getRegisterData);
+                    registerUser.put("userType", "Persons with Disabilities (PWD)");
 
-                    databaseReference.updateChildren(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-
-                                StaticDataPasser.selectedSex = null;
-                                StaticDataPasser.currentAge = 0;
-                                StaticDataPasser.currentBirthDate = null;
-
-                                intent = new Intent(RegisterPWD.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }else {
-                                Log.e(TAG, String.valueOf(task.getException()));
-
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+                    databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            Log.e(TAG, e.getMessage());
+                            StaticDataPasser.selectedSex = null;
+                            StaticDataPasser.currentAge = 0;
+                            StaticDataPasser.currentBirthDate = null;
+
+                            intent = new Intent(RegisterPWD.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }else {
+                            Log.e(TAG, String.valueOf(task.getException()));
+
+                            progressBarLayout.setVisibility(View.GONE);
+                            doneBtn.setVisibility(View.VISIBLE);
                         }
+                    }).addOnFailureListener(e -> {
+                        progressBarLayout.setVisibility(View.GONE);
+                        doneBtn.setVisibility(View.VISIBLE);
+
+                        Log.e(TAG, e.getMessage());
                     });
                 }
             }

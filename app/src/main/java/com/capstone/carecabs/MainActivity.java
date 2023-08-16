@@ -6,10 +6,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.capstone.carecabs.Fragments.AccountFragment;
@@ -22,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private Intent intent;
     private DoubleTapBackHandler doubleTapBackHandler;
+    private AlertDialog exitAppDialog;
+    private AlertDialog.Builder builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
     }
+
     @Override
     public void onBackPressed() {
         if (doubleTapBackHandler.handleDoubleTap()) {
@@ -60,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
             showExitConfirmationDialog();
         }
     }
+
     public class DoubleTapBackHandler {
         private boolean doubleTapped = false;
         private final Handler handler = new Handler();
@@ -76,19 +83,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showExitConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Exit App?");
-        builder.setMessage("Are you sure you want to exit the app?");
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Perform any cleanup or other actions before exiting the app
-                finish();
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.exit_app_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            if (exitAppDialog != null && exitAppDialog.isShowing()) {
+                exitAppDialog.dismiss();
             }
         });
-        builder.setNegativeButton("No", null);
-        builder.show();
+
+        builder.setView(dialogView);
+
+        exitAppDialog = builder.create();
+        exitAppDialog.show();
     }
+
     private void showFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

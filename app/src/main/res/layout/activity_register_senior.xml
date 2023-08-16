@@ -220,6 +220,28 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout"/>
+
+            <LinearLayout
+                android:id="@+id/idLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/textView2"
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/scanIDBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Scan ID"/>
+
+            </LinearLayout>
+
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/doneBtn"
                 android:layout_width="185dp"
@@ -229,7 +251,7 @@
                 android:textSize="24dp"
                 android:fontFamily="@font/opensans_bold"
                 android:textColor="@color/white"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/idLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
                 android:layout_marginBottom="50dp"/>

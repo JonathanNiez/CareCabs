@@ -1,6 +1,5 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,16 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.capstone.carecabs.Static.StaticDataPasser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +34,7 @@ import java.util.Objects;
 
 public class RegisterSenior extends AppCompatActivity {
 
-    private Button doneBtn, birthdateBtn;
+    private Button doneBtn, birthdateBtn, scanIDBtn;
     private EditText firstname, lastname;
     private TextView ageTextView, birthdateTextView;
     private Spinner spinnerSex;
@@ -61,6 +56,7 @@ public class RegisterSenior extends AppCompatActivity {
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
         birthdateBtn = findViewById(R.id.birthdateBtn);
+        scanIDBtn = findViewById(R.id.scanIDBtn);
         ageTextView = findViewById(R.id.ageTextView);
         birthdateTextView = findViewById(R.id.birthdateTextView);
         spinnerSex = findViewById(R.id.spinnerSex);
@@ -137,32 +133,26 @@ public class RegisterSenior extends AppCompatActivity {
                     registerUser.put("profilePic", "default");
                     registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
                     registerUser.put("sex", StaticDataPasser.selectedSex);
-                    registerUser.put("userType", getRegisterData);
+                    registerUser.put("userType", "Senior Citizen");
 
-                    databaseReference.updateChildren(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-
-                                StaticDataPasser.selectedSex = null;
-                                StaticDataPasser.currentAge = 0;
-                                StaticDataPasser.currentBirthDate = null;
-
-                                intent = new Intent(RegisterSenior.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
+                    databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            Log.e(TAG, e.getMessage());
+                            StaticDataPasser.selectedSex = null;
+                            StaticDataPasser.currentAge = 0;
+                            StaticDataPasser.currentBirthDate = null;
+
+                            intent = new Intent(RegisterSenior.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
                         }
+                    }).addOnFailureListener(e -> {
+                        progressBarLayout.setVisibility(View.GONE);
+                        doneBtn.setVisibility(View.VISIBLE);
+
+                        Log.e(TAG, e.getMessage());
                     });
                 }
             }
@@ -175,15 +165,12 @@ public class RegisterSenior extends AppCompatActivity {
         customDialog.setContentView(R.layout.you_are_not_a_senior_ciitizen_dialog);
 
         Button okBtn = customDialog.findViewById(R.id.okBtn);
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        okBtn.setOnClickListener(v -> {
 
-                intent = new Intent(RegisterSenior.this, Login.class);
-                startActivity(intent);
-                finish();
-                customDialog.dismiss();
-            }
+            intent = new Intent(RegisterSenior.this, Login.class);
+            startActivity(intent);
+            finish();
+            customDialog.dismiss();
         });
         customDialog.show();
     }

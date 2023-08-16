@@ -18,10 +18,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.capstone.carecabs.Static.StaticDataPasser;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -230,23 +229,17 @@ public class Register extends AppCompatActivity {
 
                                             }
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            progressBarLayout.setVisibility(View.GONE);
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            Log.e(TAG, e.getMessage());
-                                        }
+                                    }).addOnFailureListener(e -> {
+                                        progressBarLayout.setVisibility(View.GONE);
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        Log.e(TAG, e.getMessage());
                                     });
                                 }
                             }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                nextBtn.setVisibility(View.VISIBLE);
-                                Log.e(TAG, e.getMessage());
-                            }
+                        }).addOnFailureListener(e -> {
+                            progressBarLayout.setVisibility(View.GONE);
+                            nextBtn.setVisibility(View.VISIBLE);
+                            Log.e(TAG, e.getMessage());
                         });
 
                         break;
@@ -265,48 +258,40 @@ public class Register extends AppCompatActivity {
                                     registerUser.put("userType", getRegisterData);
                                     registerUser.put("email", stringEmail);
                                     registerUser.put("password", hashedPassword);
+                                    registerUser.put("status", "not_verified");
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                    databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
-                                            if (task.isSuccessful()) {
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-
-                                                buildAndDisplayNotification();
-
-                                                intent = new Intent(Register.this, RegisterSenior.class);
-                                                intent.putExtra("registerData", getRegisterData);
-                                                startActivity(intent);
-                                                finish();
-
-
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
-
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            progressBarLayout.setVisibility(View.GONE);
+                                        if (task1.isSuccessful()) {
                                             nextBtn.setVisibility(View.VISIBLE);
-                                            Log.e(TAG, e.getMessage());
+                                            progressBarLayout.setVisibility(View.GONE);
+
+                                            buildAndDisplayNotification();
+
+                                            intent = new Intent(Register.this, RegisterSenior.class);
+                                            intent.putExtra("registerData", getRegisterData);
+                                            startActivity(intent);
+                                            finish();
+
+
+                                        } else {
+                                            Log.e(TAG, String.valueOf(task1.getException()));
+
+                                            nextBtn.setVisibility(View.VISIBLE);
+                                            progressBarLayout.setVisibility(View.GONE);
+
                                         }
+                                    }).addOnFailureListener(e -> {
+                                        progressBarLayout.setVisibility(View.GONE);
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        Log.e(TAG, e.getMessage());
                                     });
                                 }
                             }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                nextBtn.setVisibility(View.VISIBLE);
-                                Log.e(TAG, e.getMessage());
-                            }
+                        }).addOnFailureListener(e -> {
+                            progressBarLayout.setVisibility(View.GONE);
+                            nextBtn.setVisibility(View.VISIBLE);
+                            Log.e(TAG, e.getMessage());
                         });
 
                         break;
@@ -360,31 +345,22 @@ public class Register extends AppCompatActivity {
                                     registerUser.put("email", googleEmail);
                                     registerUser.put("profilePic", googleProfilePic);
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                    databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
-                                            if (task.isSuccessful()) {
-                                                buildAndDisplayNotification();
-                                                closePleaseWaitDialog();
+                                        if (task1.isSuccessful()) {
+                                            buildAndDisplayNotification();
+                                            closePleaseWaitDialog();
 
-                                                intent = new Intent(Register.this, RegisterDriver.class);
-                                                intent.putExtra("registerData", StaticDataPasser.registerData);
-                                                startActivity(intent);
-                                                finish();
+                                            intent = new Intent(Register.this, RegisterDriver.class);
+                                            intent.putExtra("registerData", StaticDataPasser.registerData);
+                                            startActivity(intent);
+                                            finish();
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                        } else {
+                                            Log.e(TAG, String.valueOf(task1.getException()));
 
-                                            }
                                         }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Log.e(TAG, e.getMessage());
-                                        }
-                                    });
+                                    }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
                                 }
                             } else {
                                 Toast.makeText(Register.this, "Login failed", Toast.LENGTH_SHORT).show();
@@ -395,112 +371,88 @@ public class Register extends AppCompatActivity {
 
                     break;
                 case "pwd":
-                    auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "googleSignInWithCredential:success");
-                                currentUser = auth.getCurrentUser();
-                                userID = currentUser.getUid();
+                    auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "googleSignInWithCredential:success");
+                            currentUser = auth.getCurrentUser();
+                            userID = currentUser.getUid();
 
-                                if (currentUser != null) {
-                                    String googleEmail = googleSignInAccount.getEmail();
-                                    String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+                            if (currentUser != null) {
+                                String googleEmail = googleSignInAccount.getEmail();
+                                String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("userID", userID);
-                                    registerUser.put("email", googleEmail);
-                                    registerUser.put("profilePic", googleProfilePic);
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("userID", userID);
+                                registerUser.put("email", googleEmail);
+                                registerUser.put("profilePic", googleProfilePic);
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
-                                            if (task.isSuccessful()) {
-                                                buildAndDisplayNotification();
-                                                closePleaseWaitDialog();
+                                    if (task12.isSuccessful()) {
+                                        buildAndDisplayNotification();
+                                        closePleaseWaitDialog();
 
-                                                intent = new Intent(Register.this, RegisterPWD.class);
-                                                intent.putExtra("registerData", StaticDataPasser.registerData);
-                                                startActivity(intent);
-                                                finish();
+                                        intent = new Intent(Register.this, RegisterPWD.class);
+                                        intent.putExtra("registerData", StaticDataPasser.registerData);
+                                        startActivity(intent);
+                                        finish();
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task12.getException()));
 
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Log.e(TAG, e.getMessage());
-                                        }
-                                    });
-                                }
-                            } else {
-                                Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
-
-
+                                    }
+                                }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
                             }
+                        } else {
+                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
+
+
                         }
                     });
 
                     break;
                 case "senior":
-                    auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "googleSignInWithCredential:success");
-                                currentUser = auth.getCurrentUser();
-                                userID = currentUser.getUid();
+                    auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "googleSignInWithCredential:success");
+                            currentUser = auth.getCurrentUser();
+                            userID = currentUser.getUid();
 
-                                if (currentUser != null) {
-                                    String googleEmail = googleSignInAccount.getEmail();
-                                    String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+                            if (currentUser != null) {
+                                String googleEmail = googleSignInAccount.getEmail();
+                                String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("userID", userID);
-                                    registerUser.put("email", googleEmail);
-                                    registerUser.put("profilePic", googleProfilePic);
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("userID", userID);
+                                registerUser.put("email", googleEmail);
+                                registerUser.put("profilePic", googleProfilePic);
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
-                                            if (task.isSuccessful()) {
-                                                buildAndDisplayNotification();
+                                    if (task13.isSuccessful()) {
+                                        buildAndDisplayNotification();
 
-                                                closePleaseWaitDialog();
+                                        closePleaseWaitDialog();
 
-                                                intent = new Intent(Register.this, RegisterSenior.class);
-                                                intent.putExtra("registerData", StaticDataPasser.registerData);
-                                                startActivity(intent);
-                                                finish();
+                                        intent = new Intent(Register.this, RegisterSenior.class);
+                                        intent.putExtra("registerData", StaticDataPasser.registerData);
+                                        startActivity(intent);
+                                        finish();
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task13.getException()));
 
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Log.e(TAG, e.getMessage());
-                                        }
-                                    });
-                                }
-                            } else {
-                                Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
-
-
+                                    }
+                                }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
                             }
+                        } else {
+                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
+
+
                         }
                     });
 
@@ -566,9 +518,9 @@ public class Register extends AppCompatActivity {
 
         View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-        okBtn.setOnClickListener(v -> {
+        tryAgainBtn.setOnClickListener(v -> {
             checkInternetConnection();
         });
 
