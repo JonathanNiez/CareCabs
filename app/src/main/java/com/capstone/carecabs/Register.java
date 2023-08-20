@@ -132,109 +132,95 @@ public class Register extends AppCompatActivity {
 
                 switch (getRegisterData) {
                     case "driver":
-                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    currentUser = auth.getCurrentUser();
-                                    userID = currentUser.getUid();
+                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                currentUser = auth.getCurrentUser();
+                                userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("driverID", userID);
-                                    registerUser.put("email", stringEmail);
-                                    registerUser.put("password", hashedPassword);
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("driverID", userID);
+                                registerUser.put("userType", getRegisterData);
+                                registerUser.put("email", stringEmail);
+                                registerUser.put("password", hashedPassword);
+                                registerUser.put("status", "Not Verified");
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
-                                            if (task.isSuccessful()) {
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
+                                    if (task12.isSuccessful()) {
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
 
-                                                buildAndDisplayNotification();
+                                        buildAndDisplayNotification();
 
-                                                intent = new Intent(Register.this, RegisterDriver.class);
-                                                intent.putExtra("registerData", getRegisterData);
-                                                startActivity(intent);
-                                                finish();
+                                        intent = new Intent(Register.this, RegisterDriver.class);
+                                        intent.putExtra("registerData", getRegisterData);
+                                        startActivity(intent);
+                                        finish();
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task12.getException()));
 
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
 
-                                            }
-                                        }
-                                    }).addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            progressBarLayout.setVisibility(View.GONE);
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            Log.e(TAG, e.getMessage());
-                                        }
-                                    });
-                                }
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    progressBarLayout.setVisibility(View.GONE);
+                                    nextBtn.setVisibility(View.VISIBLE);
+                                    Log.e(TAG, e.getMessage());
+                                });
                             }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                nextBtn.setVisibility(View.VISIBLE);
-                                Log.e(TAG, e.getMessage());
-                            }
+                        }).addOnFailureListener(e -> {
+                            progressBarLayout.setVisibility(View.GONE);
+                            nextBtn.setVisibility(View.VISIBLE);
+                            Log.e(TAG, e.getMessage());
                         });
 
                         break;
                     case "pwd":
-                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    currentUser = auth.getCurrentUser();
-                                    userID = currentUser.getUid();
+                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                currentUser = auth.getCurrentUser();
+                                userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("userID", userID);
-                                    registerUser.put("userType", getRegisterData);
-                                    registerUser.put("email", stringEmail);
-                                    registerUser.put("password", hashedPassword);
-
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-
-                                            if (task.isSuccessful()) {
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-
-                                                buildAndDisplayNotification();
-
-                                                intent = new Intent(Register.this, RegisterPWD.class);
-                                                intent.putExtra("registerData", getRegisterData);
-                                                startActivity(intent);
-                                                finish();
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("userID", userID);
+                                registerUser.put("userType", getRegisterData);
+                                registerUser.put("email", stringEmail);
+                                registerUser.put("password", hashedPassword);
+                                registerUser.put("status", "Not Verified");
 
 
-                                            } else {
-                                                Log.e(TAG, String.valueOf(task.getException()));
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
-                                                nextBtn.setVisibility(View.VISIBLE);
-                                                progressBarLayout.setVisibility(View.GONE);
-
-                                            }
-                                        }
-                                    }).addOnFailureListener(e -> {
-                                        progressBarLayout.setVisibility(View.GONE);
+                                    if (task13.isSuccessful()) {
                                         nextBtn.setVisibility(View.VISIBLE);
-                                        Log.e(TAG, e.getMessage());
-                                    });
-                                }
+                                        progressBarLayout.setVisibility(View.GONE);
+
+                                        buildAndDisplayNotification();
+
+                                        intent = new Intent(Register.this, RegisterPWD.class);
+                                        intent.putExtra("registerData", getRegisterData);
+                                        startActivity(intent);
+                                        finish();
+
+
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task13.getException()));
+
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
+
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    progressBarLayout.setVisibility(View.GONE);
+                                    nextBtn.setVisibility(View.VISIBLE);
+                                    Log.e(TAG, e.getMessage());
+                                });
                             }
                         }).addOnFailureListener(e -> {
                             progressBarLayout.setVisibility(View.GONE);
@@ -244,49 +230,46 @@ public class Register extends AppCompatActivity {
 
                         break;
                     case "senior":
-                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    currentUser = auth.getCurrentUser();
-                                    userID = currentUser.getUid();
+                        auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                currentUser = auth.getCurrentUser();
+                                userID = currentUser.getUid();
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("userID", userID);
-                                    registerUser.put("userType", getRegisterData);
-                                    registerUser.put("email", stringEmail);
-                                    registerUser.put("password", hashedPassword);
-                                    registerUser.put("status", "not_verified");
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("userID", userID);
+                                registerUser.put("userType", getRegisterData);
+                                registerUser.put("email", stringEmail);
+                                registerUser.put("password", hashedPassword);
+                                registerUser.put("status", "Not Verified");
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
-                                        if (task1.isSuccessful()) {
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
-
-                                            buildAndDisplayNotification();
-
-                                            intent = new Intent(Register.this, RegisterSenior.class);
-                                            intent.putExtra("registerData", getRegisterData);
-                                            startActivity(intent);
-                                            finish();
-
-
-                                        } else {
-                                            Log.e(TAG, String.valueOf(task1.getException()));
-
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
-
-                                        }
-                                    }).addOnFailureListener(e -> {
-                                        progressBarLayout.setVisibility(View.GONE);
+                                    if (task1.isSuccessful()) {
                                         nextBtn.setVisibility(View.VISIBLE);
-                                        Log.e(TAG, e.getMessage());
-                                    });
-                                }
+                                        progressBarLayout.setVisibility(View.GONE);
+
+                                        buildAndDisplayNotification();
+
+                                        intent = new Intent(Register.this, RegisterSenior.class);
+                                        intent.putExtra("registerData", getRegisterData);
+                                        startActivity(intent);
+                                        finish();
+
+
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task1.getException()));
+
+                                        nextBtn.setVisibility(View.VISIBLE);
+                                        progressBarLayout.setVisibility(View.GONE);
+
+                                    }
+                                }).addOnFailureListener(e -> {
+                                    progressBarLayout.setVisibility(View.GONE);
+                                    nextBtn.setVisibility(View.VISIBLE);
+                                    Log.e(TAG, e.getMessage());
+                                });
                             }
                         }).addOnFailureListener(e -> {
                             progressBarLayout.setVisibility(View.GONE);
@@ -310,8 +293,6 @@ public class Register extends AppCompatActivity {
                 fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
-
-
             }
         }
 

@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.account) {
                 showFragment(new AccountFragment());
             } else if (item.getItemId() == R.id.map) {
-                intent = new Intent(MainActivity.this, MapActivity.class);
+                intent = new Intent(MainActivity.this, RegisterDriver.class);
                 startActivity(intent);
             }
 

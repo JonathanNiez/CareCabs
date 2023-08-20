@@ -9,4 +9,7 @@ public class StaticDataPasser {
     public static String registerData = null;
     public static int currentAge = 0;
 
+    public static String firstName = null;
+    public static String lastName = null;
+
 }

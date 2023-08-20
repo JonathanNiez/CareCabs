@@ -1,10 +1,11 @@
 package com.capstone.carecabs;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.Manifest;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +39,7 @@ import java.util.Objects;
 
 public class RegisterDriver extends AppCompatActivity {
 
-    private Button doneBtn, birthdateBtn;
+    private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private EditText firstname, lastname;
     private TextView ageTextView, birthdateTextView;
     private Spinner spinnerSex;
@@ -50,9 +58,11 @@ public class RegisterDriver extends AppCompatActivity {
         setContentView(R.layout.activity_register_driver);
 
         doneBtn = findViewById(R.id.doneBtn);
+        scanIDBtn = findViewById(R.id.scanIDBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
         birthdateBtn = findViewById(R.id.birthdateBtn);
+        ageBtn = findViewById(R.id.ageBtn);
         ageTextView = findViewById(R.id.ageTextView);
         birthdateTextView = findViewById(R.id.birthdateTextView);
         spinnerSex = findViewById(R.id.spinnerSex);
@@ -70,7 +80,7 @@ public class RegisterDriver extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    Toast.makeText(RegisterDriver.this, "Please select your sex", Toast.LENGTH_SHORT).show();
+                    return;
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.selectedSex = selectedSex;
@@ -81,6 +91,13 @@ public class RegisterDriver extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 // Handle case when nothing is selected
             }
+        });
+
+
+
+        scanIDBtn.setOnClickListener(v -> {
+          intent = new Intent(this, ScanID.class);
+          startActivity(intent);
         });
 
         birthdateBtn.setOnClickListener(v -> {
@@ -102,51 +119,56 @@ public class RegisterDriver extends AppCompatActivity {
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.currentBirthDate == null
                     || StaticDataPasser.currentAge == 0
-            || Objects.equals(StaticDataPasser.selectedSex, "Select your sex")) {
+                    || Objects.equals(StaticDataPasser.selectedSex, "Select your sex")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
 
             } else {
                 currentUser = auth.getCurrentUser();
-                userID = currentUser.getUid();
 
-                if (getRegisterData.equals("driver")) {
-                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+                if (currentUser != null){
+                    userID = currentUser.getUid();
 
-                    Map<String, Object> registerUser = new HashMap<>();
-                    registerUser.put("firstname", stringFirstname);
-                    registerUser.put("lastname", stringLastname);
-                    registerUser.put("age", StaticDataPasser.currentAge);
-                    registerUser.put("profilePic", "default");
-                    registerUser.put("isAvailable", true);
-                    registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
-                    registerUser.put("sex", StaticDataPasser.selectedSex);
-                    registerUser.put("userType", "Driver");
+                    if (getRegisterData.equals("driver")) {
+                        databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
 
-                    databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
+                        Map<String, Object> registerUser = new HashMap<>();
+                        registerUser.put("firstname", stringFirstname);
+                        registerUser.put("lastname", stringLastname);
+                        registerUser.put("age", StaticDataPasser.currentAge);
+                        registerUser.put("profilePic", "default");
+                        registerUser.put("isAvailable", true);
+                        registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
+                        registerUser.put("sex", StaticDataPasser.selectedSex);
+                        registerUser.put("userType", "Driver");
+
+                        databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBarLayout.setVisibility(View.GONE);
+                                doneBtn.setVisibility(View.VISIBLE);
+
+                                StaticDataPasser.selectedSex = null;
+                                StaticDataPasser.currentAge = 0;
+                                StaticDataPasser.currentBirthDate = null;
+
+                                intent = new Intent(RegisterDriver.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }).addOnFailureListener(e -> {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            StaticDataPasser.selectedSex = null;
-                            StaticDataPasser.currentAge = 0;
-                            StaticDataPasser.currentBirthDate = null;
-
-                            intent = new Intent(RegisterDriver.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }).addOnFailureListener(e -> {
-                        progressBarLayout.setVisibility(View.GONE);
-                        doneBtn.setVisibility(View.VISIBLE);
-
-                        Log.e(TAG, e.getMessage());
-                    });
+                            Log.e(TAG, e.getMessage());
+                        });
+                    }
                 }
+
             }
         });
     }
+
     private void calculateAge() {
         if (selectedDate != null) {
             // Calculate the age based on the selected birthdate
@@ -159,7 +181,7 @@ public class RegisterDriver extends AppCompatActivity {
             }
 
             // Update the ageTextView with the calculated age
-            ageTextView.setText("Age: " + String.valueOf(age));
+            ageBtn.setText("Age: " + age);
             StaticDataPasser.currentAge = age;
         }
     }
@@ -177,7 +199,7 @@ public class RegisterDriver extends AppCompatActivity {
 
                     // Update the birthdateTextView with the selected date in a desired format
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    birthdateTextView.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
+                    birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
                     //TODO: date and time
                     StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
 
@@ -186,5 +208,4 @@ public class RegisterDriver extends AppCompatActivity {
                 }, year, month, day);
         datePickerDialog.show();
     }
-
 }

@@ -1,0 +1,48 @@
+
+o	java:S116+"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Áû³âüÿÿÿÿ8Ó¿æàŸ1
+R
+java:S1659"0Declare "loginUsingTextView" on a separate line.(Ò‚ÜŸşÿÿÿÿ8Ü¿æàŸ1
+C
+java:S1659""&Declare "password" on a separate line.(…é¶ê8Ü¿æàŸ1
+R
+java:S1659#"0Declare "googleSignInLayout" on a separate line.(õÄëÔøÿÿÿÿ8Ü¿æàŸ1
+K
+java:S1659-")Declare "emailDialog" on a separate line.(àÍñèıÿÿÿÿ8Ü¿æàŸ1
+q
+java:S1450""TRemove the "email" field and declare it as a local variable in the relevant methods.(…é¶ê8İ¿æàŸ1
+x
+java:S1450!"[Remove the "googleImgBtn" field and declare it as a local variable in the relevant methods.(¢¹Ë8İ¿æàŸ1
+„
+java:S1450)"bRemove the "googleSignInAccount" field and declare it as a local variable in the relevant methods.(ÛóŒÁüÿÿÿÿ8Ş¿æàŸ1
+~
+java:S1450*"aRemove the "googleSignInClient" field and declare it as a local variable in the relevant methods.(ÄŸığ8Ş¿æàŸ1
+ƒ
+java:S1450#"aRemove the "googleSignInLayout" field and declare it as a local variable in the relevant methods.(õÄëÔøÿÿÿÿ8Ş¿æàŸ1
+„
+java:S1450("bRemove the "googleSignInOptions" field and declare it as a local variable in the relevant methods.(ŠĞˆ•ùÿÿÿÿ8Ş¿æàŸ1
+s
+java:S1450 "WRemove the "loginBtn" field and declare it as a local variable in the relevant methods.(ĞÍ•-8Ş¿æàŸ1
+ƒ
+java:S1450"aRemove the "loginUsingTextView" field and declare it as a local variable in the relevant methods.(Ò‚ÜŸşÿÿÿÿ8ß¿æàŸ1
+t
+java:S1450""WRemove the "password" field and declare it as a local variable in the relevant methods.(…é¶ê8ß¿æàŸ1
+‚
+java:S1450#"`Remove the "progressBarLayout" field and declare it as a local variable in the relevant methods.(õÄëÔøÿÿÿÿ8ß¿æàŸ1
+
+java:S1450"_Remove the "registerTextView" field and declare it as a local variable in the relevant methods.(Ò‚ÜŸşÿÿÿÿ8ß¿æàŸ1
+I
+java:S1602H",Remove useless curly braces around statement(´›áï8ø¿æàŸ1
+[
+java:S1874N">Remove this use of "startActivityForResult"; it is deprecated.(éÒäÜ8û¿æàŸ1
+^
+java:S1117‹"@Rename "googleImgBtn" which hides the field declared at line 33.(øŠ¤Ğ8ŸÔæàŸ1
+m
+java:S1874§"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(ÉÎÍïıÿÿÿÿ8¢ÔæàŸ1
+O
+java:S1602Ï",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8©ÔæàŸ1
+U
+java:S1135î"2Complete the task associated to this TODO comment.(Âù²ğøÿÿÿÿ8®ÔæàŸ1
+W
+java:S1068'"5Remove this unused "databaseReference" private field.(Ï¨Î·ùÿÿÿÿ8˜ÀæàŸ1
+Y
+java:S1068)"7Remove this unused "googleSignInAccount" private field.(ÛóŒÁüÿÿÿÿ8˜ÀæàŸ1

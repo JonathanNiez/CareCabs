@@ -1,0 +1,27 @@
+
+o
+java:S11927"MDefine a constant instead of duplicating this literal "registerData" 3 times.(ì€Úëÿÿÿÿÿ8îµŒÌž1
+j
+java:S1192"MDefine a constant instead of duplicating this literal "registerType" 4 times.(³ô¥ÿ8ïµŒÌž1
+E
+java:S1604R"(Make this anonymous inner class a lambda(Å±òÛ8ïµŒÌž1
+E
+java:S1604`"(Make this anonymous inner class a lambda(­­Å¶8ïµŒÌž1
+J
+java:S1604o"(Make this anonymous inner class a lambda(†ÏÇ±üÿÿÿÿ8ïµŒÌž1
+h
+java:S1659"LDeclare "passengerImgBtn" and all following declarations on a separate line.(ÝÑ½m8¯¶ŒÌž1
+w
+java:S1450"[Remove the "driverImgBtn" field and declare it as a local variable in the relevant methods.(ÝÑ½m8±¶ŒÌž1
+
+java:S1450"]Remove the "googleTextView" field and declare it as a local variable in the relevant methods.( Ÿàèøÿÿÿÿ8²¶ŒÌž1
+u
+java:S1450"YRemove the "imgBackBtn" field and declare it as a local variable in the relevant methods.(ÝÑ½m8²¶ŒÌž1
+x
+java:S1450"[Remove the "loginHereBtn" field and declare it as a local variable in the relevant methods.(ò»¥¦8²¶ŒÌž1
+z
+java:S1450"^Remove the "passengerImgBtn" field and declare it as a local variable in the relevant methods.(ÝÑ½m8²¶ŒÌž1
+I
+java:S1602>",Remove useless curly braces around statement(ƒþ…Ø8Ò¶ŒÌž1
+`
+java:S1117P">Rename "imgBackBtn" which hides the field declared at line 18.(Æ¯ßÂýÿÿÿÿ8Ö¶ŒÌž1

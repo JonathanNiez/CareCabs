@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".EditAccountFragment">
+    tools:context=".Fragments.EditAccountFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -75,56 +75,81 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/editFirstname"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap the info you want to edit"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="5dp"/>
+
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editFirstnameBtn"
                     android:layout_width="340dp"
                     android:layout_height="62dp"
                     android:layout_marginBottom="10dp"
+                    android:autofillHints="firstname"
                     android:background="@drawable/edit_text"
                     android:fontFamily="@font/opensans_bold"
                     android:hint="FIRSTNAME"
+                    android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black" />
+                    android:textColorHint="@color/black"
+                    android:textSize="20sp" />
 
-                <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/editLastname"
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editLastnameBtn"
                     android:layout_width="340dp"
                     android:layout_height="62dp"
                     android:layout_marginBottom="10dp"
+                    android:autofillHints="firstname"
                     android:background="@drawable/edit_text"
                     android:fontFamily="@font/opensans_bold"
                     android:hint="LASTNAME"
+                    android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
-
-                    />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spinnerDisability"
                     android:layout_width="340dp"
                     android:layout_height="62dp"
-                    android:background="@drawable/edit_text"
                     android:layout_marginBottom="10dp"
-                    android:visibility="gone"/>
+                    android:background="@drawable/edit_text"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spinnerSex"
                     android:layout_width="340dp"
                     android:layout_height="62dp"
-                    android:background="@drawable/edit_text"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/edit_text" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/birthdateBtn"
                     android:layout_width="340dp"
                     android:layout_height="62dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/edit_text"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Date of Birth"
                     android:textColor="@color/black"
-                    android:textSize="15dp"
-                    android:layout_marginBottom="10dp"/>
+                    android:textSize="20sp" />
 
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/doneBtn"
+                    android:layout_width="185dp"
+                    android:layout_height="78dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:background="@drawable/login_button"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Done"
+                    android:textColor="@color/white"
+                    android:textSize="24sp" />
             </LinearLayout>
 
 

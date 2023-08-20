@@ -43,7 +43,7 @@
                     android:text="Account Settings"
                     android:textSize="30dp" />
 
-                <ImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profielPic"
                     android:layout_width="100dp"
                     android:layout_height="100dp"

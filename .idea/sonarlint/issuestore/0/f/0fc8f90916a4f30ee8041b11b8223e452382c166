@@ -1,0 +1,16 @@
+
+O
+java:S1659"-Declare "confirmPassword" on a separate line.(Â¤Þµþÿÿÿÿ8˜û•àŸ1
+‚
+java:S1450"`Remove the "changePasswordBtn" field and declare it as a local variable in the relevant methods.(óæÊŸýÿÿÿÿ8‰¶¢àŸ1
+€
+java:S1450"^Remove the "confirmPassword" field and declare it as a local variable in the relevant methods.(Â¤Þµþÿÿÿÿ8™û•àŸ1
+v
+java:S1450"YRemove the "imgBackBtn" field and declare it as a local variable in the relevant methods.(­•ÐÓ8ûá¥àŸ1
+y
+java:S1450"WRemove the "password" field and declare it as a local variable in the relevant methods.(Â¤Þµþÿÿÿÿ8™û•àŸ1
+}
+java:S1450"`Remove the "progressBarLayout" field and declare it as a local variable in the relevant methods.(ªŠ™¸8™û•àŸ1
+I
+java:S1602 ",Remove useless curly braces around statement(˜‡ŸÛ8’â¥àŸ1
+E	java:S108-")Either remove or fill this block of code.(å¥ž‡8´û•àŸ1

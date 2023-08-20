@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -24,10 +25,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.EditAccountFragment;
 import com.capstone.carecabs.LoggingOut;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -103,6 +104,9 @@ public class AccountFragment extends Fragment {
         intent = new Intent(getActivity(), LoggingOut.class);
         startActivity(intent);
         getActivity().finish();
+
+        StaticDataPasser.firstName = null;
+        StaticDataPasser.lastName = null;
     }
 
     private void loadUserProfileInfo() {
@@ -118,14 +122,14 @@ public class AccountFragment extends Fragment {
 
                     if (snapshot.exists()) {
 
-
-                        String getFirstname, getLastname, getProfilePic, fullName, getUserType, getAge;
+                        String getFirstname, getLastname, getProfilePic, fullName, getUserType, getAge, getStatus;
 
                         DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
 
                         if (snapshot.child("driver").hasChild(userID)) {
 
                             driverSnapshot = snapshot.child("driver").child(userID);
+                            getStatus  = driverSnapshot.child("status").getValue(String.class);
                             getUserType = driverSnapshot.child("userType").getValue(String.class);
                             getFirstname = driverSnapshot.child("firstname").getValue(String.class);
                             getAge = String.valueOf(driverSnapshot.child("age").getValue());
@@ -143,12 +147,20 @@ public class AccountFragment extends Fragment {
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
 
+                            if (getUserType.equals("Verified")){
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+
+                            }else{
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                            }
+                            statusTextView.setText("Status: " + getStatus);
+
                             closeLoadingDialog();
 
                         } else if (snapshot.child("senior").hasChild(userID)) {
-                            buildAndDisplayNotification();
 
                             seniorSnapshot = snapshot.child("senior").child(userID);
+                            getStatus  = seniorSnapshot.child("status").getValue(String.class);
                             getAge = String.valueOf(seniorSnapshot.child("age").getValue());
                             getUserType = seniorSnapshot.child("userType").getValue(String.class);
                             getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
@@ -165,12 +177,21 @@ public class AccountFragment extends Fragment {
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
 
+                            if (getUserType.equals("Verified")){
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+
+                            }else{
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                            }
+                            statusTextView.setText("Status: " + getStatus);
+
                             closeLoadingDialog();
 
 
                         } else if (snapshot.child("pwd").hasChild(userID)) {
 
                             pwdSnapshot = snapshot.child("pwd").child(userID);
+                            getStatus  = pwdSnapshot.child("status").getValue(String.class);
                             getUserType = pwdSnapshot.child("userType").getValue(String.class);
                             getAge = String.valueOf(pwdSnapshot.child("age").getValue());
                             getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
@@ -187,6 +208,14 @@ public class AccountFragment extends Fragment {
                             fullNameTextView.setText(fullName);
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
+
+                            if (getUserType.equals("Verified")){
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+
+                            }else{
+                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                            }
+                            statusTextView.setText("Status: " + getStatus);
 
                             closeLoadingDialog();
 
@@ -249,6 +278,7 @@ public class AccountFragment extends Fragment {
             loadingDialog.dismiss();
         }
     }
+
 
     private void goToEditAccountFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();

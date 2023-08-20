@@ -6,13 +6,23 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.play.core.integrity.v
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.dsl.generated.interpolate
+import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateBearing
+import com.mapbox.maps.plugin.viewport.data.FollowPuckViewportStateOptions
+import com.mapbox.maps.plugin.viewport.data.OverviewViewportStateOptions
+import com.mapbox.maps.plugin.viewport.state.FollowPuckViewportState
+import com.mapbox.maps.plugin.viewport.state.OverviewViewportState
+import com.mapbox.maps.plugin.viewport.viewport
 
 class MapActivity : AppCompatActivity() {
 
@@ -49,6 +59,35 @@ class MapActivity : AppCompatActivity() {
             }
         )
 
+
+
+    mapView?.location?.locationPuck = LocationPuck2D(
+    topImage = AppCompatResources.getDrawable(
+    this,
+    com.mapbox.maps.plugin.locationcomponent.R.drawable.mapbox_user_icon
+    ),
+    bearingImage = AppCompatResources.getDrawable(
+    this,
+    com.mapbox.maps.plugin.locationcomponent.R.drawable.mapbox_user_bearing_icon
+    ),
+    shadowImage = AppCompatResources.getDrawable(
+    this,
+    com.mapbox.maps.plugin.locationcomponent.R.drawable.mapbox_user_stroke_icon
+    ),
+    scaleExpression = interpolate
+    {
+        linear()
+        zoom()
+        stop {
+            literal(0.0)
+            literal(0.6)
+        }
+        stop {
+            literal(20.0)
+            literal(1.0)
+        }
+    }.toJson()
+    )
 
     //      mapView?.getMapboxMap()?.loadStyle(
 //                styleExtension = style(getString(R.string.custom_map_url)) {

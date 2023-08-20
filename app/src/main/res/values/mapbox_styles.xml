@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <style name="CustomLocationComponent" parent="mapbox_LocationComponent">-->
+<!--        <item name="mapbox_locationComponentLocationPuck">"location_puck_2_d"</item>-->
+<!--        <item name="mapbox_locationComponentLocationPuckLocationPuck2DTopImage">@drawable/mar</item>-->
+<!--        <item name="mapbox_locationComponentLocationPuckLocationPuck2DBearingImage">@drawable/custom_user_arrow</item>-->
+<!--        <item name="mapbox_locationComponentLocationPuckLocationPuck2DShadowImage">@drawable/custom_user_puck_icon</item>-->
+<!--    </style>-->
+</resources>

@@ -1,5 +1,6 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Fragments;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,16 +17,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.Fragments.AccountFragment;
+import com.capstone.carecabs.Login;
+import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,8 +43,7 @@ public class EditAccountFragment extends Fragment {
 
     private ImageButton imgBackBtn;
     private ImageView profilePic;
-    private Button birthdateBtn;
-    private EditText editFirstname, editLastame;
+    private Button birthdateBtn, doneBtn, editFirstnameBtn, editLastameBtn;
     private TextView fullNameTextView;
     private Spinner spinnerDisability, spinnerSex;
     private FirebaseAuth auth;
@@ -54,6 +53,8 @@ public class EditAccountFragment extends Fragment {
     private String TAG = "EditAccountFragment";
     private Intent intent;
     private Calendar selectedDate;
+    private AlertDialog.Builder builder;
+    private AlertDialog editFirstNameDialog, editLastNameDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,9 +76,22 @@ public class EditAccountFragment extends Fragment {
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         profilePic = view.findViewById(R.id.profielPic);
         fullNameTextView = view.findViewById(R.id.fullNameTextView);
-        editFirstname = view.findViewById(R.id.editFirstname);
-        editLastame = view.findViewById(R.id.editLastname);
+        editFirstnameBtn = view.findViewById(R.id.editFirstnameBtn);
+        editLastameBtn = view.findViewById(R.id.editLastnameBtn);
         birthdateBtn = view.findViewById(R.id.birthdateBtn);
+        doneBtn = view.findViewById(R.id.doneBtn);
+
+        editFirstnameBtn.setOnClickListener(v -> {
+            showEditFirstNameDialog();
+        });
+
+        editLastameBtn.setOnClickListener(v -> {
+
+        });
+
+        doneBtn.setOnClickListener(v -> {
+            backToAccountFragment();
+        });
 
         birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
@@ -86,7 +100,6 @@ public class EditAccountFragment extends Fragment {
         imgBackBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(),
@@ -101,7 +114,7 @@ public class EditAccountFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    Toast.makeText(getContext(), "Please select your Sex", Toast.LENGTH_SHORT).show();
+                    return;
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.selectedSex = selectedSex;
@@ -126,22 +139,20 @@ public class EditAccountFragment extends Fragment {
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        selectedDate = Calendar.getInstance();
-                        selectedDate.set(year, monthOfYear, dayOfMonth);
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    selectedDate = Calendar.getInstance();
+                    selectedDate.set(year1, monthOfYear, dayOfMonth);
 
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
 
-                        birthdateBtn.setText(dateFormat.format(selectedDate.getTime()));
+                    birthdateBtn.setText(dateFormat.format(selectedDate.getTime()));
 
-                    }
                 }, year, month, day);
         datePickerDialog.show();
     }
-    private void getUserType(){
+
+    private void getUserType() {
         if (currentUser != null) {
             userID = currentUser.getUid();
 
@@ -161,13 +172,15 @@ public class EditAccountFragment extends Fragment {
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
-                            editFirstname.setText(getFirstname);
-                            editLastame.setText(getLastname);
+                            StaticDataPasser.firstName = getFirstname;
+                            StaticDataPasser.lastName = getLastname;
 
-                            if (!getProfilePic.equals("default")){
+                            editFirstnameBtn.setText(getFirstname);
+                            editLastameBtn.setText(getLastname);
+
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
 
@@ -180,13 +193,15 @@ public class EditAccountFragment extends Fragment {
                             getLastname = seniorSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
 
-                            editFirstname.setText(getFirstname);
-                            editLastame.setText(getLastname);
+                            StaticDataPasser.firstName = getFirstname;
+                            StaticDataPasser.lastName = getLastname;
 
-                            if (!getProfilePic.equals("default")){
+                            editFirstnameBtn.setText(getFirstname);
+                            editLastameBtn.setText(getLastname);
+
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
@@ -198,8 +213,11 @@ public class EditAccountFragment extends Fragment {
                             getLastname = pwdSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
 
-                            editFirstname.setText(getFirstname);
-                            editLastame.setText(getLastname);
+                            StaticDataPasser.firstName = getFirstname;
+                            StaticDataPasser.lastName = getLastname;
+
+                            editFirstnameBtn.setText(getFirstname);
+                            editLastameBtn.setText(getLastname);
 
                             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                                     getContext(),
@@ -228,10 +246,9 @@ public class EditAccountFragment extends Fragment {
                             });
 
 
-                            if (!getProfilePic.equals("default")){
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
 
@@ -280,10 +297,9 @@ public class EditAccountFragment extends Fragment {
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
-                            if (!getProfilePic.equals("default")){
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
 
@@ -296,10 +312,9 @@ public class EditAccountFragment extends Fragment {
                             getLastname = seniorSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
 
-                            if (!getProfilePic.equals("default")){
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
@@ -311,10 +326,9 @@ public class EditAccountFragment extends Fragment {
                             getLastname = pwdSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
 
-                            if (!getProfilePic.equals("default")){
+                            if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
-                            }
-                            else{
+                            } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
 
@@ -336,6 +350,34 @@ public class EditAccountFragment extends Fragment {
             intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
         }
+    }
+
+    private void showEditFirstNameDialog() {
+
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.edit_firstname_dialog, null);
+
+        Button doneBtn = dialogView.findViewById(R.id.doneBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+        EditText editFirstName = dialogView.findViewById(R.id.editFirstname);
+
+        editFirstName.setText(StaticDataPasser.firstName);
+
+        doneBtn.setOnClickListener(v -> {
+
+        });
+
+        cancelBtn.setOnClickListener(v -> {
+            if (editFirstNameDialog != null && editFirstNameDialog.isShowing()) {
+                editFirstNameDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        editFirstNameDialog = builder.create();
+        editFirstNameDialog.show();
     }
 
     private void backToAccountFragment() {

@@ -94,10 +94,11 @@
                     android:textColor="@color/black"
                     />
 
-                <ProgressBar
+                <pl.droidsonroids.gif.GifImageView
                     android:id="@+id/progressBar"
                     android:layout_width="50pt"
                     android:layout_height="50pt"
+                    android:src="@drawable/loadingif"
                     />
 
             </LinearLayout>

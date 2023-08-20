@@ -1,0 +1,13 @@
+
+u
+java:S1450"SRemove the "auth" field and declare it as a local variable in the relevant methods.(Ú‡›æøÿÿÿÿ8 €ÈŸŸ1
+s
+java:S1450"VRemove the "builder" field and declare it as a local variable in the relevant methods.(ùšÜ¥8¡€ÈŸŸ1
+|
+java:S1450"ZRemove the "currentUser" field and declare it as a local variable in the relevant methods.(”Ùµ«øÿÿÿÿ8¡€ÈŸŸ1
+y
+java:S1450"\Remove the "getStartedBtn" field and declare it as a local variable in the relevant methods.(»ÓÏ·8¡€ÈŸŸ1
+l
+java:S1874+"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8»€ÈŸŸ1
+N
+java:S16028",Remove useless curly braces around statement(±ÂùÌÿÿÿÿÿ8ÑîŸŸ1

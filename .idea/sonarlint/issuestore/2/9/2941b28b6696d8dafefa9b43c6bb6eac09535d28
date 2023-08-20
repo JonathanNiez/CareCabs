@@ -1,0 +1,46 @@
+
+F
+java:S1604·"(Make this anonymous inner class a lambda(ÌÜİ‚8ÔôáŸ1
+N
+java:S1153«"1Directly append the argument of String.valueOf().(÷Ød8ÖôáŸ1
+j	java:S116,"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ìÚê8´íŸæ˜1
+G
+java:S1659#"*Declare "birthdateBtn" on a separate line.(¡«û—8¿íŸæ˜1
+C
+java:S1659$"&Declare "lastname" on a separate line.(š´§ó8¿íŸæ˜1
+L
+java:S1659%"/Declare "birthdateTextView" on a separate line.(Ù¿£º8¿íŸæ˜1
+u
+java:S1450("SRemove the "auth" field and declare it as a local variable in the relevant methods.(Ú‡›æøÿÿÿÿ8ÀíŸæ˜1
+x
+java:S1450#"[Remove the "birthdateBtn" field and declare it as a local variable in the relevant methods.(¡«û—8ÀíŸæ˜1
+s
+java:S1450#"VRemove the "doneBtn" field and declare it as a local variable in the relevant methods.(¡«û—8¯ôáŸ1
+u
+java:S1450$"XRemove the "firstname" field and declare it as a local variable in the relevant methods.(š´§ó8ÁíŸæ˜1
+w
+java:S1450-"URemove the "intent" field and declare it as a local variable in the relevant methods.(–Ô¼ùÿÿÿÿ8Â‡ôáŸ1
+t
+java:S1450$"WRemove the "lastname" field and declare it as a local variable in the relevant methods.(š´§ó8ÂíŸæ˜1
+}
+java:S1450'"`Remove the "progressBarLayout" field and declare it as a local variable in the relevant methods.(ªŠ™¸8°ôáŸ1
+v
+java:S1450&"YRemove the "spinnerSex" field and declare it as a local variable in the relevant methods.(ã…êü8ÂíŸæ˜1
+t
+java:S37761"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(¨Œşÿÿÿÿ8‡Á®æ˜1
+S
+java:S2696M"6Make the enclosing method "static" or remove this set.(ı¾¹è8ÛíŸæ˜1
+N
+java:S1602W",Remove useless curly braces around statement(ëº‡Âøÿÿÿÿ8İíŸæ˜1
+Y
+java:S2696…"6Make the enclosing method "static" or remove this set.(÷ìŒ¹øÿÿÿÿ8ç‡ôáŸ1
+Y
+java:S2696†"6Make the enclosing method "static" or remove this set.(û¥ùİøÿÿÿÿ8ìâ¡æ˜1
+Y
+java:S2696‡"6Make the enclosing method "static" or remove this set.(¸Ê¬àøÿÿÿÿ8ğâ¡æ˜1
+Y
+java:S2696¬"6Make the enclosing method "static" or remove this set.(Î€Ğµüÿÿÿÿ8ÓôáŸ1
+Y
+java:S2696Á"6Make the enclosing method "static" or remove this set.(ğı§úÿÿÿÿ8×ôáŸ1
+P
+java:S1135À"2Complete the task associated to this TODO comment.(í­İç8×ôáŸ1
