@@ -10,11 +10,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -32,10 +31,10 @@ import java.util.Objects;
 
 public class RegisterPWD extends AppCompatActivity {
 
-    private Button doneBtn, birthdateBtn;
+    private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
+    private ImageButton imgBackBtn;
     private EditText firstname, lastname;
-    private TextView ageTextView, birthdateTextView;
-    private Spinner spinnerSex;
+    private Spinner spinnerDisability, spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -54,10 +53,17 @@ public class RegisterPWD extends AppCompatActivity {
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
         birthdateBtn = findViewById(R.id.birthdateBtn);
-        ageTextView = findViewById(R.id.ageTextView);
-        birthdateTextView = findViewById(R.id.birthdateTextView);
+        imgBackBtn = findViewById(R.id.imgBackBtn);
         spinnerSex = findViewById(R.id.spinnerSex);
+        spinnerDisability = findViewById(R.id.spinnerDisability);
+        ageBtn = findViewById(R.id.ageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+
+        imgBackBtn.setOnClickListener(v -> {
+            intent = new Intent(this, RegisterUserType.class);
+            startActivity(intent);
+            finish();
+        });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
@@ -74,7 +80,7 @@ public class RegisterPWD extends AppCompatActivity {
                     Toast.makeText(RegisterPWD.this, "Please select your sex", Toast.LENGTH_SHORT).show();
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
-                    StaticDataPasser.selectedSex = selectedSex;
+                    StaticDataPasser.storeSelectedSex = selectedSex;
                 }
             }
 
@@ -83,6 +89,33 @@ public class RegisterPWD extends AppCompatActivity {
                 // Handle case when nothing is selected
             }
         });
+
+        ArrayAdapter<CharSequence> disabilityAdapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.disability_type,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDisability.setVisibility(View.VISIBLE);
+        spinnerDisability.setAdapter(disabilityAdapter);
+        spinnerDisability.setSelection(0);
+        spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    spinnerDisability.setSelection(0);
+                } else {
+                    String selectedDisability = parent.getItemAtPosition(position).toString();
+                    StaticDataPasser.storeSelectedDisability = selectedDisability;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                spinnerDisability.setSelection(0);
+            }
+        });
+
 
         birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
@@ -101,9 +134,9 @@ public class RegisterPWD extends AppCompatActivity {
             String stringLastname = lastname.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-                    || StaticDataPasser.currentBirthDate == null
-                    || StaticDataPasser.currentAge == 0
-                    || Objects.equals(StaticDataPasser.selectedSex, "Select your sex")) {
+                    || StaticDataPasser.storeCurrentBirthDate == null
+                    || StaticDataPasser.storeCurrentAge == 0
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
@@ -112,17 +145,16 @@ public class RegisterPWD extends AppCompatActivity {
                 currentUser = auth.getCurrentUser();
                 userID = currentUser.getUid();
 
-                if (getRegisterData.equals("pwd")) {
+                if (getRegisterData.equals("Persons with Disabilities (PWD)")) {
                     databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
-                    registerUser.put("profilePic", "default");
-                    registerUser.put("disability", "none");
-                    registerUser.put("age", StaticDataPasser.currentAge);
-                    registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
-                    registerUser.put("sex", StaticDataPasser.selectedSex);
+                    registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
+                    registerUser.put("age", StaticDataPasser.storeCurrentAge);
+                    registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+                    registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                     registerUser.put("userType", "Persons with Disabilities (PWD)");
 
                     databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
@@ -130,9 +162,10 @@ public class RegisterPWD extends AppCompatActivity {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            StaticDataPasser.selectedSex = null;
-                            StaticDataPasser.currentAge = 0;
-                            StaticDataPasser.currentBirthDate = null;
+                            StaticDataPasser.storeSelectedSex = null;
+                            StaticDataPasser.storeCurrentAge = 0;
+                            StaticDataPasser.storeCurrentBirthDate = null;
+                            StaticDataPasser.storeSelectedDisability = null;
 
                             intent = new Intent(RegisterPWD.this, MainActivity.class);
                             startActivity(intent);
@@ -168,8 +201,8 @@ public class RegisterPWD extends AppCompatActivity {
             }
 
             // Update the ageTextView with the calculated age
-            ageTextView.setText("Age: " + String.valueOf(age));
-            StaticDataPasser.currentAge = age;
+            ageBtn.setText("Age: " + age);
+            StaticDataPasser.storeCurrentAge = age;
         }
     }
 
@@ -180,21 +213,17 @@ public class RegisterPWD extends AppCompatActivity {
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        selectedDate = Calendar.getInstance();
-                        selectedDate.set(year, monthOfYear, dayOfMonth);
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    selectedDate = Calendar.getInstance();
+                    selectedDate.set(year1, monthOfYear, dayOfMonth);
 
-                        // Update the birthdateTextView with the selected date in a desired format
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        birthdateTextView.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
-                        //TODO: date and time
-                        StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    // Update the birthdateTextView with the selected date in a desired format
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
+                    StaticDataPasser.storeCurrentBirthDate = String.valueOf(selectedDate.getTime());
 
-                        // Calculate the age and display it
-                        calculateAge();
-                    }
+                    // Calculate the age and display it
+                    calculateAge();
                 }, year, month, day);
         datePickerDialog.show();
     }

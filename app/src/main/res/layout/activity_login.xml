@@ -47,6 +47,7 @@
                         android:layout_height="62dp"
                         android:background="@drawable/edit_text"
                         android:hint="EMAIL"
+                        android:autofillHints="emailAddress"
                         android:fontFamily="@font/opensans_bold"
                         android:textColor="@color/black"
                         android:textColorHint="@color/black" />
@@ -68,6 +69,7 @@
                         android:layout_height="62dp"
                         android:background="@drawable/edit_text"
                         android:hint="PASSWORD"
+                        android:autofillHints="password"
                         android:fontFamily="@font/opensans_bold"
                         android:inputType="textPassword"
                         android:textColor="@color/black"

@@ -18,8 +18,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -28,7 +30,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -45,7 +46,7 @@ import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
-    private ImageButton imgBackBtn;
+    private ImageButton imgBackBtn, userTypeImageBtn;
     private EditText email, password, confirmPassword;
     private Button nextBtn;
     private LinearLayout progressBarLayout;
@@ -60,7 +61,7 @@ public class Register extends AppCompatActivity {
     private String TAG = "Register";
     private Intent intent;
     private static final int RC_SIGN_IN = 69;
-    private AlertDialog customDialog, noInternetDialog;
+    private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog;
     private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
 
@@ -78,6 +79,7 @@ public class Register extends AppCompatActivity {
 
         imgBackBtn = findViewById(R.id.imgBackBtn);
         nextBtn = findViewById(R.id.nextBtn);
+        userTypeImageBtn = findViewById(R.id.userTypeImageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
@@ -90,8 +92,12 @@ public class Register extends AppCompatActivity {
         intent = getIntent();
         String getRegisterData = intent.getStringExtra("registerData");
         String getRegisterType = intent.getStringExtra("registerType");
-        StaticDataPasser.registerType = getRegisterType;
-        StaticDataPasser.registerData = getRegisterData;
+        StaticDataPasser.storeRegisterType = getRegisterType;
+        StaticDataPasser.storeRegisterData = getRegisterData;
+
+        userTypeImageBtn.setOnClickListener(v -> {
+            showUserTypeImageDialog();
+        });
 
         if (getRegisterType.equals("googleRegister")) {
             intent = googleSignInClient.getSignInIntent();
@@ -129,9 +135,11 @@ public class Register extends AppCompatActivity {
                 nextBtn.setVisibility(View.VISIBLE);
 
             } else {
-
                 switch (getRegisterData) {
-                    case "driver":
+                    case "Driver":
+
+                        Glide.with(this).load(R.drawable.driver).into(userTypeImageBtn);
+
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 currentUser = auth.getCurrentUser();
@@ -179,7 +187,9 @@ public class Register extends AppCompatActivity {
                         });
 
                         break;
-                    case "pwd":
+                    case "Persons with Disability (PWD)":
+                        Glide.with(this).load(R.drawable.pwd).into(userTypeImageBtn);
+
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 currentUser = auth.getCurrentUser();
@@ -229,7 +239,9 @@ public class Register extends AppCompatActivity {
                         });
 
                         break;
-                    case "senior":
+                    case "Senior Citizen":
+                        Glide.with(this).load(R.drawable.senior).into(userTypeImageBtn);
+
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 currentUser = auth.getCurrentUser();
@@ -243,6 +255,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("email", stringEmail);
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
+                                registerUser.put("profilePic", "default");
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
@@ -283,6 +296,28 @@ public class Register extends AppCompatActivity {
         });
     }
 
+    private void showUserTypeImageDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.you_are_signing_as_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+        TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
+
+        registerAsTextView.setText("You are Registering as a "+StaticDataPasser.storeRegisterData);
+
+        okBtn.setOnClickListener(v -> {
+            if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
+                userTypeImageDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        userTypeImageDialog = builder.create();
+        userTypeImageDialog.show();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -305,7 +340,7 @@ public class Register extends AppCompatActivity {
 
         if (googleSignInAccount != null) {
             showPleaseWaitDialog();
-            switch (StaticDataPasser.registerData) {
+            switch (StaticDataPasser.storeRegisterData) {
                 case "driver":
                     auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -333,7 +368,7 @@ public class Register extends AppCompatActivity {
                                             closePleaseWaitDialog();
 
                                             intent = new Intent(Register.this, RegisterDriver.class);
-                                            intent.putExtra("registerData", StaticDataPasser.registerData);
+                                            intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
                                             startActivity(intent);
                                             finish();
 
@@ -376,7 +411,7 @@ public class Register extends AppCompatActivity {
                                         closePleaseWaitDialog();
 
                                         intent = new Intent(Register.this, RegisterPWD.class);
-                                        intent.putExtra("registerData", StaticDataPasser.registerData);
+                                        intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
                                         startActivity(intent);
                                         finish();
 
@@ -420,7 +455,7 @@ public class Register extends AppCompatActivity {
                                         closePleaseWaitDialog();
 
                                         intent = new Intent(Register.this, RegisterSenior.class);
-                                        intent.putExtra("registerData", StaticDataPasser.registerData);
+                                        intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
                                         startActivity(intent);
                                         finish();
 
@@ -483,13 +518,13 @@ public class Register extends AppCompatActivity {
 
         builder.setView(dialogView);
 
-        customDialog = builder.create();
-        customDialog.show();
+        pleaseWaitDialog = builder.create();
+        pleaseWaitDialog.show();
     }
 
     private void closePleaseWaitDialog() {
-        if (customDialog != null && customDialog.isShowing()) {
-            customDialog.dismiss();
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+            pleaseWaitDialog.dismiss();
         }
     }
 

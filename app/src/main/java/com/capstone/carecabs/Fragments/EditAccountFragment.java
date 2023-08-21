@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.ScanID;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,7 +44,7 @@ public class EditAccountFragment extends Fragment {
 
     private ImageButton imgBackBtn;
     private ImageView profilePic;
-    private Button birthdateBtn, doneBtn, editFirstnameBtn, editLastameBtn;
+    private Button birthdateBtn, doneBtn, editFirstnameBtn, editLastameBtn, scanIDBtn;
     private TextView fullNameTextView;
     private Spinner spinnerDisability, spinnerSex;
     private FirebaseAuth auth;
@@ -80,6 +81,7 @@ public class EditAccountFragment extends Fragment {
         editLastameBtn = view.findViewById(R.id.editLastnameBtn);
         birthdateBtn = view.findViewById(R.id.birthdateBtn);
         doneBtn = view.findViewById(R.id.doneBtn);
+        scanIDBtn = view.findViewById(R.id.scanIDBtn);
 
         editFirstnameBtn.setOnClickListener(v -> {
             showEditFirstNameDialog();
@@ -91,6 +93,11 @@ public class EditAccountFragment extends Fragment {
 
         doneBtn.setOnClickListener(v -> {
             backToAccountFragment();
+        });
+
+        scanIDBtn.setOnClickListener(v -> {
+            intent = new Intent(getActivity(), ScanID.class);
+            startActivity(intent);
         });
 
         birthdateBtn.setOnClickListener(v -> {
@@ -117,7 +124,7 @@ public class EditAccountFragment extends Fragment {
                     return;
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
-                    StaticDataPasser.selectedSex = selectedSex;
+                    StaticDataPasser.storeSelectedSex = selectedSex;
                 }
             }
 
@@ -144,7 +151,7 @@ public class EditAccountFragment extends Fragment {
                     selectedDate.set(year1, monthOfYear, dayOfMonth);
 
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    StaticDataPasser.storeCurrentBirthDate = String.valueOf(selectedDate.getTime());
 
                     birthdateBtn.setText(dateFormat.format(selectedDate.getTime()));
 
@@ -172,8 +179,8 @@ public class EditAccountFragment extends Fragment {
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
-                            StaticDataPasser.firstName = getFirstname;
-                            StaticDataPasser.lastName = getLastname;
+                            StaticDataPasser.storeFirstName = getFirstname;
+                            StaticDataPasser.storeLastName = getLastname;
 
                             editFirstnameBtn.setText(getFirstname);
                             editLastameBtn.setText(getLastname);
@@ -193,8 +200,8 @@ public class EditAccountFragment extends Fragment {
                             getLastname = seniorSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
 
-                            StaticDataPasser.firstName = getFirstname;
-                            StaticDataPasser.lastName = getLastname;
+                            StaticDataPasser.storeFirstName = getFirstname;
+                            StaticDataPasser.storeLastName = getLastname;
 
                             editFirstnameBtn.setText(getFirstname);
                             editLastameBtn.setText(getLastname);
@@ -213,8 +220,8 @@ public class EditAccountFragment extends Fragment {
                             getLastname = pwdSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
 
-                            StaticDataPasser.firstName = getFirstname;
-                            StaticDataPasser.lastName = getLastname;
+                            StaticDataPasser.storeFirstName = getFirstname;
+                            StaticDataPasser.storeLastName = getLastname;
 
                             editFirstnameBtn.setText(getFirstname);
                             editLastameBtn.setText(getLastname);
@@ -235,7 +242,7 @@ public class EditAccountFragment extends Fragment {
                                         spinnerDisability.setSelection(0);
                                     } else {
                                         String selectedSex = parent.getItemAtPosition(position).toString();
-                                        StaticDataPasser.selectedDisability = selectedSex;
+                                        StaticDataPasser.storeSelectedDisability = selectedSex;
                                     }
                                 }
 
@@ -362,7 +369,7 @@ public class EditAccountFragment extends Fragment {
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
         EditText editFirstName = dialogView.findViewById(R.id.editFirstname);
 
-        editFirstName.setText(StaticDataPasser.firstName);
+        editFirstName.setText(StaticDataPasser.storeFirstName);
 
         doneBtn.setOnClickListener(v -> {
 

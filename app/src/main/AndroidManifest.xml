@@ -58,9 +58,6 @@
             android:name=".Register"
             android:exported="false" />
         <activity
-            android:name=".RegisterPassenger"
-            android:exported="false" />
-        <activity
             android:name=".RegisterDriver"
             android:exported="false" />
         <activity

@@ -2,27 +2,19 @@ package com.capstone.carecabs;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.Manifest;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,8 +32,8 @@ import java.util.Objects;
 public class RegisterDriver extends AppCompatActivity {
 
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
+    private ImageButton imgBackBtn;
     private EditText firstname, lastname;
-    private TextView ageTextView, birthdateTextView;
     private Spinner spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -62,11 +54,16 @@ public class RegisterDriver extends AppCompatActivity {
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
         birthdateBtn = findViewById(R.id.birthdateBtn);
+        imgBackBtn = findViewById(R.id.imgBackBtn);
         ageBtn = findViewById(R.id.ageBtn);
-        ageTextView = findViewById(R.id.ageTextView);
-        birthdateTextView = findViewById(R.id.birthdateTextView);
         spinnerSex = findViewById(R.id.spinnerSex);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+
+        imgBackBtn.setOnClickListener(v -> {
+            intent = new Intent(this, RegisterUserType.class);
+            startActivity(intent);
+            finish();
+        });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
@@ -82,8 +79,7 @@ public class RegisterDriver extends AppCompatActivity {
                 if (position == 0) {
                     return;
                 } else {
-                    String selectedSex = parent.getItemAtPosition(position).toString();
-                    StaticDataPasser.selectedSex = selectedSex;
+                    StaticDataPasser.storeSelectedSex = parent.getItemAtPosition(position).toString();
                 }
             }
 
@@ -117,9 +113,9 @@ public class RegisterDriver extends AppCompatActivity {
             String stringLastname = lastname.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-                    || StaticDataPasser.currentBirthDate == null
-                    || StaticDataPasser.currentAge == 0
-                    || Objects.equals(StaticDataPasser.selectedSex, "Select your sex")) {
+                    || StaticDataPasser.storeCurrentBirthDate == null
+                    || StaticDataPasser.storeCurrentAge == 0
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
@@ -130,17 +126,16 @@ public class RegisterDriver extends AppCompatActivity {
                 if (currentUser != null){
                     userID = currentUser.getUid();
 
-                    if (getRegisterData.equals("driver")) {
+                    if (getRegisterData.equals("Driver")) {
                         databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
 
                         Map<String, Object> registerUser = new HashMap<>();
                         registerUser.put("firstname", stringFirstname);
                         registerUser.put("lastname", stringLastname);
-                        registerUser.put("age", StaticDataPasser.currentAge);
-                        registerUser.put("profilePic", "default");
+                        registerUser.put("age", StaticDataPasser.storeCurrentAge);
                         registerUser.put("isAvailable", true);
-                        registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
-                        registerUser.put("sex", StaticDataPasser.selectedSex);
+                        registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+                        registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                         registerUser.put("userType", "Driver");
 
                         databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
@@ -148,9 +143,9 @@ public class RegisterDriver extends AppCompatActivity {
                                 progressBarLayout.setVisibility(View.GONE);
                                 doneBtn.setVisibility(View.VISIBLE);
 
-                                StaticDataPasser.selectedSex = null;
-                                StaticDataPasser.currentAge = 0;
-                                StaticDataPasser.currentBirthDate = null;
+                                StaticDataPasser.storeSelectedSex = null;
+                                StaticDataPasser.storeCurrentAge = 0;
+                                StaticDataPasser.storeCurrentBirthDate = null;
 
                                 intent = new Intent(RegisterDriver.this, MainActivity.class);
                                 startActivity(intent);
@@ -169,6 +164,15 @@ public class RegisterDriver extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        intent = new Intent(this, RegisterUserType.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void calculateAge() {
         if (selectedDate != null) {
             // Calculate the age based on the selected birthdate
@@ -182,7 +186,7 @@ public class RegisterDriver extends AppCompatActivity {
 
             // Update the ageTextView with the calculated age
             ageBtn.setText("Age: " + age);
-            StaticDataPasser.currentAge = age;
+            StaticDataPasser.storeCurrentAge = age;
         }
     }
 
@@ -201,7 +205,7 @@ public class RegisterDriver extends AppCompatActivity {
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                     birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
                     //TODO: date and time
-                    StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    StaticDataPasser.storeCurrentBirthDate = String.valueOf(selectedDate.getTime());
 
                     // Calculate the age and display it
                     calculateAge();

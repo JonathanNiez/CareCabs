@@ -105,8 +105,8 @@ public class AccountFragment extends Fragment {
         startActivity(intent);
         getActivity().finish();
 
-        StaticDataPasser.firstName = null;
-        StaticDataPasser.lastName = null;
+        StaticDataPasser.storeFirstName = null;
+        StaticDataPasser.storeLastName = null;
     }
 
     private void loadUserProfileInfo() {
@@ -263,7 +263,7 @@ public class AccountFragment extends Fragment {
     }
 
     private void showLoadingDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
         View dialogView = getLayoutInflater().inflate(R.layout.loading_dialog, null);
 

@@ -1,24 +1,0 @@
-
-J
-java:S1604X"(Make this anonymous inner class a lambda(Œî…Áúÿÿÿÿ8£à³âŸ1
-J
-java:S1604e"(Make this anonymous inner class a lambda(œÁÈÌşÿÿÿÿ8£à³âŸ1
-E
-java:S1604K"(Make this anonymous inner class a lambda(†‘ï™8£à³âŸ1
-J
-java:S1604q"(Make this anonymous inner class a lambda(œÁÈÌşÿÿÿÿ8£à³âŸ1
-j	java:S116&"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ùµ£”8Åà³âŸ1
-g
-java:S1659"EDeclare "password" and all following declarations on a separate line.(ÔÙ½Ïıÿÿÿÿ8ãà³âŸ1
-u
-java:S1450!"SRemove the "auth" field and declare it as a local variable in the relevant methods.(Ú‡›æøÿÿÿÿ8äà³âŸ1
-€
-java:S1450"^Remove the "confirmPassword" field and declare it as a local variable in the relevant methods.(ÔÙ½Ïıÿÿÿÿ8äà³âŸ1
-v
-java:S1450"YRemove the "imgBackBtn" field and declare it as a local variable in the relevant methods.(­•ĞÓ8äà³âŸ1
-y
-java:S1450"WRemove the "password" field and declare it as a local variable in the relevant methods.(ÔÙ½Ïıÿÿÿÿ8äà³âŸ1
-y
-java:S1450"WRemove the "username" field and declare it as a local variable in the relevant methods.(ÔÙ½Ïıÿÿÿÿ8äà³âŸ1
-Q
-java:S1068""4Remove this unused "firebaseDatabase" private field.(­Õğ»8†á³âŸ1

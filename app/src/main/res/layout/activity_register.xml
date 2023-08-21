@@ -17,6 +17,21 @@
             android:layout_height="wrap_content">
 
             <ImageButton
+                android:id="@+id/userTypeImageBtn"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/mar"
+                android:background="@drawable/circular_button"
+                android:backgroundTint="@color/yellow"/>
+
+            <ImageButton
                 android:id="@+id/imgBackBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -34,6 +49,7 @@
                 android:src="@drawable/logo"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="20dp"
+                android:layout_marginTop="-30dp"
                 android:layout_below="@id/imgBackBtn"
                 />
 
@@ -47,7 +63,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_centerHorizontal="true"
                 android:textColor="@color/black"
-                android:textSize="10pt"
+                android:textSize="25sp"
                 android:fontFamily="@font/opensans_semibold"/>
 
 
@@ -75,6 +91,7 @@
                         android:layout_height="62dp"
                         android:background="@drawable/edit_text"
                         android:hint="EMAIL"
+                        android:autofillHints="emailAddress"
                         android:fontFamily="@font/opensans_bold"
                         android:textColor="@color/black"
                         android:textColorHint="@color/black" />
@@ -97,6 +114,7 @@
                         android:layout_height="62dp"
                         android:background="@drawable/edit_text"
                         android:hint="PASSWORD"
+                        android:autofillHints="password"
                         android:fontFamily="@font/opensans_bold"
                         android:inputType="textPassword"
                         android:textColor="@color/black"

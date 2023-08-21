@@ -2,20 +2,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/dirty_yellow"
-    android:background="@drawable/dialog_shape">
+    android:background="@color/dirty_yellow">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/opensans_semibold"
         android:text="@string/not_senior_citizen"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="15pt" />
+        android:textSize="30sp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/okBtn"
@@ -26,9 +28,9 @@
         android:layout_centerHorizontal="true"
         android:text="Okay"
         android:textColor="@color/white"
-        android:textSize="32dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginBottom="50dp"
+        android:textSize="32sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
         />
 
 </RelativeLayout>

@@ -1,10 +1,9 @@
 package com.capstone.carecabs;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,11 +11,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -34,9 +32,10 @@ import java.util.Objects;
 
 public class RegisterSenior extends AppCompatActivity {
 
-    private Button doneBtn, birthdateBtn, scanIDBtn;
+    private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
+    private ImageButton imgBackBtn;
+
     private EditText firstname, lastname;
-    private TextView ageTextView, birthdateTextView;
     private Spinner spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -46,6 +45,8 @@ public class RegisterSenior extends AppCompatActivity {
     private String TAG = "RegisterSenior";
     private Intent intent;
     private Calendar selectedDate;
+    private AlertDialog.Builder builder;
+    private AlertDialog ageReqDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +57,17 @@ public class RegisterSenior extends AppCompatActivity {
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
         birthdateBtn = findViewById(R.id.birthdateBtn);
+        imgBackBtn = findViewById(R.id.imgBackBtn);
         scanIDBtn = findViewById(R.id.scanIDBtn);
-        ageTextView = findViewById(R.id.ageTextView);
-        birthdateTextView = findViewById(R.id.birthdateTextView);
         spinnerSex = findViewById(R.id.spinnerSex);
+        ageBtn = findViewById(R.id.ageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+
+        imgBackBtn.setOnClickListener(v -> {
+            intent = new Intent(this, RegisterUserType.class);
+            startActivity(intent);
+            finish();
+        });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 this,
@@ -74,10 +81,10 @@ public class RegisterSenior extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    Toast.makeText(RegisterSenior.this, "Please select your sex", Toast.LENGTH_SHORT).show();
+                    return;
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
-                    StaticDataPasser.selectedSex = selectedSex;
+                    StaticDataPasser.storeSelectedSex = selectedSex;
                 }
             }
 
@@ -104,35 +111,37 @@ public class RegisterSenior extends AppCompatActivity {
             String stringLastname = lastname.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-                    || StaticDataPasser.currentBirthDate == null
-                    || StaticDataPasser.currentAge == 0
-                    || Objects.equals(StaticDataPasser.selectedSex, "Select your sex")) {
+                    || StaticDataPasser.storeCurrentBirthDate == null
+                    || StaticDataPasser.storeCurrentAge == 0
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
 
-            } else if (StaticDataPasser.currentAge <= 60) {
-                showDialog();
+            } else if (StaticDataPasser.storeCurrentAge <= 60) {
+                intent = new Intent(this, Login.class);
+                startActivity(intent);
+                finish();
 
                 auth.signOut();
 
+                showAgeReqDialog();
+
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
-
             } else {
                 currentUser = auth.getCurrentUser();
                 userID = currentUser.getUid();
 
-                if (getRegisterData.equals("senior")) {
+                if (getRegisterData.equals("Senior Citizen")) {
                     databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
-                    registerUser.put("age", StaticDataPasser.currentAge);
-                    registerUser.put("profilePic", "default");
-                    registerUser.put("birthdate", StaticDataPasser.currentBirthDate);
-                    registerUser.put("sex", StaticDataPasser.selectedSex);
+                    registerUser.put("age", StaticDataPasser.storeCurrentAge);
+                    registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+                    registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                     registerUser.put("userType", "Senior Citizen");
 
                     databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
@@ -140,9 +149,9 @@ public class RegisterSenior extends AppCompatActivity {
                             progressBarLayout.setVisibility(View.GONE);
                             doneBtn.setVisibility(View.VISIBLE);
 
-                            StaticDataPasser.selectedSex = null;
-                            StaticDataPasser.currentAge = 0;
-                            StaticDataPasser.currentBirthDate = null;
+                            StaticDataPasser.storeSelectedSex = null;
+                            StaticDataPasser.storeCurrentAge = 0;
+                            StaticDataPasser.storeCurrentBirthDate = null;
 
                             intent = new Intent(RegisterSenior.this, MainActivity.class);
                             startActivity(intent);
@@ -159,20 +168,32 @@ public class RegisterSenior extends AppCompatActivity {
         });
     }
 
-    private void showDialog() {
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        final Dialog customDialog = new Dialog(this);
-        customDialog.setContentView(R.layout.you_are_not_a_senior_ciitizen_dialog);
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
-        Button okBtn = customDialog.findViewById(R.id.okBtn);
+        intent = new Intent(this, RegisterUserType.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void showAgeReqDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.you_are_not_a_senior_ciitizen_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
         okBtn.setOnClickListener(v -> {
-
-            intent = new Intent(RegisterSenior.this, Login.class);
-            startActivity(intent);
-            finish();
-            customDialog.dismiss();
+            if (ageReqDialog != null && ageReqDialog.isShowing()){
+                ageReqDialog.dismiss();
+            }
         });
-        customDialog.show();
+
+        builder.setView(dialogView);
+
+        ageReqDialog = builder.create();
+        ageReqDialog.show();
     }
 
     private void calculateAge() {
@@ -187,8 +208,8 @@ public class RegisterSenior extends AppCompatActivity {
             }
 
             // Update the ageTextView with the calculated age
-            ageTextView.setText("Age: " + String.valueOf(age));
-            StaticDataPasser.currentAge = age;
+            ageBtn.setText("Age: " + age);
+            StaticDataPasser.storeCurrentAge = age;
         }
     }
 
@@ -199,21 +220,18 @@ public class RegisterSenior extends AppCompatActivity {
         int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                        selectedDate = Calendar.getInstance();
-                        selectedDate.set(year, monthOfYear, dayOfMonth);
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    selectedDate = Calendar.getInstance();
+                    selectedDate.set(year1, monthOfYear, dayOfMonth);
 
-                        // Update the birthdateTextView with the selected date in a desired format
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                        birthdateTextView.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
-                        //TODO: date and time
-                        StaticDataPasser.currentBirthDate = String.valueOf(selectedDate.getTime());
+                    // Update the birthdateTextView with the selected date in a desired format
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
+                    //TODO: date and time
+                    StaticDataPasser.storeCurrentBirthDate = String.valueOf(selectedDate.getTime());
 
-                        // Calculate the age and display it
-                        calculateAge();
-                    }
+                    // Calculate the age and display it
+                    calculateAge();
                 }, year, month, day);
         datePickerDialog.show();
     }

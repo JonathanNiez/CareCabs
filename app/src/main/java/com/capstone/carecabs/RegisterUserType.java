@@ -1,8 +1,8 @@
 package com.capstone.carecabs;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +21,8 @@ public class RegisterUserType extends AppCompatActivity {
     private Intent intent;
     private String registerData;
     private String registerType;
+    private AlertDialog userTypeDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +37,19 @@ public class RegisterUserType extends AppCompatActivity {
         loginHereBtn = findViewById(R.id.loginHereBtn);
         googleTextView = findViewById(R.id.googleTextView);
 
-        if (getRegisterType.equals("googleRegister")){
-            googleTextView.setVisibility(View.VISIBLE);
 
-            registerType = getRegisterType;
-        }else{
-            registerType = "emailRegister";
+        if (getRegisterType != null) {
+            if (getRegisterType.equals("googleRegister")) {
+                googleTextView.setVisibility(View.VISIBLE);
+
+                registerType = getRegisterType;
+            } else {
+                registerType = "emailRegister";
+            }
+        } else {
+            return;
         }
+
 
         loginHereBtn.setOnClickListener(v -> {
             intent = new Intent(this, Login.class);
@@ -51,11 +59,10 @@ public class RegisterUserType extends AppCompatActivity {
 
         driverImgBtn.setOnClickListener(v -> {
             intent = new Intent(this, Register.class);
-            registerData = "driver";
+            registerData = "Driver";
             intent.putExtra("registerData", registerData);
             intent.putExtra("registerType", registerType);
             startActivity(intent);
-            finish();
 
         });
 
@@ -68,53 +75,54 @@ public class RegisterUserType extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+    }
+
+    private void closeUserTypeDialog() {
+        if (userTypeDialog != null && userTypeDialog.isShowing()) {
+            userTypeDialog.dismiss();
+        }
     }
 
     private void showUserTypeDialog() {
+        AlertDialog.Builder  builder = new AlertDialog.Builder(this);
 
-        final Dialog customDialog = new Dialog(this);
-        customDialog.setContentView(R.layout.user_type_dialog);
+        View dialogView = getLayoutInflater().inflate(R.layout.user_type_dialog, null);
 
-        ImageButton seniorImgBtn = customDialog.findViewById(R.id.seniorImgBtn);
-        ImageButton pwdImgBtn = customDialog.findViewById(R.id.pwdImgBtn);
-        ImageButton imgBackBtn = customDialog.findViewById(R.id.imgBackBtn);
+        ImageButton seniorImgBtn = dialogView.findViewById(R.id.seniorImgBtn);
+        ImageButton pwdImgBtn = dialogView.findViewById(R.id.pwdImgBtn);
+        ImageButton imgBackBtn = dialogView.findViewById(R.id.imgBackBtn);
 
-        seniorImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(RegisterUserType.this, Register.class);
-                registerData = "senior";
-                intent.putExtra("registerData", registerData);
-                intent.putExtra("registerType", registerType);
-                startActivity(intent);
-                finish();
+        seniorImgBtn.setOnClickListener(v -> {
+            intent = new Intent(RegisterUserType.this, Register.class);
+            registerData = "Senior Citizen";
+            intent.putExtra("registerData", registerData);
+            intent.putExtra("registerType", registerType);
+            startActivity(intent);
+            finish();
 
-                customDialog.dismiss();
-            }
+            closeUserTypeDialog();
         });
 
-        pwdImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                intent = new Intent(RegisterUserType.this, Register.class);
-                registerData = "pwd";
-                intent.putExtra("registerData", registerData);
-                intent.putExtra("registerType", registerType);
-                startActivity(intent);
-                finish();
+        pwdImgBtn.setOnClickListener(v -> {
+            intent = new Intent(RegisterUserType.this, Register.class);
+            registerData = "Persons with Disability (PWD)";
+            intent.putExtra("registerData", registerData);
+            intent.putExtra("registerType", registerType);
+            startActivity(intent);
+            finish();
 
-                customDialog.dismiss();
+            userTypeDialog.dismiss();
 
-            }
         });
 
-        imgBackBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                customDialog.dismiss();
-            }
+        imgBackBtn.setOnClickListener(v -> {
+            closeUserTypeDialog();
         });
 
-        customDialog.show();
+        builder.setView(dialogView);
+
+        userTypeDialog = builder.create();
+        userTypeDialog.show();
     }
 }

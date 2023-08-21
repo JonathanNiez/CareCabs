@@ -20,6 +20,8 @@ import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
@@ -36,26 +38,24 @@ public class MainActivity extends AppCompatActivity {
         showFragment(new HomeFragment());
 
         doubleTapBackHandler = new DoubleTapBackHandler();
+
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.home);
         bottomNavigationView.setOnItemSelectedListener(item -> {
 
             if (item.getItemId() == R.id.home) {
                 showFragment(new HomeFragment());
+
             } else if (item.getItemId() == R.id.account) {
                 showFragment(new AccountFragment());
-            } else if (item.getItemId() == R.id.map) {
-                intent = new Intent(MainActivity.this, RegisterDriver.class);
-                startActivity(intent);
-            }
 
+            } else if (item.getItemId() == R.id.map) {
+                intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
+
+            }
             return true;
         });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
     }
 
     @Override
