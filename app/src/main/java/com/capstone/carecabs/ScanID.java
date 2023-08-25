@@ -1,12 +1,14 @@
 package com.capstone.carecabs;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,11 +23,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+
+import java.io.ByteArrayOutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScanID extends AppCompatActivity {
     private ImageButton imgBackBtn, getImageBtn;
@@ -41,11 +46,13 @@ public class ScanID extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
 
+    private String TAG = "ScanID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_id);
+
         imgBackBtn = findViewById(R.id.imgBackBtn);
         getImageBtn = findViewById(R.id.getImageBtn);
         recognizedTextView = findViewById(R.id.recognizedTextView);
@@ -54,9 +61,7 @@ public class ScanID extends AppCompatActivity {
 
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
-        imgBackBtn.setOnClickListener(v -> {
-            finish();
-        });
+        checkPermission();
 
         getImageBtn.setOnClickListener(v -> {
 //            ImagePicker.with(this)
@@ -64,27 +69,27 @@ public class ScanID extends AppCompatActivity {
 //                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
 //                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
 //                    .start();
-
+//
             showOptionsDialog();
         });
+    }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // Check for camera permission
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.CAMERA},
-                        CAMERA_PERMISSION_REQUEST);
-            }
+    private void checkPermission() {
+        // Check for camera permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST);
+        }
 
-            // Check for storage permission
-            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                                Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        STORAGE_PERMISSION_REQUEST);
-            }
+        // Check for storage permission
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_REQUEST);
         }
     }
 
@@ -144,7 +149,74 @@ public class ScanID extends AppCompatActivity {
         optionsDialog.show();
     }
 
+    private boolean matchesPattern(String text, String pattern) {
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(text);
+        return m.find();
+    }
+
+    private Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        try {
+            if (resultCode == RESULT_OK) {
+                if (requestCode == CAMERA_REQUEST_CODE) {
+                    if (data != null) {
+
+                        Bundle extras = data.getExtras();
+                        Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+                        imageUri = getImageUri(getApplicationContext(), imageBitmap);
+                        idPreview.setImageURI(imageUri);
+
+                        Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+
+                        recognizeText();
+
+                    } else {
+                        Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+                        progressBarLayout.setVisibility(View.GONE);
+                    }
+
+                } else if (requestCode == GALLERY_REQUEST_CODE) {
+                    if (data != null) {
+
+                        imageUri = data.getData();
+                        idPreview.setImageURI(imageUri);
+
+                        Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
+
+                        recognizeText();
+                    } else {
+                        Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+                        progressBarLayout.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Image is not Selected", Toast.LENGTH_SHORT).show();
+                Log.e(TAG + ":ERROR", "Failed to Extract Text");
+
+                Toast.makeText(this, "Failed to Extract Text", Toast.LENGTH_LONG).show();
+
+                progressBarLayout.setVisibility(View.GONE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void recognizeText() {
+        progressBarLayout.setVisibility(View.VISIBLE);
 
         if (imageUri != null) {
 
@@ -153,59 +225,50 @@ public class ScanID extends AppCompatActivity {
 
                 textRecognizer.process(inputImage).addOnSuccessListener(text -> {
 
-                    String recognizeText = text.getText();
-                    recognizedTextView.setText(recognizeText);
+                    String extractedText = text.getText();
 
-                }).addOnFailureListener(e ->
-                        Toast.makeText(ScanID.this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                    recognizedTextView.setText(extractedText);
+
+                    progressBarLayout.setVisibility(View.GONE);
+
+                    // Define patterns for PWD and Senior Citizen IDs
+                    String pwdPattern = "PWD-[0-9]{4}";
+                    String seniorCitizenPattern = "SeniorCitizen-[0-9]{4}";
+
+                    // Check if extracted text matches patterns
+                    if (matchesPattern(extractedText, pwdPattern)) {
+                        recognizedTextView.setText(extractedText);
+                    } else if (matchesPattern(extractedText, seniorCitizenPattern)) {
+                        recognizedTextView.setText(extractedText);
+                    } else {
+                        recognizedTextView.setText("Please use an ID");
+                    }
+
+
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(ScanID.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                    e.printStackTrace();
+
+                    recognizedTextView.setText("Please try again");
+
+                    progressBarLayout.setVisibility(View.GONE);
+                });
+
 
             } catch (Exception e) {
                 e.printStackTrace();
+                Log.e(TAG + ":ERROR", "Failed to Extract Text");
+
+                progressBarLayout.setVisibility(View.GONE);
+
             }
         } else {
-            Toast.makeText(this, "Image is not loaded", Toast.LENGTH_SHORT).show();
-        }
-    }
+            Toast.makeText(this, "Image is not loaded", Toast.LENGTH_LONG).show();
+            recognizedTextView.setText("Please try again");
+            Toast.makeText(this, "Failed to Extract Text", Toast.LENGTH_LONG).show();
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            if (data != null) {
-
-                imageUri = data.getData();
-                idPreview.setImageURI(imageUri);
-
-                recognizeText();
-
-            } else {
-                Toast.makeText(this, "Image is not Selected", Toast.LENGTH_SHORT).show();
-            }
-//            if (requestCode == CAMERA_REQUEST_CODE) {
-//                if (data != null) {
-//                    recognizeText();
-//
-//                    imageUri = data.getData();
-//                    idPreview.setImageURI(imageUri);
-//                } else {
-//                    Toast.makeText(this, "Image is not Selected", Toast.LENGTH_SHORT).show();
-//                }
-//
-//            } else if (requestCode == GALLERY_REQUEST_CODE) {
-//                if (data != null) {
-//                    recognizeText();
-//
-//                    imageUri = data.getData();
-//                    idPreview.setImageURI(imageUri);
-//
-//                } else {
-//                    Toast.makeText(this, "Image is not Selected", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-        } else {
-            Toast.makeText(this, "Image is not Selected", Toast.LENGTH_SHORT).show();
-
+            progressBarLayout.setVisibility(View.GONE);
         }
     }
 
@@ -215,13 +278,14 @@ public class ScanID extends AppCompatActivity {
 
         if (requestCode == CAMERA_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Camera permission granted
+                Log.i(TAG, "Camera Permission Granted");
             }
         } else if (requestCode == STORAGE_PERMISSION_REQUEST) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Storage permission granted
+                Log.i(TAG, "Gallery Permission Granted");
             }
         } else {
+            Log.e(TAG, "Permission Denied");
 
         }
     }

@@ -1,9 +1,14 @@
 package com.capstone.carecabs;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -58,6 +63,8 @@ public class RegisterPWD extends AppCompatActivity {
         spinnerDisability = findViewById(R.id.spinnerDisability);
         ageBtn = findViewById(R.id.ageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+
+        createNotificationChannel();
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -167,6 +174,8 @@ public class RegisterPWD extends AppCompatActivity {
                             StaticDataPasser.storeCurrentBirthDate = null;
                             StaticDataPasser.storeSelectedDisability = null;
 
+                            buildAndDisplayNotification();
+
                             intent = new Intent(RegisterPWD.this, MainActivity.class);
                             startActivity(intent);
                             finish();
@@ -226,6 +235,36 @@ public class RegisterPWD extends AppCompatActivity {
                     calculateAge();
                 }, year, month, day);
         datePickerDialog.show();
+    }
+    private void createNotificationChannel() {
+        String channelId = "channel_id";
+        String channelName = "CareCabs";
+        String channelDescription = "You have Successfully Registered";
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(channelDescription);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void buildAndDisplayNotification() {
+        int notificationId = 1;
+        String channelId = "channel_id";
+
+        // Build the notification
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("CareCabs")
+                .setContentText("You have Successfully Registered as a PWD")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Display the notification
+        notificationManager.notify(notificationId, notificationBuilder.build());
     }
 
 }

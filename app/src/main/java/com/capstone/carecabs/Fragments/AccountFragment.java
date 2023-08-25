@@ -137,7 +137,7 @@ public class AccountFragment extends Fragment {
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -168,7 +168,7 @@ public class AccountFragment extends Fragment {
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -199,7 +199,7 @@ public class AccountFragment extends Fragment {
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }

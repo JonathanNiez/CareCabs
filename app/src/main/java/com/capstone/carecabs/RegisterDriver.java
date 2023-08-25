@@ -1,7 +1,11 @@
 package com.capstone.carecabs;
 
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,6 +63,8 @@ public class RegisterDriver extends AppCompatActivity {
         ageBtn = findViewById(R.id.ageBtn);
         spinnerSex = findViewById(R.id.spinnerSex);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+
+        createNotificationChannel();
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -147,6 +154,8 @@ public class RegisterDriver extends AppCompatActivity {
                                 StaticDataPasser.storeCurrentAge = 0;
                                 StaticDataPasser.storeCurrentBirthDate = null;
 
+                                buildAndDisplayNotification();
+
                                 intent = new Intent(RegisterDriver.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -212,4 +221,36 @@ public class RegisterDriver extends AppCompatActivity {
                 }, year, month, day);
         datePickerDialog.show();
     }
+
+    private void createNotificationChannel() {
+        String channelId = "channel_id";
+        String channelName = "CareCabs";
+        String channelDescription = "You have Successfully Registered";
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(channelDescription);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    private void buildAndDisplayNotification() {
+        int notificationId = 1;
+        String channelId = "channel_id";
+
+        // Build the notification
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle("CareCabs")
+                .setContentText("You have Successfully Registered as a Driver")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Display the notification
+        notificationManager.notify(notificationId, notificationBuilder.build());
+    }
+
 }

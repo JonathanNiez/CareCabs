@@ -75,7 +75,6 @@ public class Register extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        createNotificationChannel();
 
         imgBackBtn = findViewById(R.id.imgBackBtn);
         nextBtn = findViewById(R.id.nextBtn);
@@ -153,6 +152,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("email", stringEmail);
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
+                                registerUser.put("profilePic", "default");
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
@@ -160,7 +160,6 @@ public class Register extends AppCompatActivity {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
-                                        buildAndDisplayNotification();
 
                                         intent = new Intent(Register.this, RegisterDriver.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -203,6 +202,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("email", stringEmail);
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
+                                registerUser.put("profilePic", "default");
 
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
@@ -211,7 +211,6 @@ public class Register extends AppCompatActivity {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
-                                        buildAndDisplayNotification();
 
                                         intent = new Intent(Register.this, RegisterPWD.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -263,7 +262,6 @@ public class Register extends AppCompatActivity {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
-                                        buildAndDisplayNotification();
 
                                         intent = new Intent(Register.this, RegisterSenior.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -364,7 +362,7 @@ public class Register extends AppCompatActivity {
                                     databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
                                         if (task1.isSuccessful()) {
-                                            buildAndDisplayNotification();
+
                                             closePleaseWaitDialog();
 
                                             intent = new Intent(Register.this, RegisterDriver.class);
@@ -407,7 +405,6 @@ public class Register extends AppCompatActivity {
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
                                     if (task12.isSuccessful()) {
-                                        buildAndDisplayNotification();
                                         closePleaseWaitDialog();
 
                                         intent = new Intent(Register.this, RegisterPWD.class);
@@ -423,8 +420,6 @@ public class Register extends AppCompatActivity {
                             }
                         } else {
                             Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
-
-
                         }
                     });
 
@@ -450,7 +445,6 @@ public class Register extends AppCompatActivity {
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
                                     if (task13.isSuccessful()) {
-                                        buildAndDisplayNotification();
 
                                         closePleaseWaitDialog();
 
@@ -479,36 +473,6 @@ public class Register extends AppCompatActivity {
         }
     }
 
-    private void createNotificationChannel() {
-        String channelId = "channel_id";
-        String channelName = "CareCabs";
-        String channelDescription = "You have Successfully Registered";
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription(channelDescription);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
-    private void buildAndDisplayNotification() {
-        int notificationId = 1;
-        String channelId = "channel_id";
-
-        // Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle("CareCabs")
-                .setContentText("You have Successfully Registered")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Display the notification
-        notificationManager.notify(notificationId, notificationBuilder.build());
-    }
 
     private void showPleaseWaitDialog() {
 

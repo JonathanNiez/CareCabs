@@ -186,7 +186,7 @@ public class EditAccountFragment extends Fragment {
                             editLastameBtn.setText(getLastname);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -207,7 +207,7 @@ public class EditAccountFragment extends Fragment {
                             editLastameBtn.setText(getLastname);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -254,7 +254,7 @@ public class EditAccountFragment extends Fragment {
 
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -305,7 +305,7 @@ public class EditAccountFragment extends Fragment {
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -320,7 +320,7 @@ public class EditAccountFragment extends Fragment {
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -334,7 +334,7 @@ public class EditAccountFragment extends Fragment {
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loadingif).into(profilePic);
+                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }

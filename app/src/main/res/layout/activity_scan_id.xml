@@ -72,7 +72,7 @@
                 <pl.droidsonroids.gif.GifImageView
                     android:layout_width="50pt"
                     android:layout_height="50pt"
-                    android:src="@drawable/loadingif"/>
+                    android:src="@drawable/loading_gif"/>
 
                 <TextView
                     android:layout_width="wrap_content"
