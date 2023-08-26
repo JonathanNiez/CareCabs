@@ -78,7 +78,7 @@ class MapActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        createDummyList()
+        createDummyMarkers()
         checkLocationPermission()
 
         imgBackBtn.setOnClickListener {
@@ -206,7 +206,7 @@ class MapActivity : AppCompatActivity() {
         )
     }
 
-    private fun createDummyList() {
+    private fun createDummyMarkers() {
         latitudeList.add(7.191233292469051)
         longitudeList.add(125.45471619362087)
 
@@ -247,8 +247,8 @@ class MapActivity : AppCompatActivity() {
         var jsonElement: JsonElement? = marker.getData()
 
         AlertDialog.Builder(this)
-            .setTitle("Nigga")
-            .setMessage("Homies$marker")
+            .setTitle("Dummy Marker")
+            .setMessage("Interacted Marker: $marker")
             .setPositiveButton("K") { dialog, whichButton ->
                 dialog.dismiss()
             }.show()
