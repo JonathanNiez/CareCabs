@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="Logging Out..."
         android:layout_below="@+id/loadingGif"
-        android:textSize="30dp"
+        android:textSize="30sp"
         android:textColor="@color/black"
         android:fontFamily="@font/opensans_semibold"
         android:layout_centerHorizontal="true"

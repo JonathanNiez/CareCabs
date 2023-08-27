@@ -52,7 +52,8 @@ public class Login extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     private String TAG = "Login";
     private static final int RC_SIGN_IN = 69;
-    private AlertDialog noInternetDialog, emailDialog, emailNotRegisteredDialog, incorrectEmailOrPasswordDialog;
+    private AlertDialog noInternetDialog, emailDialog,
+            emailNotRegisteredDialog, incorrectEmailOrPasswordDialog, pleaseWaitDialog;
     private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
 
@@ -67,7 +68,9 @@ public class Login extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
 
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -278,6 +281,8 @@ public class Login extends AppCompatActivity {
                             e.printStackTrace();
                         });
                     } else {
+                        showPleaseWaitDialog();
+
                         intent = new Intent(Login.this, RegisterUserType.class);
                         intent.putExtra("registerType", "googleRegister");
                     }
@@ -305,6 +310,17 @@ public class Login extends AppCompatActivity {
 
         emailDialog = builder.create();
         emailDialog.show();
+    }
+
+    private void showPleaseWaitDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+
+        builder.setView(dialogView);
+
+        pleaseWaitDialog = builder.create();
+        pleaseWaitDialog.show();
     }
 
     private void showNoInternetDialog() {

@@ -41,14 +41,16 @@ public class AccountFragment extends Fragment {
     private Button signOutBtn, editProfileBtn, changePasswordBtn, secuAndPriBtn;
     private ImageButton imgBackBtn;
     private ImageView profilePic;
-    private TextView fullNameTextView, userTypeTextView, ageTextView, statusTextView;
+    private TextView fullNameTextView, userTypeTextView,
+            ageTextView, statusTextView, driverStatusTextView,
+            birthdateTextView, setTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
     private String TAG = "AccountFragment";
     private String userID;
     private Intent intent;
-    private AlertDialog signOutDialog, loadingDialog;
+    private AlertDialog signOutDialog, pleaseWaitDialog;
 
 
     @Override
@@ -65,6 +67,9 @@ public class AccountFragment extends Fragment {
         userTypeTextView = view.findViewById(R.id.userTypeTextView);
         ageTextView = view.findViewById(R.id.ageTextView);
         statusTextView = view.findViewById(R.id.statusTextView);
+        driverStatusTextView = view.findViewById(R.id.driverStatusTextView);
+        birthdateTextView = view.findViewById(R.id.birthdateTextView);
+        setTextView = view.findViewById(R.id.sexTextView);
         changePasswordBtn = view.findViewById(R.id.changePasswordBtn);
         signOutBtn = view.findViewById(R.id.signOutBtn);
         editProfileBtn = view.findViewById(R.id.editProfileBtn);
@@ -113,10 +118,12 @@ public class AccountFragment extends Fragment {
         StaticDataPasser.storeCurrentAge = 0;
         StaticDataPasser.storeFirstName = null;
         StaticDataPasser.storeLastName = null;
-        StaticDataPasser.storeHashedPassword = null;    }
+        StaticDataPasser.storeHashedPassword = null;
+    }
 
     private void loadUserProfileInfo() {
-        showLoadingDialog();
+        showPleaseWaitDialog();
+
         if (currentUser != null) {
             userID = currentUser.getUid();
 
@@ -127,19 +134,26 @@ public class AccountFragment extends Fragment {
 
                     if (snapshot.exists()) {
 
-                        String getFirstname, getLastname, getProfilePic, fullName, getUserType, getAge, getStatus;
+                        String getFirstname, getLastname, getProfilePic, fullName,
+                                getUserType, getStatus, getBirthdate,
+                                getSex;
+                        int getAge;
+                        Boolean getDriverStatus;
 
                         DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
 
                         if (snapshot.child("driver").hasChild(userID)) {
 
                             driverSnapshot = snapshot.child("driver").child(userID);
-                            getStatus  = driverSnapshot.child("status").getValue(String.class);
+                            getStatus = driverSnapshot.child("status").getValue(String.class);
                             getUserType = driverSnapshot.child("userType").getValue(String.class);
                             getFirstname = driverSnapshot.child("firstname").getValue(String.class);
-                            getAge = String.valueOf(driverSnapshot.child("age").getValue());
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
+                            getAge = driverSnapshot.child("age").getValue(Integer.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
+                            getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
+                            getSex = driverSnapshot.child("sex").getValue(String.class);
+                            getDriverStatus = driverSnapshot.child("isAvailable").getValue(Boolean.class);
 
                             if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
@@ -151,26 +165,40 @@ public class AccountFragment extends Fragment {
                             fullNameTextView.setText(fullName);
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
+                            birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            setTextView.setText("Sex: " + getSex);
 
-                            if (getUserType.equals("Verified")){
+                            if (getUserType.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
-                            }else{
+                            } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
                             statusTextView.setText("Status: " + getStatus);
+
+                            driverStatusTextView.setVisibility(View.VISIBLE);
+                            if (getDriverStatus) {
+                                driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+                                driverStatusTextView.setText("Available");
+                            } else {
+                                driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                                driverStatusTextView.setText("Busy");
+
+                            }
 
                             closeLoadingDialog();
 
                         } else if (snapshot.child("senior").hasChild(userID)) {
 
                             seniorSnapshot = snapshot.child("senior").child(userID);
-                            getStatus  = seniorSnapshot.child("status").getValue(String.class);
-                            getAge = String.valueOf(seniorSnapshot.child("age").getValue());
+                            getStatus = seniorSnapshot.child("status").getValue(String.class);
+                            getAge = seniorSnapshot.child("age").getValue(Integer.class);
                             getUserType = seniorSnapshot.child("userType").getValue(String.class);
                             getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
                             getLastname = seniorSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
+                            getBirthdate = seniorSnapshot.child("birthdate").getValue(String.class);
+                            getSex = seniorSnapshot.child("sex").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
@@ -181,11 +209,13 @@ public class AccountFragment extends Fragment {
                             fullNameTextView.setText(fullName);
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
+                            birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            setTextView.setText("Sex: " + getSex);
 
-                            if (getUserType.equals("Verified")){
+                            if (getUserType.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
-                            }else{
+                            } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
                             statusTextView.setText("Status: " + getStatus);
@@ -196,12 +226,14 @@ public class AccountFragment extends Fragment {
                         } else if (snapshot.child("pwd").hasChild(userID)) {
 
                             pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getStatus  = pwdSnapshot.child("status").getValue(String.class);
+                            getStatus = pwdSnapshot.child("status").getValue(String.class);
                             getUserType = pwdSnapshot.child("userType").getValue(String.class);
-                            getAge = String.valueOf(pwdSnapshot.child("age").getValue());
+                            getAge = pwdSnapshot.child("age").getValue(Integer.class);
                             getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
                             getLastname = pwdSnapshot.child("lastname").getValue(String.class);
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
+                            getBirthdate = pwdSnapshot.child("birthdate").getValue(String.class);
+                            getSex = pwdSnapshot.child("sex").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
@@ -213,11 +245,13 @@ public class AccountFragment extends Fragment {
                             fullNameTextView.setText(fullName);
                             userTypeTextView.setText(getUserType);
                             ageTextView.setText("Age: " + getAge);
+                            birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            setTextView.setText("Sex: " + getSex);
 
-                            if (getUserType.equals("Verified")){
+                            if (getUserType.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
-                            }else{
+                            } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
                             statusTextView.setText("Status: " + getStatus);
@@ -245,7 +279,7 @@ public class AccountFragment extends Fragment {
     private void showSignOutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.log_out_dialog, null);
 
         Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
@@ -267,20 +301,20 @@ public class AccountFragment extends Fragment {
         signOutDialog.show();
     }
 
-    private void showLoadingDialog() {
+    private void showPleaseWaitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        View dialogView = getLayoutInflater().inflate(R.layout.loading_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
         builder.setView(dialogView);
 
-        loadingDialog = builder.create();
-        loadingDialog.show();
+        pleaseWaitDialog = builder.create();
+        pleaseWaitDialog.show();
     }
 
     private void closeLoadingDialog() {
-        if (loadingDialog != null && loadingDialog.isShowing()) {
-            loadingDialog.dismiss();
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+            pleaseWaitDialog.dismiss();
         }
     }
 

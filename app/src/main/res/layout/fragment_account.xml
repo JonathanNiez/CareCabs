@@ -18,7 +18,7 @@
             <RelativeLayout
                 android:id="@+id/upperLayout"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="wrap_content"
                 android:background="@drawable/rectangle_one">
 
                 <ImageButton
@@ -41,7 +41,7 @@
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/opensans_regular"
                     android:text="Account Settings"
-                    android:textSize="30dp" />
+                    android:textSize="30sp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profielPic"
@@ -61,8 +61,21 @@
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Name"
+                    android:layout_marginBottom="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="23sp" />
+
+                <TextView
+                    android:id="@+id/userTypeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="User Type"
+                    android:textColor="@color/black"
+                    android:textSize="23sp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/fullNameTextView"/>
 
             </RelativeLayout>
 
@@ -81,7 +94,17 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Status:"
                     android:textColor="@color/black"
-                    android:textSize="24dp" />
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/birthdateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Birthdate"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
 
                 <TextView
                     android:id="@+id/ageTextView"
@@ -89,19 +112,32 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="Age:"
+                    android:text="Age"
                     android:textColor="@color/black"
-                    android:textSize="24dp" />
+                    android:textSize="24sp" />
 
                 <TextView
-                    android:id="@+id/userTypeTextView"
+                    android:id="@+id/sexTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="User Type"
+                    android:text="Sex"
                     android:textColor="@color/black"
-                    android:textSize="24dp" />
+                    android:textSize="24sp" />
+
+
+
+                <TextView
+                    android:id="@+id/driverStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Driver Status"
+                    android:visibility="gone"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
 
                 <View
                     android:layout_width="match_parent"

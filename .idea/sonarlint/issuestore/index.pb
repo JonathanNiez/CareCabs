@@ -174,8 +174,6 @@ w
 G.idea/sonarlint/issuestore/b/b/bbf202272a96de5cd6b6828ffdc55fb3ce45289c,8\4\84e95bd0ea795e5307464eb72e7bd95d9f673c00
 Å
 Q.idea/sonarlint/securityhotspotstore/3/0/30205a209c6ce77c4cfc19a09e6f57c588b7fb88,6\7\67eaf978e530588b1f14f51aeca296c2b659e272
-g
-7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
 x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment1.java,2\c\2c0dec3c746c4600801f8e55d12fdba91a7120bf
 z
@@ -430,8 +428,6 @@ P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/BookingHistoryFragment.java,a\b\ab423654dab36405399ad44bbaef12502bd941a6
-z
-Japp/src/main/java/com/capstone/carecabs/Fragments/EditAccountFragment.java,8\c\8ccd260f24b3d18052ac8fb0794b1a2ca283e8e4
 u
 Eapp/src/main/java/com/capstone/carecabs/Utility/IDTypeIdentifier.java,f\a\fa0aa6cdf093e3977f1ebc687f6e711511c0e825
 g
@@ -440,9 +436,15 @@ g
 Mapp/src/main/java/com/capstone/carecabs/Fragments/PendingBookingFragment.java,e\f\ef4c37f912b72c62beb18d4489febb712030b312
 k
 ;app/src/main/java/com/capstone/carecabs/RegisterDriver.java,3\e\3e11284aff40f662a4f9a401386ffb909df1b69c
-h
-8app/src/main/java/com/capstone/carecabs/RegisterPWD.java,2\9\2941b28b6696d8dafefa9b43c6bb6eac09535d28
 k
 ;app/src/main/java/com/capstone/carecabs/RegisterSenior.java,f\8\f8aa2b7d26fb5025498c278a4d52a33419f59742
 c
 3app/src/main/java/com/capstone/carecabs/ScanID.java,0\5\0503a67ff6de07fec171d1cc7af7022a8a028918
+A
+gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
+?
+settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+f
+6app/src/main/java/com/capstone/carecabs/MapActivity.kt,c\5\c5fa5469b9d76d3698def09b8f5144aa45e739c3

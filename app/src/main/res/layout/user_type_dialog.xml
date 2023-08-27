@@ -62,7 +62,7 @@
                     android:fontFamily="@font/opensans_bold"
                     android:text="SENIOR CITIZEN"
                     android:textColor="@color/black"
-                    android:textSize="30sp" />
+                    android:textSize="25sp" />
 
                 <ImageButton
                     android:id="@+id/seniorImgBtn"
@@ -108,7 +108,7 @@
                     android:layout_marginStart="7dp"
                     android:text="PERSONS WITH DISABILITY \n (PWD)"
                     android:textColor="@color/black"
-                    android:textSize="25sp" />
+                    android:textSize="24sp" />
 
                 <ImageButton
                     android:id="@+id/pwdImgBtn"

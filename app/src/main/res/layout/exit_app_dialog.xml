@@ -13,7 +13,7 @@
         android:fontFamily="@font/opensans_semibold"
         android:text="Exit App?"
         android:textColor="@color/black"
-        android:textSize="30dp" />
+        android:textSize="30sp" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -30,8 +30,8 @@
             android:layout_marginEnd="10dp"
             android:background="@drawable/login_button"
             android:backgroundTint="@color/red"
-            android:text="Sí"
-            android:textSize="20dp"
+            android:text="Exit"
+            android:textSize="20sp"
             android:textColor="@color/white" />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -40,8 +40,8 @@
             android:layout_height="70dp"
             android:layout_marginStart="10dp"
             android:background="@drawable/login_button"
-            android:text="Nein"
-            android:textSize="20dp"
+            android:text="No"
+            android:textSize="20sp"
             android:textColor="@color/white" />
 
     </LinearLayout>
