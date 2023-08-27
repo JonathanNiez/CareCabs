@@ -64,8 +64,6 @@ j
 :app/src/main/java/com/capstone/carecabs/RegisterUsing.java,8\0\80edef7479dd1c8abcec38c38107c71a50635dd5
 i
 9app/src/main/java/com/capstone/carecabs/SplashScreen.java,4\0\404fcb8b06de06c20cfb7f4ea965dec6f5de1e3e
-f
-6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
 k
 ;app/src/main/java/com/capstone/carecabs/ChangePassword.java,0\f\0fc8f90916a4f30ee8041b11b8223e452382c166
 w
@@ -178,8 +176,6 @@ G.idea/sonarlint/issuestore/b/b/bbf202272a96de5cd6b6828ffdc55fb3ce45289c,8\4\84
 Q.idea/sonarlint/securityhotspotstore/3/0/30205a209c6ce77c4cfc19a09e6f57c588b7fb88,6\7\67eaf978e530588b1f14f51aeca296c2b659e272
 g
 7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
-b
-2app/src/main/java/com/capstone/carecabs/Login.java,0\5\054ecd2dd0980873de870a6c3b26d7cf7acacb5a
 x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment1.java,2\c\2c0dec3c746c4600801f8e55d12fdba91a7120bf
 z
@@ -422,10 +418,6 @@ x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
 s
 Capp/src/main/java/com/capstone/carecabs/Fragments/HomeFragment.java,c\5\c59eb044c6fed59e0a0402b93c2bb7670960228c
-m
-=app/src/main/java/com/capstone/carecabs/RegisterUserType.java,1\e\1e0734fa7f44cacb572ac9b73e0b895bc70f248a
-u
-Eapp/src/main/java/com/capstone/carecabs/Utility/StaticDataPasser.java,0\4\0446777c3cc910d0d937441caf1a4393c58fcb51
 F
 app/proguard-rules.pro,9\e\9e08934d811afe28fbc77aaa3c0d747b94348db9
 i
@@ -434,8 +426,6 @@ i
 Oapp/src/main/java/com/capstone/carecabs/Utility/NetworkConnectivityChecker.java,b\6\b63ab6379c024c227f73e06a9eecf46cc47a5733
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-v
-Fapp/src/main/java/com/capstone/carecabs/Fragments/AccountFragment.java,b\8\b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
 }
@@ -448,8 +438,6 @@ g
 7app/src/main/java/com/capstone/carecabs/MyBookings.java,6\1\61a2786cacdae974fe8469c120a55038b625020d
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/PendingBookingFragment.java,e\f\ef4c37f912b72c62beb18d4489febb712030b312
-e
-5app/src/main/java/com/capstone/carecabs/Register.java,7\b\7b21d9bf603835ee75a442b4d4cd608c3bff2496
 k
 ;app/src/main/java/com/capstone/carecabs/RegisterDriver.java,3\e\3e11284aff40f662a4f9a401386ffb909df1b69c
 h

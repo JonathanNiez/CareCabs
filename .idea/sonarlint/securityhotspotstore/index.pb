@@ -64,8 +64,6 @@ j
 :app/src/main/java/com/capstone/carecabs/RegisterUsing.java,8\0\80edef7479dd1c8abcec38c38107c71a50635dd5
 i
 9app/src/main/java/com/capstone/carecabs/SplashScreen.java,4\0\404fcb8b06de06c20cfb7f4ea965dec6f5de1e3e
-f
-6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
 k
 ;app/src/main/java/com/capstone/carecabs/ChangePassword.java,0\f\0fc8f90916a4f30ee8041b11b8223e452382c166
 w
@@ -176,8 +174,6 @@ w
 G.idea/sonarlint/issuestore/b/b/bbf202272a96de5cd6b6828ffdc55fb3ce45289c,8\4\84e95bd0ea795e5307464eb72e7bd95d9f673c00
 Å
 Q.idea/sonarlint/securityhotspotstore/3/0/30205a209c6ce77c4cfc19a09e6f57c588b7fb88,6\7\67eaf978e530588b1f14f51aeca296c2b659e272
-b
-2app/src/main/java/com/capstone/carecabs/Login.java,0\5\054ecd2dd0980873de870a6c3b26d7cf7acacb5a
 g
 7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
 x
@@ -384,8 +380,6 @@ Q.idea/sonarlint/securityhotspotstore/6/7/67b32c96e87b8be57a742eb04a1dfc6de0655a
 Q.idea/sonarlint/securityhotspotstore/b/d/bd4eb750d71eb6c0cb5750e20efceb0ceef240d6,0\4\046804272f8bebb86fd50a95fad2affece8e7fcb
 Å
 Q.idea/sonarlint/securityhotspotstore/2/e/2e1a3e005400768c7a2a8318102767a731476f43,2\a\2af0edec3e7fe372d3925c012bdd6233b2f4e9c8
-u
-Eapp/src/main/java/com/capstone/carecabs/Utility/StaticDataPasser.java,0\4\0446777c3cc910d0d937441caf1a4393c58fcb51
 Å
 Q.idea/sonarlint/securityhotspotstore/d/3/d34b8e59910bfcf973afdb3a2689773d6a5dfd22,9\9\99a990585871293b60929dea6b1e7459fe0bfd72
 Å
@@ -406,8 +400,6 @@ Q.idea/sonarlint/securityhotspotstore/b/c/bc199be1972ff36e1397ae80e13ad04c7fe8bf
 Q.idea/sonarlint/securityhotspotstore/e/0/e0473fd70db69fb41f8c41bd08a2c53ddde0e793,1\6\164610580f2c19a53ed56c5d46827cf2ae85fd71
 Å
 Q.idea/sonarlint/securityhotspotstore/6/2/62aed203827e066438ba8614c77952b2b09cb7d6,2\f\2fd5816c337cef8cd27b7fca52171a709a383268
-m
-=app/src/main/java/com/capstone/carecabs/RegisterUserType.java,1\e\1e0734fa7f44cacb572ac9b73e0b895bc70f248a
 Å
 Q.idea/sonarlint/securityhotspotstore/e/5/e5babc9c4e98545e8c1fa7856f821fec6cf0d876,d\c\dc92ca624cfa425e6a348ef98fa981cfc94a7951
 Å
@@ -448,13 +440,9 @@ c
 Mapp/src/main/java/com/capstone/carecabs/Fragments/PendingBookingFragment.java,e\f\ef4c37f912b72c62beb18d4489febb712030b312
 h
 8app/src/main/java/com/capstone/carecabs/RegisterPWD.java,2\9\2941b28b6696d8dafefa9b43c6bb6eac09535d28
-v
-Fapp/src/main/java/com/capstone/carecabs/Fragments/AccountFragment.java,b\8\b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/BookingHistoryFragment.java,a\b\ab423654dab36405399ad44bbaef12502bd941a6
 g
 7app/src/main/java/com/capstone/carecabs/MyBookings.java,6\1\61a2786cacdae974fe8469c120a55038b625020d
-e
-5app/src/main/java/com/capstone/carecabs/Register.java,7\b\7b21d9bf603835ee75a442b4d4cd608c3bff2496
 u
 Eapp/src/main/java/com/capstone/carecabs/Utility/IDTypeIdentifier.java,f\a\fa0aa6cdf093e3977f1ebc687f6e711511c0e825

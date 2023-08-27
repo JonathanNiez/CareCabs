@@ -11,15 +11,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <ImageButton
                 android:id="@+id/userTypeImageBtn"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginStart="10dp"
@@ -27,7 +26,7 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/mar"
+                android:src="@drawable/account"
                 android:background="@drawable/circular_button"
                 android:backgroundTint="@color/yellow"/>
 
@@ -129,6 +128,8 @@
                     app:endIconMode="password_toggle"
                     app:hintTextColor="@color/black"
                     android:layout_marginBottom="20dp"
+                    app:helperTextTextColor="@color/black"
+                    app:helperText="Match your Password"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -140,9 +141,37 @@
                         android:fontFamily="@font/opensans_bold"
                         android:inputType="textPassword"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black" />
+                        android:textColorHint="@color/black"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/googleRegisterLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:layout_below="@id/linearLayout"
+                android:visibility="gone"
+                >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="You are Registering \n using Google"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    />
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/google"/>
 
             </LinearLayout>
 
@@ -150,12 +179,14 @@
                 android:id="@+id/progressBarLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/googleRegisterLayout"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="30dp"
+                android:orientation="vertical"
                 android:visibility="gone"
-                android:layout_marginTop="50dp"
-                android:orientation="vertical">
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -181,9 +212,9 @@
                 android:background="@drawable/login_button"
                 android:text="Next"
                 android:fontFamily="@font/opensans_bold"
-                android:textSize="24dp"
+                android:textSize="24sp"
                 android:textColor="@color/white"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/googleRegisterLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="50dp"/>

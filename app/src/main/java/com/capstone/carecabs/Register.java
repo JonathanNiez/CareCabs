@@ -30,6 +30,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -49,7 +50,7 @@ public class Register extends AppCompatActivity {
     private ImageButton imgBackBtn, userTypeImageBtn;
     private EditText email, password, confirmPassword;
     private Button nextBtn;
-    private LinearLayout progressBarLayout;
+    private LinearLayout progressBarLayout, googleRegisterLayout;
     private FirebaseAuth auth;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser currentUser;
@@ -75,11 +76,11 @@ public class Register extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-
         imgBackBtn = findViewById(R.id.imgBackBtn);
         nextBtn = findViewById(R.id.nextBtn);
         userTypeImageBtn = findViewById(R.id.userTypeImageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
+        googleRegisterLayout = findViewById(R.id.googleRegisterLayout);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.confirmPassword);
@@ -101,6 +102,8 @@ public class Register extends AppCompatActivity {
         if (getRegisterType.equals("googleRegister")) {
             intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, RC_SIGN_IN);
+
+            googleRegisterLayout.setVisibility(View.VISIBLE);
         }
 
         imgBackBtn.setOnClickListener(v -> {
@@ -117,6 +120,7 @@ public class Register extends AppCompatActivity {
             String stringPassword = password.getText().toString().trim();
             String stringConfirmPassword = confirmPassword.getText().toString().trim();
             String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
+            StaticDataPasser.storeHashedPassword = hashedPassword;
 
             if (stringEmail.isEmpty()) {
                 email.setError("Please enter your Email");
@@ -160,6 +164,7 @@ public class Register extends AppCompatActivity {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
+                                        StaticDataPasser.storeHashedPassword = null;
 
                                         intent = new Intent(Register.this, RegisterDriver.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -169,20 +174,26 @@ public class Register extends AppCompatActivity {
                                     } else {
                                         Log.e(TAG, String.valueOf(task12.getException()));
 
+                                        StaticDataPasser.storeHashedPassword = null;
+
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
                                     }
                                 }).addOnFailureListener(e -> {
+                                    StaticDataPasser.storeHashedPassword = null;
+
                                     progressBarLayout.setVisibility(View.GONE);
                                     nextBtn.setVisibility(View.VISIBLE);
-                                    Log.e(TAG, e.getMessage());
+                                    e.printStackTrace();
                                 });
                             }
                         }).addOnFailureListener(e -> {
+                            StaticDataPasser.storeHashedPassword = null;
+
                             progressBarLayout.setVisibility(View.GONE);
                             nextBtn.setVisibility(View.VISIBLE);
-                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
                         });
 
                         break;
@@ -204,13 +215,13 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("status", "Not Verified");
                                 registerUser.put("profilePic", "default");
 
-
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
                                     if (task13.isSuccessful()) {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
+                                        StaticDataPasser.storeHashedPassword = null;
 
                                         intent = new Intent(Register.this, RegisterPWD.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -221,20 +232,26 @@ public class Register extends AppCompatActivity {
                                     } else {
                                         Log.e(TAG, String.valueOf(task13.getException()));
 
+                                        StaticDataPasser.storeHashedPassword = null;
+
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
                                     }
                                 }).addOnFailureListener(e -> {
+                                    StaticDataPasser.storeHashedPassword = null;
+
                                     progressBarLayout.setVisibility(View.GONE);
                                     nextBtn.setVisibility(View.VISIBLE);
-                                    Log.e(TAG, e.getMessage());
+                                    e.printStackTrace();
                                 });
                             }
                         }).addOnFailureListener(e -> {
+                            StaticDataPasser.storeHashedPassword = null;
+
                             progressBarLayout.setVisibility(View.GONE);
                             nextBtn.setVisibility(View.VISIBLE);
-                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
                         });
 
                         break;
@@ -262,6 +279,7 @@ public class Register extends AppCompatActivity {
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
+                                        StaticDataPasser.storeHashedPassword = null;
 
                                         intent = new Intent(Register.this, RegisterSenior.class);
                                         intent.putExtra("registerData", getRegisterData);
@@ -272,20 +290,26 @@ public class Register extends AppCompatActivity {
                                     } else {
                                         Log.e(TAG, String.valueOf(task1.getException()));
 
+                                        StaticDataPasser.storeHashedPassword = null;
+
                                         nextBtn.setVisibility(View.VISIBLE);
                                         progressBarLayout.setVisibility(View.GONE);
 
                                     }
                                 }).addOnFailureListener(e -> {
+                                    StaticDataPasser.storeHashedPassword = null;
+
                                     progressBarLayout.setVisibility(View.GONE);
                                     nextBtn.setVisibility(View.VISIBLE);
-                                    Log.e(TAG, e.getMessage());
+                                    e.printStackTrace();
                                 });
                             }
                         }).addOnFailureListener(e -> {
+                            StaticDataPasser.storeHashedPassword = null;
+
                             progressBarLayout.setVisibility(View.GONE);
                             nextBtn.setVisibility(View.VISIBLE);
-                            Log.e(TAG, e.getMessage());
+                            e.printStackTrace();
                         });
 
                         break;
@@ -302,7 +326,7 @@ public class Register extends AppCompatActivity {
         Button okBtn = dialogView.findViewById(R.id.okBtn);
         TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
 
-        registerAsTextView.setText("You are Registering as a "+StaticDataPasser.storeRegisterData);
+        registerAsTextView.setText("You are Registering as a " + StaticDataPasser.storeRegisterData);
 
         okBtn.setOnClickListener(v -> {
             if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
@@ -339,52 +363,54 @@ public class Register extends AppCompatActivity {
         if (googleSignInAccount != null) {
             showPleaseWaitDialog();
             switch (StaticDataPasser.storeRegisterData) {
-                case "driver":
-                    auth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                Log.d(TAG, "googleSignInWithCredential:success");
-                                currentUser = auth.getCurrentUser();
+                case "Driver":
+                    auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "googleSignInWithCredential:success");
+                            currentUser = auth.getCurrentUser();
+                            if (currentUser != null) {
                                 userID = currentUser.getUid();
 
-                                if (currentUser != null) {
-                                    String googleEmail = googleSignInAccount.getEmail();
-                                    String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+                                String googleEmail = googleSignInAccount.getEmail();
+                                String googleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
 
-                                    databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+                                databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
 
-                                    Map<String, Object> registerUser = new HashMap<>();
-                                    registerUser.put("driverID", userID);
-                                    registerUser.put("email", googleEmail);
-                                    registerUser.put("profilePic", googleProfilePic);
+                                Map<String, Object> registerUser = new HashMap<>();
+                                registerUser.put("driverID", userID);
+                                registerUser.put("userType", StaticDataPasser.storeRegisterData);
+                                registerUser.put("email", googleEmail);
+                                registerUser.put("password", StaticDataPasser.storeHashedPassword);
+                                registerUser.put("profilePic", googleProfilePic);
+                                registerUser.put("status", "Not Verified");
 
-                                    databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
+                                databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
-                                        if (task1.isSuccessful()) {
+                                    if (task1.isSuccessful()) {
 
-                                            closePleaseWaitDialog();
+                                        closePleaseWaitDialog();
 
-                                            intent = new Intent(Register.this, RegisterDriver.class);
-                                            intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
-                                            startActivity(intent);
-                                            finish();
+                                        StaticDataPasser.storeHashedPassword = null;
 
-                                        } else {
-                                            Log.e(TAG, String.valueOf(task1.getException()));
+                                        intent = new Intent(Register.this, RegisterDriver.class);
+                                        intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
+                                        startActivity(intent);
+                                        finish();
 
-                                        }
-                                    }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-                                }
-                            } else {
-                                Toast.makeText(Register.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.e(TAG, String.valueOf(task1.getException()));
 
+                                    }
+                                }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
                             }
+                        } else {
+                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_LONG).show();
+
                         }
                     });
 
                     break;
-                case "pwd":
+                case "Persons with Disability (PWD)":
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "googleSignInWithCredential:success");
@@ -400,12 +426,17 @@ public class Register extends AppCompatActivity {
                                 Map<String, Object> registerUser = new HashMap<>();
                                 registerUser.put("userID", userID);
                                 registerUser.put("email", googleEmail);
+                                registerUser.put("userType", StaticDataPasser.storeRegisterData);
+                                registerUser.put("password", StaticDataPasser.storeHashedPassword);
                                 registerUser.put("profilePic", googleProfilePic);
+                                registerUser.put("status", "Not Verified");
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
                                     if (task12.isSuccessful()) {
                                         closePleaseWaitDialog();
+
+                                        StaticDataPasser.storeHashedPassword = null;
 
                                         intent = new Intent(Register.this, RegisterPWD.class);
                                         intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
@@ -415,16 +446,18 @@ public class Register extends AppCompatActivity {
                                     } else {
                                         Log.e(TAG, String.valueOf(task12.getException()));
 
+
+
                                     }
                                 }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
                             }
                         } else {
-                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_LONG).show();
                         }
                     });
 
                     break;
-                case "senior":
+                case "Senior Citizen":
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             Log.d(TAG, "googleSignInWithCredential:success");
@@ -439,8 +472,11 @@ public class Register extends AppCompatActivity {
 
                                 Map<String, Object> registerUser = new HashMap<>();
                                 registerUser.put("userID", userID);
+                                registerUser.put("userType", StaticDataPasser.storeRegisterData);
                                 registerUser.put("email", googleEmail);
+                                registerUser.put("password", StaticDataPasser.storeHashedPassword);
                                 registerUser.put("profilePic", googleProfilePic);
+                                registerUser.put("status", "Not Verified");
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
@@ -448,20 +484,26 @@ public class Register extends AppCompatActivity {
 
                                         closePleaseWaitDialog();
 
+                                        StaticDataPasser.storeHashedPassword = null;
+
                                         intent = new Intent(Register.this, RegisterSenior.class);
                                         intent.putExtra("registerData", StaticDataPasser.storeRegisterData);
                                         startActivity(intent);
                                         finish();
 
                                     } else {
-                                        Log.e(TAG, String.valueOf(task13.getException()));
+                                        StaticDataPasser.storeHashedPassword = null;
 
+                                        Log.e(TAG, String.valueOf(task13.getException()));
                                     }
-                                }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+                                }).addOnFailureListener(e -> {
+                                    e.printStackTrace();
+                                    StaticDataPasser.storeHashedPassword = null;
+                                });
                             }
                         } else {
-                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(Register.this, "Register failed", Toast.LENGTH_LONG).show();
+                            StaticDataPasser.storeHashedPassword = null;
 
                         }
                     });

@@ -10,5 +10,6 @@ public class StaticDataPasser {
     public static int storeCurrentAge = 0;
     public static String storeFirstName = null;
     public static String storeLastName = null;
+    public static String storeHashedPassword = null;
 
 }

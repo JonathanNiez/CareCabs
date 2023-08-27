@@ -28,18 +28,31 @@
                 android:background="@color/background"
                 android:src="@drawable/back64" />
 
-            <TextView
-                android:id="@+id/googleTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/googleRegisterLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:fontFamily="@font/opensans_semibold"
-                android:text="You are Signing-in \nusing Google"
-                android:textAlignment="center"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                android:visibility="gone" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="You are Registering \n using Google"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="24sp"
+                    />
+
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/google"/>
+
+            </LinearLayout>
 
 
             <LinearLayout

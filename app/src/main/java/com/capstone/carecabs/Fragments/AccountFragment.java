@@ -105,12 +105,17 @@ public class AccountFragment extends Fragment {
         startActivity(intent);
         getActivity().finish();
 
+        StaticDataPasser.storeSelectedSex = null;
+        StaticDataPasser.storeSelectedDisability = null;
+        StaticDataPasser.storeCurrentBirthDate = null;
+        StaticDataPasser.storeRegisterType = null;
+        StaticDataPasser.storeRegisterData = null;
+        StaticDataPasser.storeCurrentAge = 0;
         StaticDataPasser.storeFirstName = null;
         StaticDataPasser.storeLastName = null;
-    }
+        StaticDataPasser.storeHashedPassword = null;    }
 
     private void loadUserProfileInfo() {
-
         showLoadingDialog();
         if (currentUser != null) {
             userID = currentUser.getUid();

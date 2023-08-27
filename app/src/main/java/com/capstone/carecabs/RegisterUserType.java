@@ -3,20 +3,17 @@ package com.capstone.carecabs;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
-
-import java.util.Objects;
+import android.widget.LinearLayout;
 
 public class RegisterUserType extends AppCompatActivity {
 
     private ImageButton imgBackBtn, passengerImgBtn, driverImgBtn;
-    private TextView googleTextView;
+    private LinearLayout googleRegisterLayout;
     private Button loginHereBtn;
     private Intent intent;
     private String registerData;
@@ -35,12 +32,11 @@ public class RegisterUserType extends AppCompatActivity {
         passengerImgBtn = findViewById(R.id.passengerImgBtn);
         driverImgBtn = findViewById(R.id.driverImgBtn);
         loginHereBtn = findViewById(R.id.loginHereBtn);
-        googleTextView = findViewById(R.id.googleTextView);
-
+        googleRegisterLayout = findViewById(R.id.googleRegisterLayout);
 
         if (getRegisterType != null) {
             if (getRegisterType.equals("googleRegister")) {
-                googleTextView.setVisibility(View.VISIBLE);
+                googleRegisterLayout.setVisibility(View.VISIBLE);
 
                 registerType = getRegisterType;
             } else {

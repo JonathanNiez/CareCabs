@@ -1,7 +1,9 @@
 package com.capstone.carecabs;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,18 +14,26 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.database.DatabaseReference;
+
 import java.util.List;
 
 public class Login extends AppCompatActivity {
@@ -42,7 +52,7 @@ public class Login extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     private String TAG = "Login";
     private static final int RC_SIGN_IN = 69;
-    private AlertDialog noInternetDialog, emailDialog;
+    private AlertDialog noInternetDialog, emailDialog, emailNotRegisteredDialog, incorrectEmailOrPasswordDialog;
     private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
 
@@ -55,6 +65,7 @@ public class Login extends AppCompatActivity {
         checkInternetConnection();
 
         auth = FirebaseAuth.getInstance();
+        FirebaseApp.initializeApp(this);
 
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
@@ -100,25 +111,49 @@ public class Login extends AppCompatActivity {
                 checkInternetConnection();
                 googleSignInLayout.setVisibility(View.GONE);
 
-                auth.signInWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        progressBarLayout.setVisibility(View.GONE);
-                        loginBtn.setVisibility(View.VISIBLE);
+                auth.fetchSignInMethodsForEmail(stringEmail)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBarLayout.setVisibility(View.GONE);
+                                loginBtn.setVisibility(View.VISIBLE);
+
+                                List<String> signInMethods = task.getResult().getSignInMethods();
+                                if (signInMethods != null && !signInMethods.isEmpty()) {
+                                    auth.signInWithEmailAndPassword(stringEmail, stringPassword)
+                                            .addOnCompleteListener(task1 -> {
+                                                if (task1.isSuccessful()) {
+
+                                                    intent = new Intent(Login.this, LoggingIn.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    startActivity(intent);
+                                                    finish();
+
+                                                    Log.i(TAG, "Login Success");
+                                                } else {
+                                                    Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
+                                                }
+                                            }).addOnFailureListener(e -> {
+                                                e.printStackTrace();
+
+                                                progressBarLayout.setVisibility(View.GONE);
+                                                loginBtn.setVisibility(View.VISIBLE);
+                                            });
+
+                                } else {
+                                    showEmailNotRegisterDialog();
+                                }
+                                Log.i(TAG, "Login Success");
+                            } else {
+                                Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
+                            }
 
 
-                        intent = new Intent(Login.this, LoggingIn.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
+                        }).addOnFailureListener(e -> {
+                            Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
 
-                        Log.i(TAG, "Login Success");
-                    }
-                }).addOnFailureListener(e -> {
-                    Log.e(TAG, e.getMessage());
+                        });
 
-                    progressBarLayout.setVisibility(View.GONE);
-                    loginBtn.setVisibility(View.VISIBLE);
-                });
             }
         });
     }
@@ -129,6 +164,56 @@ public class Login extends AppCompatActivity {
         if (networkConnectivityChecker != null) {
             networkConnectivityChecker.unregisterNetworkCallback();
         }
+    }
+
+    private void showIncorrectEmailOrPasswordDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.email_not_registered_dialog, null);
+
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+
+        noBtn.setOnClickListener(v -> {
+            if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
+                emailNotRegisteredDialog.dismiss();
+            }
+        });
+
+        yesBtn.setOnClickListener(v -> {
+            if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
+                emailNotRegisteredDialog.dismiss();
+            }
+
+            intent = new Intent(this, Register.class);
+            startActivity(intent);
+            finish();
+        });
+
+        builder.setView(dialogView);
+
+        emailNotRegisteredDialog = builder.create();
+        emailNotRegisteredDialog.show();
+    }
+
+    private void showEmailNotRegisterDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.incorrect_email_or_password_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            if (incorrectEmailOrPasswordDialog != null && incorrectEmailOrPasswordDialog.isShowing()) {
+                incorrectEmailOrPasswordDialog.dismiss();
+            }
+        });
+
+
+        builder.setView(dialogView);
+
+        incorrectEmailOrPasswordDialog = builder.create();
+        incorrectEmailOrPasswordDialog.show();
     }
 
     private void showRegisterUsingDialog() {
@@ -172,27 +257,35 @@ public class Login extends AppCompatActivity {
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-            } catch (ApiException e) {
-                // Handle Google Sign-In failure
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        String getGoogleEmail = acct.getEmail();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        FirebaseAuth.getInstance().fetchSignInMethodsForEmail(currentUser.getEmail())
+        FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
                 .addOnCompleteListener(task -> {
-                    List<String> signInMethods = task.getResult().getSignInMethods();
-                    if (signInMethods != null && !signInMethods.isEmpty()) {
-                        showEmailAlreadyRegisteredDialog();
-                    } else {
+                    SignInMethodQueryResult result = task.getResult();
+                    if (result.getSignInMethods().size() > 0) {
+                        intent = new Intent(Login.this, LoggingIn.class);
                         auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
 
                         }).addOnFailureListener(e -> {
-
+                            Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
                         });
+                    } else {
+                        intent = new Intent(Login.this, RegisterUserType.class);
+                        intent.putExtra("registerType", "googleRegister");
                     }
-
+                    startActivity(intent);
+                    finish();
+                }).addOnFailureListener(e -> {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to Login", Toast.LENGTH_LONG).show();
                 });
     }
 
