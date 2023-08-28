@@ -10,11 +10,6 @@ import android.view.ViewGroup;
 
 import com.capstone.carecabs.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CarouselFragment4#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CarouselFragment4 extends Fragment {
 
 
@@ -28,6 +23,6 @@ public class CarouselFragment4 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_carousel_frament4, container, false);
+        return inflater.inflate(R.layout.fragment_carousel4, container, false);
     }
 }

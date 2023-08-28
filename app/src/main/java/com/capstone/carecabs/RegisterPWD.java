@@ -229,7 +229,7 @@ public class RegisterPWD extends AppCompatActivity {
                     // Update the birthdateTextView with the selected date in a desired format
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
                     birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
-                    StaticDataPasser.storeCurrentBirthDate = String.valueOf(selectedDate.getTime());
+                    StaticDataPasser.storeCurrentBirthDate = dateFormat.format(selectedDate.getTime());
 
                     // Calculate the age and display it
                     calculateAge();

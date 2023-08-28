@@ -99,12 +99,17 @@ public class Register extends AppCompatActivity {
             showUserTypeImageDialog();
         });
 
-        if (getRegisterType.equals("googleRegister")) {
-            intent = googleSignInClient.getSignInIntent();
-            startActivityForResult(intent, RC_SIGN_IN);
+        if (getRegisterType != null && getRegisterData != null){
+            if (getRegisterType.equals("googleRegister")) {
+                intent = googleSignInClient.getSignInIntent();
+                startActivityForResult(intent, RC_SIGN_IN);
 
-            googleRegisterLayout.setVisibility(View.VISIBLE);
+                googleRegisterLayout.setVisibility(View.VISIBLE);
+            }
+        }else{
+            return;
         }
+
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -117,8 +122,8 @@ public class Register extends AppCompatActivity {
             nextBtn.setVisibility(View.GONE);
 
             String stringEmail = email.getText().toString().trim();
-            String stringPassword = password.getText().toString().trim();
-            String stringConfirmPassword = confirmPassword.getText().toString().trim();
+            String stringPassword = password.getText().toString();
+            String stringConfirmPassword = confirmPassword.getText().toString();
             String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
             StaticDataPasser.storeHashedPassword = hashedPassword;
 

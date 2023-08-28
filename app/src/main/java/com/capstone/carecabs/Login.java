@@ -1,10 +1,8 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,17 +20,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.List;
 
@@ -46,14 +40,14 @@ public class Login extends AppCompatActivity {
     private Intent intent;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
     private GoogleSignInOptions googleSignInOptions;
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInClient googleSignInClient;
     private String TAG = "Login";
     private static final int RC_SIGN_IN = 69;
     private AlertDialog noInternetDialog, emailDialog,
-            emailNotRegisteredDialog, incorrectEmailOrPasswordDialog, pleaseWaitDialog;
+            emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
+            pleaseWaitDialog, registerUsingDialog;
     private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
 
@@ -97,7 +91,7 @@ public class Login extends AppCompatActivity {
             loginBtn.setVisibility(View.GONE);
 
             final String stringEmail = email.getText().toString().trim();
-            final String stringPassword = password.getText().toString().trim();
+            final String stringPassword = password.getText().toString();
 
             if (stringEmail.isEmpty()) {
                 email.setError("Please Enter your Email");
@@ -143,7 +137,7 @@ public class Login extends AppCompatActivity {
                                             });
 
                                 } else {
-                                    showEmailNotRegisterDialog();
+                                    showIncorrectEmailOrPasswordDialog();
                                 }
                                 Log.i(TAG, "Login Success");
                             } else {
@@ -169,7 +163,7 @@ public class Login extends AppCompatActivity {
         }
     }
 
-    private void showIncorrectEmailOrPasswordDialog() {
+    private void showEmailNotRegisterDialog() {
         builder = new AlertDialog.Builder(this);
 
         View dialogView = getLayoutInflater().inflate(R.layout.email_not_registered_dialog, null);
@@ -199,7 +193,7 @@ public class Login extends AppCompatActivity {
         emailNotRegisteredDialog.show();
     }
 
-    private void showEmailNotRegisterDialog() {
+    private void showIncorrectEmailOrPasswordDialog() {
         builder = new AlertDialog.Builder(this);
 
         View dialogView = getLayoutInflater().inflate(R.layout.incorrect_email_or_password_dialog, null);
@@ -212,21 +206,40 @@ public class Login extends AppCompatActivity {
             }
         });
 
-
         builder.setView(dialogView);
 
         incorrectEmailOrPasswordDialog = builder.create();
         incorrectEmailOrPasswordDialog.show();
     }
 
+    private void showEmailAlreadyRegisteredDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            emailDialog.dismiss();
+        });
+
+        builder.setView(dialogView);
+
+        emailDialog = builder.create();
+        emailDialog.show();
+    }
+
+
     private void showRegisterUsingDialog() {
 
-        final Dialog customDialog = new Dialog(this);
-        customDialog.setContentView(R.layout.register_using_dialog);
+        builder = new AlertDialog.Builder(this);
 
-        ImageButton googleImgBtn = customDialog.findViewById(R.id.googleImgBtn);
-        ImageButton emailImgBtn = customDialog.findViewById(R.id.emailImgBtn);
-        Button cancelBtn = customDialog.findViewById(R.id.cancelBtn);
+        View dialogView = getLayoutInflater().inflate(R.layout.register_using_dialog, null);
+
+        ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
+        ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
         googleImgBtn.setOnClickListener(v -> {
             intent = new Intent(Login.this, RegisterUserType.class);
@@ -234,7 +247,7 @@ public class Login extends AppCompatActivity {
             startActivity(intent);
             finish();
 
-            customDialog.dismiss();
+            closeRegisterUsingDialog();
         });
 
         emailImgBtn.setOnClickListener(v -> {
@@ -243,12 +256,24 @@ public class Login extends AppCompatActivity {
             startActivity(intent);
             finish();
 
-            customDialog.dismiss();
+           closeRegisterUsingDialog();
         });
 
-        cancelBtn.setOnClickListener(v -> customDialog.dismiss());
+        cancelBtn.setOnClickListener(v -> {
+            closeRegisterUsingDialog();
+        });
 
-        customDialog.show();
+        builder.setView(dialogView);
+
+        registerUsingDialog = builder.create();
+        registerUsingDialog.show();
+
+    }
+
+    private void closeRegisterUsingDialog(){
+        if (registerUsingDialog != null && registerUsingDialog.isShowing()){
+            registerUsingDialog.dismiss();
+        }
     }
 
     @Override
@@ -273,8 +298,14 @@ public class Login extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     SignInMethodQueryResult result = task.getResult();
                     if (result.getSignInMethods().size() > 0) {
-                        intent = new Intent(Login.this, LoggingIn.class);
                         auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()){
+                                intent = new Intent(Login.this, LoggingIn.class);
+                                startActivity(intent);
+                                finish();
+                            }else{
+                                Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
+                            }
 
                         }).addOnFailureListener(e -> {
                             Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
@@ -294,23 +325,6 @@ public class Login extends AppCompatActivity {
                 });
     }
 
-    private void showEmailAlreadyRegisteredDialog() {
-
-        builder = new AlertDialog.Builder(this);
-
-        View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
-
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
-
-        okBtn.setOnClickListener(v -> {
-            emailDialog.dismiss();
-        });
-
-        builder.setView(dialogView);
-
-        emailDialog = builder.create();
-        emailDialog.show();
-    }
 
     private void showPleaseWaitDialog() {
         builder = new AlertDialog.Builder(this);

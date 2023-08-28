@@ -127,7 +127,6 @@
                     android:textSize="24sp" />
 
 
-
                 <TextView
                     android:id="@+id/driverStatusTextView"
                     android:layout_width="wrap_content"
@@ -157,7 +156,7 @@
                     android:text="Edit Profile"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -173,7 +172,7 @@
                     android:text="Change Password"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/optionsBtn"
@@ -188,7 +187,7 @@
                     android:text="Options"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/secAndPriBtn"
@@ -203,7 +202,7 @@
                     android:text="Security And Privacy"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/signOutBtn"
@@ -216,7 +215,7 @@
                     android:text="Sign Out"
                     android:textAlignment="textStart"
                     android:textColor="@color/red"
-                    android:textSize="20dp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 

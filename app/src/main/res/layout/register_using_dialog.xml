@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/background"
-    android:padding="20dp">
+    android:orientation="vertical"
+    android:gravity="center"
+    >
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:fontFamily="@font/opensans_semibold"
         android:text="Register Using:"
         android:textColor="@color/black"
-        android:textSize="25dp" />
+        android:textSize="25sp"
+        android:layout_marginTop="10dp"/>
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -47,7 +47,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:text="Email"
                 android:textColor="@color/black"
-                android:textSize="15dp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -74,7 +74,7 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:text="Google"
                 android:textColor="@color/black"
-                android:textSize="15dp" />
+                android:textSize="20sp" />
 
         </LinearLayout>
 
@@ -84,13 +84,12 @@
         android:id="@+id/cancelBtn"
         android:layout_width="185dp"
         android:layout_height="78dp"
-        android:layout_below="@id/linearLayout"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/login_button"
         android:fontFamily="@font/opensans_bold"
         android:text="Cancel"
         android:textColor="@color/white"
-        android:textSize="24dp" />
+        android:textSize="24sp"
+        android:layout_marginBottom="10dp"/>
 
-</RelativeLayout>
+</LinearLayout>

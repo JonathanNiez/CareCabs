@@ -91,7 +91,7 @@ public class AccountFragment extends Fragment {
         });
 
         changePasswordBtn.setOnClickListener(v -> {
-
+            goToChangePasswordFragment();
         });
 
         imgBackBtn.setOnClickListener(v -> {
@@ -323,6 +323,14 @@ public class AccountFragment extends Fragment {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, new EditAccountFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void goToChangePasswordFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new ChangePasswordFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

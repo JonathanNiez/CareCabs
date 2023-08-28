@@ -226,8 +226,6 @@ w
 G.idea/sonarlint/issuestore/2/6/26c370892a64e86838532e341d0fde40cf0324ae,2\f\2f98714730d9b955a688c4a3c53318efe7a36f39
 w
 G.idea/sonarlint/issuestore/5/8/58a4c43afb86283a2cb73f0e20cf5ca1dc84babe,6\a\6a68b4910553a3bcb7727c36a8795ef6107df810
-x
-Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
 w
 G.idea/sonarlint/issuestore/f/e/fecf5323300fbb3035ec31c56ab7923e198f5ae8,c\e\ce56a64b3fe8d43f997bddc27b23e711ed7492e3
 w
@@ -424,10 +422,6 @@ Oapp/src/main/java/com/capstone/carecabs/Utility/NetworkConnectivityChecker.java
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 P
  app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
-k
-;app/src/main/java/com/capstone/carecabs/RegisterDriver.java,3\e\3e11284aff40f662a4f9a401386ffb909df1b69c
-k
-;app/src/main/java/com/capstone/carecabs/RegisterSenior.java,f\8\f8aa2b7d26fb5025498c278a4d52a33419f59742
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/PendingBookingFragment.java,e\f\ef4c37f912b72c62beb18d4489febb712030b312
 }
@@ -446,13 +440,11 @@ f
 6app/src/main/java/com/capstone/carecabs/MapActivity.kt,c\5\c5fa5469b9d76d3698def09b8f5144aa45e739c3
 f
 6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
-e
-5app/src/main/java/com/capstone/carecabs/Register.java,7\b\7b21d9bf603835ee75a442b4d4cd608c3bff2496
-m
-=app/src/main/java/com/capstone/carecabs/RegisterUserType.java,1\e\1e0734fa7f44cacb572ac9b73e0b895bc70f248a
 g
 7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
-h
-8app/src/main/java/com/capstone/carecabs/RegisterPWD.java,2\9\2941b28b6696d8dafefa9b43c6bb6eac09535d28
-b
-2app/src/main/java/com/capstone/carecabs/Login.java,0\5\054ecd2dd0980873de870a6c3b26d7cf7acacb5a
+c
+3app/src/main/java/com/capstone/carecabs/ScanID.java,0\5\0503a67ff6de07fec171d1cc7af7022a8a028918
+i
+9app/src/main/java/com/capstone/carecabs/MainActivity.java,2\4\248ce20ffd58328de0bbe9ed93a698e47b20cc50
+z
+Japp/src/main/java/com/capstone/carecabs/Fragments/EditAccountFragment.java,8\c\8ccd260f24b3d18052ac8fb0794b1a2ca283e8e4
