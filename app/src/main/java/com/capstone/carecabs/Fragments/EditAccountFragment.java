@@ -1,15 +1,24 @@
 package com.capstone.carecabs.Fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Login;
@@ -36,6 +46,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -53,11 +64,16 @@ public class EditAccountFragment extends Fragment {
     private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "EditAccountFragment";
-    private Intent intent;
+    private Intent intent, cameraIntent, galleryIntent;
     private Calendar selectedDate;
     private AlertDialog.Builder builder;
     private AlertDialog editFirstNameDialog, editLastNameDialog,
-            editDisabilityDialog, editSexDialog, editAgeDialog;
+            editDisabilityDialog, editSexDialog, editAgeDialog, cameraGalleryOptionsDialog;
+    private Uri imageUri;
+    private static final int CAMERA_REQUEST_CODE = 1;
+    private static final int GALLERY_REQUEST_CODE = 2;
+    private static final int CAMERA_PERMISSION_REQUEST = 101;
+    private static final int STORAGE_PERMISSION_REQUEST = 102;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +89,7 @@ public class EditAccountFragment extends Fragment {
         currentUser = auth.getCurrentUser();
 
         getUserType();
+        checkPermission();
 
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         profilePic = view.findViewById(R.id.profielPic);
@@ -108,6 +125,10 @@ public class EditAccountFragment extends Fragment {
 
         doneBtn.setOnClickListener(v -> {
             backToAccountFragment();
+        });
+
+        profilePic.setOnClickListener(v -> {
+            showOptionsDialog();
         });
 
         scanIDBtn.setOnClickListener(v -> {
@@ -393,6 +414,7 @@ public class EditAccountFragment extends Fragment {
         editFirstNameDialog = builder.create();
         editFirstNameDialog.show();
     }
+
     private void showEditLastNameDialog() {
 
         builder = new AlertDialog.Builder(getContext());
@@ -410,16 +432,17 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editFirstNameDialog != null && editFirstNameDialog.isShowing()) {
-                editFirstNameDialog.dismiss();
+            if (editLastNameDialog != null && editLastNameDialog.isShowing()) {
+                editLastNameDialog.dismiss();
             }
         });
 
         builder.setView(dialogView);
 
-        editFirstNameDialog = builder.create();
-        editFirstNameDialog.show();
+        editLastNameDialog = builder.create();
+        editLastNameDialog.show();
     }
+
     private void showEditAgeDialog() {
 
         builder = new AlertDialog.Builder(getContext());
@@ -448,7 +471,8 @@ public class EditAccountFragment extends Fragment {
         editAgeDialog = builder.create();
         editAgeDialog.show();
     }
-    private void showEditSexDialog(){
+
+    private void showEditSexDialog() {
         builder = new AlertDialog.Builder(getContext());
 
         View dialogView = getLayoutInflater().inflate(R.layout.edit_sex_dialog, null);
@@ -497,6 +521,7 @@ public class EditAccountFragment extends Fragment {
         editSexDialog = builder.create();
         editSexDialog.show();
     }
+
     private void showEditDisabilityDialog() {
         builder = new AlertDialog.Builder(getContext());
 
@@ -555,4 +580,147 @@ public class EditAccountFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
+    private void showOptionsDialog() {
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+
+        Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
+        Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+        openCameraBtn.setOnClickListener(v -> {
+            openCamera();
+        });
+
+        openGalleryBtn.setOnClickListener(v -> {
+            openGallery();
+        });
+
+        cancelBtn.setOnClickListener(v -> {
+            if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+                cameraGalleryOptionsDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        cameraGalleryOptionsDialog = builder.create();
+        cameraGalleryOptionsDialog.show();
+    }
+
+    private void checkPermission() {
+        // Check for camera permission
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_REQUEST);
+        }
+
+        // Check for storage permission
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_REQUEST);
+        }
+    }
+
+    private void openGallery() {
+        galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+        if (galleryIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+            if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+                cameraGalleryOptionsDialog.dismiss();
+            }
+            Toast.makeText(getContext(), "Opened Gallery", Toast.LENGTH_LONG).show();
+
+        } else {
+            Toast.makeText(getContext(), "No gallery app found", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void openCamera() {
+        cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+                cameraGalleryOptionsDialog.dismiss();
+            }
+            Toast.makeText(getContext(), "Opened Camera", Toast.LENGTH_LONG).show();
+
+
+        } else {
+            Toast.makeText(getContext(), "No camera app found", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private Uri getImageUri(Context context, Bitmap bitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
+        return Uri.parse(path);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+
+            if (requestCode == CAMERA_REQUEST_CODE) {
+                if (data != null) {
+
+                    Bundle extras = data.getExtras();
+                    Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+                    imageUri = getImageUri(getContext(), imageBitmap);
+                    profilePic.setImageURI(imageUri);
+
+                    Toast.makeText(getContext(), "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+
+
+                } else {
+                    Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+                }
+
+            } else if (requestCode == GALLERY_REQUEST_CODE) {
+                if (data != null) {
+
+                    imageUri = data.getData();
+                    profilePic.setImageURI(imageUri);
+
+                    Toast.makeText(getContext(), "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
+
+                } else {
+                    Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+                }
+            }
+
+        } else {
+            Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "Camera Permission Granted");
+            }
+        } else if (requestCode == STORAGE_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i(TAG, "Gallery Permission Granted");
+            }
+        } else {
+            Log.e(TAG, "Permission Denied");
+        }
+    }
 }

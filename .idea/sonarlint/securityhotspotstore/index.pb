@@ -418,8 +418,6 @@ Q.idea/sonarlint/securityhotspotstore/e/3/e36d3b35b0aa033dfcf067b2cd16117a306b1e
 Q.idea/sonarlint/securityhotspotstore/c/e/ce7799643a95553c6bee1d403d6cb738907a7f2c,2\7\279a79a9d9151a9959cd88cbae53cc58d712a5b2
 F
 app/proguard-rules.pro,9\e\9e08934d811afe28fbc77aaa3c0d747b94348db9
-i
-9app/src/main/java/com/capstone/carecabs/MainActivity.java,2\4\248ce20ffd58328de0bbe9ed93a698e47b20cc50
 
 Oapp/src/main/java/com/capstone/carecabs/Utility/NetworkConnectivityChecker.java,b\6\b63ab6379c024c227f73e06a9eecf46cc47a5733
 <
@@ -430,8 +428,6 @@ k
 ;app/src/main/java/com/capstone/carecabs/RegisterDriver.java,3\e\3e11284aff40f662a4f9a401386ffb909df1b69c
 k
 ;app/src/main/java/com/capstone/carecabs/RegisterSenior.java,f\8\f8aa2b7d26fb5025498c278a4d52a33419f59742
-c
-3app/src/main/java/com/capstone/carecabs/ScanID.java,0\5\0503a67ff6de07fec171d1cc7af7022a8a028918
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/PendingBookingFragment.java,e\f\ef4c37f912b72c62beb18d4489febb712030b312
 }

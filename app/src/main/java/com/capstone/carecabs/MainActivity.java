@@ -1,5 +1,6 @@
 package com.capstone.carecabs;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,13 +10,17 @@ import androidx.fragment.app.FragmentTransaction;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.capstone.carecabs.Fragments.AccountFragment;
+import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -29,6 +34,14 @@ public class MainActivity extends AppCompatActivity {
     private DoubleTapBackHandler doubleTapBackHandler;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
+    private String TAG = "MainActivity";
+    private static final int CAMERA_REQUEST_CODE = 1;
+    private static final int GALLERY_REQUEST_CODE = 2;
+    private static final int CAMERA_PERMISSION_REQUEST = 101;
+    private static final int STORAGE_PERMISSION_REQUEST = 102;
+
+    private EditAccountFragment editAccountFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,4 +125,28 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.fragmentContainer, fragment);
         fragmentTransaction.commit();
     }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        editAccountFragment = (EditAccountFragment) getSupportFragmentManager().findFragmentByTag("editAccountFragment");
+
+        if (editAccountFragment != null) {
+            editAccountFragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        editAccountFragment = (EditAccountFragment) getSupportFragmentManager().findFragmentByTag("editAccountFragment");
+
+        if (editAccountFragment != null) {
+            editAccountFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+    }
+
 }
