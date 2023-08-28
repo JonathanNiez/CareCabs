@@ -448,3 +448,15 @@ A
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 f
 6app/src/main/java/com/capstone/carecabs/MapActivity.kt,c\5\c5fa5469b9d76d3698def09b8f5144aa45e739c3
+e
+5app/src/main/java/com/capstone/carecabs/Register.java,7\b\7b21d9bf603835ee75a442b4d4cd608c3bff2496
+f
+6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
+m
+=app/src/main/java/com/capstone/carecabs/RegisterUserType.java,1\e\1e0734fa7f44cacb572ac9b73e0b895bc70f248a
+g
+7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
+h
+8app/src/main/java/com/capstone/carecabs/RegisterPWD.java,2\9\2941b28b6696d8dafefa9b43c6bb6eac09535d28
+b
+2app/src/main/java/com/capstone/carecabs/Login.java,0\5\054ecd2dd0980873de870a6c3b26d7cf7acacb5a
