@@ -175,36 +175,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/edit_text"
-                    app:endIconMode="clear_text"
-                    app:helperText="*Required"
-                    app:helperTextTextColor="@color/red"
-                    app:startIconDrawable="@drawable/phone_24"
-                    app:counterMaxLength="12"
-                    app:counterEnabled="true"
-                    app:prefixText="+63"
-                    app:prefixTextColor="@color/black">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/phoneNumber"
-                        android:layout_width="340dp"
-                        android:layout_height="60dp"
-                        android:autofillHints="phone"
-                        android:background="@drawable/edit_text"
-                        android:fontFamily="@font/opensans_semibold"
-                        android:hint="PHONE NUMBER"
-                        android:inputType="phone"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/black"
-                        android:maxLength="12"/>
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="5dp"

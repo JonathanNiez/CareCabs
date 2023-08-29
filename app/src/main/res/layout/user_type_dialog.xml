@@ -1,31 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dirty_yellow">
-
-    <ImageButton
-        android:id="@+id/imgBackBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/dirty_yellow"
-        android:src="@drawable/back64" />
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/yellow">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/imgBackBtn"
-        android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="-60dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/opensans_semibold"
         android:text="Are you a..."
         android:textColor="@color/black"
@@ -33,99 +20,107 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_centerInParent="true"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:backgroundTint="@color/background"
+            android:backgroundTint="@color/white"
             android:elevation="4dp"
-            app:cardCornerRadius="8dp">
+            app:cardCornerRadius="8dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="150dp"
+                android:layout_height="175dp"
+                >
 
                 <TextView
+                    android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/opensans_bold"
-                    android:text="SENIOR CITIZEN"
+                    android:text="SENIOR\nCITIZEN"
+                    android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="25sp" />
+                    android:layout_centerHorizontal="true"
+                    android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/seniorImgBtn"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/smooth_image_frame"
-                    android:backgroundTint="@color/yellow"
-                    android:padding="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
                     android:src="@drawable/senior"
-                    android:layout_marginBottom="40dp"
-                    />
+                    android:layout_marginBottom="10dp"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
 
         </androidx.cardview.widget.CardView>
 
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:backgroundTint="@color/background"
+            android:backgroundTint="@color/white"
             android:elevation="4dp"
             app:cardCornerRadius="8dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
             >
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="150dp"
+                android:layout_height="175dp"
+               >
 
                 <TextView
+                    android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/opensans_bold"
-                    android:gravity="center"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="7dp"
-                    android:layout_marginStart="7dp"
-                    android:text="PERSONS WITH DISABILITY \n (PWD)"
+                    android:text="PWD"
+                    android:layout_centerHorizontal="true"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="25sp" />
 
                 <ImageButton
                     android:id="@+id/pwdImgBtn"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
-                    android:background="@drawable/smooth_image_frame"
-                    android:backgroundTint="@color/yellow"
-                    android:padding="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerInParent="true"
+                    android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/pwd"                android:layout_marginBottom="40dp"
-                    />
+                    android:src="@drawable/pwd"
+                    android:layout_marginBottom="10dp"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
         </androidx.cardview.widget.CardView>
 
 
     </LinearLayout>
 
-</RelativeLayout>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/cancelBtn"
+        android:layout_width="180dp"
+        android:layout_height="70dp"
+        android:background="@drawable/login_button"
+        android:backgroundTint="@color/red"
+        android:text="Cancel"
+        android:fontFamily="@font/opensans_bold"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"/>
+
+</LinearLayout>

@@ -452,3 +452,7 @@ x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/ChangePasswordFragment.java,8\6\864143977846c0e1d4f9939caafb2807d4ddf782
+c
+3app/src/main/java/com/capstone/carecabs/ScanID.java,0\5\0503a67ff6de07fec171d1cc7af7022a8a028918
+u
+Eapp/src/main/java/com/capstone/carecabs/Utility/StaticDataPasser.java,0\4\0446777c3cc910d0d937441caf1a4393c58fcb51

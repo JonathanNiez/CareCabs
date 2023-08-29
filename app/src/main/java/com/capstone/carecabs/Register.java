@@ -48,7 +48,7 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
 
     private ImageButton imgBackBtn, userTypeImageBtn;
-    private EditText email, password, confirmPassword;
+    private EditText email, password, confirmPassword, phoneNumber;
     private Button nextBtn;
     private LinearLayout progressBarLayout, googleRegisterLayout;
     private FirebaseAuth auth;
@@ -65,6 +65,7 @@ public class Register extends AppCompatActivity {
     private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog;
     private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
+    private AlertDialog ageInfoDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class Register extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         confirmPassword = findViewById(R.id.confirmPassword);
+        phoneNumber = findViewById(R.id.phoneNumber);
 
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
@@ -99,17 +101,19 @@ public class Register extends AppCompatActivity {
             showUserTypeImageDialog();
         });
 
-        if (getRegisterType != null && getRegisterData != null){
+        if (getRegisterType != null && getRegisterData != null) {
             if (getRegisterType.equals("googleRegister")) {
                 intent = googleSignInClient.getSignInIntent();
                 startActivityForResult(intent, RC_SIGN_IN);
 
                 googleRegisterLayout.setVisibility(View.VISIBLE);
             }
-        }else{
+            else if (getRegisterData.equals("Senior Citizen")) {
+                showAgeInfoDialog();
+            }
+        } else {
             return;
         }
-
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -124,6 +128,8 @@ public class Register extends AppCompatActivity {
             String stringEmail = email.getText().toString().trim();
             String stringPassword = password.getText().toString();
             String stringConfirmPassword = confirmPassword.getText().toString();
+            String stringPhoneNumber = phoneNumber.getText().toString().trim();
+            String prefixPhoneNumber = "+63" + stringPhoneNumber;
             String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
             StaticDataPasser.storeHashedPassword = hashedPassword;
 
@@ -132,13 +138,21 @@ public class Register extends AppCompatActivity {
                 progressBarLayout.setVisibility(View.GONE);
                 nextBtn.setVisibility(View.VISIBLE);
 
-            } else if (stringPassword.isEmpty()) {
+            }
+            if (stringPassword.isEmpty()) {
                 email.setError("Please enter your Password");
                 progressBarLayout.setVisibility(View.GONE);
                 nextBtn.setVisibility(View.VISIBLE);
 
-            } else if (!stringConfirmPassword.equals(stringPassword)) {
+            }
+            if (!stringConfirmPassword.equals(stringPassword)) {
                 confirmPassword.setError("Password did not matched");
+                progressBarLayout.setVisibility(View.GONE);
+                nextBtn.setVisibility(View.VISIBLE);
+
+            }
+            if (stringPhoneNumber.isEmpty()) {
+                confirmPassword.setError("Please enter your Phone number");
                 progressBarLayout.setVisibility(View.GONE);
                 nextBtn.setVisibility(View.VISIBLE);
 
@@ -146,7 +160,8 @@ public class Register extends AppCompatActivity {
                 switch (getRegisterData) {
                     case "Driver":
 
-                        Glide.with(this).load(R.drawable.driver).into(userTypeImageBtn);
+//                        Glide.with(this).load(R.drawable.driver).into(userTypeImageBtn);
+                        userTypeImageBtn.setImageResource(R.drawable.driver);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -162,6 +177,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
                                 registerUser.put("profilePic", "default");
+                                registerUser.put("phoneNumber", prefixPhoneNumber);
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
@@ -203,7 +219,9 @@ public class Register extends AppCompatActivity {
 
                         break;
                     case "Persons with Disability (PWD)":
-                        Glide.with(this).load(R.drawable.pwd).into(userTypeImageBtn);
+
+//                        Glide.with(this).load(R.drawable.pwd).into(userTypeImageBtn);
+                        userTypeImageBtn.setImageResource(R.drawable.pwd);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -219,6 +237,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
                                 registerUser.put("profilePic", "default");
+                                registerUser.put("phoneNumber", prefixPhoneNumber);
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
@@ -261,7 +280,9 @@ public class Register extends AppCompatActivity {
 
                         break;
                     case "Senior Citizen":
-                        Glide.with(this).load(R.drawable.senior).into(userTypeImageBtn);
+
+//                        Glide.with(this).load(R.drawable.senior).into(userTypeImageBtn);
+                        userTypeImageBtn.setImageResource(R.drawable.senior);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -277,6 +298,7 @@ public class Register extends AppCompatActivity {
                                 registerUser.put("password", hashedPassword);
                                 registerUser.put("status", "Not Verified");
                                 registerUser.put("profilePic", "default");
+                                registerUser.put("phoneNumber", prefixPhoneNumber);
 
                                 databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
@@ -323,6 +345,25 @@ public class Register extends AppCompatActivity {
         });
     }
 
+    private void showAgeInfoDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.age_required_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
+                ageInfoDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        ageInfoDialog = builder.create();
+        ageInfoDialog.show();
+    }
+
     private void showUserTypeImageDialog() {
         builder = new AlertDialog.Builder(this);
 
@@ -331,7 +372,7 @@ public class Register extends AppCompatActivity {
         Button okBtn = dialogView.findViewById(R.id.okBtn);
         TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
 
-        registerAsTextView.setText("You are Registering as a " + StaticDataPasser.storeRegisterData);
+        registerAsTextView.setText(StaticDataPasser.storeRegisterData);
 
         okBtn.setOnClickListener(v -> {
             if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
@@ -450,7 +491,6 @@ public class Register extends AppCompatActivity {
 
                                     } else {
                                         Log.e(TAG, String.valueOf(task12.getException()));
-
 
 
                                     }

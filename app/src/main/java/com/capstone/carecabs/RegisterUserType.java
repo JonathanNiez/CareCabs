@@ -28,7 +28,7 @@ public class RegisterUserType extends AppCompatActivity {
 
     private ImageButton imgBackBtn, passengerImgBtn, driverImgBtn;
     private LinearLayout googleRegisterLayout;
-    private Button loginHereBtn;
+    private Button cancelBtn;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private GoogleSignInOptions googleSignInOptions;
@@ -62,7 +62,7 @@ public class RegisterUserType extends AppCompatActivity {
         imgBackBtn = findViewById(R.id.imgBackBtn);
         passengerImgBtn = findViewById(R.id.passengerImgBtn);
         driverImgBtn = findViewById(R.id.driverImgBtn);
-        loginHereBtn = findViewById(R.id.loginHereBtn);
+        cancelBtn = findViewById(R.id.cancelBtn);
         googleRegisterLayout = findViewById(R.id.googleRegisterLayout);
 
         if (getRegisterType != null) {
@@ -78,7 +78,13 @@ public class RegisterUserType extends AppCompatActivity {
             return;
         }
 
-        loginHereBtn.setOnClickListener(v -> {
+        cancelBtn.setOnClickListener(v -> {
+            intent = new Intent(this, Login.class);
+            startActivity(intent);
+            finish();
+        });
+
+        imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, Login.class);
             startActivity(intent);
             finish();
@@ -97,12 +103,6 @@ public class RegisterUserType extends AppCompatActivity {
             showUserTypeDialog();
         });
 
-        imgBackBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
-            finish();
-        });
-
     }
 
     private void closeUserTypeDialog() {
@@ -118,7 +118,7 @@ public class RegisterUserType extends AppCompatActivity {
 
         ImageButton seniorImgBtn = dialogView.findViewById(R.id.seniorImgBtn);
         ImageButton pwdImgBtn = dialogView.findViewById(R.id.pwdImgBtn);
-        ImageButton imgBackBtn = dialogView.findViewById(R.id.imgBackBtn);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
         seniorImgBtn.setOnClickListener(v -> {
             intent = new Intent(RegisterUserType.this, Register.class);
@@ -139,11 +139,10 @@ public class RegisterUserType extends AppCompatActivity {
             startActivity(intent);
             finish();
 
-            userTypeDialog.dismiss();
-
+            closeUserTypeDialog();
         });
 
-        imgBackBtn.setOnClickListener(v -> {
+        cancelBtn.setOnClickListener(v -> {
             closeUserTypeDialog();
         });
 

@@ -189,30 +189,6 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/edit_text"
-                    app:endIconMode="clear_text"
-                    app:helperText="*Required"
-                    app:helperTextTextColor="@color/red"
-                    app:hintTextColor="@color/black">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/phoneNumber"
-                        android:layout_width="340dp"
-                        android:layout_height="60dp"
-                        android:autofillHints="phone"
-                        android:background="@drawable/edit_text"
-                        android:fontFamily="@font/opensans_bold"
-                        android:hint="PHONE NUMBER"
-                        android:inputType="number"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/black" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
 
                 <View
                     android:layout_width="match_parent"

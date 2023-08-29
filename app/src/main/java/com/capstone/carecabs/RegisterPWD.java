@@ -38,7 +38,7 @@ public class RegisterPWD extends AppCompatActivity {
 
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private ImageButton imgBackBtn;
-    private EditText firstname, lastname, phoneNumber;
+    private EditText firstname, lastname;
     private Spinner spinnerDisability, spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -57,7 +57,6 @@ public class RegisterPWD extends AppCompatActivity {
         doneBtn = findViewById(R.id.doneBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
-        phoneNumber = findViewById(R.id.phoneNumber);
         birthdateBtn = findViewById(R.id.birthdateBtn);
         imgBackBtn = findViewById(R.id.imgBackBtn);
         spinnerSex = findViewById(R.id.spinnerSex);
@@ -139,7 +138,6 @@ public class RegisterPWD extends AppCompatActivity {
 
             String stringFirstname = firstname.getText().toString().trim();
             String stringLastname = lastname.getText().toString().trim();
-            String stringPhoneNumber = phoneNumber.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.storeCurrentBirthDate == null
@@ -157,7 +155,6 @@ public class RegisterPWD extends AppCompatActivity {
                 if (getRegisterData.equals("Persons with Disabilities (PWD)")) {
                     databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
-                    String prefixPhoneNumber = "+63" + stringPhoneNumber;
 
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
@@ -167,7 +164,6 @@ public class RegisterPWD extends AppCompatActivity {
                     registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
                     registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                     registerUser.put("userType", "Persons with Disabilities (PWD)");
-                    registerUser.put("phoneNumber", prefixPhoneNumber);
 
                     databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

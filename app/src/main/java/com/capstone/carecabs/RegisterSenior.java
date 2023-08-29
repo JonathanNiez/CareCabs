@@ -40,7 +40,7 @@ public class RegisterSenior extends AppCompatActivity {
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private ImageButton imgBackBtn;
 
-    private EditText firstname, lastname, phoneNumber;
+    private EditText firstname, lastname;
     private Spinner spinnerSex, spinnerMedicalCondition;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -61,7 +61,6 @@ public class RegisterSenior extends AppCompatActivity {
         doneBtn = findViewById(R.id.doneBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
-        phoneNumber = findViewById(R.id.phoneNumber);
         birthdateBtn = findViewById(R.id.birthdateBtn);
         imgBackBtn = findViewById(R.id.imgBackBtn);
         scanIDBtn = findViewById(R.id.scanIDBtn);
@@ -160,7 +159,6 @@ public class RegisterSenior extends AppCompatActivity {
                 finish();
 
                 auth.signOut();
-
                 showAgeReqDialog();
 
                 progressBarLayout.setVisibility(View.GONE);
@@ -215,6 +213,7 @@ public class RegisterSenior extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
 
     private void showAgeReqDialog() {
         builder = new AlertDialog.Builder(this);
