@@ -442,9 +442,13 @@ f
 6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
 g
 7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
-c
-3app/src/main/java/com/capstone/carecabs/ScanID.java,0\5\0503a67ff6de07fec171d1cc7af7022a8a028918
 i
 9app/src/main/java/com/capstone/carecabs/MainActivity.java,2\4\248ce20ffd58328de0bbe9ed93a698e47b20cc50
 z
 Japp/src/main/java/com/capstone/carecabs/Fragments/EditAccountFragment.java,8\c\8ccd260f24b3d18052ac8fb0794b1a2ca283e8e4
+v
+Fapp/src/main/java/com/capstone/carecabs/Fragments/AccountFragment.java,b\8\b8b5babf3fe35991f52e18ddcdf6c2bfbb7d8e47
+x
+Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
+}
+Mapp/src/main/java/com/capstone/carecabs/Fragments/ChangePasswordFragment.java,8\6\864143977846c0e1d4f9939caafb2807d4ddf782

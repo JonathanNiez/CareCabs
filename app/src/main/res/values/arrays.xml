@@ -18,4 +18,28 @@
         <item>Physical disability</item>
     </string-array>
 
+    <string-array name="senior_citizen_medical_condition">
+        <item>Select your Medical Condition</item>
+        <item>Hypertension (High Blood Pressure)</item>
+        <item>Diabetes</item>
+        <item>Arthritis</item>
+        <item>Osteoporosis</item>
+        <item>Cardiovascular Diseases</item>
+        <item>Chronic Obstructive Pulmonary Disease (COPD)</item>
+        <item>Alzheimer\'s Disease and Dementia</item>
+        <item>Depression</item>
+        <item>Vision and Hearing Impairments</item>
+        <item>Stroke</item>
+        <item>Cancer</item>
+        <item>Parkinson\'s Disease</item>
+        <item>Chronic Kidney Disease</item>
+        <item>Peripheral Vascular Disease</item>
+        <item>Incontinence</item>
+        <item>Sleep Disorders</item>
+        <item>Gastrointestinal Issues</item>
+        <item>Anemia</item>
+        <item>Malnutrition</item>
+        <item>Chronic Pain</item>
+    </string-array>
+
 </resources>

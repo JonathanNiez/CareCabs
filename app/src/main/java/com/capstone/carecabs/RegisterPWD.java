@@ -38,7 +38,7 @@ public class RegisterPWD extends AppCompatActivity {
 
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private ImageButton imgBackBtn;
-    private EditText firstname, lastname;
+    private EditText firstname, lastname, phoneNumber;
     private Spinner spinnerDisability, spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -57,6 +57,7 @@ public class RegisterPWD extends AppCompatActivity {
         doneBtn = findViewById(R.id.doneBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
+        phoneNumber = findViewById(R.id.phoneNumber);
         birthdateBtn = findViewById(R.id.birthdateBtn);
         imgBackBtn = findViewById(R.id.imgBackBtn);
         spinnerSex = findViewById(R.id.spinnerSex);
@@ -65,6 +66,10 @@ public class RegisterPWD extends AppCompatActivity {
         progressBarLayout = findViewById(R.id.progressBarLayout);
 
         createNotificationChannel();
+        auth = FirebaseAuth.getInstance();
+
+        intent = getIntent();
+        String getRegisterData = intent.getStringExtra("registerData");
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -128,22 +133,19 @@ public class RegisterPWD extends AppCompatActivity {
             showDatePickerDialog();
         });
 
-        auth = FirebaseAuth.getInstance();
-
-        intent = getIntent();
-        String getRegisterData = intent.getStringExtra("registerData");
-
         doneBtn.setOnClickListener(v -> {
             progressBarLayout.setVisibility(View.VISIBLE);
             doneBtn.setVisibility(View.GONE);
 
             String stringFirstname = firstname.getText().toString().trim();
             String stringLastname = lastname.getText().toString().trim();
+            String stringPhoneNumber = phoneNumber.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.storeCurrentBirthDate == null
                     || StaticDataPasser.storeCurrentAge == 0
-                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
+                    || Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
@@ -155,6 +157,8 @@ public class RegisterPWD extends AppCompatActivity {
                 if (getRegisterData.equals("Persons with Disabilities (PWD)")) {
                     databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
 
+                    String prefixPhoneNumber = "+63" + stringPhoneNumber;
+
                     Map<String, Object> registerUser = new HashMap<>();
                     registerUser.put("firstname", stringFirstname);
                     registerUser.put("lastname", stringLastname);
@@ -163,6 +167,7 @@ public class RegisterPWD extends AppCompatActivity {
                     registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
                     registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                     registerUser.put("userType", "Persons with Disabilities (PWD)");
+                    registerUser.put("phoneNumber", prefixPhoneNumber);
 
                     databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -179,7 +184,7 @@ public class RegisterPWD extends AppCompatActivity {
                             intent = new Intent(RegisterPWD.this, MainActivity.class);
                             startActivity(intent);
                             finish();
-                        }else {
+                        } else {
                             Log.e(TAG, String.valueOf(task.getException()));
 
                             progressBarLayout.setVisibility(View.GONE);
@@ -236,6 +241,7 @@ public class RegisterPWD extends AppCompatActivity {
                 }, year, month, day);
         datePickerDialog.show();
     }
+
     private void createNotificationChannel() {
         String channelId = "channel_id";
         String channelName = "CareCabs";

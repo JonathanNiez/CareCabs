@@ -40,8 +40,8 @@ public class RegisterSenior extends AppCompatActivity {
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private ImageButton imgBackBtn;
 
-    private EditText firstname, lastname;
-    private Spinner spinnerSex;
+    private EditText firstname, lastname, phoneNumber;
+    private Spinner spinnerSex, spinnerMedicalCondition;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -61,10 +61,12 @@ public class RegisterSenior extends AppCompatActivity {
         doneBtn = findViewById(R.id.doneBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
+        phoneNumber = findViewById(R.id.phoneNumber);
         birthdateBtn = findViewById(R.id.birthdateBtn);
         imgBackBtn = findViewById(R.id.imgBackBtn);
         scanIDBtn = findViewById(R.id.scanIDBtn);
         spinnerSex = findViewById(R.id.spinnerSex);
+        spinnerMedicalCondition = findViewById(R.id.spinnerMedicalCondition);
         ageBtn = findViewById(R.id.ageBtn);
         progressBarLayout = findViewById(R.id.progressBarLayout);
 
@@ -101,6 +103,32 @@ public class RegisterSenior extends AppCompatActivity {
             }
         });
 
+        ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(
+                this,
+                R.array.senior_citizen_medical_condition,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMedicalCondition.setAdapter(adapter1);
+        spinnerMedicalCondition.setSelection(0);
+        spinnerMedicalCondition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    return;
+                } else {
+                    String selectedMedicalCondition = parent.getItemAtPosition(position).toString();
+                    StaticDataPasser.storeSelectedMedicalCondition = selectedMedicalCondition;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Handle case when nothing is selected
+            }
+        });
+
+
         birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
         });
@@ -120,7 +148,8 @@ public class RegisterSenior extends AppCompatActivity {
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.storeCurrentBirthDate == null
                     || StaticDataPasser.storeCurrentAge == 0
-                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
+                    || Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
@@ -159,6 +188,7 @@ public class RegisterSenior extends AppCompatActivity {
                             StaticDataPasser.storeSelectedSex = null;
                             StaticDataPasser.storeCurrentAge = 0;
                             StaticDataPasser.storeCurrentBirthDate = null;
+                            StaticDataPasser.storeSelectedMedicalCondition = null;
 
                             buildAndDisplayNotification();
 

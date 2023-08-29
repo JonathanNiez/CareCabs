@@ -38,7 +38,7 @@ public class RegisterDriver extends AppCompatActivity {
 
     private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
     private ImageButton imgBackBtn;
-    private EditText firstname, lastname;
+    private EditText firstname, lastname, phoneNumber;
     private Spinner spinnerSex;
     private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
@@ -58,6 +58,7 @@ public class RegisterDriver extends AppCompatActivity {
         scanIDBtn = findViewById(R.id.scanIDBtn);
         firstname = findViewById(R.id.firstname);
         lastname = findViewById(R.id.lastname);
+        phoneNumber = findViewById(R.id.phoneNumber);
         birthdateBtn = findViewById(R.id.birthdateBtn);
         imgBackBtn = findViewById(R.id.imgBackBtn);
         ageBtn = findViewById(R.id.ageBtn);
@@ -65,6 +66,11 @@ public class RegisterDriver extends AppCompatActivity {
         progressBarLayout = findViewById(R.id.progressBarLayout);
 
         createNotificationChannel();
+
+        auth = FirebaseAuth.getInstance();
+
+        intent = getIntent();
+        String getRegisterData = intent.getStringExtra("registerData");
 
         imgBackBtn.setOnClickListener(v -> {
             intent = new Intent(this, RegisterUserType.class);
@@ -97,20 +103,14 @@ public class RegisterDriver extends AppCompatActivity {
         });
 
 
-
         scanIDBtn.setOnClickListener(v -> {
-          intent = new Intent(this, ScanID.class);
-          startActivity(intent);
+            intent = new Intent(this, ScanID.class);
+            startActivity(intent);
         });
 
         birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
         });
-
-        auth = FirebaseAuth.getInstance();
-
-        intent = getIntent();
-        String getRegisterData = intent.getStringExtra("registerData");
 
         doneBtn.setOnClickListener(v -> {
             progressBarLayout.setVisibility(View.VISIBLE);
@@ -118,11 +118,13 @@ public class RegisterDriver extends AppCompatActivity {
 
             String stringFirstname = firstname.getText().toString().trim();
             String stringLastname = lastname.getText().toString().trim();
+            String stringPhoneNumber = phoneNumber.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.storeCurrentBirthDate == null
                     || StaticDataPasser.storeCurrentAge == 0
-                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
+                    || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
+                    || stringPhoneNumber.isEmpty()) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 progressBarLayout.setVisibility(View.GONE);
                 doneBtn.setVisibility(View.VISIBLE);
@@ -130,11 +132,13 @@ public class RegisterDriver extends AppCompatActivity {
             } else {
                 currentUser = auth.getCurrentUser();
 
-                if (currentUser != null){
+                if (currentUser != null) {
                     userID = currentUser.getUid();
 
                     if (getRegisterData.equals("Driver")) {
                         databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+
+                        String prefixPhoneNumber = "+63" + stringPhoneNumber;
 
                         Map<String, Object> registerUser = new HashMap<>();
                         registerUser.put("firstname", stringFirstname);
@@ -144,6 +148,8 @@ public class RegisterDriver extends AppCompatActivity {
                         registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
                         registerUser.put("sex", StaticDataPasser.storeSelectedSex);
                         registerUser.put("userType", "Driver");
+                        registerUser.put("driverRating", 0.0);
+                        registerUser.put("phoneNumber", prefixPhoneNumber);
 
                         databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
