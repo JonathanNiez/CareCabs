@@ -10,6 +10,8 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -32,6 +35,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,19 +67,19 @@ public class Register extends AppCompatActivity {
     private Intent intent;
     private static final int RC_SIGN_IN = 69;
     private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog;
-    private NetworkConnectivityChecker networkConnectivityChecker;
     private AlertDialog.Builder builder;
     private AlertDialog ageInfoDialog;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        networkConnectivityChecker = new NetworkConnectivityChecker(this);
-        checkInternetConnection();
+        initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
+        FirebaseApp.initializeApp(this);
 
         imgBackBtn = findViewById(R.id.imgBackBtn);
         nextBtn = findViewById(R.id.nextBtn);
@@ -107,8 +111,7 @@ public class Register extends AppCompatActivity {
                 startActivityForResult(intent, RC_SIGN_IN);
 
                 googleRegisterLayout.setVisibility(View.VISIBLE);
-            }
-            else if (getRegisterData.equals("Senior Citizen")) {
+            } else if (getRegisterData.equals("Senior Citizen")) {
                 showAgeInfoDialog();
             }
         } else {
@@ -560,6 +563,20 @@ public class Register extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
 
     private void showPleaseWaitDialog() {
 
@@ -588,7 +605,12 @@ public class Register extends AppCompatActivity {
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            checkInternetConnection();
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+                updateConnectionStatus(isConnected);
+            }
         });
 
         builder.setView(dialogView);
@@ -597,8 +619,25 @@ public class Register extends AppCompatActivity {
         noInternetDialog.show();
     }
 
-    private void checkInternetConnection() {
-        if (networkConnectivityChecker.isConnected()) {
+    private void initializeNetworkChecker(){
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
             if (noInternetDialog != null && noInternetDialog.isShowing()) {
                 noInternetDialog.dismiss();
             }

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.map) {
                 intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
-
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
             return true;
         });

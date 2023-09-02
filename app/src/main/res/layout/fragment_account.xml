@@ -40,8 +40,10 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/opensans_regular"
-                    android:text="Account Settings"
-                    android:textSize="30sp" />
+                    android:text="Account"
+                    android:textSize="25sp"
+                    android:layout_marginTop="30dp"
+                    android:layout_alignParentTop="true"/>
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profielPic"
@@ -59,9 +61,9 @@
                     android:layout_below="@id/profielPic"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Name"
-                    android:layout_marginBottom="10dp"
                     android:textColor="@color/black"
                     android:textSize="23sp" />
 
@@ -69,22 +71,24 @@
                     android:id="@+id/userTypeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_below="@id/fullNameTextView"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="User Type"
                     android:textColor="@color/black"
-                    android:textSize="23sp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_below="@id/fullNameTextView"/>
+                    android:textSize="23sp" />
 
             </RelativeLayout>
-
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:orientation="vertical">
+                android:layout_margin="10dp"
+                android:padding="5dp"
+                android:orientation="vertical"
+                android:background="@drawable/text_view_card">
+
 
                 <TextView
                     android:id="@+id/statusTextView"
@@ -94,7 +98,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Status:"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/birthdateTextView"
@@ -104,7 +108,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Birthdate"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/ageTextView"
@@ -114,7 +118,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Age"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/sexTextView"
@@ -124,7 +128,7 @@
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Sex"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp" />
 
 
                 <TextView
@@ -134,21 +138,33 @@
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Driver Status"
-                    android:visibility="gone"
                     android:textColor="@color/black"
-                    android:textSize="24sp" />
+                    android:textSize="20sp"
+                    android:visibility="gone" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="3dp"
-                    android:background="@color/gray" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/gray" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editProfileBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="76dp"
-                    android:background="@color/background"
-                    android:drawableStart="@drawable/editprof"
+                    android:layout_height="70dp"
+                    android:background="@drawable/text_view_card"
+                    android:drawableStart="@drawable/edit_32png"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
                     android:fontFamily="@font/opensans_semibold"
@@ -162,9 +178,9 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/changePasswordBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="76dp"
-                    android:background="@color/background"
-                    android:drawableStart="@drawable/changepassword"
+                    android:layout_height="70dp"
+                    android:background="@drawable/text_view_card"
+                    android:drawableStart="@drawable/reset_password_32"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
                     android:fontFamily="@font/opensans_semibold"
@@ -175,16 +191,16 @@
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/optionsBtn"
+                    android:id="@+id/appSettingsBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="76dp"
-                    android:background="@color/background"
-                    android:drawableStart="@drawable/option"
+                    android:layout_height="70dp"
+                    android:background="@drawable/text_view_card"
+                    android:drawableStart="@drawable/settings_32"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:padding="10dp"
-                    android:text="Options"
+                    android:text="App Settings"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
@@ -192,8 +208,8 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/secAndPriBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="76dp"
-                    android:background="@color/background"
+                    android:layout_height="70dp"
+                    android:background="@drawable/text_view_card"
                     android:drawableStart="@drawable/privacy"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
@@ -202,18 +218,18 @@
                     android:text="Security And Privacy"
                     android:textAlignment="textStart"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/signOutBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="76dp"
-                    android:background="@color/background"
+                    android:layout_height="70dp"
+                    android:background="@drawable/text_view_card"
                     android:drawableEnd="@drawable/logout32"
                     android:fontFamily="@font/opensans_semibold"
                     android:padding="10dp"
                     android:text="Sign Out"
-                    android:textAlignment="textStart"
+                    android:textAlignment="center"
                     android:textColor="@color/red"
                     android:textSize="20sp" />
 

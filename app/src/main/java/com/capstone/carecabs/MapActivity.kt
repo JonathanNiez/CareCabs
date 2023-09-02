@@ -98,7 +98,7 @@ class MapActivity : AppCompatActivity() {
 
                 R.id.myBookings -> {
                     setLocationLayout.visibility = View.GONE
-                    val intent = Intent(this, MyBookings::class.java)
+                    val intent = Intent(this, Bookings::class.java)
                     startActivity(intent)
                 }
 

@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -37,7 +39,10 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanID;
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -68,12 +73,14 @@ public class EditAccountFragment extends Fragment {
     private Calendar selectedDate;
     private AlertDialog.Builder builder;
     private AlertDialog editFirstNameDialog, editLastNameDialog,
-            editDisabilityDialog, editSexDialog, editAgeDialog, cameraGalleryOptionsDialog;
+            editDisabilityDialog, editSexDialog, editAgeDialog,
+            cameraGalleryOptionsDialog, noInternetDialog;
     private Uri imageUri;
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,11 +92,11 @@ public class EditAccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_account, container, false);
 
+        initializeNetworkChecker();
+
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-
-        getUserType();
-        checkPermission();
+        FirebaseApp.initializeApp(getContext());
 
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         profilePic = view.findViewById(R.id.profielPic);
@@ -102,6 +109,9 @@ public class EditAccountFragment extends Fragment {
         editSexBtn = view.findViewById(R.id.editSexBtn);
         doneBtn = view.findViewById(R.id.doneBtn);
         scanIDBtn = view.findViewById(R.id.scanIDBtn);
+
+        getUserType();
+        checkPermission();
 
         editFirstnameBtn.setOnClickListener(v -> {
             showEditFirstNameDialog();
@@ -665,7 +675,6 @@ public class EditAccountFragment extends Fragment {
         return Uri.parse(path);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -721,6 +730,55 @@ public class EditAccountFragment extends Fragment {
             }
         } else {
             Log.e(TAG, "Permission Denied");
+        }
+    }
+
+    private void showNoInternetDialog() {
+
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            if (noInternetDialog != null && noInternetDialog.isShowing()){
+                noInternetDialog.dismiss();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+    private void initializeNetworkChecker(){
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        getContext().registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
         }
     }
 }

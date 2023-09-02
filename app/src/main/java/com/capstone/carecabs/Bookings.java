@@ -17,14 +17,14 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class MyBookings extends AppCompatActivity {
+public class Bookings extends AppCompatActivity {
 
     private ImageButton imageButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_bookings);
+        setContentView(R.layout.activity_bookings);
 
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ViewPager viewPager = findViewById(R.id.viewPager);

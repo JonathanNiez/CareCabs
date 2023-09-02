@@ -2,46 +2,21 @@ package com.capstone.carecabs.Utility;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
+import android.net.NetworkInfo;
 
 public class NetworkConnectivityChecker {
-    private Context context;
-    private ConnectivityManager connectivityManager;
-    private boolean isConnected;
-    private ConnectivityManager.NetworkCallback networkCallback;
+    public static boolean isNetworkConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-    public NetworkConnectivityChecker(Context context) {
-        this.context = context;
-        connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        startNetworkCallback();
-    }
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 
-    private void startNetworkCallback() {
-        NetworkRequest networkRequest = new NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .build();
-
-        networkCallback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(Network network) {
-                isConnected = true;
+            // Check if there is a network connection and it is connected or connecting
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting()) {
+                return true;
             }
+        }
 
-            @Override
-            public void onLost(Network network) {
-                isConnected = false;
-            }
-        };
-
-        connectivityManager.registerNetworkCallback(networkRequest, networkCallback);
+        return false;
     }
-
-    public boolean isConnected() {
-        return isConnected;
-    }
-
-    public void unregisterNetworkCallback() {
-        connectivityManager.unregisterNetworkCallback(networkCallback);
-    }}
+}

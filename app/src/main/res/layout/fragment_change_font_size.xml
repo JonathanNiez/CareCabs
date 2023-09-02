@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".Fragments.ChangeFontSizeFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <RelativeLayout
+                android:id="@+id/upperLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rectangle_one">
+
+                <ImageButton
+                    android:id="@+id/imgBackBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/yellow"
+                    android:src="@drawable/back64" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imgBackBtn"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:textColor="@color/black"
+                    android:text="Change\n Font Size"
+                    android:textAlignment="center"
+                    android:textSize="25sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="30dp"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@drawable/text_view_card"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/fontSizePreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="The quick brown fox jumps over the lazy dog"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_margin="10dp">
+
+                <TextView
+                    android:id="@+id/fontSizeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Font Size"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/opensans_regular"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="5dp"
+                    />
+
+                <SeekBar
+                    android:id="@+id/fontSizeSeekBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:max="3"
+                    android:progress="1"
+                    android:layout_marginBottom="5dp"
+                    />
+
+                <TextView
+                    android:id="@+id/currentFontSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current Font Size: "
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/opensans_regular"
+                    android:textSize="18sp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/saveBtn"
+                    android:layout_width="180dp"
+                    android:layout_height="70dp"
+                    android:background="@drawable/login_button"
+                    android:text="Save"
+                    android:textSize="24sp"
+                    android:fontFamily="@font/opensans_bold"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="20dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

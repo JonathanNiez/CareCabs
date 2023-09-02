@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +13,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -34,17 +38,20 @@ public class RegisterUserType extends AppCompatActivity {
     private GoogleSignInOptions googleSignInOptions;
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInClient googleSignInClient;
-
     private Intent intent;
     private String registerData, registerType;
     private AlertDialog.Builder builder;
-    private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog;
+    private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog, noInternetDialog;
     private static final int RC_SIGN_IN = 69;
+    private NetworkChangeReceiver networkChangeReceiver;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user_type);
+
+        initializeNetworkChecker();
 
         intent = getIntent();
         //From Login
@@ -103,6 +110,13 @@ public class RegisterUserType extends AppCompatActivity {
             showUserTypeDialog();
         });
 
+    }
+
+    protected void onDestroy() {
+        super.onDestroy();
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
     }
 
     private void closeUserTypeDialog() {
@@ -222,4 +236,55 @@ public class RegisterUserType extends AppCompatActivity {
             }
         }
     }
+
+    private void showNoInternetDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    private void initializeNetworkChecker() {
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
+        }
+    }
+
+
 }

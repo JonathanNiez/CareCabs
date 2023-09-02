@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/dirty_yellow"
+    android:background="@color/yellow"
     android:gravity="center">
 
     <TextView
@@ -18,18 +19,23 @@
         android:text="Log Out"
         android:textAlignment="center"
         android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textSize="25sp"
+        android:background="@drawable/text_view_card"
+        android:padding="5dp"
+        />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="Are you sure \n you want to Log out?"
-        android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="25sp" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/opensans_semibold"
+            android:text="Are you sure \n you want to Log out?"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:background="@drawable/text_view_card"
+            android:padding="5dp"/>
+
 
     <LinearLayout
         android:id="@+id/linearLayout"

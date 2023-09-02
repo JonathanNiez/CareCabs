@@ -3,7 +3,11 @@ package com.capstone.carecabs;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -48,7 +53,7 @@ public class Login extends AppCompatActivity {
     private AlertDialog noInternetDialog, emailDialog,
             emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
             pleaseWaitDialog, registerUsingDialog;
-    private NetworkConnectivityChecker networkConnectivityChecker;
+    private NetworkChangeReceiver networkChangeReceiver;
     private AlertDialog.Builder builder;
 
     @Override
@@ -56,8 +61,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        networkConnectivityChecker = new NetworkConnectivityChecker(this);
-        checkInternetConnection();
+        initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
@@ -105,7 +109,6 @@ public class Login extends AppCompatActivity {
                 loginBtn.setVisibility(View.VISIBLE);
 
             } else {
-                checkInternetConnection();
                 googleSignInLayout.setVisibility(View.GONE);
 
                 auth.fetchSignInMethodsForEmail(stringEmail)
@@ -158,9 +161,21 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (networkConnectivityChecker != null) {
-            networkConnectivityChecker.unregisterNetworkCallback();
+
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
 
     private void showEmailNotRegisterDialog() {
@@ -256,7 +271,7 @@ public class Login extends AppCompatActivity {
             startActivity(intent);
             finish();
 
-           closeRegisterUsingDialog();
+            closeRegisterUsingDialog();
         });
 
         cancelBtn.setOnClickListener(v -> {
@@ -270,8 +285,8 @@ public class Login extends AppCompatActivity {
 
     }
 
-    private void closeRegisterUsingDialog(){
-        if (registerUsingDialog != null && registerUsingDialog.isShowing()){
+    private void closeRegisterUsingDialog() {
+        if (registerUsingDialog != null && registerUsingDialog.isShowing()) {
             registerUsingDialog.dismiss();
         }
     }
@@ -292,6 +307,8 @@ public class Login extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        showPleaseWaitDialog();
+
         String getGoogleEmail = acct.getEmail();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
@@ -299,20 +316,27 @@ public class Login extends AppCompatActivity {
                     SignInMethodQueryResult result = task.getResult();
                     if (result.getSignInMethods().size() > 0) {
                         auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()){
+                            if (task1.isSuccessful()) {
                                 intent = new Intent(Login.this, LoggingIn.class);
                                 startActivity(intent);
                                 finish();
-                            }else{
+
+                                closePleaseWaitDialog();
+                            } else {
+                                closePleaseWaitDialog();
+
                                 Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
                             }
 
                         }).addOnFailureListener(e -> {
+                            closePleaseWaitDialog();
+
                             Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
                             e.printStackTrace();
                         });
                     } else {
-                        showPleaseWaitDialog();
+
+                        closePleaseWaitDialog();
 
                         intent = new Intent(Login.this, RegisterUserType.class);
                         intent.putExtra("registerType", "googleRegister");
@@ -320,11 +344,12 @@ public class Login extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }).addOnFailureListener(e -> {
+                    closePleaseWaitDialog();
+
                     e.printStackTrace();
                     Toast.makeText(this, "Failed to Login", Toast.LENGTH_LONG).show();
                 });
     }
-
 
     private void showPleaseWaitDialog() {
         builder = new AlertDialog.Builder(this);
@@ -337,6 +362,12 @@ public class Login extends AppCompatActivity {
         pleaseWaitDialog.show();
     }
 
+    private void closePleaseWaitDialog(){
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()){
+            pleaseWaitDialog.dismiss();
+        }
+    }
+
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
 
@@ -347,7 +378,10 @@ public class Login extends AppCompatActivity {
         tryAgainBtn.setOnClickListener(v -> {
             if (noInternetDialog != null && noInternetDialog.isShowing()) {
                 noInternetDialog.dismiss();
-                checkInternetConnection();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+                updateConnectionStatus(isConnected);
+
             }
         });
 
@@ -357,16 +391,30 @@ public class Login extends AppCompatActivity {
         noInternetDialog.show();
     }
 
-    private void checkInternetConnection() {
-        //TODO mugawas ang dialog biskang naay net
-        if (networkConnectivityChecker.isConnected()) {
+    private void initializeNetworkChecker(){
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
             if (noInternetDialog != null && noInternetDialog.isShowing()) {
                 noInternetDialog.dismiss();
             }
-            Log.e(TAG, String.valueOf(networkConnectivityChecker.isConnected()));
         } else {
             showNoInternetDialog();
-            Log.e(TAG, String.valueOf(networkConnectivityChecker.isConnected()));
         }
     }
 }

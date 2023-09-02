@@ -1,15 +1,12 @@
 package com.capstone.carecabs.Fragments;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -28,7 +25,10 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.LoggingOut;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +38,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class AccountFragment extends Fragment {
-    private Button signOutBtn, editProfileBtn, changePasswordBtn, secuAndPriBtn;
+    private Button signOutBtn, editProfileBtn, changePasswordBtn,
+            secuAndPriBtn, appSettingsBtn;
     private ImageButton imgBackBtn;
     private ImageView profilePic;
     private TextView fullNameTextView, userTypeTextView,
@@ -50,8 +51,9 @@ public class AccountFragment extends Fragment {
     private String TAG = "AccountFragment";
     private String userID;
     private Intent intent;
-    private AlertDialog signOutDialog, pleaseWaitDialog;
-
+    private AlertDialog signOutDialog, pleaseWaitDialog, noInternetDialog;
+    private AlertDialog.Builder builder;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,12 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
+
+        initializeNetworkChecker();
+
+        auth = FirebaseAuth.getInstance();
+        currentUser = auth.getCurrentUser();
+        FirebaseApp.initializeApp(getContext());
 
         fullNameTextView = view.findViewById(R.id.fullNameTextView);
         userTypeTextView = view.findViewById(R.id.userTypeTextView);
@@ -76,9 +84,7 @@ public class AccountFragment extends Fragment {
         profilePic = view.findViewById(R.id.profielPic);
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         secuAndPriBtn = view.findViewById(R.id.secAndPriBtn);
-
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        appSettingsBtn = view.findViewById(R.id.appSettingsBtn);
 
         loadUserProfileInfo();
 
@@ -88,6 +94,10 @@ public class AccountFragment extends Fragment {
 
         secuAndPriBtn.setOnClickListener(v -> {
 
+        });
+
+        appSettingsBtn.setOnClickListener(v -> {
+            goToAssSettingsFragment();
         });
 
         changePasswordBtn.setOnClickListener(v -> {
@@ -179,10 +189,10 @@ public class AccountFragment extends Fragment {
                             driverStatusTextView.setVisibility(View.VISIBLE);
                             if (getDriverStatus) {
                                 driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-                                driverStatusTextView.setText("Available");
+                                driverStatusTextView.setText("Driver Status: Available");
                             } else {
                                 driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                                driverStatusTextView.setText("Busy");
+                                driverStatusTextView.setText("Driver Status: Busy");
 
                             }
 
@@ -276,10 +286,24 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (networkChangeReceiver != null) {
+            getContext().unregisterReceiver(networkChangeReceiver);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     private void showSignOutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        View dialogView = getLayoutInflater().inflate(R.layout.log_out_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
 
         Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
@@ -327,6 +351,14 @@ public class AccountFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
+    private void goToAssSettingsFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new AppSettingsFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
     private void goToChangePasswordFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -343,35 +375,52 @@ public class AccountFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void createNotificationChannel() {
-        String channelId = "channel_id";
-        String channelName = "CareCabs";
-        String channelDescription = "You have Successfully Registered";
+    private void showNoInternetDialog() {
 
-        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        builder = new AlertDialog.Builder(getContext());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription(channelDescription);
-            notificationManager.createNotificationChannel(channel);
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            if (noInternetDialog != null && noInternetDialog.isShowing()){
+                noInternetDialog.dismiss();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+    private void initializeNetworkChecker(){
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        getContext().registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
         }
     }
-
-    private void buildAndDisplayNotification() {
-        int notificationId = 1;
-        String channelId = "channel_id";
-
-        // Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getContext(), channelId)
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle("CareCabs")
-                .setContentText("Displaying Profile Info")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-
-        NotificationManager notificationManager = (NotificationManager) requireContext().getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Display the notification
-        notificationManager.notify(notificationId, notificationBuilder.build());
-    }
-
 }
