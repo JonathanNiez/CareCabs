@@ -109,9 +109,7 @@ public class Register extends AppCompatActivity {
         }
 
         imgBackBtn.setOnClickListener(v -> {
-            intent = new Intent(this, RegisterUserType.class);
-            startActivity(intent);
-            finish();
+            showCancelRegisterDialog();
         });
 
         nextBtn.setOnClickListener(v -> {
@@ -141,8 +139,8 @@ public class Register extends AppCompatActivity {
                 switch (getRegisterData) {
                     case "Driver":
 
-                        userTypeImageBtn.setImageResource(R.drawable.driver);
                         userTypeImageBtn.invalidate();
+                        userTypeImageBtn.setImageResource(R.drawable.driver);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -206,8 +204,8 @@ public class Register extends AppCompatActivity {
 
                     case "Persons with Disability (PWD)":
 
-                        userTypeImageBtn.setImageResource(R.drawable.pwd);
                         userTypeImageBtn.invalidate();
+                        userTypeImageBtn.setImageResource(R.drawable.pwd);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -274,8 +272,8 @@ public class Register extends AppCompatActivity {
 
                     case "Senior Citizen":
 
-                        userTypeImageBtn.setImageResource(R.drawable.senior);
                         userTypeImageBtn.invalidate();
+                        userTypeImageBtn.setImageResource(R.drawable.senior);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -359,6 +357,11 @@ public class Register extends AppCompatActivity {
         super.onPause();
 
         closeRegisterFailedDialog();
+        closePleaseWaitDialog();
+        closeAgeInfoDialog();
+        closeCancelRegisterDialog();
+        closeNoInternetDialog();
+        closeUserTypeImageDialog();
     }
 
     @Override
@@ -370,6 +373,11 @@ public class Register extends AppCompatActivity {
         }
 
         closeRegisterFailedDialog();
+        closePleaseWaitDialog();
+        closeAgeInfoDialog();
+        closeCancelRegisterDialog();
+        closeNoInternetDialog();
+        closeUserTypeImageDialog();
     }
 
     private void showAgeInfoDialog() {
@@ -380,15 +388,19 @@ public class Register extends AppCompatActivity {
         Button okBtn = dialogView.findViewById(R.id.okBtn);
 
         okBtn.setOnClickListener(v -> {
-            if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
-                ageInfoDialog.dismiss();
-            }
+            closeAgeInfoDialog();
         });
 
         builder.setView(dialogView);
 
         ageInfoDialog = builder.create();
         ageInfoDialog.show();
+    }
+
+    private void closeAgeInfoDialog() {
+        if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
+            ageInfoDialog.dismiss();
+        }
     }
 
     private void showUserTypeImageDialog() {
@@ -402,15 +414,148 @@ public class Register extends AppCompatActivity {
         registerAsTextView.setText(StaticDataPasser.storeRegisterData);
 
         okBtn.setOnClickListener(v -> {
-            if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
-                userTypeImageDialog.dismiss();
-            }
+            closeUserTypeImageDialog();
         });
 
         builder.setView(dialogView);
 
         userTypeImageDialog = builder.create();
         userTypeImageDialog.show();
+    }
+
+    private void closeUserTypeImageDialog() {
+        if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
+            userTypeImageDialog.dismiss();
+        }
+    }
+
+    private void showCancelRegisterDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            auth.signOut();
+
+            intent = new Intent(this, Login.class);
+            startActivity(intent);
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            closeCancelRegisterDialog();
+        });
+
+        builder.setView(dialogView);
+
+        cancelRegisterDialog = builder.create();
+        cancelRegisterDialog.show();
+    }
+
+    private void closeCancelRegisterDialog() {
+        if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
+            cancelRegisterDialog.dismiss();
+        }
+    }
+
+    private void showPleaseWaitDialog() {
+
+        builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+
+        builder.setView(dialogView);
+
+        pleaseWaitDialog = builder.create();
+        pleaseWaitDialog.show();
+    }
+
+    private void closePleaseWaitDialog() {
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+            pleaseWaitDialog.dismiss();
+        }
+    }
+
+    private void showNoInternetDialog() {
+        builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            closeNoInternetDialog();
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+            updateConnectionStatus(isConnected);
+        }
+    }
+
+    private void initializeNetworkChecker() {
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
+        }
+    }
+
+    private void showRegisterFailedDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            closeRegisterFailedDialog();
+        });
+
+        builder.setView(dialogView);
+
+        registerFailedDialog = builder.create();
+        registerFailedDialog.show();
+
+    }
+
+    private void closeRegisterFailedDialog() {
+        if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
+            registerFailedDialog.dismiss();
+        }
     }
 
     @Override
@@ -441,6 +586,10 @@ public class Register extends AppCompatActivity {
 
             switch (StaticDataPasser.storeRegisterData) {
                 case "Driver":
+
+                    userTypeImageBtn.invalidate();
+                    userTypeImageBtn.setImageResource(R.drawable.driver);
+
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             currentUser = auth.getCurrentUser();
@@ -502,6 +651,10 @@ public class Register extends AppCompatActivity {
                     break;
 
                 case "Persons with Disability (PWD)":
+
+                    userTypeImageBtn.invalidate();
+                    userTypeImageBtn.setImageResource(R.drawable.pwd);
+
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
                             currentUser = auth.getCurrentUser();
@@ -561,12 +714,16 @@ public class Register extends AppCompatActivity {
                     break;
 
                 case "Senior Citizen":
+                    userTypeImageBtn.invalidate();
+                    userTypeImageBtn.setImageResource(R.drawable.senior_64);
+
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
 
                             currentUser = auth.getCurrentUser();
 
                             if (currentUser != null) {
+                                userID = currentUser.getUid();
 
                                 databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
 
@@ -626,128 +783,6 @@ public class Register extends AppCompatActivity {
 
             Log.e(TAG, "googleSignInWithCredential:failed");
             Log.e(TAG, "googleSignInWithCredential:googleUser is null");
-        }
-    }
-
-    private void showCancelRegisterDialog() {
-
-        builder = new AlertDialog.Builder(this);
-
-        View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
-
-        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-        Button noBtn = dialogView.findViewById(R.id.noBtn);
-
-        yesBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
-            finish();
-        });
-
-        noBtn.setOnClickListener(v -> {
-            if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
-                cancelRegisterDialog.dismiss();
-            }
-        });
-
-
-        builder.setView(dialogView);
-
-        cancelRegisterDialog = builder.create();
-        cancelRegisterDialog.show();
-    }
-
-    private void showPleaseWaitDialog() {
-
-        builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
-
-        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
-
-        builder.setView(dialogView);
-
-        pleaseWaitDialog = builder.create();
-        pleaseWaitDialog.show();
-    }
-
-    private void closePleaseWaitDialog() {
-        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
-            pleaseWaitDialog.dismiss();
-        }
-    }
-
-    private void showNoInternetDialog() {
-
-        builder = new AlertDialog.Builder(this);
-
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
-
-        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
-
-        tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-                updateConnectionStatus(isConnected);
-            }
-        });
-
-        builder.setView(dialogView);
-
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
-    }
-
-    private void initializeNetworkChecker() {
-        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-            @Override
-            public void onNetworkChanged(boolean isConnected) {
-                updateConnectionStatus(isConnected);
-            }
-        });
-
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, intentFilter);
-
-        // Initial network status check
-        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-        updateConnectionStatus(isConnected);
-
-    }
-
-    private void updateConnectionStatus(boolean isConnected) {
-        if (isConnected) {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-            }
-        } else {
-            showNoInternetDialog();
-        }
-    }
-
-    private void showRegisterFailedDialog() {
-
-        builder = new AlertDialog.Builder(this);
-
-        View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
-
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
-
-        okBtn.setOnClickListener(v -> {
-            closeRegisterFailedDialog();
-        });
-
-        builder.setView(dialogView);
-
-        registerFailedDialog = builder.create();
-        registerFailedDialog.show();
-
-    }
-
-    private void closeRegisterFailedDialog() {
-        if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
-            registerFailedDialog.dismiss();
         }
     }
 

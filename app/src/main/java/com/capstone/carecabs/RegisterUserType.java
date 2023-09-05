@@ -1,6 +1,7 @@
 package com.capstone.carecabs;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -25,13 +27,11 @@ import com.google.firebase.auth.FirebaseUser;
 public class RegisterUserType extends AppCompatActivity {
 
     private ImageButton passengerImgBtn, driverImgBtn;
-    private LinearLayout googleRegisterLayout;
+    private CardView googleRegisterLayout;
+    private RelativeLayout userTypeParentLayout;
     private Button cancelBtn;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private GoogleSignInOptions googleSignInOptions;
-    private GoogleSignInAccount googleSignInAccount;
-    private GoogleSignInClient googleSignInClient;
     private Intent intent;
     private String registerData, registerType;
     private AlertDialog.Builder builder;
@@ -40,7 +40,6 @@ public class RegisterUserType extends AppCompatActivity {
     private static final int RC_SIGN_IN = 69;
     private NetworkChangeReceiver networkChangeReceiver;
     private boolean shouldExit = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,19 +55,20 @@ public class RegisterUserType extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
 
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-
         passengerImgBtn = findViewById(R.id.passengerImgBtn);
         driverImgBtn = findViewById(R.id.driverImgBtn);
         cancelBtn = findViewById(R.id.cancelBtn);
         googleRegisterLayout = findViewById(R.id.googleRegisterLayout);
+        userTypeParentLayout = findViewById(R.id.userTypeParentLayout);
 
         if (getRegisterType != null) {
             if (getRegisterType.equals("googleRegister")) {
+                userTypeParentLayout.invalidate();
+                passengerImgBtn.invalidate();
+                driverImgBtn.invalidate();
+                cancelBtn.invalidate();
+                googleRegisterLayout.invalidate();
+
                 googleRegisterLayout.setVisibility(View.VISIBLE);
 
                 registerType = "googleRegister";
@@ -105,6 +105,7 @@ public class RegisterUserType extends AppCompatActivity {
 
         closeCancelRegisterDialog();
         closeUserTypeDialog();
+        closeNoInternetDialog();
     }
 
     protected void onDestroy() {
@@ -115,6 +116,7 @@ public class RegisterUserType extends AppCompatActivity {
 
         closeCancelRegisterDialog();
         closeUserTypeDialog();
+        closeNoInternetDialog();
     }
 
     @Override
@@ -230,18 +232,14 @@ public class RegisterUserType extends AppCompatActivity {
 
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-                updateConnectionStatus(isConnected);
-            }
+            closeNoInternetDialog();
         });
 
         builder.setView(dialogView);
@@ -249,6 +247,16 @@ public class RegisterUserType extends AppCompatActivity {
         noInternetDialog = builder.create();
         noInternetDialog.show();
     }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+            updateConnectionStatus(isConnected);
+        }
+    }
+
 
     private void initializeNetworkChecker() {
         networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {

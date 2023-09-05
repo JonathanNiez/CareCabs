@@ -109,11 +109,11 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/loginBtn"
-                android:layout_width="180dp"
-                android:layout_height="70dp"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
                 android:background="@drawable/custom_button"
                 android:text="Login"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:fontFamily="@font/opensans_bold"
                 android:textColor="@color/white"
                 android:layout_marginTop="20dp"/>
@@ -150,7 +150,6 @@
             </LinearLayout>
 
 
-
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -174,6 +173,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="CLICK HERE TO REGISTER"
+                    android:padding="5dp"
+                    android:background="@drawable/custom_card_view"
                     android:fontFamily="@font/opensans_semibold"
                     android:textColor="@color/red"
                     android:textSize="20sp"/>

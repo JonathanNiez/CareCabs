@@ -52,7 +52,8 @@ public class AccountFragment extends Fragment {
     private String TAG = "AccountFragment";
     private String userID;
     private Intent intent;
-    private AlertDialog signOutDialog, pleaseWaitDialog, noInternetDialog;
+    private AlertDialog signOutDialog, pleaseWaitDialog, noInternetDialog,
+            profileInfoNotCompleteDialog;
     private AlertDialog.Builder builder;
     private NetworkChangeReceiver networkChangeReceiver;
     private Context context;
@@ -131,6 +132,63 @@ public class AccountFragment extends Fragment {
         StaticDataPasser.storeHashedPassword = null;
     }
 
+    private void getTheUserType() {
+        showPleaseWaitDialog();
+
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("users");
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+                    //TODO: user info empty
+                    if (snapshot.exists()) {
+                        String getUserType;
+
+                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
+
+                        if (snapshot.child("driver").hasChild(userID)) {
+                            driverSnapshot = snapshot.child("driver").child(userID);
+                            getUserType = driverSnapshot.child("userType").getValue(String.class);
+
+                            closePleaseWaitDialog();
+
+                        } else if (snapshot.child("senior").hasChild(userID)) {
+                            seniorSnapshot = snapshot.child("senior").child(userID);
+                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
+
+                            closePleaseWaitDialog();
+
+                        } else if (snapshot.child("pwd").hasChild(userID)) {
+                            pwdSnapshot = snapshot.child("pwd").child(userID);
+                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
+
+                            closePleaseWaitDialog();
+                        }
+                    } else {
+                        closePleaseWaitDialog();
+
+                        Log.e(TAG, "Not Exist");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    closePleaseWaitDialog();
+
+                    Log.e(TAG, error.getMessage());
+                }
+            });
+
+        } else {
+            closePleaseWaitDialog();
+            showIncompleteProfileInfoDialog();
+        }
+    }
+
     private void loadUserProfileInfo() {
         showPleaseWaitDialog();
 
@@ -167,7 +225,7 @@ public class AccountFragment extends Fragment {
                             getDriverStatus = driverSnapshot.child("isAvailable").getValue(Boolean.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -211,7 +269,7 @@ public class AccountFragment extends Fragment {
                             getSex = seniorSnapshot.child("sex").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -247,7 +305,7 @@ public class AccountFragment extends Fragment {
                             getDisability = pwdSnapshot.child("disability").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
                             } else {
                                 profilePic.setImageResource(R.drawable.account);
                             }
@@ -273,21 +331,29 @@ public class AccountFragment extends Fragment {
 
                         }
                     } else {
+                        closePleaseWaitDialog();
+
                         Log.e(TAG, "Not Exist");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+                    closePleaseWaitDialog();
+
                     Log.e(TAG, error.getMessage());
                 }
             });
 
         } else {
+            closePleaseWaitDialog();
+            showIncompleteProfileInfoDialog();
+
             intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
         }
     }
+
 
     @Override
     public void onDestroy() {
@@ -297,17 +363,53 @@ public class AccountFragment extends Fragment {
             getContext().unregisterReceiver(networkChangeReceiver);
         }
 
+        closeSignOutDialog();
         closePleaseWaitDialog();
+        closeIncompleteProfileInfoDialog();
+        closeNoInternetDialog();
     }
 
 
     @Override
     public void onPause() {
         super.onPause();
+
+        closeSignOutDialog();
+        closePleaseWaitDialog();
+        closeIncompleteProfileInfoDialog();
+        closeNoInternetDialog();
+    }
+
+    private void showIncompleteProfileInfoDialog() {
+        builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            getTheUserType();
+
+            intent = new Intent(getActivity(), LoggingOut.class);
+            startActivity(intent);
+            getActivity().finish();
+        });
+
+        builder.setView(dialogView);
+
+        profileInfoNotCompleteDialog = builder.create();
+        profileInfoNotCompleteDialog.show();
+    }
+
+    private void closeIncompleteProfileInfoDialog() {
+        if (profileInfoNotCompleteDialog != null && profileInfoNotCompleteDialog.isShowing()) {
+            profileInfoNotCompleteDialog.isShowing();
+        }
     }
 
     private void showSignOutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
@@ -321,9 +423,7 @@ public class AccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (signOutDialog != null && signOutDialog.isShowing()) {
-                signOutDialog.dismiss();
-            }
+            closeSignOutDialog();
         });
 
         builder.setView(dialogView);
@@ -332,8 +432,14 @@ public class AccountFragment extends Fragment {
         signOutDialog.show();
     }
 
+    private void closeSignOutDialog() {
+        if (signOutDialog != null && signOutDialog.isShowing()) {
+            signOutDialog.dismiss();
+        }
+    }
+
     private void showPleaseWaitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
@@ -400,26 +506,30 @@ public class AccountFragment extends Fragment {
     }
 
     private void showNoInternetDialog() {
-
-        builder = new AlertDialog.Builder(getContext());
+        builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
-                updateConnectionStatus(isConnected);
-            }
+            closeNoInternetDialog();
         });
 
         builder.setView(dialogView);
 
         noInternetDialog = builder.create();
         noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
+            updateConnectionStatus(isConnected);
+        }
     }
 
     private void initializeNetworkChecker() {

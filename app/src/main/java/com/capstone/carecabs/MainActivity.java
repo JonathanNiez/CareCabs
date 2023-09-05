@@ -29,6 +29,7 @@ import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.Map;
 
@@ -45,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int STORAGE_PERMISSION_REQUEST = 102;
     private boolean shouldExit = false;
     private EditAccountFragment editAccountFragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,6 +124,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        closeExitConfirmationDialog();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        closeExitConfirmationDialog();
+    }
+
     private void showExitConfirmationDialog() {
         builder = new AlertDialog.Builder(this);
 
@@ -137,15 +151,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         noBtn.setOnClickListener(v -> {
-            if (exitAppDialog != null && exitAppDialog.isShowing()) {
-                exitAppDialog.dismiss();
-            }
+            closeExitConfirmationDialog();
         });
 
         builder.setView(dialogView);
 
         exitAppDialog = builder.create();
         exitAppDialog.show();
+    }
+
+    private void closeExitConfirmationDialog(){
+        if (exitAppDialog != null && exitAppDialog.isShowing()) {
+            exitAppDialog.dismiss();
+        }
     }
 
     private void showFragment(Fragment fragment) {

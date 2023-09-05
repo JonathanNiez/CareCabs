@@ -2,121 +2,180 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/userTypeParentLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context=".RegisterUserType">
 
-
-    <LinearLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/googleRegisterLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        android:elevation="4dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/opensans_semibold"
-            android:text="You are Registering \n using Google"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/google" />
-
-    </LinearLayout>
-
-
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:fontFamily="@font/opensans_semibold"
-            android:text="Are you a..."
-            android:textColor="@color/black"
-            android:textSize="25sp"
-            android:layout_centerHorizontal="true"
-            android:layout_above="@id/userTypeLayout"/>
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        >
 
         <LinearLayout
-            android:id="@+id/userTypeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:layout_margin="10dp"
+            >
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:gravity="center"
-                android:orientation="vertical">
+            <ImageView
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/google"
+                android:layout_marginBottom="10dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="@font/opensans_bold"
-                    android:text="PASSENGER"
-                    android:textColor="@color/black"
-                    android:textSize="25sp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/opensans_semibold"
+                android:text="You are Registering using Google"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
 
-                <ImageButton
-                    android:id="@+id/passengerImgBtn"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/image_button"
-                    android:backgroundTint="@color/gray"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/passenger" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="@font/opensans_bold"
-                    android:gravity="center"
-                    android:text="DRIVER"
-                    android:textColor="@color/black"
-                    android:textSize="25sp" />
-
-                <ImageButton
-                    android:id="@+id/driverImgBtn"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/image_button"
-                    android:backgroundTint="@color/gray"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/driver" />
-
-            </LinearLayout>
 
         </LinearLayout>
 
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/userTypeLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/custom_card_view"
+        android:fontFamily="@font/opensans_semibold"
+        android:padding="5dp"
+        android:text="Are you a..."
+        android:textColor="@color/black"
+        android:textSize="25sp" />
+
+
+    <LinearLayout
+        android:id="@+id/userTypeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/opensans_bold"
+                        android:text="PASSENGER"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:layout_margin="10dp"/>
+
+                    <ImageButton
+                        android:id="@+id/passengerImgBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/image_button"
+                        android:backgroundTint="@color/gray"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/passenger_128"
+                        android:layout_marginBottom="20dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_marginStart="5dp"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
+                        android:fontFamily="@font/opensans_bold"
+                        android:gravity="center"
+                        android:text="DRIVER"
+                        android:textColor="@color/black"
+                        android:textSize="25sp"
+                        android:layout_margin="10dp"/>
+
+                    <ImageButton
+                        android:id="@+id/driverImgBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/image_button"
+                        android:backgroundTint="@color/gray"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/driver_128"
+                        android:layout_marginBottom="20dp"/>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancelBtn"
-        android:layout_width="170dp"
-        android:layout_height="70dp"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="100dp"

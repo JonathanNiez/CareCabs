@@ -172,6 +172,10 @@ public class Login extends AppCompatActivity {
         }
 
         closeExitConfirmationDialog();
+        closeLoginFailedDialog();
+        closePleaseWaitDialog();
+        closeRegisterUsingDialog();
+        closeNoInternetDialog();
     }
 
     @Override
@@ -179,6 +183,10 @@ public class Login extends AppCompatActivity {
         super.onPause();
 
         closeExitConfirmationDialog();
+        closeLoginFailedDialog();
+        closePleaseWaitDialog();
+        closeRegisterUsingDialog();
+        closeNoInternetDialog();
     }
 
     @Override
@@ -206,9 +214,7 @@ public class Login extends AppCompatActivity {
         });
 
         noBtn.setOnClickListener(v -> {
-            if (exitAppDialog != null && exitAppDialog.isShowing()) {
-                exitAppDialog.dismiss();
-            }
+            closeExitConfirmationDialog();
         });
 
         builder.setView(dialogView);
@@ -376,6 +382,7 @@ public class Login extends AppCompatActivity {
                         closePleaseWaitDialog();
 
                         intent = new Intent(this, RegisterUserType.class);
+                        intent.putExtra("registerType", "googleRegister");
                         startActivity(intent);
                         finish();
                     }
@@ -402,25 +409,29 @@ public class Login extends AppCompatActivity {
 
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-                updateConnectionStatus(isConnected);
-
-            }
+            closeNoInternetDialog();
         });
 
         builder.setView(dialogView);
 
         noInternetDialog = builder.create();
         noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+            updateConnectionStatus(isConnected);
+        }
     }
 
     private void initializeNetworkChecker() {
