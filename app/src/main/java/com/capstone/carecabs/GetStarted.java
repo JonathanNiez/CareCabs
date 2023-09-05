@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,6 +26,7 @@ public class GetStarted extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
+        FirebaseApp.initializeApp(this);
 
         if (currentUser != null) {
             intent = new Intent(this, MainActivity.class);
@@ -36,7 +39,26 @@ public class GetStarted extends AppCompatActivity {
         getStartedBtn.setOnClickListener(v -> {
             intent = new Intent(this, Login.class);
             startActivity(intent);
+            finish();
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (exitAppDialog != null && exitAppDialog.isShowing()) {
+            exitAppDialog.dismiss();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (exitAppDialog != null && exitAppDialog.isShowing()) {
+            exitAppDialog.dismiss();
+        }
     }
 
     @Override

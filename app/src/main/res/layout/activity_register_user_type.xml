@@ -8,30 +8,16 @@
     tools:context=".RegisterUserType">
 
 
-    <ImageButton
-        android:id="@+id/imgBackBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/background"
-        android:src="@drawable/back64" />
-
     <LinearLayout
         android:id="@+id/googleRegisterLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/userTypeLayout"
+        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="100dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:visibility="gone"
-        >
+        android:visibility="gone">
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,7 +26,7 @@
             android:text="You are Registering \n using Google"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="24sp" />
+            android:textSize="20sp" />
 
         <ImageView
             android:layout_width="50dp"
@@ -49,13 +35,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/userTypeLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="vertical">
+
 
         <TextView
             android:id="@+id/textView"
@@ -65,13 +45,16 @@
             android:fontFamily="@font/opensans_semibold"
             android:text="Are you a..."
             android:textColor="@color/black"
-            android:textSize="25sp" />
+            android:textSize="25sp"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@id/userTypeLayout"/>
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/userTypeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_centerInParent="true"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -130,21 +113,18 @@
 
         </LinearLayout>
 
-    </LinearLayout>
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/cancelBtn"
         android:layout_width="170dp"
         android:layout_height="70dp"
-        android:background="@drawable/login_button"
-        android:backgroundTint="@color/red"
-        android:text="Cancel"
-        android:fontFamily="@font/opensans_bold"
-        android:textSize="24sp"
-        android:textColor="@color/white"
-        android:layout_below="@id/userTypeLayout"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="50dp"/>
+        android:layout_marginBottom="100dp"
+        android:background="@drawable/custom_button"
+        android:backgroundTint="@color/red"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Cancel"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
 
 </RelativeLayout>

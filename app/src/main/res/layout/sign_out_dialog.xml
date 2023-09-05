@@ -20,7 +20,7 @@
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="25sp"
-        android:background="@drawable/text_view_card"
+        android:background="@drawable/custom_card_view"
         android:padding="5dp"
         />
 
@@ -33,7 +33,7 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="20sp"
-            android:background="@drawable/text_view_card"
+            android:background="@drawable/custom_card_view"
             android:padding="5dp"/>
 
 
@@ -48,7 +48,7 @@
             android:layout_width="120dp"
             android:layout_height="70dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/custom_button"
             android:backgroundTint="@color/red"
             android:text="Sign Out"
             android:textSize="20sp"
@@ -60,7 +60,7 @@
             android:layout_width="120dp"
             android:layout_height="70dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/custom_button"
             android:text="Cancel"
             android:textSize="20sp"
             android:textColor="@color/white"

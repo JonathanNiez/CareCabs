@@ -271,6 +271,10 @@ public class ChangePasswordFragment extends Fragment {
         passwordWarningDialog.show();
     }
 
+    public void onBackPressed() {
+        backToAccountFragment();
+    }
+
     private void backToAccountFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

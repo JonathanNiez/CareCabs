@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".Fragments.AccountFragment">
 
@@ -39,7 +40,8 @@
                     android:layout_below="@id/imgBackBtn"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/opensans_bold"
+                    android:textColor="@color/black"
                     android:text="Account"
                     android:textSize="25sp"
                     android:layout_marginTop="30dp"
@@ -52,16 +54,23 @@
                     android:layout_below="@id/textView"
                     android:layout_centerHorizontal="true"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/account" />
+                    android:src="@drawable/account"
+                    app:civ_border_color="@color/black"
+                    app:civ_border_width="2dp"/>
 
                 <TextView
                     android:id="@+id/fullNameTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/profielPic"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:textAlignment="center"
+                    android:background="@drawable/custom_card_view"
+                    android:padding="5dp"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Name"
                     android:textColor="@color/black"
@@ -69,15 +78,20 @@
 
                 <TextView
                     android:id="@+id/userTypeTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/fullNameTextView"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="20dp"
+                    android:textAlignment="center"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/custom_card_view"
+                    android:padding="5dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="User Type"
                     android:textColor="@color/black"
-                    android:textSize="23sp" />
+                    android:textSize="20sp" />
 
             </RelativeLayout>
 
@@ -87,7 +101,7 @@
                 android:layout_margin="10dp"
                 android:padding="5dp"
                 android:orientation="vertical"
-                android:background="@drawable/text_view_card">
+                android:background="@drawable/custom_card_view">
 
 
                 <TextView
@@ -130,6 +144,18 @@
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
+                <TextView
+                    android:id="@+id/disabilityTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Disability"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    />
+
 
                 <TextView
                     android:id="@+id/driverStatusTextView"
@@ -163,7 +189,7 @@
                     android:id="@+id/editProfileBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/text_view_card"
+                    android:background="@drawable/custom_card_view"
                     android:drawableStart="@drawable/edit_32png"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
@@ -179,7 +205,7 @@
                     android:id="@+id/changePasswordBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/text_view_card"
+                    android:background="@drawable/custom_card_view"
                     android:drawableStart="@drawable/reset_password_32"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
@@ -194,7 +220,7 @@
                     android:id="@+id/appSettingsBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/text_view_card"
+                    android:background="@drawable/custom_card_view"
                     android:drawableStart="@drawable/settings_32"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
@@ -206,10 +232,40 @@
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/aboutBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="@drawable/custom_card_view"
+                    android:drawableStart="@drawable/information_32"
+                    android:drawableEnd="@drawable/right_arrow"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:padding="10dp"
+                    android:text="About"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/contactUsBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:background="@drawable/custom_card_view"
+                    android:drawableStart="@drawable/contact_us_32"
+                    android:drawableEnd="@drawable/right_arrow"
+                    android:drawablePadding="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:padding="10dp"
+                    android:text="Contact Us"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/secAndPriBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/text_view_card"
+                    android:background="@drawable/custom_card_view"
                     android:drawableStart="@drawable/privacy"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"
@@ -224,7 +280,7 @@
                     android:id="@+id/signOutBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@drawable/text_view_card"
+                    android:background="@drawable/custom_card_view"
                     android:drawableEnd="@drawable/logout32"
                     android:fontFamily="@font/opensans_semibold"
                     android:padding="10dp"
@@ -234,7 +290,6 @@
                     android:textSize="20sp" />
 
             </LinearLayout>
-
 
         </LinearLayout>
 

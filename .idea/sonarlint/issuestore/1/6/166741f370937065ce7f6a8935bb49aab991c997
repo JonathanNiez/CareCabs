@@ -1,0 +1,9 @@
+
+|
+java:S1450"ZRemove the "imageButton" field and declare it as a local variable in the relevant methods.(óè×¡ýÿÿÿÿ8èåú«¢1
+I
+java:S1602"",Remove useless curly braces around statement(—á›Û8ï‚€¬¢1
+^
+java:S1874/"<Remove this use of "FragmentPagerAdapter"; it is deprecated.(ýÂÌ”úÿÿÿÿ8ƒæú«¢1
+P
+java:S18744".Remove this use of "<init>"; it is deprecated.(’“±Õþÿÿÿÿ8ƒæú«¢1

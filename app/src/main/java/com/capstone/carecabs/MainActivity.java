@@ -19,7 +19,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Fragments.AboutFragment;
 import com.capstone.carecabs.Fragments.AccountFragment;
+import com.capstone.carecabs.Fragments.AppSettingsFragment;
+import com.capstone.carecabs.Fragments.ChangeFontSizeFragment;
+import com.capstone.carecabs.Fragments.ChangePasswordFragment;
+import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.R;
@@ -31,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private Intent intent;
-    private DoubleTapBackHandler doubleTapBackHandler;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
     private String TAG = "MainActivity";
@@ -39,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
-
+    private boolean shouldExit = false;
     private EditAccountFragment editAccountFragment;
 
 
@@ -49,8 +53,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         showFragment(new HomeFragment());
-
-        doubleTapBackHandler = new DoubleTapBackHandler();
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.home);
@@ -71,28 +73,55 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (doubleTapBackHandler.handleDoubleTap()) {
-            super.onBackPressed();
-        } else {
-            showExitConfirmationDialog();
-        }
+
+    private void exitApp() {
+        shouldExit = true;
+        onBackPressed();
+
+        finish();
     }
 
-    public class DoubleTapBackHandler {
-        private boolean doubleTapped = false;
-        private final Handler handler = new Handler();
+    @Override
+    public void onBackPressed() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
-        public boolean handleDoubleTap() {
-            if (doubleTapped) {
-                return true;
-            }
+        if (currentFragment instanceof AboutFragment) {
+            ((AboutFragment) currentFragment).onBackPressed();
 
-            doubleTapped = true;
-            handler.postDelayed(() -> doubleTapped = false, 2000); // 2 seconds
-            return false;
+            return;
+        } else if (currentFragment instanceof ContactUsFragment) {
+            ((ContactUsFragment) currentFragment).onBackPressed();
+
+            return;
+        } else if (currentFragment instanceof EditAccountFragment) {
+            ((EditAccountFragment) currentFragment).onBackPressed();
+
+            return;
         }
+        else if (currentFragment instanceof ChangePasswordFragment) {
+            ((ChangePasswordFragment) currentFragment).onBackPressed();
+
+            return;
+        }
+        else if (currentFragment instanceof AppSettingsFragment) {
+            ((AppSettingsFragment) currentFragment).onBackPressed();
+
+            return;
+        }
+        else if (currentFragment instanceof ChangeFontSizeFragment) {
+            ((ChangeFontSizeFragment) currentFragment).onBackPressed();
+
+            return;
+        }
+
+
+        if (shouldExit) {
+            super.onBackPressed(); // Exit the app
+        } else {
+            // Show an exit confirmation dialog
+            showExitConfirmationDialog();
+        }
+
     }
 
     private void showExitConfirmationDialog() {
@@ -104,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         Button noBtn = dialogView.findViewById(R.id.noBtn);
 
         yesBtn.setOnClickListener(v -> {
-            finish();
+            exitApp();
         });
 
         noBtn.setOnClickListener(v -> {

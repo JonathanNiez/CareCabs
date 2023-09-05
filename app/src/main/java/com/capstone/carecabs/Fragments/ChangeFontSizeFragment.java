@@ -99,6 +99,10 @@ public class ChangeFontSizeFragment extends Fragment {
         currentFontSize.setText(fontSizeLabelString);
     }
 
+    public void onBackPressed(){
+        backToAppSettingsFragment();
+    }
+
     private void backToAppSettingsFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

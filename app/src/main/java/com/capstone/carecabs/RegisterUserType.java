@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -19,18 +18,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.SignInMethodQueryResult;
 
 public class RegisterUserType extends AppCompatActivity {
 
-    private ImageButton imgBackBtn, passengerImgBtn, driverImgBtn;
+    private ImageButton passengerImgBtn, driverImgBtn;
     private LinearLayout googleRegisterLayout;
     private Button cancelBtn;
     private FirebaseAuth auth;
@@ -41,9 +35,11 @@ public class RegisterUserType extends AppCompatActivity {
     private Intent intent;
     private String registerData, registerType;
     private AlertDialog.Builder builder;
-    private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog, noInternetDialog;
+    private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog,
+            noInternetDialog, cancelRegisterDialog;
     private static final int RC_SIGN_IN = 69;
     private NetworkChangeReceiver networkChangeReceiver;
+    private boolean shouldExit = false;
 
 
     @Override
@@ -66,7 +62,6 @@ public class RegisterUserType extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        imgBackBtn = findViewById(R.id.imgBackBtn);
         passengerImgBtn = findViewById(R.id.passengerImgBtn);
         driverImgBtn = findViewById(R.id.driverImgBtn);
         cancelBtn = findViewById(R.id.cancelBtn);
@@ -76,8 +71,7 @@ public class RegisterUserType extends AppCompatActivity {
             if (getRegisterType.equals("googleRegister")) {
                 googleRegisterLayout.setVisibility(View.VISIBLE);
 
-                intent = googleSignInClient.getSignInIntent();
-                startActivityForResult(intent, RC_SIGN_IN);
+                registerType = "googleRegister";
             } else {
                 registerType = "emailRegister";
             }
@@ -86,16 +80,9 @@ public class RegisterUserType extends AppCompatActivity {
         }
 
         cancelBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
-            finish();
+            showCancelRegisterDialog();
         });
 
-        imgBackBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
-            finish();
-        });
 
         driverImgBtn.setOnClickListener(v -> {
             intent = new Intent(this, Register.class);
@@ -112,10 +99,62 @@ public class RegisterUserType extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        closeCancelRegisterDialog();
+        closeUserTypeDialog();
+    }
+
     protected void onDestroy() {
         super.onDestroy();
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
+        }
+
+        closeCancelRegisterDialog();
+        closeUserTypeDialog();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (shouldExit) {
+            super.onBackPressed(); // Exit the app
+        } else {
+            // Show an exit confirmation dialog
+            showCancelRegisterDialog();
+        }
+    }
+
+    private void showCancelRegisterDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            intent = new Intent(this, Login.class);
+            startActivity(intent);
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            closeCancelRegisterDialog();
+        });
+
+        builder.setView(dialogView);
+
+        cancelRegisterDialog = builder.create();
+        cancelRegisterDialog.show();
+    }
+
+    private void closeCancelRegisterDialog() {
+        if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
+            cancelRegisterDialog.dismiss();
         }
     }
 
@@ -126,7 +165,7 @@ public class RegisterUserType extends AppCompatActivity {
     }
 
     private void showUserTypeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);
 
         View dialogView = getLayoutInflater().inflate(R.layout.user_type_dialog, null);
 
@@ -189,54 +228,6 @@ public class RegisterUserType extends AppCompatActivity {
         emailAlreadyRegisteredDialog.show();
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        String getGoogleEmail = acct.getEmail();
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
-                .addOnCompleteListener(task -> {
-                    SignInMethodQueryResult result = task.getResult();
-                    if (result.getSignInMethods().size() > 0) {
-
-                        showEmailAlreadyRegisteredDialog();
-
-//                        auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
-//                            if (task1.isSuccessful()) {
-//                                intent = new Intent(RegisterUserType.this, LoggingIn.class);
-//                                startActivity(intent);
-//                                finish();
-//                            } else {
-//                                Toast.makeText(RegisterUserType.this, "Failed to Login", Toast.LENGTH_LONG).show();
-//
-//                            }
-//                        }).addOnFailureListener(e -> {
-//                            Toast.makeText(RegisterUserType.this, "Failed to Login", Toast.LENGTH_LONG).show();
-//                            e.printStackTrace();
-//                        });
-
-                    } else {
-                        showEmailAlreadyRegisteredDialog();
-                    }
-                }).addOnFailureListener(e -> {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Failed to Login", Toast.LENGTH_LONG).show();
-                });
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
 
@@ -285,6 +276,5 @@ public class RegisterUserType extends AppCompatActivity {
             showNoInternetDialog();
         }
     }
-
 
 }

@@ -50,10 +50,24 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_preview_desc"
+                android:textColor="@color/black"
+                android:textAlignment="center"
+                android:fontFamily="@font/opensans_semibold"
+                android:textSize="18sp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                />
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
-                android:background="@drawable/text_view_card"
+                android:background="@drawable/custom_card_view"
                 android:layout_margin="10dp">
 
                 <TextView
@@ -66,12 +80,24 @@
                     android:layout_marginEnd="5dp"
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="The quick brown fox jumps over the lazy dog"
+                    android:text="@string/font_size_preview"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="17sp" />
 
             </RelativeLayout>
+
+            <TextView
+                android:id="@+id/fontSizeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Move the slider below\n to change the font size"
+                android:textAlignment="center"
+                android:textColor="@color/black"
+                android:fontFamily="@font/opensans_semibold"
+                android:textSize="18sp"
+                android:layout_marginBottom="5dp"
+                />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -80,24 +106,14 @@
                 android:gravity="center"
                 android:layout_margin="10dp">
 
-                <TextView
-                    android:id="@+id/fontSizeLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Font Size"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/opensans_regular"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="5dp"
-                    />
-
                 <SeekBar
                     android:id="@+id/fontSizeSeekBar"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="70dp"
                     android:max="3"
                     android:progress="1"
                     android:layout_marginBottom="5dp"
+                    android:background="@drawable/custom_card_view"
                     />
 
                 <TextView
@@ -106,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:text="Current Font Size: "
                     android:textColor="@color/black"
-                    android:fontFamily="@font/opensans_regular"
+                    android:fontFamily="@font/opensans_semibold"
                     android:textSize="18sp"
                     />
 
@@ -114,7 +130,7 @@
                     android:id="@+id/saveBtn"
                     android:layout_width="180dp"
                     android:layout_height="70dp"
-                    android:background="@drawable/login_button"
+                    android:background="@drawable/custom_button"
                     android:text="Save"
                     android:textSize="24sp"
                     android:fontFamily="@font/opensans_bold"

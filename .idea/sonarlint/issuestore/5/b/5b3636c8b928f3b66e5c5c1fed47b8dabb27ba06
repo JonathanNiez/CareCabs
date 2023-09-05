@@ -1,0 +1,9 @@
+
+u
+java:S1450"SRemove the "auth" field and declare it as a local variable in the relevant methods.(Ú‡›æøÿÿÿÿ8â‰ƒÓ™1
+|
+java:S1450"ZRemove the "currentUser" field and declare it as a local variable in the relevant methods.(”Ùµ«øÿÿÿÿ8ã‰ƒÓ™1
+Q
+java:S1874"/Remove this use of "Handler"; it is deprecated.(’àŞ–úÿÿÿÿ8êëÌ1
+Q
+java:S1068"/Remove this unused "currentUser" private field.(”Ùµ«øÿÿÿÿ8õØêÌ1

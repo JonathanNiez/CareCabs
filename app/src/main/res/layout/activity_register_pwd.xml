@@ -37,7 +37,7 @@
 
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/logo"
                 android:layout_centerHorizontal="true"
@@ -229,7 +229,7 @@
                     android:text="Tap the Scan ID button below \n to scan your ID"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:textSize="16sp" />
+                    android:textSize="18sp" />
 
 
             </LinearLayout>
@@ -261,12 +261,12 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/scanIDBtn"
-                android:layout_width="120dp"
+                android:layout_width="150dp"
                 android:layout_height="50dp"
                 android:layout_below="@id/textLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:background="@drawable/login_button"
+                android:background="@drawable/custom_button"
                 android:backgroundTint="@color/dark_gray"
                 android:drawableEnd="@drawable/scan"
                 android:fontFamily="@font/opensans_bold"
@@ -276,13 +276,13 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/doneBtn"
-                android:layout_width="120dp"
+                android:layout_width="150dp"
                 android:layout_height="50dp"
                 android:layout_below="@id/scanIDBtn"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="50dp"
-                android:background="@drawable/login_button"
+                android:background="@drawable/custom_button"
                 android:fontFamily="@font/opensans_bold"
                 android:text="Done"
                 android:textColor="@color/white"

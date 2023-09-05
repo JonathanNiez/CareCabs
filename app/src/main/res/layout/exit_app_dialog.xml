@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="200dp"
-    android:background="@color/dirty_yellow">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/yellow">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_margin="20dp"
         android:fontFamily="@font/opensans_semibold"
         android:text="Exit App?"
+        android:background="@drawable/custom_card_view"
+        android:padding="5dp"
         android:textColor="@color/black"
         android:textSize="30sp" />
 
@@ -19,8 +22,6 @@
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textView"
-        android:layout_centerHorizontal="true"
         android:layout_margin="10dp">
 
         <androidx.appcompat.widget.AppCompatButton
@@ -28,7 +29,7 @@
             android:layout_width="100dp"
             android:layout_height="70dp"
             android:layout_marginEnd="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/custom_button"
             android:backgroundTint="@color/red"
             android:text="Exit"
             android:textSize="20sp"
@@ -39,11 +40,11 @@
             android:layout_width="100dp"
             android:layout_height="70dp"
             android:layout_marginStart="10dp"
-            android:background="@drawable/login_button"
+            android:background="@drawable/custom_button"
             android:text="No"
             android:textSize="20sp"
             android:textColor="@color/white" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

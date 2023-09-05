@@ -20,7 +20,7 @@
         android:id="@+id/getStartedBtn"
         android:layout_width="185dp"
         android:layout_height="78dp"
-        android:background="@drawable/login_button"
+        android:background="@drawable/custom_button"
         android:text="Get Started"
         android:textSize="24dp"
         android:fontFamily="@font/opensans_bold"

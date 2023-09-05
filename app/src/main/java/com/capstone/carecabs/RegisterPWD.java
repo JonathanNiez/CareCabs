@@ -53,10 +53,14 @@ public class RegisterPWD extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "RegisterPWD";
+    private String verificationStatus = "Not Verified";
+    private boolean shouldExit = false;
+    private boolean isIDScanned = false;
     private Intent intent;
     private Calendar selectedDate;
     private AlertDialog.Builder builder;
-    private AlertDialog noInternetDialog;
+    private AlertDialog noInternetDialog, registerFailedDialog,
+            cancelRegisterDialog, idNotScannedDialog;
     private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
@@ -84,9 +88,7 @@ public class RegisterPWD extends AppCompatActivity {
         progressBarLayout = findViewById(R.id.progressBarLayout);
 
         imgBackBtn.setOnClickListener(v -> {
-            intent = new Intent(this, RegisterUserType.class);
-            startActivity(intent);
-            finish();
+            showCancelRegisterDialog();
         });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -101,7 +103,7 @@ public class RegisterPWD extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    Toast.makeText(RegisterPWD.this, "Please select your sex", Toast.LENGTH_SHORT).show();
+                    spinnerSex.setSelection(0);
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.storeSelectedSex = selectedSex;
@@ -140,7 +142,6 @@ public class RegisterPWD extends AppCompatActivity {
             }
         });
 
-
         birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
         });
@@ -162,66 +163,166 @@ public class RegisterPWD extends AppCompatActivity {
                 doneBtn.setVisibility(View.VISIBLE);
 
             } else {
-                if (currentUser != null) {
-                    userID = currentUser.getUid();
+                StaticDataPasser.storeFirstName = stringFirstname;
+                StaticDataPasser.storeLastName = stringLastname;
 
-                    if (getRegisterData.equals("Persons with Disabilities (PWD)")) {
-                        databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
-
-                        Map<String, Object> registerUser = new HashMap<>();
-                        registerUser.put("firstname", stringFirstname);
-                        registerUser.put("lastname", stringLastname);
-                        registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
-                        registerUser.put("age", StaticDataPasser.storeCurrentAge);
-                        registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
-                        registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-                        registerUser.put("userType", "Persons with Disabilities (PWD)");
-
-                        databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-
-                                StaticDataPasser.storeSelectedSex = null;
-                                StaticDataPasser.storeCurrentAge = 0;
-                                StaticDataPasser.storeCurrentBirthDate = null;
-                                StaticDataPasser.storeSelectedDisability = null;
-
-                                showRegisterSuccessNotification();
-
-                                intent = new Intent(RegisterPWD.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Log.e(TAG, String.valueOf(task.getException()));
-
-                                progressBarLayout.setVisibility(View.GONE);
-                                doneBtn.setVisibility(View.VISIBLE);
-                            }
-                        }).addOnFailureListener(e -> {
-                            progressBarLayout.setVisibility(View.GONE);
-                            doneBtn.setVisibility(View.VISIBLE);
-
-                            Log.e(TAG, e.getMessage());
-                        });
-                    }
+                if (!isIDScanned) {
+                    showIDNotScannedDialog();
                 } else {
-                    auth.signOut();
-
-                    intent = new Intent(this, Login.class);
-                    startActivity(intent);
-                    finish();
+                    verificationStatus = "Verified";
+                    registerPWD(verificationStatus);
                 }
+
             }
         });
     }
 
+
     @Override
+    public void onBackPressed() {
+
+        if (shouldExit) {
+            super.onBackPressed(); // Exit the app
+        } else {
+            // Show an exit confirmation dialog
+            showCancelRegisterDialog();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        closeCancelRegisterDialog();
+        closeIDNotScannedDialog();
+    }
+
     protected void onDestroy() {
         super.onDestroy();
-
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
+        }
+
+        closeCancelRegisterDialog();
+        closeIDNotScannedDialog();
+    }
+
+    private void registerPWD(String xVerificationStatus) {
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
+
+            Map<String, Object> registerUser = new HashMap<>();
+            registerUser.put("firstname", StaticDataPasser.storeFirstName);
+            registerUser.put("lastname", StaticDataPasser.storeLastName);
+            registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
+            registerUser.put("age", StaticDataPasser.storeCurrentAge);
+            registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+            registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+            registerUser.put("userType", "Persons with Disabilities (PWD)");
+            registerUser.put("verificationStatus", xVerificationStatus);
+
+            databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    progressBarLayout.setVisibility(View.GONE);
+                    doneBtn.setVisibility(View.VISIBLE);
+
+                    StaticDataPasser.storeFirstName = null;
+                    StaticDataPasser.storeLastName = null;
+                    StaticDataPasser.storeSelectedSex = null;
+                    StaticDataPasser.storeCurrentAge = 0;
+                    StaticDataPasser.storeCurrentBirthDate = null;
+                    StaticDataPasser.storeSelectedDisability = null;
+
+                    showRegisterSuccessNotification();
+
+                    intent = new Intent(RegisterPWD.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                } else {
+                    showRegisterFailedDialog();
+
+                    progressBarLayout.setVisibility(View.GONE);
+                    doneBtn.setVisibility(View.VISIBLE);
+
+                    Log.e(TAG, String.valueOf(task.getException()));
+                }
+            });
+        } else {
+            showRegisterFailedDialog();
+
+            progressBarLayout.setVisibility(View.GONE);
+            doneBtn.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void showIDNotScannedDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.id_not_scanned_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            verificationStatus = "Not Verified";
+            registerPWD(verificationStatus);
+        });
+
+        noBtn.setOnClickListener(v -> {
+            closeIDNotScannedDialog();
+        });
+
+        builder.setView(dialogView);
+
+        idNotScannedDialog = builder.create();
+        idNotScannedDialog.show();
+    }
+
+    private void closeIDNotScannedDialog() {
+        if (idNotScannedDialog != null && idNotScannedDialog.isShowing()) {
+            idNotScannedDialog.dismiss();
+        }
+    }
+
+    private void showCancelRegisterDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            StaticDataPasser.storeFirstName = null;
+            StaticDataPasser.storeLastName = null;
+            StaticDataPasser.storeSelectedSex = null;
+            StaticDataPasser.storeCurrentAge = 0;
+            StaticDataPasser.storeCurrentBirthDate = null;
+            StaticDataPasser.storeSelectedDisability = null;
+
+            intent = new Intent(this, Login.class);
+            startActivity(intent);
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            closeCancelRegisterDialog();
+        });
+
+
+        builder.setView(dialogView);
+
+        cancelRegisterDialog = builder.create();
+        cancelRegisterDialog.show();
+    }
+
+    private void closeCancelRegisterDialog() {
+        if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
+            cancelRegisterDialog.dismiss();
         }
     }
 
@@ -263,7 +364,6 @@ public class RegisterPWD extends AppCompatActivity {
                 }, year, month, day);
         datePickerDialog.show();
     }
-
 
     private void showRegisterSuccessNotification() {
         String channelId = "registration_channel_id"; // Change this to your desired channel ID
@@ -309,7 +409,7 @@ public class RegisterPWD extends AppCompatActivity {
         noInternetDialog.show();
     }
 
-    private void initializeNetworkChecker(){
+    private void initializeNetworkChecker() {
         networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
             @Override
             public void onNetworkChanged(boolean isConnected) {
@@ -335,4 +435,30 @@ public class RegisterPWD extends AppCompatActivity {
             showNoInternetDialog();
         }
     }
+
+    private void showRegisterFailedDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            closeRegisterFailedDialog();
+        });
+
+        builder.setView(dialogView);
+
+        registerFailedDialog = builder.create();
+        registerFailedDialog.show();
+
+    }
+
+    private void closeRegisterFailedDialog() {
+        if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
+            registerFailedDialog.dismiss();
+        }
+    }
+
 }

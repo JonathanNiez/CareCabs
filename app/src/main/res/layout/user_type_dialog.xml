@@ -3,84 +3,83 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@color/yellow"
     android:gravity="center"
-    android:background="@color/yellow">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
         android:fontFamily="@font/opensans_semibold"
         android:text="Are you a..."
         android:textColor="@color/black"
-        android:textSize="30sp" />
+        android:textSize="25sp" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
             android:backgroundTint="@color/white"
             android:elevation="4dp"
-            app:cardCornerRadius="8dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp">
+            app:cardCornerRadius="8dp">
 
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="175dp"
-                >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
-                    android:text="SENIOR\nCITIZEN"
+                    android:text="SENIOR CITIZEN"
                     android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:layout_centerHorizontal="true"
                     android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/seniorImgBtn"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/senior"
-                    android:layout_marginBottom="10dp"/>
+                    android:src="@drawable/senior_128" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
 
         </androidx.cardview.widget.CardView>
 
 
         <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:backgroundTint="@color/white"
             android:elevation="4dp"
-            app:cardCornerRadius="8dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            >
+            app:cardCornerRadius="8dp">
 
-            <RelativeLayout
-                android:layout_width="150dp"
-                android:layout_height="175dp"
-               >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -88,22 +87,19 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
                     android:text="PWD"
-                    android:layout_centerHorizontal="true"
                     android:textColor="@color/black"
                     android:textSize="25sp" />
 
                 <ImageButton
                     android:id="@+id/pwdImgBtn"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
                     android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/pwd"
-                    android:layout_marginBottom="10dp"/>
+                    android:src="@drawable/pwd_128" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
@@ -114,13 +110,13 @@
         android:id="@+id/cancelBtn"
         android:layout_width="180dp"
         android:layout_height="70dp"
-        android:background="@drawable/login_button"
-        android:backgroundTint="@color/red"
-        android:text="Cancel"
-        android:fontFamily="@font/opensans_bold"
-        android:textSize="24sp"
-        android:textColor="@color/white"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"/>
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/custom_button"
+        android:backgroundTint="@color/red"
+        android:fontFamily="@font/opensans_bold"
+        android:text="Cancel"
+        android:textColor="@color/white"
+        android:textSize="24sp" />
 
 </LinearLayout>

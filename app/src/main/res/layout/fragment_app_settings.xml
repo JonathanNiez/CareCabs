@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".Fragments.AppSettingsFragment">
 
     <ScrollView
@@ -58,7 +59,7 @@
                     android:id="@+id/changeFontSizeBtn"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:background="@color/background"
+                    android:background="@drawable/custom_card_view"
                     android:drawableStart="@drawable/font_adjustment_32"
                     android:drawableEnd="@drawable/right_arrow"
                     android:drawablePadding="5dp"

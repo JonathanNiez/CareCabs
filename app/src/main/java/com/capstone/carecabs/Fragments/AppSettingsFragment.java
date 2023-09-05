@@ -43,6 +43,10 @@ public class AppSettingsFragment extends Fragment {
 
         return view;
     }
+
+    public void onBackPressed(){
+        backToAccountFragment();
+    }
     private void goToChangeFontSizeFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

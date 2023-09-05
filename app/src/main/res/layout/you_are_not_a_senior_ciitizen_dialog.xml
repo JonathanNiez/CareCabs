@@ -24,7 +24,7 @@
         android:layout_width="185dp"
         android:layout_height="78dp"
         android:layout_below="@+id/textView"
-        android:background="@drawable/login_button"
+        android:background="@drawable/custom_button"
         android:layout_centerHorizontal="true"
         android:text="Okay"
         android:textColor="@color/white"

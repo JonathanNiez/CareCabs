@@ -3,11 +3,9 @@ package com.capstone.carecabs;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -49,10 +47,12 @@ public class Login extends AppCompatActivity {
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInClient googleSignInClient;
     private String TAG = "Login";
+    private boolean shouldExit = false;
     private static final int RC_SIGN_IN = 69;
     private AlertDialog noInternetDialog, emailDialog,
             emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
-            pleaseWaitDialog, registerUsingDialog;
+            pleaseWaitDialog, registerUsingDialog, loginFailedDialog,
+            exitAppDialog;
     private NetworkChangeReceiver networkChangeReceiver;
     private AlertDialog.Builder builder;
 
@@ -86,6 +86,8 @@ public class Login extends AppCompatActivity {
         });
 
         googleImgBtn.setOnClickListener(v -> {
+            showPleaseWaitDialog();
+
             intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, RC_SIGN_IN);
         });
@@ -109,6 +111,7 @@ public class Login extends AppCompatActivity {
                 loginBtn.setVisibility(View.VISIBLE);
 
             } else {
+                showPleaseWaitDialog();
                 googleSignInLayout.setVisibility(View.GONE);
 
                 auth.fetchSignInMethodsForEmail(stringEmail)
@@ -122,6 +125,7 @@ public class Login extends AppCompatActivity {
                                     auth.signInWithEmailAndPassword(stringEmail, stringPassword)
                                             .addOnCompleteListener(task1 -> {
                                                 if (task1.isSuccessful()) {
+                                                    closePleaseWaitDialog();
 
                                                     intent = new Intent(Login.this, LoggingIn.class);
                                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -130,30 +134,31 @@ public class Login extends AppCompatActivity {
 
                                                     Log.i(TAG, "Login Success");
                                                 } else {
-                                                    Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
-                                                }
-                                            }).addOnFailureListener(e -> {
-                                                e.printStackTrace();
+                                                    closePleaseWaitDialog();
+                                                    showLoginFailedDialog();
 
-                                                progressBarLayout.setVisibility(View.GONE);
-                                                loginBtn.setVisibility(View.VISIBLE);
+                                                    progressBarLayout.setVisibility(View.GONE);
+                                                    loginBtn.setVisibility(View.VISIBLE);
+
+                                                    Log.e(TAG, String.valueOf(task1.getException()));
+                                                }
                                             });
 
                                 } else {
                                     showIncorrectEmailOrPasswordDialog();
+                                    closePleaseWaitDialog();
+
+                                    Log.e(TAG, String.valueOf(task.getException()));
                                 }
-                                Log.i(TAG, "Login Success");
+
                             } else {
-                                Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
+                                showLoginFailedDialog();
+                                closePleaseWaitDialog();
+
+                                Log.e(TAG, String.valueOf(task.getException()));
                             }
 
-
-                        }).addOnFailureListener(e -> {
-                            Toast.makeText(this, "Login Failed", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
-
                         });
-
             }
         });
     }
@@ -165,17 +170,57 @@ public class Login extends AppCompatActivity {
         if (networkChangeReceiver != null) {
             unregisterReceiver(networkChangeReceiver);
         }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        closeExitConfirmationDialog();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
+        closeExitConfirmationDialog();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (shouldExit) {
+            super.onBackPressed(); // Exit the app
+        } else {
+            // Show an exit confirmation dialog
+            showExitConfirmationDialog();
+        }
+
+    }
+
+    private void showExitConfirmationDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.exit_app_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            if (exitAppDialog != null && exitAppDialog.isShowing()) {
+                exitAppDialog.dismiss();
+            }
+        });
+
+        builder.setView(dialogView);
+
+        exitAppDialog = builder.create();
+        exitAppDialog.show();
+    }
+
+    private void closeExitConfirmationDialog() {
+        if (exitAppDialog != null && exitAppDialog.isShowing()) {
+            exitAppDialog.dismiss();
+        }
     }
 
     private void showEmailNotRegisterDialog() {
@@ -245,7 +290,6 @@ public class Login extends AppCompatActivity {
         emailDialog.show();
     }
 
-
     private void showRegisterUsingDialog() {
 
         builder = new AlertDialog.Builder(this);
@@ -261,6 +305,7 @@ public class Login extends AppCompatActivity {
             intent.putExtra("registerType", "googleRegister");
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
             closeRegisterUsingDialog();
         });
@@ -270,6 +315,7 @@ public class Login extends AppCompatActivity {
             intent.putExtra("registerType", "emailRegister");
             startActivity(intent);
             finish();
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
             closeRegisterUsingDialog();
         });
@@ -307,14 +353,12 @@ public class Login extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        showPleaseWaitDialog();
-
         String getGoogleEmail = acct.getEmail();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
                 .addOnCompleteListener(task -> {
                     SignInMethodQueryResult result = task.getResult();
-                    if (result.getSignInMethods().size() > 0) {
+                    if (!result.getSignInMethods().isEmpty()) {
                         auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 intent = new Intent(Login.this, LoggingIn.class);
@@ -324,35 +368,23 @@ public class Login extends AppCompatActivity {
                                 closePleaseWaitDialog();
                             } else {
                                 closePleaseWaitDialog();
-
-                                Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
+                                showLoginFailedDialog();
                             }
 
-                        }).addOnFailureListener(e -> {
-                            closePleaseWaitDialog();
-
-                            Toast.makeText(Login.this, "Failed to Login", Toast.LENGTH_LONG).show();
-                            e.printStackTrace();
                         });
                     } else {
-
                         closePleaseWaitDialog();
 
-                        intent = new Intent(Login.this, RegisterUserType.class);
-                        intent.putExtra("registerType", "googleRegister");
+                        intent = new Intent(this, RegisterUserType.class);
+                        startActivity(intent);
+                        finish();
                     }
-                    startActivity(intent);
-                    finish();
-                }).addOnFailureListener(e -> {
-                    closePleaseWaitDialog();
-
-                    e.printStackTrace();
-                    Toast.makeText(this, "Failed to Login", Toast.LENGTH_LONG).show();
                 });
     }
 
     private void showPleaseWaitDialog() {
         builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
@@ -362,8 +394,8 @@ public class Login extends AppCompatActivity {
         pleaseWaitDialog.show();
     }
 
-    private void closePleaseWaitDialog(){
-        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()){
+    private void closePleaseWaitDialog() {
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
             pleaseWaitDialog.dismiss();
         }
     }
@@ -391,7 +423,7 @@ public class Login extends AppCompatActivity {
         noInternetDialog.show();
     }
 
-    private void initializeNetworkChecker(){
+    private void initializeNetworkChecker() {
         networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
             @Override
             public void onNetworkChanged(boolean isConnected) {
@@ -417,4 +449,30 @@ public class Login extends AppCompatActivity {
             showNoInternetDialog();
         }
     }
+
+    private void showLoginFailedDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.login_failed_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            closeLoginFailedDialog();
+        });
+
+        builder.setView(dialogView);
+
+        loginFailedDialog = builder.create();
+        loginFailedDialog.show();
+
+    }
+
+    private void closeLoginFailedDialog() {
+        if (loginFailedDialog != null && loginFailedDialog.isShowing()) {
+            loginFailedDialog.dismiss();
+        }
+    }
+
 }

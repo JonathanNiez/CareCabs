@@ -82,6 +82,7 @@
                     app:helperTextTextColor="@color/black"
                     app:helperText="Your Email"
                     android:layout_marginBottom="10dp"
+                    app:startIconDrawable="@drawable/email_24"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -106,6 +107,7 @@
                     app:helperTextTextColor="@color/black"
                     app:helperText="Your Password"
                     android:layout_marginBottom="10dp"
+                    app:startIconDrawable="@drawable/password_24"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -131,6 +133,7 @@
                     android:layout_marginBottom="10dp"
                     app:helperTextTextColor="@color/black"
                     app:helperText="Match your Password"
+                    app:startIconDrawable="@drawable/password_24"
                     >
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -178,39 +181,12 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/googleRegisterLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp"
-                android:gravity="center"
-                android:layout_below="@id/linearLayout"
-                android:visibility="gone"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="You are Registering \n using Google"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="24sp"
-                    />
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/google"/>
-
-            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/progressBarLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/googleRegisterLayout"
+                android:layout_below="@id/linearLayout"
                 android:layout_centerHorizontal="true"
                 android:gravity="center"
                 android:layout_marginTop="10dp"
@@ -240,12 +216,12 @@
                 android:id="@+id/nextBtn"
                 android:layout_width="180dp"
                 android:layout_height="70dp"
-                android:background="@drawable/login_button"
+                android:background="@drawable/custom_button"
                 android:text="Next"
                 android:fontFamily="@font/opensans_bold"
                 android:textSize="24sp"
                 android:textColor="@color/white"
-                android:layout_below="@id/googleRegisterLayout"
+                android:layout_below="@id/linearLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="50dp"/>

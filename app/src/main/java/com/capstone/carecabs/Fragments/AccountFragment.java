@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -39,12 +40,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class AccountFragment extends Fragment {
     private Button signOutBtn, editProfileBtn, changePasswordBtn,
-            secuAndPriBtn, appSettingsBtn;
+            secuAndPriBtn, appSettingsBtn, aboutBtn, contactUsBtn;
     private ImageButton imgBackBtn;
     private ImageView profilePic;
     private TextView fullNameTextView, userTypeTextView,
             ageTextView, statusTextView, driverStatusTextView,
-            birthdateTextView, setTextView;
+            birthdateTextView, setTextView, disabilityTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
@@ -54,6 +55,7 @@ public class AccountFragment extends Fragment {
     private AlertDialog signOutDialog, pleaseWaitDialog, noInternetDialog;
     private AlertDialog.Builder builder;
     private NetworkChangeReceiver networkChangeReceiver;
+    private Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,11 +67,12 @@ public class AccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_account, container, false);
 
+        context = getContext();
         initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        FirebaseApp.initializeApp(getContext());
+        FirebaseApp.initializeApp(context);
 
         fullNameTextView = view.findViewById(R.id.fullNameTextView);
         userTypeTextView = view.findViewById(R.id.userTypeTextView);
@@ -78,6 +81,7 @@ public class AccountFragment extends Fragment {
         driverStatusTextView = view.findViewById(R.id.driverStatusTextView);
         birthdateTextView = view.findViewById(R.id.birthdateTextView);
         setTextView = view.findViewById(R.id.sexTextView);
+        disabilityTextView = view.findViewById(R.id.disabilityTextView);
         changePasswordBtn = view.findViewById(R.id.changePasswordBtn);
         signOutBtn = view.findViewById(R.id.signOutBtn);
         editProfileBtn = view.findViewById(R.id.editProfileBtn);
@@ -85,32 +89,28 @@ public class AccountFragment extends Fragment {
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         secuAndPriBtn = view.findViewById(R.id.secAndPriBtn);
         appSettingsBtn = view.findViewById(R.id.appSettingsBtn);
+        contactUsBtn = view.findViewById(R.id.contactUsBtn);
+        aboutBtn = view.findViewById(R.id.aboutBtn);
 
         loadUserProfileInfo();
 
-        editProfileBtn.setOnClickListener(v -> {
-            goToEditAccountFragment();
-        });
+        editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
         secuAndPriBtn.setOnClickListener(v -> {
 
         });
 
-        appSettingsBtn.setOnClickListener(v -> {
-            goToAssSettingsFragment();
-        });
+        aboutBtn.setOnClickListener(v -> goToAboutFragment());
 
-        changePasswordBtn.setOnClickListener(v -> {
-            goToChangePasswordFragment();
-        });
+        contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
 
-        imgBackBtn.setOnClickListener(v -> {
-            backToHomeFragment();
-        });
+        appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
 
-        signOutBtn.setOnClickListener(v -> {
-            showSignOutDialog();
-        });
+        changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
+
+        imgBackBtn.setOnClickListener(v -> backToHomeFragment());
+
+        signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
         return view;
     }
@@ -145,8 +145,9 @@ public class AccountFragment extends Fragment {
                     if (snapshot.exists()) {
 
                         String getFirstname, getLastname, getProfilePic, fullName,
-                                getUserType, getStatus, getBirthdate,
-                                getSex;
+                                getUserType, getBirthdate,
+                                getSex, getUserVerificationStatus,
+                                getDisability;
                         int getAge;
                         Boolean getDriverStatus;
 
@@ -155,10 +156,10 @@ public class AccountFragment extends Fragment {
                         if (snapshot.child("driver").hasChild(userID)) {
 
                             driverSnapshot = snapshot.child("driver").child(userID);
-                            getStatus = driverSnapshot.child("status").getValue(String.class);
                             getUserType = driverSnapshot.child("userType").getValue(String.class);
                             getFirstname = driverSnapshot.child("firstname").getValue(String.class);
                             getLastname = driverSnapshot.child("lastname").getValue(String.class);
+                            getUserVerificationStatus = driverSnapshot.child("verificationStatus").getValue(String.class);
                             getAge = driverSnapshot.child("age").getValue(Integer.class);
                             getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
                             getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
@@ -178,13 +179,12 @@ public class AccountFragment extends Fragment {
                             birthdateTextView.setText("Birthdate: " + getBirthdate);
                             setTextView.setText("Sex: " + getSex);
 
-                            if (getUserType.equals("Verified")) {
+                            if (getUserVerificationStatus.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-
                             } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getStatus);
+                            statusTextView.setText("Status: " + getUserVerificationStatus);
 
                             driverStatusTextView.setVisibility(View.VISIBLE);
                             if (getDriverStatus) {
@@ -196,12 +196,12 @@ public class AccountFragment extends Fragment {
 
                             }
 
-                            closeLoadingDialog();
+                            closePleaseWaitDialog();
 
                         } else if (snapshot.child("senior").hasChild(userID)) {
 
                             seniorSnapshot = snapshot.child("senior").child(userID);
-                            getStatus = seniorSnapshot.child("status").getValue(String.class);
+                            getUserVerificationStatus = seniorSnapshot.child("verificationStatus").getValue(String.class);
                             getAge = seniorSnapshot.child("age").getValue(Integer.class);
                             getUserType = seniorSnapshot.child("userType").getValue(String.class);
                             getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
@@ -222,21 +222,21 @@ public class AccountFragment extends Fragment {
                             birthdateTextView.setText("Birthdate: " + getBirthdate);
                             setTextView.setText("Sex: " + getSex);
 
-                            if (getUserType.equals("Verified")) {
+                            if (getUserVerificationStatus.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
                             } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getStatus);
+                            statusTextView.setText("Status: " + getUserVerificationStatus);
 
-                            closeLoadingDialog();
+                            closePleaseWaitDialog();
 
 
                         } else if (snapshot.child("pwd").hasChild(userID)) {
 
                             pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getStatus = pwdSnapshot.child("status").getValue(String.class);
+                            getUserVerificationStatus = pwdSnapshot.child("verificationStatus").getValue(String.class);
                             getUserType = pwdSnapshot.child("userType").getValue(String.class);
                             getAge = pwdSnapshot.child("age").getValue(Integer.class);
                             getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
@@ -244,6 +244,7 @@ public class AccountFragment extends Fragment {
                             getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
                             getBirthdate = pwdSnapshot.child("birthdate").getValue(String.class);
                             getSex = pwdSnapshot.child("sex").getValue(String.class);
+                            getDisability = pwdSnapshot.child("disability").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
                                 Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
@@ -257,16 +258,18 @@ public class AccountFragment extends Fragment {
                             ageTextView.setText("Age: " + getAge);
                             birthdateTextView.setText("Birthdate: " + getBirthdate);
                             setTextView.setText("Sex: " + getSex);
+                            disabilityTextView.setVisibility(View.VISIBLE);
+                            disabilityTextView.setText("Disability: " + getDisability);
 
-                            if (getUserType.equals("Verified")) {
+                            if (getUserVerificationStatus.equals("Verified")) {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
                             } else {
                                 statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getStatus);
+                            statusTextView.setText("Status: " + getUserVerificationStatus);
 
-                            closeLoadingDialog();
+                            closePleaseWaitDialog();
 
                         }
                     } else {
@@ -293,7 +296,10 @@ public class AccountFragment extends Fragment {
         if (networkChangeReceiver != null) {
             getContext().unregisterReceiver(networkChangeReceiver);
         }
+
+        closePleaseWaitDialog();
     }
+
 
     @Override
     public void onPause() {
@@ -302,6 +308,7 @@ public class AccountFragment extends Fragment {
 
     private void showSignOutDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
 
@@ -327,6 +334,7 @@ public class AccountFragment extends Fragment {
 
     private void showPleaseWaitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
 
         View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
@@ -336,7 +344,7 @@ public class AccountFragment extends Fragment {
         pleaseWaitDialog.show();
     }
 
-    private void closeLoadingDialog() {
+    private void closePleaseWaitDialog() {
         if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
             pleaseWaitDialog.dismiss();
         }
@@ -351,10 +359,26 @@ public class AccountFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void goToAssSettingsFragment() {
+    private void goToAppSettingsFragment() {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, new AppSettingsFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void goToAboutFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new AboutFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    private void goToContactUsFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new ContactUsFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -384,7 +408,7 @@ public class AccountFragment extends Fragment {
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()){
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
                 noInternetDialog.dismiss();
 
                 boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
@@ -397,7 +421,8 @@ public class AccountFragment extends Fragment {
         noInternetDialog = builder.create();
         noInternetDialog.show();
     }
-    private void initializeNetworkChecker(){
+
+    private void initializeNetworkChecker() {
         networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
             @Override
             public void onNetworkChanged(boolean isConnected) {

@@ -83,7 +83,7 @@
             android:layout_width="300dp"
             android:layout_height="75dp"
             android:layout_gravity="center"
-            android:background="@drawable/login_button"
+            android:background="@drawable/custom_button"
             android:drawableStart="@drawable/location"
             android:fontFamily="@font/opensans_semibold"
             android:text="Set Location on Map"

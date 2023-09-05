@@ -1,0 +1,15 @@
+
+^kotlin:S1172ü">Use "_" instead of this unused lambda parameter "whichButton".(˜ß‰ş8òÖÕ¢1
+`kotlin:S6615£";Remove this variable, which is assigned but never accessed.(Şõø²ÿÿÿÿÿ8ôÖÕ¢1
+`kotlin:S6615¢";Remove this variable, which is assigned but never accessed.(¯ÅÜåüÿÿÿÿ8ôÖÕ¢1
+[kotlin:S6615¡";Remove this variable, which is assigned but never accessed.(äÁ±Û8ôÖÕ¢1
+Kkotlin:S6615¯"&The value assigned here is never used.(ÔÑèÅûÿÿÿÿ8ôÖÕ¢1
+Fkotlin:S6615§"&The value assigned here is never used.(Ú£üø8ôÖÕ¢1
+Kkotlin:S6615³"&The value assigned here is never used.(ı¦²„ÿÿÿÿÿ8ôÖÕ¢1
+Ckotlin:S125£"Remove this commented out code.(´‘…ôûÿÿÿÿ8øÖÕ¢1
+Xkotlin:S1144É"8Remove this unused private "flyToCameraPosition" method.(ë¢„š8ÿÖÕ¢1
+Xkotlin:S1144Ø"8Remove this unused private "addCustomAnnotation" method.(¨„–¨8€ÖÕ¢1
+Ukotlin:S1481÷"0Remove this unused "jsonElement" local variable.(¢›Åÿÿÿÿÿ8‰ÖÕ¢1
+Hkotlin:S1874Û"#Deprecated code should not be used.(Ğ ÷¡øÿÿÿÿ8ÖÕ¢1
+pkotlin:S6516u"LReplace explicit functional interface implementation with lambda expression.(½ŸÌ úÿÿÿÿ8’ÖÕ¢1
+]kotlin:S6511¦"=Merge chained "if" statements into a single "when" statement.(Ó™Ÿ8”ÖÕ¢1

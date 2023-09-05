@@ -3,8 +3,10 @@ package com.capstone.carecabs;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -23,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
@@ -39,19 +43,23 @@ public class ScanID extends AppCompatActivity {
     private ImageView idPreview;
     private Uri imageUri;
     private AlertDialog.Builder builder;
-    private AlertDialog optionsDialog;
+    private AlertDialog optionsDialog, cancelScanIDDialog, noInternetDialog;
     private TextRecognizer textRecognizer;
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
-
+    private Intent intent;
     private String TAG = "ScanID";
+    private boolean shouldExit = false;
+    private NetworkChangeReceiver networkChangeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_id);
+
+        initializeNetworkChecker();
 
         imgBackBtn = findViewById(R.id.imgBackBtn);
         getImageBtn = findViewById(R.id.getImageBtn);
@@ -72,6 +80,69 @@ public class ScanID extends AppCompatActivity {
 //
             showOptionsDialog();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (shouldExit) {
+            super.onBackPressed(); // Exit the app
+        } else {
+            // Show an exit confirmation dialog
+            showCancelRegisterDialog();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        closeCancelScanIDDialog();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (networkChangeReceiver != null) {
+            unregisterReceiver(networkChangeReceiver);
+        }
+
+        closeCancelScanIDDialog();
+    }
+
+    private void showCancelRegisterDialog() {
+
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.cancel_scan_id_dialog, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        yesBtn.setOnClickListener(v -> {
+            intent = new Intent(this, Login.class);
+            startActivity(intent);
+            finish();
+        });
+
+        noBtn.setOnClickListener(v -> {
+            if (cancelScanIDDialog != null && cancelScanIDDialog.isShowing()) {
+                cancelScanIDDialog.dismiss();
+            }
+        });
+
+
+        builder.setView(dialogView);
+
+        cancelScanIDDialog = builder.create();
+        cancelScanIDDialog.show();
+    }
+
+    private void closeCancelScanIDDialog() {
+        if (cancelScanIDDialog != null && cancelScanIDDialog.isShowing()) {
+            cancelScanIDDialog.isShowing();
+        }
     }
 
     private void checkPermission() {
@@ -287,6 +358,56 @@ public class ScanID extends AppCompatActivity {
         } else {
             Log.e(TAG, "Permission Denied");
 
+        }
+    }
+
+    private void showNoInternetDialog() {
+        builder = new AlertDialog.Builder(this);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+
+                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+                updateConnectionStatus(isConnected);
+
+            }
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    private void initializeNetworkChecker() {
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
         }
     }
 }

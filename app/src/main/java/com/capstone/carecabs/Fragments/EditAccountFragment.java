@@ -62,7 +62,8 @@ public class EditAccountFragment extends Fragment {
     private ImageView profilePic;
     private Button doneBtn, editFirstnameBtn,
             editLastnameBtn, scanIDBtn, editDisabilityBtn,
-            editAgeBtn, editBirthdateBtn, editSexBtn;
+            editAgeBtn, editBirthdateBtn, editSexBtn,
+            userTypeBtn;
     private TextView fullNameTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -81,6 +82,7 @@ public class EditAccountFragment extends Fragment {
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
     private NetworkChangeReceiver networkChangeReceiver;
+    private Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -92,11 +94,13 @@ public class EditAccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_account, container, false);
 
+        context = getContext();
+
         initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        FirebaseApp.initializeApp(getContext());
+        FirebaseApp.initializeApp(context);
 
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
         profilePic = view.findViewById(R.id.profielPic);
@@ -109,9 +113,14 @@ public class EditAccountFragment extends Fragment {
         editSexBtn = view.findViewById(R.id.editSexBtn);
         doneBtn = view.findViewById(R.id.doneBtn);
         scanIDBtn = view.findViewById(R.id.scanIDBtn);
+        userTypeBtn = view.findViewById(R.id.userTypeBtn);
 
-        getUserType();
+        loadUserProfileInfo();
         checkPermission();
+
+        userTypeBtn.setOnClickListener(v -> {
+
+        });
 
         editFirstnameBtn.setOnClickListener(v -> {
             showEditFirstNameDialog();
@@ -157,6 +166,16 @@ public class EditAccountFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+
+    }
+
+    public void onBackPressed() {
+        backToAccountFragment();
+    }
 
     private void showDatePickerDialog() {
         final Calendar currentDate = Calendar.getInstance();
@@ -176,7 +195,7 @@ public class EditAccountFragment extends Fragment {
         datePickerDialog.show();
     }
 
-    private void getUserType() {
+    private void loadUserProfileInfo() {
         if (currentUser != null) {
             userID = currentUser.getUid();
 
@@ -187,7 +206,7 @@ public class EditAccountFragment extends Fragment {
                     if (snapshot.exists()) {
 
                         String getFirstname, getLastname, getProfilePic, fullName,
-                                getBirthdate, getSex, getDisability;
+                                getBirthdate, getSex, getDisability, getUserType;
                         int getAge;
 
                         DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
@@ -200,11 +219,14 @@ public class EditAccountFragment extends Fragment {
                             getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
                             getAge = driverSnapshot.child("age").getValue(Integer.class);
                             getSex = driverSnapshot.child("sex").getValue(String.class);
+                            getUserType = driverSnapshot.child("userType").getValue(String.class);
 
                             StaticDataPasser.storeFirstName = getFirstname;
                             StaticDataPasser.storeLastName = getLastname;
                             StaticDataPasser.storeCurrentAge = getAge;
+                            StaticDataPasser.storeUserType = getUserType;
 
+                            userTypeBtn.setText(getUserType);
                             editFirstnameBtn.setText(getFirstname);
                             editLastnameBtn.setText(getLastname);
                             editBirthdateBtn.setText("Birthdate: " + getBirthdate);
@@ -228,11 +250,14 @@ public class EditAccountFragment extends Fragment {
                             getBirthdate = seniorSnapshot.child("birthdate").getValue(String.class);
                             getAge = seniorSnapshot.child("age").getValue(Integer.class);
                             getSex = seniorSnapshot.child("sex").getValue(String.class);
+                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
 
                             StaticDataPasser.storeFirstName = getFirstname;
                             StaticDataPasser.storeLastName = getLastname;
                             StaticDataPasser.storeCurrentAge = getAge;
+                            StaticDataPasser.storeUserType = getUserType;
 
+                            userTypeBtn.setText(getUserType);
                             editFirstnameBtn.setText(getFirstname);
                             editLastnameBtn.setText(getLastname);
                             editBirthdateBtn.setText("Birthdate: " + getBirthdate);
@@ -257,11 +282,14 @@ public class EditAccountFragment extends Fragment {
                             getAge = pwdSnapshot.child("age").getValue(Integer.class);
                             getSex = pwdSnapshot.child("sex").getValue(String.class);
                             getDisability = pwdSnapshot.child("disability").getValue(String.class);
+                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
 
                             StaticDataPasser.storeFirstName = getFirstname;
                             StaticDataPasser.storeLastName = getLastname;
                             StaticDataPasser.storeCurrentAge = getAge;
+                            StaticDataPasser.storeUserType = getUserType;
 
+                            userTypeBtn.setText(getUserType);
                             editFirstnameBtn.setText(getFirstname);
                             editLastnameBtn.setText(getLastname);
                             editBirthdateBtn.setText("Birthdate: " + getBirthdate);
@@ -297,105 +325,6 @@ public class EditAccountFragment extends Fragment {
 
     }
 
-    private void loadUserProfileInfo() {
-
-        if (currentUser != null) {
-            userID = currentUser.getUid();
-
-            databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                    if (snapshot.exists()) {
-
-                        String getFirstname, getLastname, getProfilePic, fullName,
-                                getBirthdate, getSex, getDisability;
-                        int getAge;
-
-                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
-
-                        if (snapshot.child("driver").hasChild(userID)) {
-                            driverSnapshot = snapshot.child("driver").child(userID);
-                            getFirstname = driverSnapshot.child("firstname").getValue(String.class);
-                            getLastname = driverSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
-                            getAge = driverSnapshot.child("age").getValue(Integer.class);
-                            getSex = driverSnapshot.child("sex").getValue(String.class);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
-                            } else {
-                                profilePic.setImageResource(R.drawable.account);
-                            }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-                            seniorSnapshot = snapshot.child("senior").child(userID);
-                            getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
-                            getLastname = seniorSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = seniorSnapshot.child("birthdate").getValue(String.class);
-                            getAge = seniorSnapshot.child("age").getValue(Integer.class);
-                            getSex = seniorSnapshot.child("sex").getValue(String.class);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
-                            } else {
-                                profilePic.setImageResource(R.drawable.account);
-                            }
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-                            pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
-                            getLastname = pwdSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = pwdSnapshot.child("birthdate").getValue(String.class);
-                            getAge = pwdSnapshot.child("age").getValue(Integer.class);
-                            getSex = pwdSnapshot.child("sex").getValue(String.class);
-                            getDisability = pwdSnapshot.child("disability").getValue(String.class);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
-                            } else {
-                                profilePic.setImageResource(R.drawable.account);
-                            }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            editDisabilityBtn.setVisibility(View.VISIBLE);
-                            editBirthdateBtn.setText("Disability: " + getDisability);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
-                        }
-                    } else {
-                        Log.e(TAG, "Not Exist");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e(TAG, error.getMessage());
-                }
-            });
-
-        } else {
-            intent = new Intent(getActivity(), Login.class);
-            startActivity(intent);
-        }
-    }
 
     private void showEditFirstNameDialog() {
 
@@ -715,7 +644,6 @@ public class EditAccountFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -742,7 +670,7 @@ public class EditAccountFragment extends Fragment {
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()){
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
                 noInternetDialog.dismiss();
 
                 boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
@@ -755,7 +683,8 @@ public class EditAccountFragment extends Fragment {
         noInternetDialog = builder.create();
         noInternetDialog.show();
     }
-    private void initializeNetworkChecker(){
+
+    private void initializeNetworkChecker() {
         networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
             @Override
             public void onNetworkChanged(boolean isConnected) {
