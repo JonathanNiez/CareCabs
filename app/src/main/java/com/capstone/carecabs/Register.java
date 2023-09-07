@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -103,6 +104,9 @@ public class Register extends AppCompatActivity {
 
             } else if (getRegisterData.equals("Senior Citizen")) {
                 showAgeInfoDialog();
+            } else if (getRegisterType.equals("googleRegister") &&
+                    getRegisterData.equals("Senior Citizen")) {
+                showAgeInfoDialog();
             }
         } else {
             return;
@@ -140,7 +144,8 @@ public class Register extends AppCompatActivity {
                     case "Driver":
 
                         userTypeImageBtn.invalidate();
-                        userTypeImageBtn.setImageResource(R.drawable.driver);
+                        Glide.with(this).load(R.drawable.driver_24).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+//                        userTypeImageBtn.setImageResource(R.drawable.driver_24);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -205,7 +210,8 @@ public class Register extends AppCompatActivity {
                     case "Persons with Disability (PWD)":
 
                         userTypeImageBtn.invalidate();
-                        userTypeImageBtn.setImageResource(R.drawable.pwd);
+                        Glide.with(this).load(R.drawable.pwd_24).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+//                        userTypeImageBtn.setImageResource(R.drawable.pwd);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -272,8 +278,9 @@ public class Register extends AppCompatActivity {
 
                     case "Senior Citizen":
 
-                        userTypeImageBtn.invalidate();
-                        userTypeImageBtn.setImageResource(R.drawable.senior);
+//                        userTypeImageBtn.invalidate();
+                        Glide.with(this).load(R.drawable.senior_24png).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+//                        userTypeImageBtn.setImageResource(R.drawable.senior);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -406,7 +413,7 @@ public class Register extends AppCompatActivity {
     private void showUserTypeImageDialog() {
         builder = new AlertDialog.Builder(this);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.you_are_registering_as_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_you_are_registering_as, null);
 
         Button okBtn = dialogView.findViewById(R.id.okBtn);
         TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
@@ -462,7 +469,6 @@ public class Register extends AppCompatActivity {
     }
 
     private void showPleaseWaitDialog() {
-
         builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
 
@@ -484,7 +490,7 @@ public class Register extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 

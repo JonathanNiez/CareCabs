@@ -30,12 +30,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanID;
@@ -50,16 +50,20 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class EditAccountFragment extends Fragment {
 
     private ImageButton imgBackBtn;
-    private ImageView profilePic;
+    private ImageButton imgBtnProfilePic;
     private Button doneBtn, editFirstnameBtn,
             editLastnameBtn, scanIDBtn, editDisabilityBtn,
             editAgeBtn, editBirthdateBtn, editSexBtn,
@@ -75,7 +79,9 @@ public class EditAccountFragment extends Fragment {
     private AlertDialog.Builder builder;
     private AlertDialog editFirstNameDialog, editLastNameDialog,
             editDisabilityDialog, editSexDialog, editAgeDialog,
-            cameraGalleryOptionsDialog, noInternetDialog;
+            cameraGalleryOptionsDialog, noInternetDialog,
+            profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
+            profilePicUpdateSuccessConfirmation;
     private Uri imageUri;
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
@@ -83,6 +89,19 @@ public class EditAccountFragment extends Fragment {
     private static final int STORAGE_PERMISSION_REQUEST = 102;
     private NetworkChangeReceiver networkChangeReceiver;
     private Context context;
+    private StorageReference storageRef;
+    private StorageReference imagesRef;
+    private StorageReference fileRef;
+    private RequestManager requestManager;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if (requestManager != null) {
+            requestManager.clear(imgBtnProfilePic);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,12 +117,17 @@ public class EditAccountFragment extends Fragment {
 
         initializeNetworkChecker();
 
+        requestManager = Glide.with(this);
+
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
         FirebaseApp.initializeApp(context);
 
+        storageRef = FirebaseStorage.getInstance().getReference();
+        imagesRef = storageRef.child("images");
+
         imgBackBtn = view.findViewById(R.id.imgBackBtn);
-        profilePic = view.findViewById(R.id.profielPic);
+        imgBtnProfilePic = view.findViewById(R.id.imgBtnProfilePic);
         fullNameTextView = view.findViewById(R.id.fullNameTextView);
         editFirstnameBtn = view.findViewById(R.id.editFirstnameBtn);
         editLastnameBtn = view.findViewById(R.id.editLastnameBtn);
@@ -146,8 +170,15 @@ public class EditAccountFragment extends Fragment {
             backToAccountFragment();
         });
 
-        profilePic.setOnClickListener(v -> {
+        imgBtnProfilePic.setOnClickListener(v -> {
             showOptionsDialog();
+
+//            ImagePicker.with(this)
+//                    .crop()                    //Crop image(Optional), Check Customization for more option
+//                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
+//                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+//                    .start();
+
         });
 
         scanIDBtn.setOnClickListener(v -> {
@@ -170,7 +201,30 @@ public class EditAccountFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
+        closeEditFirstNameDialog();
+        closeEditLastNameDialog();
+        closeEditAgeDialog();
+        closeEditSexDialog();
+        closeEditDisabilityDialog();
+        closeNoInternetDialog();
+        closeOptionsDialog();
+        closeProfilePicUpdateFailed();
+        closeProfilePicUpdateSuccess();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        closeEditFirstNameDialog();
+        closeEditLastNameDialog();
+        closeEditAgeDialog();
+        closeEditSexDialog();
+        closeEditDisabilityDialog();
+        closeNoInternetDialog();
+        closeOptionsDialog();
+        closeProfilePicUpdateFailed();
+        closeProfilePicUpdateSuccess();
     }
 
     public void onBackPressed() {
@@ -234,9 +288,9 @@ public class EditAccountFragment extends Fragment {
                             editSexBtn.setText("Sex: " + getSex);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
@@ -266,9 +320,9 @@ public class EditAccountFragment extends Fragment {
 
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
                             fullNameTextView.setText(fullName);
@@ -299,9 +353,9 @@ public class EditAccountFragment extends Fragment {
                             editDisabilityBtn.setText("Disability: " + getDisability);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(getContext()).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
@@ -325,6 +379,85 @@ public class EditAccountFragment extends Fragment {
 
     }
 
+    private void showProfilePicUpdateSuccess() {
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_pic_update_success, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            closeProfilePicUpdateSuccess();
+        });
+
+
+        builder.setView(dialogView);
+
+        profilePicUpdateSuccessDialog = builder.create();
+        profilePicUpdateSuccessDialog.show();
+    }
+
+    private void closeProfilePicUpdateSuccess() {
+        if (profilePicUpdateSuccessDialog != null && profilePicUpdateSuccessDialog.isShowing()) {
+            profilePicUpdateSuccessDialog.dismiss();
+
+        }
+    }
+
+    private void showProfilePicUpdateFailed() {
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_pic_update_success, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            closeProfilePicUpdateFailed();
+        });
+
+
+        builder.setView(dialogView);
+
+        profilePicUpdateFailedDialog = builder.create();
+        profilePicUpdateFailedDialog.show();
+    }
+
+    private void closeProfilePicUpdateFailed() {
+        if (profilePicUpdateFailedDialog != null && profilePicUpdateFailedDialog.isShowing()) {
+            profilePicUpdateFailedDialog.dismiss();
+
+        }
+    }
+
+    private void showProfilePicUpdateConfirmation() {
+        builder = new AlertDialog.Builder(getContext());
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_pic_change_confirm, null);
+
+        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+        Button noBtn = dialogView.findViewById(R.id.noBtn);
+
+        noBtn.setOnClickListener(v -> {
+            closeProfilePicUpdateConfirmation();
+        });
+
+        yesBtn.setOnClickListener(v -> {
+
+        });
+
+
+        builder.setView(dialogView);
+
+        profilePicUpdateSuccessConfirmation = builder.create();
+        profilePicUpdateSuccessConfirmation.show();
+    }
+
+    private void closeProfilePicUpdateConfirmation() {
+        if (profilePicUpdateSuccessConfirmation != null && profilePicUpdateSuccessConfirmation.isShowing()) {
+            profilePicUpdateSuccessConfirmation.dismiss();
+
+        }
+    }
 
     private void showEditFirstNameDialog() {
 
@@ -343,15 +476,19 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editFirstNameDialog != null && editFirstNameDialog.isShowing()) {
-                editFirstNameDialog.dismiss();
-            }
+            closeEditFirstNameDialog();
         });
 
         builder.setView(dialogView);
 
         editFirstNameDialog = builder.create();
         editFirstNameDialog.show();
+    }
+
+    private void closeEditFirstNameDialog() {
+        if (editFirstNameDialog != null && editFirstNameDialog.isShowing()) {
+            editFirstNameDialog.dismiss();
+        }
     }
 
     private void showEditLastNameDialog() {
@@ -371,15 +508,19 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editLastNameDialog != null && editLastNameDialog.isShowing()) {
-                editLastNameDialog.dismiss();
-            }
+            closeEditLastNameDialog();
         });
 
         builder.setView(dialogView);
 
         editLastNameDialog = builder.create();
         editLastNameDialog.show();
+    }
+
+    private void closeEditLastNameDialog() {
+        if (editLastNameDialog != null && editLastNameDialog.isShowing()) {
+            editLastNameDialog.dismiss();
+        }
     }
 
     private void showEditAgeDialog() {
@@ -400,15 +541,19 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editAgeDialog != null && editAgeDialog.isShowing()) {
-                editAgeDialog.dismiss();
-            }
+            closeEditAgeDialog();
         });
 
         builder.setView(dialogView);
 
         editAgeDialog = builder.create();
         editAgeDialog.show();
+    }
+
+    private void closeEditAgeDialog() {
+        if (editAgeDialog != null && editAgeDialog.isShowing()) {
+            editAgeDialog.dismiss();
+        }
     }
 
     private void showEditSexDialog() {
@@ -432,7 +577,7 @@ public class EditAccountFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    return;
+                    spinnerSexDialog.setSelection(0);
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.storeSelectedSex = selectedSex;
@@ -450,15 +595,19 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editSexDialog != null && editSexDialog.isShowing()) {
-                editSexDialog.dismiss();
-            }
+            closeEditSexDialog();
         });
 
         builder.setView(dialogView);
 
         editSexDialog = builder.create();
         editSexDialog.show();
+    }
+
+    private void closeEditSexDialog() {
+        if (editSexDialog != null && editSexDialog.isShowing()) {
+            editSexDialog.dismiss();
+        }
     }
 
     private void showEditDisabilityDialog() {
@@ -482,7 +631,7 @@ public class EditAccountFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    return;
+                    spinnerDisabilityDialog.setSelection(0);
                 } else {
                     String selectedDisability = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.storeSelectedDisability = selectedDisability;
@@ -500,9 +649,7 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (editDisabilityDialog != null && editDisabilityDialog.isShowing()) {
-                editDisabilityDialog.dismiss();
-            }
+            closeEditDisabilityDialog();
         });
 
         builder.setView(dialogView);
@@ -511,12 +658,10 @@ public class EditAccountFragment extends Fragment {
         editDisabilityDialog.show();
     }
 
-    private void backToAccountFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+    private void closeEditDisabilityDialog() {
+        if (editDisabilityDialog != null && editDisabilityDialog.isShowing()) {
+            editDisabilityDialog.dismiss();
+        }
     }
 
     private void showOptionsDialog() {
@@ -537,15 +682,27 @@ public class EditAccountFragment extends Fragment {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
-                cameraGalleryOptionsDialog.dismiss();
-            }
+            closeOptionsDialog();
         });
 
         builder.setView(dialogView);
 
         cameraGalleryOptionsDialog = builder.create();
         cameraGalleryOptionsDialog.show();
+    }
+
+    private void closeOptionsDialog() {
+        if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+            cameraGalleryOptionsDialog.dismiss();
+        }
+    }
+
+    private void backToAccountFragment() {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void checkPermission() {
@@ -604,33 +761,133 @@ public class EditAccountFragment extends Fragment {
         return Uri.parse(path);
     }
 
+    private void uploadImageToFirebaseStorage(Uri imageUri) {
+        fileRef = imagesRef.child(imageUri.getLastPathSegment());
+        fileRef.putFile(imageUri).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+
+                    String imageUrl = uri.toString();
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("profilePicUrl", uri.toString());
+                    imgBtnProfilePic.setImageURI(imageUri);
+                    uploadImageUriInDatabase(imageUrl);
+
+                }).addOnFailureListener(e -> {
+
+                    showProfilePicUpdateFailed();
+                    Log.e(TAG, e.getMessage());
+                });
+            } else {
+                showProfilePicUpdateFailed();
+                Log.e(TAG, String.valueOf(task.getException()));
+            }
+        });
+    }
+
+    private void uploadImageUriInDatabase(String xImageUrl) {
+        if (currentUser != null) {
+            userID = currentUser.getUid();
+
+            databaseReference = FirebaseDatabase.getInstance().getReference("users");
+            databaseReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+
+                        String getProfilePic;
+                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
+
+                        if (snapshot.child("driver").hasChild(userID)) {
+                            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+
+                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
+
+                                if (task.isSuccessful()) {
+                                    showProfilePicUpdateSuccess();
+                                    loadUserProfileInfo();
+                                } else {
+                                    showProfilePicUpdateFailed();
+                                    Log.e(TAG, String.valueOf(task.getException()));
+                                }
+                            });
+
+                        } else if (snapshot.child("senior").hasChild(userID)) {
+                            databaseReference = FirebaseDatabase.getInstance().getReference("senior").child("driver").child(userID);
+
+                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
+
+                                if (task.isSuccessful()) {
+                                    showProfilePicUpdateSuccess();
+                                    loadUserProfileInfo();
+                                } else {
+                                    showProfilePicUpdateFailed();
+                                    Log.e(TAG, String.valueOf(task.getException()));
+                                }
+                            });
+
+                        } else if (snapshot.child("pwd").hasChild(userID)) {
+                            databaseReference = FirebaseDatabase.getInstance().getReference("pwd").child("driver").child(userID);
+
+                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
+
+                                if (task.isSuccessful()) {
+                                    showProfilePicUpdateSuccess();
+                                    loadUserProfileInfo();
+                                } else {
+                                    showProfilePicUpdateFailed();
+                                    Log.e(TAG, String.valueOf(task.getException()));
+                                }
+                            });
+
+                        }
+                    } else {
+                        showProfilePicUpdateFailed();
+                        Log.e(TAG, "Not Exist");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    showProfilePicUpdateFailed();
+                    Log.e(TAG, error.getMessage());
+                }
+            });
+
+        } else {
+            intent = new Intent(getActivity(), Login.class);
+            startActivity(intent);
+
+            Log.e(TAG, "currentUser is null");
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-
             if (requestCode == CAMERA_REQUEST_CODE) {
                 if (data != null) {
 
                     Bundle extras = data.getExtras();
                     Bitmap imageBitmap = (Bitmap) extras.get("data");
 
-                    imageUri = getImageUri(getContext(), imageBitmap);
-                    profilePic.setImageURI(imageUri);
+                    imageUri = getImageUri(context, imageBitmap);
+                    uploadImageToFirebaseStorage(imageUri);
 
-                    Toast.makeText(getContext(), "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
 
 
                 } else {
-                    Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Image is not Selected", Toast.LENGTH_LONG).show();
                 }
 
             } else if (requestCode == GALLERY_REQUEST_CODE) {
                 if (data != null) {
 
                     imageUri = data.getData();
-                    profilePic.setImageURI(imageUri);
+                    uploadImageToFirebaseStorage(imageUri);
 
                     Toast.makeText(getContext(), "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
 
@@ -664,24 +921,29 @@ public class EditAccountFragment extends Fragment {
     private void showNoInternetDialog() {
 
         builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
-                updateConnectionStatus(isConnected);
-            }
+            closeNoInternetDialog();
         });
 
         builder.setView(dialogView);
 
         noInternetDialog = builder.create();
         noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
+            updateConnectionStatus(isConnected);
+        }
     }
 
     private void initializeNetworkChecker() {

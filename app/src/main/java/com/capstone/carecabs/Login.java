@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -143,7 +142,6 @@ public class Login extends AppCompatActivity {
                                                     Log.e(TAG, String.valueOf(task1.getException()));
                                                 }
                                             });
-
                                 } else {
                                     showIncorrectEmailOrPasswordDialog();
                                     closePleaseWaitDialog();
@@ -204,7 +202,7 @@ public class Login extends AppCompatActivity {
     private void showExitConfirmationDialog() {
         builder = new AlertDialog.Builder(this);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.exit_app_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
         Button yesBtn = dialogView.findViewById(R.id.yesBtn);
         Button noBtn = dialogView.findViewById(R.id.noBtn);
@@ -411,7 +409,7 @@ public class Login extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 

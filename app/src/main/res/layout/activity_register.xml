@@ -25,10 +25,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
+                android:src="@drawable/help_64"
                 android:scaleType="centerCrop"
-                android:src="@drawable/account"
                 android:background="@drawable/circular_button"
-                android:backgroundTint="@color/yellow"/>
+                />
 
             <ImageButton
                 android:id="@+id/imgBackBtn"

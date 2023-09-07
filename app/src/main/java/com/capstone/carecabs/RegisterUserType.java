@@ -11,15 +11,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -234,7 +229,7 @@ public class RegisterUserType extends AppCompatActivity {
         builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 

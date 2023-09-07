@@ -7,12 +7,18 @@
     android:background="@color/yellow"
     android:gravity="center">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logout_128"
+        android:layout_marginTop="20dp"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:fontFamily="@font/opensans_semibold"
@@ -26,42 +32,48 @@
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/opensans_semibold"
-            android:text="Are you sure \n you want to Log out?"
+            android:text="Are you sure you want to \n Log out?"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="20sp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/custom_card_view"
             android:padding="5dp"/>
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp">
+        android:gravity="center"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/signOutBtn"
-            android:layout_width="120dp"
-            android:layout_height="70dp"
-            android:layout_marginEnd="10dp"
+            android:id="@+id/cancelBtn"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="5dp"
             android:background="@drawable/custom_button"
-            android:backgroundTint="@color/red"
-            android:text="Sign Out"
+            android:text="Cancel"
             android:textSize="20sp"
             android:textColor="@color/white"
             android:fontFamily="@font/opensans_semibold"/>
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/cancelBtn"
-            android:layout_width="120dp"
-            android:layout_height="70dp"
-            android:layout_marginStart="10dp"
+            android:id="@+id/signOutBtn"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/custom_button"
-            android:text="Cancel"
+            android:backgroundTint="@color/red"
+            android:text="Log Out"
             android:textSize="20sp"
             android:textColor="@color/white"
             android:fontFamily="@font/opensans_semibold"/>

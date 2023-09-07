@@ -21,6 +21,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="10dp"
+        android:background="@drawable/custom_card_view"
+        android:padding="5dp"
         android:fontFamily="@font/opensans_bold"
         android:text="No Internet"
         android:textAlignment="center"
@@ -32,12 +34,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/opensans_bold"
-        android:text="Slow or no internet connection\nPlease check your Internet settings."
+        android:text="Slow or no internet connection Please check your Internet settings."
+        android:background="@drawable/custom_card_view"
+        android:padding="5dp"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="18sp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginStart="10dp"/>
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/tryAgainBtn"

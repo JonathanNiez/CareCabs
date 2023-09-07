@@ -42,12 +42,12 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/opensans_bold"
-                    android:textColor="@color/black"
                     android:text="Edit Profile"
+                    android:textColor="@color/black"
                     android:textSize="25sp" />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/profielPic"
+                    android:id="@+id/imgBtnProfilePic"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_below="@id/textView"
@@ -55,13 +55,14 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/account"
                     app:civ_border_color="@color/black"
-                    app:civ_border_width="2dp"/>
+                    app:civ_border_width="2dp" />
+
 
                 <TextView
                     android:id="@+id/fullNameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/profielPic"
+                    android:layout_below="@id/textView2"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/opensans_bold"
@@ -69,15 +70,30 @@
                     android:textColor="@color/black"
                     android:textSize="23sp" />
 
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imgBtnProfilePic"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Click the picture to change your profile pic"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/userTypeBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/fullNameTextView"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
                     android:padding="10dp"
@@ -91,19 +107,19 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="20dp"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:layout_margin="20dp">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:text="Tap the info you want to edit"
-                    android:textSize="17sp"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/opensans_semibold"
+                    android:text="Tap the info you want to edit"
+                    android:textAlignment="center"
                     android:textColor="@color/black"
-                    android:layout_marginBottom="10dp"/>
+                    android:textSize="17sp" />
 
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -118,8 +134,7 @@
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editLastnameBtn"
@@ -148,8 +163,7 @@
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
                     android:textSize="20sp"
-                    android:visibility="gone"
-                    />
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editAgeBtn"
@@ -197,9 +211,9 @@
                     android:layout_marginTop="20dp"
                     android:background="@drawable/custom_button"
                     android:backgroundTint="@color/dark_gray"
+                    android:drawableEnd="@drawable/scan"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Scan ID"
-                    android:drawableEnd="@drawable/scan"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
 

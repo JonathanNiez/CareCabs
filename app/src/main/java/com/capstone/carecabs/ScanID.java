@@ -25,21 +25,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.google.firebase.storage.StorageReference;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScanID extends AppCompatActivity {
     private ImageButton imgBackBtn, getImageBtn;
-    private TextView recognizedTextView;
-    private LinearLayout progressBarLayout;
     private ImageView idPreview;
     private Uri imageUri;
     private AlertDialog.Builder builder;
@@ -52,7 +54,13 @@ public class ScanID extends AppCompatActivity {
     private Intent intent;
     private String TAG = "ScanID";
     private boolean shouldExit = false;
+    private boolean isIDScanningCancelled = false;
     private NetworkChangeReceiver networkChangeReceiver;
+    private StorageReference storageRef;
+    private StorageReference imagesRef;
+    private StorageReference fileRef;
+    private RequestManager requestManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,24 +68,15 @@ public class ScanID extends AppCompatActivity {
         setContentView(R.layout.activity_scan_id);
 
         initializeNetworkChecker();
+        checkPermission();
 
         imgBackBtn = findViewById(R.id.imgBackBtn);
         getImageBtn = findViewById(R.id.getImageBtn);
-        recognizedTextView = findViewById(R.id.recognizedTextView);
         idPreview = findViewById(R.id.idPreview);
-        progressBarLayout = findViewById(R.id.progressBarLayout);
 
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
-        checkPermission();
-
         getImageBtn.setOnClickListener(v -> {
-//            ImagePicker.with(this)
-//                    .crop()                    //Crop image(Optional), Check Customization for more option
-//                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
-//                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-//                    .start();
-//
             showOptionsDialog();
         });
     }
@@ -98,6 +97,8 @@ public class ScanID extends AppCompatActivity {
         super.onPause();
 
         closeCancelScanIDDialog();
+        closeNoInternetDialog();
+        closeOptionsDialog();
     }
 
     @Override
@@ -109,10 +110,11 @@ public class ScanID extends AppCompatActivity {
         }
 
         closeCancelScanIDDialog();
+        closeNoInternetDialog();
+        closeOptionsDialog();
     }
 
     private void showCancelRegisterDialog() {
-
         builder = new AlertDialog.Builder(this);
 
         View dialogView = getLayoutInflater().inflate(R.layout.cancel_scan_id_dialog, null);
@@ -127,9 +129,7 @@ public class ScanID extends AppCompatActivity {
         });
 
         noBtn.setOnClickListener(v -> {
-            if (cancelScanIDDialog != null && cancelScanIDDialog.isShowing()) {
-                cancelScanIDDialog.dismiss();
-            }
+            closeCancelScanIDDialog();
         });
 
 
@@ -209,15 +209,19 @@ public class ScanID extends AppCompatActivity {
         });
 
         cancelBtn.setOnClickListener(v -> {
-            if (optionsDialog != null && optionsDialog.isShowing()) {
-                optionsDialog.dismiss();
-            }
+            closeOptionsDialog();
         });
 
         builder.setView(dialogView);
 
         optionsDialog = builder.create();
         optionsDialog.show();
+    }
+
+    private void closeOptionsDialog() {
+        if (optionsDialog != null && optionsDialog.isShowing()) {
+            optionsDialog.dismiss();
+        }
     }
 
     private boolean matchesPattern(String text, String pattern) {
@@ -236,7 +240,6 @@ public class ScanID extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         try {
             if (resultCode == RESULT_OK) {
                 if (requestCode == CAMERA_REQUEST_CODE) {
@@ -248,13 +251,13 @@ public class ScanID extends AppCompatActivity {
                         imageUri = getImageUri(getApplicationContext(), imageBitmap);
                         idPreview.setImageURI(imageUri);
 
+                        uploadImageToFirebaseStorage(imageUri);
+
                         Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
 
-                        recognizeText();
 
                     } else {
                         Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-                        progressBarLayout.setVisibility(View.GONE);
                     }
 
                 } else if (requestCode == GALLERY_REQUEST_CODE) {
@@ -265,10 +268,8 @@ public class ScanID extends AppCompatActivity {
 
                         Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
 
-                        recognizeText();
                     } else {
                         Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-                        progressBarLayout.setVisibility(View.GONE);
                     }
                 }
             } else {
@@ -277,70 +278,29 @@ public class ScanID extends AppCompatActivity {
 
                 Toast.makeText(this, "Failed to Extract Text", Toast.LENGTH_LONG).show();
 
-                progressBarLayout.setVisibility(View.GONE);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    private void recognizeText() {
-        progressBarLayout.setVisibility(View.VISIBLE);
+    private void uploadImageToFirebaseStorage(Uri imageUri) {
+        fileRef = imagesRef.child(imageUri.getLastPathSegment());
+        fileRef.putFile(imageUri).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
-        if (imageUri != null) {
+                    // Save the download URL in Firestore
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("profilePicUrl", uri.toString());
+                    idPreview.setImageURI(imageUri);
 
-            try {
-                InputImage inputImage = InputImage.fromFilePath(ScanID.this, imageUri);
-
-                textRecognizer.process(inputImage).addOnSuccessListener(text -> {
-
-                    String extractedText = text.getText();
-
-                    recognizedTextView.setText(extractedText);
-
-                    progressBarLayout.setVisibility(View.GONE);
-
-                    // Define patterns for PWD and Senior Citizen IDs
-                    String pwdPattern = "PWD-[0-9]{4}";
-                    String seniorCitizenPattern = "SeniorCitizen-[0-9]{4}";
-
-                    // Check if extracted text matches patterns
-                    if (matchesPattern(extractedText, pwdPattern)) {
-                        recognizedTextView.setText(extractedText);
-                    } else if (matchesPattern(extractedText, seniorCitizenPattern)) {
-                        recognizedTextView.setText(extractedText);
-                    } else {
-                        recognizedTextView.setText("Please use an ID");
-                    }
-
-
-                }).addOnFailureListener(e -> {
-                    Toast.makeText(ScanID.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                    e.printStackTrace();
-
-                    recognizedTextView.setText("Please try again");
-
-                    progressBarLayout.setVisibility(View.GONE);
-                });
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG + ":ERROR", "Failed to Extract Text");
-
-                progressBarLayout.setVisibility(View.GONE);
-
+                }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+            } else {
+                Log.e(TAG, String.valueOf(task.getException()));
             }
-        } else {
-            Toast.makeText(this, "Image is not loaded", Toast.LENGTH_LONG).show();
-            recognizedTextView.setText("Please try again");
-            Toast.makeText(this, "Failed to Extract Text", Toast.LENGTH_LONG).show();
-
-            progressBarLayout.setVisibility(View.GONE);
-        }
+        });
     }
 
     @Override
@@ -363,25 +323,30 @@ public class ScanID extends AppCompatActivity {
 
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
         tryAgainBtn.setOnClickListener(v -> {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-
-                boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-                updateConnectionStatus(isConnected);
-
-            }
+            closeNoInternetDialog();
         });
 
         builder.setView(dialogView);
 
         noInternetDialog = builder.create();
         noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+            updateConnectionStatus(isConnected);
+
+        }
     }
 
     private void initializeNetworkChecker() {

@@ -412,7 +412,7 @@ public class AccountFragment extends Fragment {
         builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.sign_out_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_sign_out, null);
 
         Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
@@ -509,7 +509,7 @@ public class AccountFragment extends Fragment {
         builder = new AlertDialog.Builder(context);
         builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 

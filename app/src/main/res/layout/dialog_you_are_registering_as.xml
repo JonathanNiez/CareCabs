@@ -23,12 +23,12 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:text="You are registering as"
                 android:textAlignment="center"
                 android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/opensans_semibold"
                 />
@@ -37,7 +37,7 @@
                 android:id="@+id/registerAsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 android:text="User Type"
                 android:textAlignment="center"
                 android:layout_marginTop="10dp"
@@ -55,10 +55,10 @@
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/okBtn"
         android:layout_width="150dp"
-        android:layout_height="70dp"
+        android:layout_height="60dp"
         android:background="@drawable/custom_button"
         android:text="Ok"
-        android:fontFamily="@font/opensans_bold"
+        android:fontFamily="@font/opensans_semibold"
         android:textSize="24sp"
         android:textColor="@color/white"
         android:layout_marginBottom="20dp"/>

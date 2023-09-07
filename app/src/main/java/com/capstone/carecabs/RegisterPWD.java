@@ -389,7 +389,7 @@ public class RegisterPWD extends AppCompatActivity {
     private void showNoInternetDialog() {
         builder = new AlertDialog.Builder(this);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.no_internet_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
         Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 

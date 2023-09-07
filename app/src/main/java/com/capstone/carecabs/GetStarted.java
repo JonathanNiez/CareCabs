@@ -70,7 +70,7 @@ public class GetStarted extends AppCompatActivity {
     private void showExitConfirmationDialog() {
         builder = new AlertDialog.Builder(this);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.exit_app_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
         Button yesBtn = dialogView.findViewById(R.id.yesBtn);
         Button noBtn = dialogView.findViewById(R.id.noBtn);

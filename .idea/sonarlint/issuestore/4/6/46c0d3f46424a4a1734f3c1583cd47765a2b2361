@@ -1,8 +1,0 @@
-
-v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(æÁÔ8Òµ£¬¥1
-[
-java:S1128"9Remove this unused import 'android.content.IntentFilter'.(ò³ñ£ÿÿÿÿÿ8˜àª¬¥1
-V
-java:S1128"4Remove this unused import 'android.net.NetworkInfo'.(«¸”ıøÿÿÿÿ8˜àª¬¥1
-G
-java:S1068"+Remove this unused "context" private field.(êİç8Áµª¬¥1

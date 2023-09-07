@@ -7,17 +7,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.capstone.carecabs.Fragments.AboutFragment;
 import com.capstone.carecabs.Fragments.AccountFragment;
@@ -27,11 +20,7 @@ import com.capstone.carecabs.Fragments.ChangePasswordFragment;
 import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
-import com.capstone.carecabs.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -141,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
     private void showExitConfirmationDialog() {
         builder = new AlertDialog.Builder(this);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.exit_app_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
         Button yesBtn = dialogView.findViewById(R.id.yesBtn);
         Button noBtn = dialogView.findViewById(R.id.noBtn);
