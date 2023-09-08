@@ -12,11 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.databinding.FragmentAccountBinding;
 
 public class AboutFragment extends Fragment {
-
-    private ImageButton imgBackBtn;
-
+    private FragmentAccountBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,11 +26,10 @@ public class AboutFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_about, container, false);
+        binding = FragmentAccountBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
-        imgBackBtn = view.findViewById(R.id.imgBackBtn);
-
-        imgBackBtn.setOnClickListener(v -> backToAccountFragment());
+        binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
 
         return view;
     }

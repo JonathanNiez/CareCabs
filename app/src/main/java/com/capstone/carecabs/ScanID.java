@@ -28,6 +28,8 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.databinding.ActivityMainBinding;
+import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.google.firebase.storage.StorageReference;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
@@ -41,8 +43,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ScanID extends AppCompatActivity {
-    private ImageButton imgBackBtn, getImageBtn;
-    private ImageView idPreview;
     private Uri imageUri;
     private AlertDialog.Builder builder;
     private AlertDialog optionsDialog, cancelScanIDDialog, noInternetDialog;
@@ -60,23 +60,20 @@ public class ScanID extends AppCompatActivity {
     private StorageReference imagesRef;
     private StorageReference fileRef;
     private RequestManager requestManager;
-
+    private ActivityScanIdBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan_id);
+        binding = ActivityScanIdBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeNetworkChecker();
         checkPermission();
 
-        imgBackBtn = findViewById(R.id.imgBackBtn);
-        getImageBtn = findViewById(R.id.getImageBtn);
-        idPreview = findViewById(R.id.idPreview);
-
         textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
 
-        getImageBtn.setOnClickListener(v -> {
+        binding.getImageBtn.setOnClickListener(v -> {
             showOptionsDialog();
         });
     }
@@ -249,7 +246,7 @@ public class ScanID extends AppCompatActivity {
                         Bitmap imageBitmap = (Bitmap) extras.get("data");
 
                         imageUri = getImageUri(getApplicationContext(), imageBitmap);
-                        idPreview.setImageURI(imageUri);
+                        binding.idPreview.setImageURI(imageUri);
 
                         uploadImageToFirebaseStorage(imageUri);
 
@@ -264,7 +261,7 @@ public class ScanID extends AppCompatActivity {
                     if (data != null) {
 
                         imageUri = data.getData();
-                        idPreview.setImageURI(imageUri);
+                        binding.idPreview.setImageURI(imageUri);
 
                         Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
 
@@ -294,7 +291,7 @@ public class ScanID extends AppCompatActivity {
                     // Save the download URL in Firestore
                     Map<String, Object> data = new HashMap<>();
                     data.put("profilePicUrl", uri.toString());
-                    idPreview.setImageURI(imageUri);
+                    binding.idPreview.setImageURI(imageUri);
 
                 }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
             } else {

@@ -20,11 +20,10 @@ import com.capstone.carecabs.Fragments.ChangePasswordFragment;
 import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
+import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-
-    private BottomNavigationView bottomNavigationView;
     private Intent intent;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
@@ -35,17 +34,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int STORAGE_PERMISSION_REQUEST = 102;
     private boolean shouldExit = false;
     private EditAccountFragment editAccountFragment;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         showFragment(new HomeFragment());
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setSelectedItemId(R.id.home);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
+        binding.bottomNavigationView.setSelectedItemId(R.id.home);
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
 
             if (item.getItemId() == R.id.home) {
                 showFragment(new HomeFragment());

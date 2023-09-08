@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -33,12 +34,6 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import java.util.List;
 
 public class Login extends AppCompatActivity {
-
-    private TextView registerTextView, loginUsingTextView;
-    private Button loginBtn;
-    private ImageButton googleImgBtn;
-    private EditText email, password;
-    private LinearLayout progressBarLayout, googleSignInLayout;
     private Intent intent;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
@@ -54,11 +49,13 @@ public class Login extends AppCompatActivity {
             exitAppDialog;
     private NetworkChangeReceiver networkChangeReceiver;
     private AlertDialog.Builder builder;
+    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeNetworkChecker();
 
@@ -71,53 +68,44 @@ public class Login extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
         googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-        registerTextView = findViewById(R.id.registerTextView);
-        loginBtn = findViewById(R.id.loginBtn);
-        email = findViewById(R.id.email);
-        password = findViewById(R.id.password);
-        loginUsingTextView = findViewById(R.id.loginUsingTextView);
-        googleImgBtn = findViewById(R.id.googleImgBtn);
-        progressBarLayout = findViewById(R.id.progressBarLayout);
-        googleSignInLayout = findViewById(R.id.googleSignInLayout);
-
-        registerTextView.setOnClickListener(v -> {
+        binding.registerTextView.setOnClickListener(v -> {
             showRegisterUsingDialog();
         });
 
-        googleImgBtn.setOnClickListener(v -> {
+        binding.googleImgBtn.setOnClickListener(v -> {
             showPleaseWaitDialog();
 
             intent = googleSignInClient.getSignInIntent();
             startActivityForResult(intent, RC_SIGN_IN);
         });
 
-        loginBtn.setOnClickListener(v -> {
-            progressBarLayout.setVisibility(View.VISIBLE);
-            loginBtn.setVisibility(View.GONE);
+        binding.loginBtn.setOnClickListener(v -> {
+            binding.progressBarLayout.setVisibility(View.VISIBLE);
+            binding.loginBtn.setVisibility(View.GONE);
 
-            final String stringEmail = email.getText().toString().trim();
-            final String stringPassword = password.getText().toString();
+            final String stringEmail = binding.email.getText().toString().trim();
+            final String stringPassword = binding.password.getText().toString();
 
             if (stringEmail.isEmpty()) {
-                email.setError("Please Enter your Email");
+                binding.email.setError("Please Enter your Email");
 
-                progressBarLayout.setVisibility(View.GONE);
-                loginBtn.setVisibility(View.VISIBLE);
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.loginBtn.setVisibility(View.VISIBLE);
 
             } else if (stringPassword.isEmpty()) {
-                password.setError("Please Enter your Password");
-                progressBarLayout.setVisibility(View.GONE);
-                loginBtn.setVisibility(View.VISIBLE);
+                binding.password.setError("Please Enter your Password");
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.loginBtn.setVisibility(View.VISIBLE);
 
             } else {
                 showPleaseWaitDialog();
-                googleSignInLayout.setVisibility(View.GONE);
+                binding.googleSignInLayout.setVisibility(View.GONE);
 
                 auth.fetchSignInMethodsForEmail(stringEmail)
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
-                                progressBarLayout.setVisibility(View.GONE);
-                                loginBtn.setVisibility(View.VISIBLE);
+                                binding.progressBarLayout.setVisibility(View.GONE);
+                                binding.loginBtn.setVisibility(View.VISIBLE);
 
                                 List<String> signInMethods = task.getResult().getSignInMethods();
                                 if (signInMethods != null && !signInMethods.isEmpty()) {
@@ -136,8 +124,8 @@ public class Login extends AppCompatActivity {
                                                     closePleaseWaitDialog();
                                                     showLoginFailedDialog();
 
-                                                    progressBarLayout.setVisibility(View.GONE);
-                                                    loginBtn.setVisibility(View.VISIBLE);
+                                                    binding.progressBarLayout.setVisibility(View.GONE);
+                                                    binding.loginBtn.setVisibility(View.VISIBLE);
 
                                                     Log.e(TAG, String.valueOf(task1.getException()));
                                                 }

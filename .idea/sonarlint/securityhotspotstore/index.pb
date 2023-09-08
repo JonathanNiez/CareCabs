@@ -152,8 +152,6 @@ x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment1.java,2\c\2c0dec3c746c4600801f8e55d12fdba91a7120bf
 z
 Japp/src/main/java/com/capstone/carecabs/Adapters/CarouselPagerAdapter.java,d\b\db3d745c835e66fca927aeef319558b9a5b4c737
-s
-Capp/src/main/java/com/capstone/carecabs/Fragments/HomeFragment.java,c\5\c59eb044c6fed59e0a0402b93c2bb7670960228c
 w
 G.idea/sonarlint/issuestore/7/f/7ff150f431c7de579e12753f1c7637cd3af9b0b6,1\0\10aa369f37b70a5fc9fb7b150300f1099ebe8290
 Å
@@ -350,10 +348,6 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-f
-6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
-g
-7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
 x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
 P
@@ -556,10 +550,6 @@ G.idea/sonarlint/issuestore/2/a/2af0edec3e7fe372d3925c012bdd6233b2f4e9c8,d\8\d8
 Q.idea/sonarlint/securityhotspotstore/7/c/7c11c99e59944b59d4ef30c73bfeca1b8628cb47,3\6\368098be370f94d190800a0981790b2a6285e04d
 Å
 Q.idea/sonarlint/securityhotspotstore/8/0/803c41fb12a3cab769ec66c457d175aa6bdf5b0c,b\d\bd01a57f3e00b80a4c1daf882706c310e99eaf3b
-t
-Dapp/src/main/java/com/capstone/carecabs/Fragments/AboutFragment.java,c\1\c1a0d66d4be3a5536f89bd09ef601db7acf1dbd5
-x
-Happ/src/main/java/com/capstone/carecabs/Fragments/ContactUsFragment.java,7\f\7fecc5faf5209d2c8d397414556a2bdc4f6cac5c
 w
 G.idea/sonarlint/issuestore/2/f/2fd5816c337cef8cd27b7fca52171a709a383268,3\c\3c747ca62d74ab4be3e610361ebd8a1532aca968
 w
@@ -646,8 +636,6 @@ G.idea/sonarlint/issuestore/5/f/5f81eb63991cef22aa1b1e0089c21ba0bb2966bc,3\e\3e
 Q.idea/sonarlint/securityhotspotstore/a/8/a8293cbd45ab1224208fc83927a2cb23e2cf663c,0\0\0078083d77195cdacaf09adaa617372468fb3245
 w
 G.idea/sonarlint/issuestore/f/4/f4a01d6a4fcb971362ec00a83903fd3902f52164,3\1\31073cf3a12b082ef2fe0f9403916a4db3811c89
-z
-Japp/src/main/java/com/capstone/carecabs/Fragments/AppSettingsFragment.java,0\c\0cb291190e65eccc6da2aada9f1a7b5ec8852965
 w
 G.idea/sonarlint/issuestore/5/9/59349250e622ab828ce7a49f14a88b82c3e9f789,f\d\fdcf407a1f81f53ea7b1985ded2dfbda4b38a6fe
 Å

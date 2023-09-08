@@ -29,6 +29,7 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.databinding.FragmentAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,13 +40,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class AccountFragment extends Fragment {
-    private Button signOutBtn, editProfileBtn, changePasswordBtn,
-            secuAndPriBtn, appSettingsBtn, aboutBtn, contactUsBtn;
-    private ImageButton imgBackBtn;
-    private ImageView profilePic;
-    private TextView fullNameTextView, userTypeTextView,
-            ageTextView, statusTextView, driverStatusTextView,
-            birthdateTextView, setTextView, disabilityTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
@@ -57,6 +51,7 @@ public class AccountFragment extends Fragment {
     private AlertDialog.Builder builder;
     private NetworkChangeReceiver networkChangeReceiver;
     private Context context;
+    private FragmentAccountBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +61,8 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_account, container, false);
+        binding = FragmentAccountBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         context = getContext();
         initializeNetworkChecker();
@@ -75,43 +71,21 @@ public class AccountFragment extends Fragment {
         currentUser = auth.getCurrentUser();
         FirebaseApp.initializeApp(context);
 
-        fullNameTextView = view.findViewById(R.id.fullNameTextView);
-        userTypeTextView = view.findViewById(R.id.userTypeTextView);
-        ageTextView = view.findViewById(R.id.ageTextView);
-        statusTextView = view.findViewById(R.id.statusTextView);
-        driverStatusTextView = view.findViewById(R.id.driverStatusTextView);
-        birthdateTextView = view.findViewById(R.id.birthdateTextView);
-        setTextView = view.findViewById(R.id.sexTextView);
-        disabilityTextView = view.findViewById(R.id.disabilityTextView);
-        changePasswordBtn = view.findViewById(R.id.changePasswordBtn);
-        signOutBtn = view.findViewById(R.id.signOutBtn);
-        editProfileBtn = view.findViewById(R.id.editProfileBtn);
-        profilePic = view.findViewById(R.id.profielPic);
-        imgBackBtn = view.findViewById(R.id.imgBackBtn);
-        secuAndPriBtn = view.findViewById(R.id.secAndPriBtn);
-        appSettingsBtn = view.findViewById(R.id.appSettingsBtn);
-        contactUsBtn = view.findViewById(R.id.contactUsBtn);
-        aboutBtn = view.findViewById(R.id.aboutBtn);
-
         loadUserProfileInfo();
 
-        editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
+        binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
-        secuAndPriBtn.setOnClickListener(v -> {
+        binding.aboutBtn.setOnClickListener(v -> goToAboutFragment());
 
-        });
+        binding.contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
 
-        aboutBtn.setOnClickListener(v -> goToAboutFragment());
+        binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
 
-        contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
+        binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
-        appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
+        binding.imgBackBtn.setOnClickListener(v -> backToHomeFragment());
 
-        changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
-
-        imgBackBtn.setOnClickListener(v -> backToHomeFragment());
-
-        signOutBtn.setOnClickListener(v -> showSignOutDialog());
+        binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
         return view;
     }
@@ -225,32 +199,32 @@ public class AccountFragment extends Fragment {
                             getDriverStatus = driverSnapshot.child("isAvailable").getValue(Boolean.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                binding.profilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            userTypeTextView.setText(getUserType);
-                            ageTextView.setText("Age: " + getAge);
-                            birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            setTextView.setText("Sex: " + getSex);
+                            binding.fullNameTextView.setText(fullName);
+                            binding.userTypeTextView.setText(getUserType);
+                            binding.ageTextView.setText("Age: " + getAge);
+                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            binding.sexTextView.setText("Sex: " + getSex);
 
                             if (getUserVerificationStatus.equals("Verified")) {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
                             } else {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                                binding. statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getUserVerificationStatus);
+                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
 
-                            driverStatusTextView.setVisibility(View.VISIBLE);
+                            binding.driverStatusTextView.setVisibility(View.VISIBLE);
                             if (getDriverStatus) {
-                                driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-                                driverStatusTextView.setText("Driver Status: Available");
+                                binding.driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+                                binding.driverStatusTextView.setText("Driver Status: Available");
                             } else {
-                                driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                                driverStatusTextView.setText("Driver Status: Busy");
+                                binding.driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                                binding.driverStatusTextView.setText("Driver Status: Busy");
 
                             }
 
@@ -269,24 +243,24 @@ public class AccountFragment extends Fragment {
                             getSex = seniorSnapshot.child("sex").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                binding.profilePic.setImageResource(R.drawable.account);
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            userTypeTextView.setText(getUserType);
-                            ageTextView.setText("Age: " + getAge);
-                            birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            setTextView.setText("Sex: " + getSex);
+                            binding.fullNameTextView.setText(fullName);
+                            binding.userTypeTextView.setText(getUserType);
+                            binding.ageTextView.setText("Age: " + getAge);
+                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            binding.sexTextView.setText("Sex: " + getSex);
 
                             if (getUserVerificationStatus.equals("Verified")) {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
                             } else {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getUserVerificationStatus);
+                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
 
                             closePleaseWaitDialog();
 
@@ -305,27 +279,27 @@ public class AccountFragment extends Fragment {
                             getDisability = pwdSnapshot.child("disability").getValue(String.class);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(profilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
                             } else {
-                                profilePic.setImageResource(R.drawable.account);
+                                binding.profilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
-                            userTypeTextView.setText(getUserType);
-                            ageTextView.setText("Age: " + getAge);
-                            birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            setTextView.setText("Sex: " + getSex);
-                            disabilityTextView.setVisibility(View.VISIBLE);
-                            disabilityTextView.setText("Disability: " + getDisability);
+                            binding.fullNameTextView.setText(fullName);
+                            binding.userTypeTextView.setText(getUserType);
+                            binding.ageTextView.setText("Age: " + getAge);
+                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+                            binding.sexTextView.setText("Sex: " + getSex);
+                            binding.disabilityTextView.setVisibility(View.VISIBLE);
+                            binding.disabilityTextView.setText("Disability: " + getDisability);
 
                             if (getUserVerificationStatus.equals("Verified")) {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
+                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
 
                             } else {
-                                statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
+                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
                             }
-                            statusTextView.setText("Status: " + getUserVerificationStatus);
+                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
 
                             closePleaseWaitDialog();
 

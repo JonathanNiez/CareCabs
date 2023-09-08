@@ -1,10 +1,15 @@
 package com.capstone.carecabs.Fragments;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -12,6 +17,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -23,21 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-
-    private TextView currentTimeTextView, greetTextView, usernameTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "HomeFragment";
-    private ViewPager viewPager;
     private int currentPage = 0;
     private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
     private Handler handler;
     private Runnable runnable;
     private List<Fragment> slideFragments = new ArrayList<>();
-
+    private AlertDialog noInternetDialog;
+    private AlertDialog.Builder builder;
+    private Context context;
+    private NetworkChangeReceiver networkChangeReceiver;
+    private FragmentHomeBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,14 +56,14 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+
+        context = getContext();
+        initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-
-        viewPager = view.findViewById(R.id.viewPager);
-        currentTimeTextView = view.findViewById(R.id.currentTimeTextView);
-        greetTextView = view.findViewById(R.id.greetTextView);
 
         slideFragments.add(new CarouselFragment1());
         slideFragments.add(new CarouselFragment2());
@@ -62,7 +71,7 @@ public class HomeFragment extends Fragment {
         slideFragments.add(new CarouselFragment4());
 
         CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
-        viewPager.setAdapter(adapter);
+        binding.viewPager.setAdapter(adapter);
 
         startAutoSlide();
         getCurrentTime();
@@ -108,8 +117,8 @@ public class HomeFragment extends Fragment {
         }
 
         // Concatenate the greeting message and formatted time
-        greetTextView.setText(greeting);
-        currentTimeTextView.setText("The time is " + formattedTime);
+        binding.greetTextView.setText(greeting);
+        binding.currentTimeTextView.setText("The time is " + formattedTime);
     }
 
     private void startAutoSlide() {
@@ -123,7 +132,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void run() {
                     currentPage = (currentPage + 1) % slideFragments.size();
-                    viewPager.setCurrentItem(currentPage, true);
+                    binding.viewPager.setCurrentItem(currentPage, true);
                     handler.postDelayed(this, AUTOSLIDE_DELAY);
                 }
             };
@@ -144,6 +153,15 @@ public class HomeFragment extends Fragment {
         super.onPause();
 
         stopAutoSlide();
+        closeNoInternetDialog();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        stopAutoSlide();
+        closeNoInternetDialog();
     }
 
     @Override
@@ -151,5 +169,60 @@ public class HomeFragment extends Fragment {
         super.onStart();
 
         startAutoSlide();
+    }
+
+    private void showNoInternetDialog() {
+
+        builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+
+        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+        tryAgainBtn.setOnClickListener(v -> {
+            closeNoInternetDialog();
+        });
+
+        builder.setView(dialogView);
+
+        noInternetDialog = builder.create();
+        noInternetDialog.show();
+    }
+
+    private void closeNoInternetDialog() {
+        if (noInternetDialog != null && noInternetDialog.isShowing()) {
+            noInternetDialog.dismiss();
+
+            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
+            updateConnectionStatus(isConnected);
+        }
+    }
+
+    private void initializeNetworkChecker() {
+        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+            @Override
+            public void onNetworkChanged(boolean isConnected) {
+                updateConnectionStatus(isConnected);
+            }
+        });
+
+        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        getContext().registerReceiver(networkChangeReceiver, intentFilter);
+
+        // Initial network status check
+        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+        updateConnectionStatus(isConnected);
+
+    }
+
+    private void updateConnectionStatus(boolean isConnected) {
+        if (isConnected) {
+            if (noInternetDialog != null && noInternetDialog.isShowing()) {
+                noInternetDialog.dismiss();
+            }
+        } else {
+            showNoInternetDialog();
+        }
     }
 }

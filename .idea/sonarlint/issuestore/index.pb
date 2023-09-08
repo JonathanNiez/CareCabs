@@ -336,8 +336,6 @@ x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment2.java,e\1\e159339c5e2ea03d8c173ccf48ed04f4b8eea438
 x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment3.java,7\8\782ed5dde02ff0ff3b74e7bf12a7a9b02505dce6
-s
-Capp/src/main/java/com/capstone/carecabs/Fragments/HomeFragment.java,c\5\c59eb044c6fed59e0a0402b93c2bb7670960228c
 F
 app/proguard-rules.pro,9\e\9e08934d811afe28fbc77aaa3c0d747b94348db9
 }
@@ -350,10 +348,6 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 ?
 settings.gradle,0\5\05efc8b1657769a27696d478ded1e95f38737233
-f
-6app/src/main/java/com/capstone/carecabs/LoggingIn.java,b\6\b6c74867c843ce4778a5ebab2cba6feb35469fce
-g
-7app/src/main/java/com/capstone/carecabs/LoggingOut.java,5\b\5b3636c8b928f3b66e5c5c1fed47b8dabb27ba06
 x
 Happ/src/main/java/com/capstone/carecabs/Fragments/CarouselFragment4.java,8\e\8eca9ad30951e22a438a42e765e17e82c2d53c12
 P
@@ -766,16 +760,10 @@ w
 G.idea/sonarlint/issuestore/a/a/aabe46f348e88e9328ed08a6e56a995641a48640,1\e\1e20ebd47e683191dffaf0c30db98add46f7e83a
 Å
 Q.idea/sonarlint/securityhotspotstore/f/4/f4a346ea6089d709b124382405d45c677d042fd4,0\8\08ee380c99ffb1414c5ace918b5bbbde1ad011ed
-t
-Dapp/src/main/java/com/capstone/carecabs/Fragments/AboutFragment.java,c\1\c1a0d66d4be3a5536f89bd09ef601db7acf1dbd5
-z
-Japp/src/main/java/com/capstone/carecabs/Fragments/AppSettingsFragment.java,0\c\0cb291190e65eccc6da2aada9f1a7b5ec8852965
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/ChangeFontSizeFragment.java,a\8\a8ac4cfae78c3464af9d9d8783e959b1b187f166
 }
 Mapp/src/main/java/com/capstone/carecabs/Fragments/ChangePasswordFragment.java,8\6\864143977846c0e1d4f9939caafb2807d4ddf782
-x
-Happ/src/main/java/com/capstone/carecabs/Fragments/ContactUsFragment.java,7\f\7fecc5faf5209d2c8d397414556a2bdc4f6cac5c
 u
 Eapp/src/main/java/com/capstone/carecabs/Utility/StaticDataPasser.java,0\4\0446777c3cc910d0d937441caf1a4393c58fcb51
 f

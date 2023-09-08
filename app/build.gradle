@@ -9,6 +9,10 @@ android {
     namespace 'com.capstone.carecabs'
     compileSdk 33
 
+    viewBinding {
+        enabled = true
+    }
+
     packagingOptions {
         exclude 'path/to/conflicting/classes'
     }

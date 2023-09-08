@@ -42,6 +42,7 @@ import com.capstone.carecabs.ScanID;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,14 +62,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EditAccountFragment extends Fragment {
-
-    private ImageButton imgBackBtn;
-    private ImageButton imgBtnProfilePic;
-    private Button doneBtn, editFirstnameBtn,
-            editLastnameBtn, scanIDBtn, editDisabilityBtn,
-            editAgeBtn, editBirthdateBtn, editSexBtn,
-            userTypeBtn;
-    private TextView fullNameTextView;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
@@ -94,12 +87,14 @@ public class EditAccountFragment extends Fragment {
     private StorageReference fileRef;
     private RequestManager requestManager;
 
+    private FragmentEditAccountBinding binding;
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
         if (requestManager != null) {
-            requestManager.clear(imgBtnProfilePic);
+            requestManager.clear(binding.imgBtnProfilePic);
         }
     }
 
@@ -111,13 +106,13 @@ public class EditAccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_account, container, false);
+        binding = FragmentEditAccountBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         context = getContext();
-
         initializeNetworkChecker();
 
-        requestManager = Glide.with(this);
+        requestManager = Glide.with(context);
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -126,52 +121,39 @@ public class EditAccountFragment extends Fragment {
         storageRef = FirebaseStorage.getInstance().getReference();
         imagesRef = storageRef.child("images");
 
-        imgBackBtn = view.findViewById(R.id.imgBackBtn);
-        imgBtnProfilePic = view.findViewById(R.id.imgBtnProfilePic);
-        fullNameTextView = view.findViewById(R.id.fullNameTextView);
-        editFirstnameBtn = view.findViewById(R.id.editFirstnameBtn);
-        editLastnameBtn = view.findViewById(R.id.editLastnameBtn);
-        editDisabilityBtn = view.findViewById(R.id.editDisabilityBtn);
-        editAgeBtn = view.findViewById(R.id.editAgeBtn);
-        editBirthdateBtn = view.findViewById(R.id.editBirthdateBtn);
-        editSexBtn = view.findViewById(R.id.editSexBtn);
-        doneBtn = view.findViewById(R.id.doneBtn);
-        scanIDBtn = view.findViewById(R.id.scanIDBtn);
-        userTypeBtn = view.findViewById(R.id.userTypeBtn);
-
         loadUserProfileInfo();
-        checkPermission();
 
-        userTypeBtn.setOnClickListener(v -> {
+        binding.userTypeBtn.setOnClickListener(v -> {
 
         });
 
-        editFirstnameBtn.setOnClickListener(v -> {
+        binding.editFirstnameBtn.setOnClickListener(v -> {
             showEditFirstNameDialog();
         });
 
-        editLastnameBtn.setOnClickListener(v -> {
+        binding.editLastnameBtn.setOnClickListener(v -> {
             showEditLastNameDialog();
         });
 
-        editAgeBtn.setOnClickListener(v -> {
+        binding.editAgeBtn.setOnClickListener(v -> {
             showEditAgeDialog();
         });
 
-        editSexBtn.setOnClickListener(v -> {
+        binding.editSexBtn.setOnClickListener(v -> {
             showEditSexDialog();
         });
 
-        editDisabilityBtn.setOnClickListener(v -> {
+        binding.editDisabilityBtn.setOnClickListener(v -> {
             showEditDisabilityDialog();
         });
 
-        doneBtn.setOnClickListener(v -> {
+        binding.doneBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
 
-        imgBtnProfilePic.setOnClickListener(v -> {
+        binding.imgBtnProfilePic.setOnClickListener(v -> {
             showOptionsDialog();
+            checkPermission();
 
 //            ImagePicker.with(this)
 //                    .crop()                    //Crop image(Optional), Check Customization for more option
@@ -181,16 +163,16 @@ public class EditAccountFragment extends Fragment {
 
         });
 
-        scanIDBtn.setOnClickListener(v -> {
+        binding.scanIDBtn.setOnClickListener(v -> {
             intent = new Intent(getActivity(), ScanID.class);
             startActivity(intent);
         });
 
-        editBirthdateBtn.setOnClickListener(v -> {
+        binding.editBirthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
         });
 
-        imgBackBtn.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
 
@@ -280,21 +262,21 @@ public class EditAccountFragment extends Fragment {
                             StaticDataPasser.storeCurrentAge = getAge;
                             StaticDataPasser.storeUserType = getUserType;
 
-                            userTypeBtn.setText(getUserType);
-                            editFirstnameBtn.setText(getFirstname);
-                            editLastnameBtn.setText(getLastname);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
+                            binding.userTypeBtn.setText(getUserType);
+                            binding.editFirstnameBtn.setText(getFirstname);
+                            binding.editLastnameBtn.setText(getLastname);
+                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+                            binding.editAgeBtn.setText("Age: " + getAge);
+                            binding.editSexBtn.setText("Sex: " + getSex);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
                             } else {
-                                imgBtnProfilePic.setImageResource(R.drawable.account);
+                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
+                            binding.fullNameTextView.setText(fullName);
 
                         } else if (snapshot.child("senior").hasChild(userID)) {
                             seniorSnapshot = snapshot.child("senior").child(userID);
@@ -311,21 +293,21 @@ public class EditAccountFragment extends Fragment {
                             StaticDataPasser.storeCurrentAge = getAge;
                             StaticDataPasser.storeUserType = getUserType;
 
-                            userTypeBtn.setText(getUserType);
-                            editFirstnameBtn.setText(getFirstname);
-                            editLastnameBtn.setText(getLastname);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
+                            binding.userTypeBtn.setText(getUserType);
+                            binding.editFirstnameBtn.setText(getFirstname);
+                            binding.editLastnameBtn.setText(getLastname);
+                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+                            binding.editAgeBtn.setText("Age: " + getAge);
+                            binding.editSexBtn.setText("Sex: " + getSex);
 
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
                             } else {
-                                imgBtnProfilePic.setImageResource(R.drawable.account);
+                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
+                            binding.fullNameTextView.setText(fullName);
 
                         } else if (snapshot.child("pwd").hasChild(userID)) {
                             pwdSnapshot = snapshot.child("pwd").child(userID);
@@ -343,23 +325,23 @@ public class EditAccountFragment extends Fragment {
                             StaticDataPasser.storeCurrentAge = getAge;
                             StaticDataPasser.storeUserType = getUserType;
 
-                            userTypeBtn.setText(getUserType);
-                            editFirstnameBtn.setText(getFirstname);
-                            editLastnameBtn.setText(getLastname);
-                            editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            editAgeBtn.setText("Age: " + getAge);
-                            editSexBtn.setText("Sex: " + getSex);
-                            editDisabilityBtn.setVisibility(View.VISIBLE);
-                            editDisabilityBtn.setText("Disability: " + getDisability);
+                            binding.userTypeBtn.setText(getUserType);
+                            binding.editFirstnameBtn.setText(getFirstname);
+                            binding.editLastnameBtn.setText(getLastname);
+                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+                            binding.editAgeBtn.setText("Age: " + getAge);
+                            binding.editSexBtn.setText("Sex: " + getSex);
+                            binding.editDisabilityBtn.setVisibility(View.VISIBLE);
+                            binding.editDisabilityBtn.setText("Disability: " + getDisability);
 
                             if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(imgBtnProfilePic);
+                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
                             } else {
-                                imgBtnProfilePic.setImageResource(R.drawable.account);
+                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
                             }
 
                             fullName = String.format("%s %s", getFirstname, getLastname);
-                            fullNameTextView.setText(fullName);
+                            binding.fullNameTextView.setText(fullName);
                         }
                     } else {
                         Log.e(TAG, "Not Exist");
@@ -770,7 +752,7 @@ public class EditAccountFragment extends Fragment {
                     String imageUrl = uri.toString();
                     Map<String, Object> data = new HashMap<>();
                     data.put("profilePicUrl", uri.toString());
-                    imgBtnProfilePic.setImageURI(imageUri);
+                    binding.imgBtnProfilePic.setImageURI(imageUri);
                     uploadImageUriInDatabase(imageUrl);
 
                 }).addOnFailureListener(e -> {

@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.databinding.ActivityRegisterBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -41,10 +42,6 @@ import java.util.Map;
 
 public class Register extends AppCompatActivity {
 
-    private ImageButton imgBackBtn, userTypeImageBtn;
-    private EditText email, password, confirmPassword, phoneNumber;
-    private Button nextBtn;
-    private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
     private FirebaseDatabase firebaseDatabase;
     private FirebaseUser currentUser;
@@ -61,25 +58,18 @@ public class Register extends AppCompatActivity {
             ageInfoDialog, registerFailedDialog, cancelRegisterDialog;
     private AlertDialog.Builder builder;
     private NetworkChangeReceiver networkChangeReceiver;
+    private ActivityRegisterBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeNetworkChecker();
 
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
-
-        imgBackBtn = findViewById(R.id.imgBackBtn);
-        nextBtn = findViewById(R.id.nextBtn);
-        userTypeImageBtn = findViewById(R.id.userTypeImageBtn);
-        progressBarLayout = findViewById(R.id.progressBarLayout);
-        email = findViewById(R.id.email);
-        password = findViewById(R.id.password);
-        confirmPassword = findViewById(R.id.confirmPassword);
-        phoneNumber = findViewById(R.id.phoneNumber);
 
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
@@ -91,7 +81,7 @@ public class Register extends AppCompatActivity {
         StaticDataPasser.storeRegisterType = getRegisterType;
         StaticDataPasser.storeRegisterData = getRegisterData;
 
-        userTypeImageBtn.setOnClickListener(v -> {
+        binding.userTypeImageBtn.setOnClickListener(v -> {
             showUserTypeImageDialog();
         });
 
@@ -112,39 +102,39 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        imgBackBtn.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();
         });
 
-        nextBtn.setOnClickListener(v -> {
-            progressBarLayout.setVisibility(View.VISIBLE);
-            nextBtn.setVisibility(View.GONE);
+        binding.nextBtn.setOnClickListener(v -> {
+            binding.progressBarLayout.setVisibility(View.VISIBLE);
+            binding.nextBtn.setVisibility(View.GONE);
 
-            String stringEmail = email.getText().toString().trim();
-            String stringPassword = password.getText().toString();
-            String stringConfirmPassword = confirmPassword.getText().toString();
-            String stringPhoneNumber = phoneNumber.getText().toString().trim();
+            String stringEmail = binding.email.getText().toString().trim();
+            String stringPassword = binding.password.getText().toString();
+            String stringConfirmPassword = binding.confirmPassword.getText().toString();
+            String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
             String prefixPhoneNumber = "+63" + stringPhoneNumber;
             String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
             StaticDataPasser.storeHashedPassword = hashedPassword;
 
             if (stringEmail.isEmpty() || stringPassword.isEmpty()
                     || stringPhoneNumber.isEmpty()) {
-                email.setError("Please enter your Email");
-                progressBarLayout.setVisibility(View.GONE);
-                nextBtn.setVisibility(View.VISIBLE);
+                binding.email.setError("Please enter your Email");
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.nextBtn.setVisibility(View.VISIBLE);
 
             } else if (!stringConfirmPassword.equals(stringPassword)) {
-                confirmPassword.setError("Password did not matched");
-                progressBarLayout.setVisibility(View.GONE);
-                nextBtn.setVisibility(View.VISIBLE);
+                binding.confirmPassword.setError("Password did not matched");
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.nextBtn.setVisibility(View.VISIBLE);
 
             } else {
                 switch (getRegisterData) {
                     case "Driver":
 
-                        userTypeImageBtn.invalidate();
-                        Glide.with(this).load(R.drawable.driver_24).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+                        binding.userTypeImageBtn.invalidate();
+                        Glide.with(this).load(R.drawable.driver_24).centerCrop().placeholder(R.drawable.loading_gif).into(binding.userTypeImageBtn);
 //                        userTypeImageBtn.setImageResource(R.drawable.driver_24);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
@@ -167,8 +157,8 @@ public class Register extends AppCompatActivity {
                                     databaseReference.setValue(registerUser).addOnCompleteListener(task12 -> {
 
                                         if (task12.isSuccessful()) {
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                             StaticDataPasser.storeHashedPassword = null;
 
@@ -182,8 +172,8 @@ public class Register extends AppCompatActivity {
 
                                             StaticDataPasser.storeHashedPassword = null;
 
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                             Log.e(TAG, String.valueOf(task12.getException()));
                                         }
@@ -199,8 +189,8 @@ public class Register extends AppCompatActivity {
 
                                 StaticDataPasser.storeHashedPassword = null;
 
-                                progressBarLayout.setVisibility(View.GONE);
-                                nextBtn.setVisibility(View.VISIBLE);
+                                binding.progressBarLayout.setVisibility(View.GONE);
+                                binding.nextBtn.setVisibility(View.VISIBLE);
 
                                 Log.e(TAG, String.valueOf(task.getException()));
                             }
@@ -209,8 +199,8 @@ public class Register extends AppCompatActivity {
 
                     case "Persons with Disability (PWD)":
 
-                        userTypeImageBtn.invalidate();
-                        Glide.with(this).load(R.drawable.pwd_24).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+                        binding.userTypeImageBtn.invalidate();
+                        Glide.with(this).load(R.drawable.pwd_24).centerCrop().placeholder(R.drawable.loading_gif).into(binding.userTypeImageBtn);
 //                        userTypeImageBtn.setImageResource(R.drawable.pwd);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
@@ -235,8 +225,8 @@ public class Register extends AppCompatActivity {
                                     databaseReference.setValue(registerUser).addOnCompleteListener(task13 -> {
 
                                         if (task13.isSuccessful()) {
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                             StaticDataPasser.storeHashedPassword = null;
 
@@ -252,8 +242,8 @@ public class Register extends AppCompatActivity {
 
                                             StaticDataPasser.storeHashedPassword = null;
 
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                         }
                                     });
@@ -268,8 +258,8 @@ public class Register extends AppCompatActivity {
 
                                 StaticDataPasser.storeHashedPassword = null;
 
-                                nextBtn.setVisibility(View.VISIBLE);
-                                progressBarLayout.setVisibility(View.GONE);
+                                binding.nextBtn.setVisibility(View.VISIBLE);
+                                binding.progressBarLayout.setVisibility(View.GONE);
 
                                 Log.e(TAG, String.valueOf(task.getException()));
                             }
@@ -279,7 +269,7 @@ public class Register extends AppCompatActivity {
                     case "Senior Citizen":
 
 //                        userTypeImageBtn.invalidate();
-                        Glide.with(this).load(R.drawable.senior_24png).centerCrop().placeholder(R.drawable.loading_gif).into(userTypeImageBtn);
+                        Glide.with(this).load(R.drawable.senior_24png).centerCrop().placeholder(R.drawable.loading_gif).into(binding.userTypeImageBtn);
 //                        userTypeImageBtn.setImageResource(R.drawable.senior);
 
                         auth.createUserWithEmailAndPassword(stringEmail, stringPassword).addOnCompleteListener(task -> {
@@ -304,8 +294,8 @@ public class Register extends AppCompatActivity {
                                     databaseReference.setValue(registerUser).addOnCompleteListener(task1 -> {
 
                                         if (task1.isSuccessful()) {
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                             StaticDataPasser.storeHashedPassword = null;
 
@@ -321,8 +311,8 @@ public class Register extends AppCompatActivity {
 
                                             StaticDataPasser.storeHashedPassword = null;
 
-                                            nextBtn.setVisibility(View.VISIBLE);
-                                            progressBarLayout.setVisibility(View.GONE);
+                                            binding.nextBtn.setVisibility(View.VISIBLE);
+                                            binding.progressBarLayout.setVisibility(View.GONE);
 
                                         }
                                     });
@@ -337,8 +327,8 @@ public class Register extends AppCompatActivity {
 
                                 StaticDataPasser.storeHashedPassword = null;
 
-                                progressBarLayout.setVisibility(View.GONE);
-                                nextBtn.setVisibility(View.VISIBLE);
+                                binding.progressBarLayout.setVisibility(View.GONE);
+                                binding.nextBtn.setVisibility(View.VISIBLE);
 
                                 Log.e(TAG, String.valueOf(task.getException()));
                             }
@@ -593,8 +583,8 @@ public class Register extends AppCompatActivity {
             switch (StaticDataPasser.storeRegisterData) {
                 case "Driver":
 
-                    userTypeImageBtn.invalidate();
-                    userTypeImageBtn.setImageResource(R.drawable.driver);
+                    binding.userTypeImageBtn.invalidate();
+                    binding.userTypeImageBtn.setImageResource(R.drawable.driver);
 
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
@@ -658,8 +648,8 @@ public class Register extends AppCompatActivity {
 
                 case "Persons with Disability (PWD)":
 
-                    userTypeImageBtn.invalidate();
-                    userTypeImageBtn.setImageResource(R.drawable.pwd);
+                    binding.userTypeImageBtn.invalidate();
+                    binding.userTypeImageBtn.setImageResource(R.drawable.pwd);
 
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {
@@ -720,8 +710,8 @@ public class Register extends AppCompatActivity {
                     break;
 
                 case "Senior Citizen":
-                    userTypeImageBtn.invalidate();
-                    userTypeImageBtn.setImageResource(R.drawable.senior_64);
+                    binding.userTypeImageBtn.invalidate();
+                    binding.userTypeImageBtn.setImageResource(R.drawable.senior_64);
 
                     auth.signInWithCredential(credential).addOnCompleteListener(this, task -> {
                         if (task.isSuccessful()) {

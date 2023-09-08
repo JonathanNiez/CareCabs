@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.capstone.carecabs.databinding.ActivityGetStartedBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -16,13 +17,14 @@ public class GetStarted extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseAuth auth;
     private Intent intent;
-    private Button getStartedBtn;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
+    private ActivityGetStartedBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_get_started);
+        binding = ActivityGetStartedBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
@@ -34,9 +36,7 @@ public class GetStarted extends AppCompatActivity {
             finish();
         }
 
-        getStartedBtn = findViewById(R.id.getStartedBtn);
-
-        getStartedBtn.setOnClickListener(v -> {
+        binding.getStartedBtn.setOnClickListener(v -> {
             intent = new Intent(this, Login.class);
             startActivity(intent);
             finish();

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,12 +43,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterPWD extends AppCompatActivity {
-
-    private Button doneBtn, scanIDBtn, birthdateBtn, ageBtn;
-    private ImageButton imgBackBtn;
-    private EditText firstname, lastname;
-    private Spinner spinnerDisability, spinnerSex;
-    private LinearLayout progressBarLayout;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DatabaseReference databaseReference;
@@ -62,11 +57,13 @@ public class RegisterPWD extends AppCompatActivity {
     private AlertDialog noInternetDialog, registerFailedDialog,
             cancelRegisterDialog, idNotScannedDialog;
     private NetworkChangeReceiver networkChangeReceiver;
+    private ActivityRegisterPwdBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_pwd);
+        binding = ActivityRegisterPwdBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeNetworkChecker();
 
@@ -77,17 +74,7 @@ public class RegisterPWD extends AppCompatActivity {
         intent = getIntent();
         String getRegisterData = intent.getStringExtra("registerData");
 
-        doneBtn = findViewById(R.id.doneBtn);
-        firstname = findViewById(R.id.firstname);
-        lastname = findViewById(R.id.lastname);
-        birthdateBtn = findViewById(R.id.birthdateBtn);
-        imgBackBtn = findViewById(R.id.imgBackBtn);
-        spinnerSex = findViewById(R.id.spinnerSex);
-        spinnerDisability = findViewById(R.id.spinnerDisability);
-        ageBtn = findViewById(R.id.ageBtn);
-        progressBarLayout = findViewById(R.id.progressBarLayout);
-
-        imgBackBtn.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();
         });
 
@@ -97,13 +84,13 @@ public class RegisterPWD extends AppCompatActivity {
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSex.setAdapter(adapter);
-        spinnerSex.setSelection(0);
-        spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.spinnerSex.setAdapter(adapter);
+        binding.spinnerSex.setSelection(0);
+        binding.spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    spinnerSex.setSelection(0);
+                    binding.spinnerSex.setSelection(0);
                 } else {
                     String selectedSex = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.storeSelectedSex = selectedSex;
@@ -122,14 +109,14 @@ public class RegisterPWD extends AppCompatActivity {
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDisability.setVisibility(View.VISIBLE);
-        spinnerDisability.setAdapter(disabilityAdapter);
-        spinnerDisability.setSelection(0);
-        spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.spinnerDisability.setVisibility(View.VISIBLE);
+        binding.spinnerDisability.setAdapter(disabilityAdapter);
+        binding.spinnerDisability.setSelection(0);
+        binding.spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    spinnerDisability.setSelection(0);
+                    binding.spinnerDisability.setSelection(0);
                 } else {
                     String selectedDisability = parent.getItemAtPosition(position).toString();
                     StaticDataPasser.storeSelectedDisability = selectedDisability;
@@ -138,20 +125,20 @@ public class RegisterPWD extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                spinnerDisability.setSelection(0);
+                binding.spinnerDisability.setSelection(0);
             }
         });
 
-        birthdateBtn.setOnClickListener(v -> {
+        binding.birthdateBtn.setOnClickListener(v -> {
             showDatePickerDialog();
         });
 
-        doneBtn.setOnClickListener(v -> {
-            progressBarLayout.setVisibility(View.VISIBLE);
-            doneBtn.setVisibility(View.GONE);
+        binding.doneBtn.setOnClickListener(v -> {
+            binding.progressBarLayout.setVisibility(View.VISIBLE);
+            binding.doneBtn.setVisibility(View.GONE);
 
-            String stringFirstname = firstname.getText().toString().trim();
-            String stringLastname = lastname.getText().toString().trim();
+            String stringFirstname = binding.firstname.getText().toString().trim();
+            String stringLastname = binding.lastname.getText().toString().trim();
 
             if (stringFirstname.isEmpty() || stringLastname.isEmpty()
                     || StaticDataPasser.storeCurrentBirthDate == null
@@ -159,8 +146,8 @@ public class RegisterPWD extends AppCompatActivity {
                     || Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
                     || Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")) {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
-                progressBarLayout.setVisibility(View.GONE);
-                doneBtn.setVisibility(View.VISIBLE);
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.doneBtn.setVisibility(View.VISIBLE);
 
             } else {
                 StaticDataPasser.storeFirstName = stringFirstname;
@@ -225,8 +212,8 @@ public class RegisterPWD extends AppCompatActivity {
 
             databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    progressBarLayout.setVisibility(View.GONE);
-                    doneBtn.setVisibility(View.VISIBLE);
+                    binding.progressBarLayout.setVisibility(View.GONE);
+                    binding.doneBtn.setVisibility(View.VISIBLE);
 
                     StaticDataPasser.storeFirstName = null;
                     StaticDataPasser.storeLastName = null;
@@ -244,8 +231,8 @@ public class RegisterPWD extends AppCompatActivity {
                 } else {
                     showRegisterFailedDialog();
 
-                    progressBarLayout.setVisibility(View.GONE);
-                    doneBtn.setVisibility(View.VISIBLE);
+                    binding.progressBarLayout.setVisibility(View.GONE);
+                    binding.doneBtn.setVisibility(View.VISIBLE);
 
                     Log.e(TAG, String.valueOf(task.getException()));
                 }
@@ -253,8 +240,8 @@ public class RegisterPWD extends AppCompatActivity {
         } else {
             showRegisterFailedDialog();
 
-            progressBarLayout.setVisibility(View.GONE);
-            doneBtn.setVisibility(View.VISIBLE);
+            binding.progressBarLayout.setVisibility(View.GONE);
+            binding.doneBtn.setVisibility(View.VISIBLE);
         }
     }
 
@@ -338,7 +325,7 @@ public class RegisterPWD extends AppCompatActivity {
             }
 
             // Update the ageTextView with the calculated age
-            ageBtn.setText("Age: " + age);
+            binding.ageBtn.setText("Age: " + age);
             StaticDataPasser.storeCurrentAge = age;
         }
     }
@@ -356,7 +343,7 @@ public class RegisterPWD extends AppCompatActivity {
 
                     // Update the birthdateTextView with the selected date in a desired format
                     SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
+                    binding.birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
                     StaticDataPasser.storeCurrentBirthDate = dateFormat.format(selectedDate.getTime());
 
                     // Calculate the age and display it

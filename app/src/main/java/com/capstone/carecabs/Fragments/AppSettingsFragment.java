@@ -13,12 +13,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.databinding.FragmentAppSettingsBinding;
 
 public class AppSettingsFragment extends Fragment {
 
-
-    private ImageButton imgBackBtn;
-    private Button changeFontSizeBtn;
+    private FragmentAppSettingsBinding binding;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,16 +27,14 @@ public class AppSettingsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_app_settings, container, false);
+        binding = FragmentAppSettingsBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
-        imgBackBtn = view.findViewById(R.id.imgBackBtn);
-        changeFontSizeBtn = view.findViewById(R.id.changeFontSizeBtn);
-
-        imgBackBtn.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
 
-        changeFontSizeBtn.setOnClickListener(v -> {
+        binding.changeFontSizeBtn.setOnClickListener(v -> {
             goToChangeFontSizeFragment();
         });
 

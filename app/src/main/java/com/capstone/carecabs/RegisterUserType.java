@@ -15,16 +15,12 @@ import android.widget.RelativeLayout;
 
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.databinding.ActivityRegisterUserTypeBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterUserType extends AppCompatActivity {
-
-    private ImageButton passengerImgBtn, driverImgBtn;
-    private CardView googleRegisterLayout;
-    private RelativeLayout userTypeParentLayout;
-    private Button cancelBtn;
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private Intent intent;
@@ -32,14 +28,15 @@ public class RegisterUserType extends AppCompatActivity {
     private AlertDialog.Builder builder;
     private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog,
             noInternetDialog, cancelRegisterDialog;
-    private static final int RC_SIGN_IN = 69;
     private NetworkChangeReceiver networkChangeReceiver;
     private boolean shouldExit = false;
+    private ActivityRegisterUserTypeBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_user_type);
+        binding = ActivityRegisterUserTypeBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         initializeNetworkChecker();
 
@@ -50,21 +47,15 @@ public class RegisterUserType extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         FirebaseApp.initializeApp(this);
 
-        passengerImgBtn = findViewById(R.id.passengerImgBtn);
-        driverImgBtn = findViewById(R.id.driverImgBtn);
-        cancelBtn = findViewById(R.id.cancelBtn);
-        googleRegisterLayout = findViewById(R.id.googleRegisterLayout);
-        userTypeParentLayout = findViewById(R.id.userTypeParentLayout);
-
         if (getRegisterType != null) {
             if (getRegisterType.equals("googleRegister")) {
-                userTypeParentLayout.invalidate();
-                passengerImgBtn.invalidate();
-                driverImgBtn.invalidate();
-                cancelBtn.invalidate();
-                googleRegisterLayout.invalidate();
+                binding.userTypeParentLayout.invalidate();
+                binding.passengerImgBtn.invalidate();
+                binding.driverImgBtn.invalidate();
+                binding.cancelBtn.invalidate();
+                binding.googleRegisterLayout.invalidate();
 
-                googleRegisterLayout.setVisibility(View.VISIBLE);
+                binding.googleRegisterLayout.setVisibility(View.VISIBLE);
 
                 registerType = "googleRegister";
             } else {
@@ -74,12 +65,12 @@ public class RegisterUserType extends AppCompatActivity {
             return;
         }
 
-        cancelBtn.setOnClickListener(v -> {
+        binding.cancelBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();
         });
 
 
-        driverImgBtn.setOnClickListener(v -> {
+        binding.driverImgBtn.setOnClickListener(v -> {
             intent = new Intent(this, Register.class);
             registerData = "Driver";
             intent.putExtra("registerData", registerData);
@@ -88,7 +79,7 @@ public class RegisterUserType extends AppCompatActivity {
 
         });
 
-        passengerImgBtn.setOnClickListener(v -> {
+        binding.passengerImgBtn.setOnClickListener(v -> {
             showUserTypeDialog();
         });
 
