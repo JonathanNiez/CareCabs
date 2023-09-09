@@ -1,7 +1,6 @@
 package com.capstone.carecabs;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -11,8 +10,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityRegisterUserTypeBinding;
@@ -21,10 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class RegisterUserType extends AppCompatActivity {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
     private Intent intent;
-    private String registerData, registerType;
+    private String registerUserType, registerType;
     private AlertDialog.Builder builder;
     private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog,
             noInternetDialog, cancelRegisterDialog;
@@ -44,7 +41,7 @@ public class RegisterUserType extends AppCompatActivity {
         //From Login
         String getRegisterType = intent.getStringExtra("registerType");
 
-        auth = FirebaseAuth.getInstance();
+        FirebaseMain.getAuth();
         FirebaseApp.initializeApp(this);
 
         if (getRegisterType != null) {
@@ -72,8 +69,8 @@ public class RegisterUserType extends AppCompatActivity {
 
         binding.driverImgBtn.setOnClickListener(v -> {
             intent = new Intent(this, Register.class);
-            registerData = "Driver";
-            intent.putExtra("registerData", registerData);
+            registerUserType = "Driver";
+            intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
             startActivity(intent);
 
@@ -163,8 +160,8 @@ public class RegisterUserType extends AppCompatActivity {
 
         seniorImgBtn.setOnClickListener(v -> {
             intent = new Intent(RegisterUserType.this, Register.class);
-            registerData = "Senior Citizen";
-            intent.putExtra("registerData", registerData);
+            registerUserType = "Senior Citizen";
+            intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
             startActivity(intent);
             finish();
@@ -174,8 +171,8 @@ public class RegisterUserType extends AppCompatActivity {
 
         pwdImgBtn.setOnClickListener(v -> {
             intent = new Intent(RegisterUserType.this, Register.class);
-            registerData = "Persons with Disability (PWD)";
-            intent.putExtra("registerData", registerData);
+            registerUserType = "Persons with Disability (PWD)";
+            intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
             startActivity(intent);
             finish();

@@ -46,11 +46,6 @@ import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -64,7 +59,6 @@ import java.util.Map;
 public class EditAccountFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "EditAccountFragment";
     private Intent intent, cameraIntent, galleryIntent;
@@ -232,127 +226,10 @@ public class EditAccountFragment extends Fragment {
     }
 
     private void loadUserProfileInfo() {
+
         if (currentUser != null) {
             userID = currentUser.getUid();
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-
-                        String getFirstname, getLastname, getProfilePic, fullName,
-                                getBirthdate, getSex, getDisability, getUserType;
-                        int getAge;
-
-                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
-
-                        if (snapshot.child("driver").hasChild(userID)) {
-                            driverSnapshot = snapshot.child("driver").child(userID);
-                            getFirstname = driverSnapshot.child("firstname").getValue(String.class);
-                            getLastname = driverSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
-                            getAge = driverSnapshot.child("age").getValue(Integer.class);
-                            getSex = driverSnapshot.child("sex").getValue(String.class);
-                            getUserType = driverSnapshot.child("userType").getValue(String.class);
-
-                            StaticDataPasser.storeFirstName = getFirstname;
-                            StaticDataPasser.storeLastName = getLastname;
-                            StaticDataPasser.storeCurrentAge = getAge;
-                            StaticDataPasser.storeUserType = getUserType;
-
-                            binding.userTypeBtn.setText(getUserType);
-                            binding.editFirstnameBtn.setText(getFirstname);
-                            binding.editLastnameBtn.setText(getLastname);
-                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            binding.editAgeBtn.setText("Age: " + getAge);
-                            binding.editSexBtn.setText("Sex: " + getSex);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
-                            } else {
-                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
-                            }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-                            seniorSnapshot = snapshot.child("senior").child(userID);
-                            getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
-                            getLastname = seniorSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = seniorSnapshot.child("birthdate").getValue(String.class);
-                            getAge = seniorSnapshot.child("age").getValue(Integer.class);
-                            getSex = seniorSnapshot.child("sex").getValue(String.class);
-                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
-
-                            StaticDataPasser.storeFirstName = getFirstname;
-                            StaticDataPasser.storeLastName = getLastname;
-                            StaticDataPasser.storeCurrentAge = getAge;
-                            StaticDataPasser.storeUserType = getUserType;
-
-                            binding.userTypeBtn.setText(getUserType);
-                            binding.editFirstnameBtn.setText(getFirstname);
-                            binding.editLastnameBtn.setText(getLastname);
-                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            binding.editAgeBtn.setText("Age: " + getAge);
-                            binding.editSexBtn.setText("Sex: " + getSex);
-
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
-                            } else {
-                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
-                            }
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-                            pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
-                            getLastname = pwdSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = pwdSnapshot.child("birthdate").getValue(String.class);
-                            getAge = pwdSnapshot.child("age").getValue(Integer.class);
-                            getSex = pwdSnapshot.child("sex").getValue(String.class);
-                            getDisability = pwdSnapshot.child("disability").getValue(String.class);
-                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
-
-                            StaticDataPasser.storeFirstName = getFirstname;
-                            StaticDataPasser.storeLastName = getLastname;
-                            StaticDataPasser.storeCurrentAge = getAge;
-                            StaticDataPasser.storeUserType = getUserType;
-
-                            binding.userTypeBtn.setText(getUserType);
-                            binding.editFirstnameBtn.setText(getFirstname);
-                            binding.editLastnameBtn.setText(getLastname);
-                            binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-                            binding.editAgeBtn.setText("Age: " + getAge);
-                            binding.editSexBtn.setText("Sex: " + getSex);
-                            binding.editDisabilityBtn.setVisibility(View.VISIBLE);
-                            binding.editDisabilityBtn.setText("Disability: " + getDisability);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
-                            } else {
-                                binding.imgBtnProfilePic.setImageResource(R.drawable.account);
-                            }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-                        }
-                    } else {
-                        Log.e(TAG, "Not Exist");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e(TAG, error.getMessage());
-                }
-            });
 
         } else {
             intent = new Intent(getActivity(), Login.class);
@@ -771,70 +648,6 @@ public class EditAccountFragment extends Fragment {
         if (currentUser != null) {
             userID = currentUser.getUid();
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-
-                        String getProfilePic;
-                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
-
-                        if (snapshot.child("driver").hasChild(userID)) {
-                            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
-
-                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
-
-                                if (task.isSuccessful()) {
-                                    showProfilePicUpdateSuccess();
-                                    loadUserProfileInfo();
-                                } else {
-                                    showProfilePicUpdateFailed();
-                                    Log.e(TAG, String.valueOf(task.getException()));
-                                }
-                            });
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-                            databaseReference = FirebaseDatabase.getInstance().getReference("senior").child("driver").child(userID);
-
-                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
-
-                                if (task.isSuccessful()) {
-                                    showProfilePicUpdateSuccess();
-                                    loadUserProfileInfo();
-                                } else {
-                                    showProfilePicUpdateFailed();
-                                    Log.e(TAG, String.valueOf(task.getException()));
-                                }
-                            });
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-                            databaseReference = FirebaseDatabase.getInstance().getReference("pwd").child("driver").child(userID);
-
-                            databaseReference.setValue(xImageUrl).addOnCompleteListener(task -> {
-
-                                if (task.isSuccessful()) {
-                                    showProfilePicUpdateSuccess();
-                                    loadUserProfileInfo();
-                                } else {
-                                    showProfilePicUpdateFailed();
-                                    Log.e(TAG, String.valueOf(task.getException()));
-                                }
-                            });
-
-                        }
-                    } else {
-                        showProfilePicUpdateFailed();
-                        Log.e(TAG, "Not Exist");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    showProfilePicUpdateFailed();
-                    Log.e(TAG, error.getMessage());
-                }
-            });
 
         } else {
             intent = new Intent(getActivity(), Login.class);

@@ -19,21 +19,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,11 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterPWD extends AppCompatActivity {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
+    private DocumentReference documentReference;
     private String userID;
-    private String TAG = "RegisterPWD";
+    private final String TAG = "RegisterPWD";
     private String verificationStatus = "Not Verified";
     private boolean shouldExit = false;
     private boolean isIDScanned = false;
@@ -67,8 +60,8 @@ public class RegisterPWD extends AppCompatActivity {
 
         initializeNetworkChecker();
 
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        FirebaseMain.getAuth();
+        FirebaseMain.getUser();
         FirebaseApp.initializeApp(this);
 
         intent = getIntent();
@@ -157,7 +150,7 @@ public class RegisterPWD extends AppCompatActivity {
                     showIDNotScannedDialog();
                 } else {
                     verificationStatus = "Verified";
-                    registerPWD(verificationStatus);
+                    updateUserRegisterToFireStore(verificationStatus);
                 }
 
             }
@@ -194,55 +187,47 @@ public class RegisterPWD extends AppCompatActivity {
         closeIDNotScannedDialog();
     }
 
-    private void registerPWD(String xVerificationStatus) {
-        if (currentUser != null) {
-            userID = currentUser.getUid();
+    private void updateUserRegisterToFireStore(String verificationStatus) {
+        userID = FirebaseMain.getUser().getUid();
+        documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.pwdCollection).document(userID);
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("pwd").child(userID);
+        Map<String, Object> registerUser = new HashMap<>();
+        registerUser.put("firstname", StaticDataPasser.storeFirstName);
+        registerUser.put("lastname", StaticDataPasser.storeLastName);
+        registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
+        registerUser.put("age", StaticDataPasser.storeCurrentAge);
+        registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+        registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+        registerUser.put("userType", "Persons with Disabilities (PWD)");
+        registerUser.put("verificationStatus", verificationStatus);
 
-            Map<String, Object> registerUser = new HashMap<>();
-            registerUser.put("firstname", StaticDataPasser.storeFirstName);
-            registerUser.put("lastname", StaticDataPasser.storeLastName);
-            registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
-            registerUser.put("age", StaticDataPasser.storeCurrentAge);
-            registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
-            registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-            registerUser.put("userType", "Persons with Disabilities (PWD)");
-            registerUser.put("verificationStatus", xVerificationStatus);
+        documentReference.update(registerUser).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.doneBtn.setVisibility(View.VISIBLE);
 
-            databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
+                StaticDataPasser.storeFirstName = null;
+                StaticDataPasser.storeLastName = null;
+                StaticDataPasser.storeSelectedSex = null;
+                StaticDataPasser.storeCurrentAge = 0;
+                StaticDataPasser.storeCurrentBirthDate = null;
+                StaticDataPasser.storeSelectedDisability = null;
 
-                    StaticDataPasser.storeFirstName = null;
-                    StaticDataPasser.storeLastName = null;
-                    StaticDataPasser.storeSelectedSex = null;
-                    StaticDataPasser.storeCurrentAge = 0;
-                    StaticDataPasser.storeCurrentBirthDate = null;
-                    StaticDataPasser.storeSelectedDisability = null;
+                showRegisterSuccessNotification();
 
-                    showRegisterSuccessNotification();
+                intent = new Intent(RegisterPWD.this, MainActivity.class);
+                startActivity(intent);
+                finish();
 
-                    intent = new Intent(RegisterPWD.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+            } else {
+                showRegisterFailedDialog();
 
-                } else {
-                    showRegisterFailedDialog();
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.doneBtn.setVisibility(View.VISIBLE);
 
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
-
-                    Log.e(TAG, String.valueOf(task.getException()));
-                }
-            });
-        } else {
-            showRegisterFailedDialog();
-
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.doneBtn.setVisibility(View.VISIBLE);
-        }
+                Log.e(TAG, String.valueOf(task.getException()));
+            }
+        });
     }
 
     private void showIDNotScannedDialog() {
@@ -255,7 +240,7 @@ public class RegisterPWD extends AppCompatActivity {
 
         yesBtn.setOnClickListener(v -> {
             verificationStatus = "Not Verified";
-            registerPWD(verificationStatus);
+            updateUserRegisterToFireStore(verificationStatus);
         });
 
         noBtn.setOnClickListener(v -> {

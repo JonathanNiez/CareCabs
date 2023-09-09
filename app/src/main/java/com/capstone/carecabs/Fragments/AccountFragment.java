@@ -5,49 +5,35 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOut;
-import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+
+import java.util.Arrays;
 
 public class AccountFragment extends Fragment {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
-    private String TAG = "AccountFragment";
-    private String userID;
+    private DocumentReference documentReference;
+    private final String TAG = "AccountFragment";
     private Intent intent;
-    private AlertDialog signOutDialog, pleaseWaitDialog, noInternetDialog,
-            profileInfoNotCompleteDialog;
+    private AlertDialog signOutDialog, pleaseWaitDialog,
+            noInternetDialog, profileInfoNotCompleteDialog;
     private AlertDialog.Builder builder;
     private NetworkChangeReceiver networkChangeReceiver;
     private Context context;
@@ -67,11 +53,8 @@ public class AccountFragment extends Fragment {
         context = getContext();
         initializeNetworkChecker();
 
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
         FirebaseApp.initializeApp(context);
-
-        loadUserProfileInfo();
+        searchTheFireStoreCollectionName();
 
         binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
@@ -99,7 +82,7 @@ public class AccountFragment extends Fragment {
         StaticDataPasser.storeSelectedDisability = null;
         StaticDataPasser.storeCurrentBirthDate = null;
         StaticDataPasser.storeRegisterType = null;
-        StaticDataPasser.storeRegisterData = null;
+        StaticDataPasser.storeRegisterUserType = null;
         StaticDataPasser.storeCurrentAge = 0;
         StaticDataPasser.storeFirstName = null;
         StaticDataPasser.storeLastName = null;
@@ -109,53 +92,9 @@ public class AccountFragment extends Fragment {
     private void getTheUserType() {
         showPleaseWaitDialog();
 
-        if (currentUser != null) {
-            userID = currentUser.getUid();
+        if (FirebaseMain.getUser() != null) {
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
-                    //TODO: user info empty
-                    if (snapshot.exists()) {
-                        String getUserType;
-
-                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
-
-                        if (snapshot.child("driver").hasChild(userID)) {
-                            driverSnapshot = snapshot.child("driver").child(userID);
-                            getUserType = driverSnapshot.child("userType").getValue(String.class);
-
-                            closePleaseWaitDialog();
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-                            seniorSnapshot = snapshot.child("senior").child(userID);
-                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
-
-                            closePleaseWaitDialog();
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-                            pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
-
-                            closePleaseWaitDialog();
-                        }
-                    } else {
-                        closePleaseWaitDialog();
-
-                        Log.e(TAG, "Not Exist");
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    closePleaseWaitDialog();
-
-                    Log.e(TAG, error.getMessage());
-                }
-            });
+            searchTheFireStoreCollectionName();
 
         } else {
             closePleaseWaitDialog();
@@ -163,169 +102,78 @@ public class AccountFragment extends Fragment {
         }
     }
 
-    private void loadUserProfileInfo() {
+    private void searchTheFireStoreCollectionName() {
         showPleaseWaitDialog();
 
-        if (currentUser != null) {
-            userID = currentUser.getUid();
+        if (FirebaseMain.getUser() != null) {
+            String getUserID = FirebaseMain.getUser().getUid();
 
-            databaseReference = FirebaseDatabase.getInstance().getReference("users");
-            databaseReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+            String[] collectionsToCheck = {"Drivers", "Senior Citizen", "PWD"};
 
-                    if (snapshot.exists()) {
+            for (String collection : collectionsToCheck) {
+                // Construct a reference to the user's document in the current collection
+                documentReference = FirebaseMain.getFireStoreInstance()
+                        .collection(collection).document(getUserID);
 
-                        String getFirstname, getLastname, getProfilePic, fullName,
-                                getUserType, getBirthdate,
-                                getSex, getUserVerificationStatus,
-                                getDisability;
-                        int getAge;
-                        Boolean getDriverStatus;
+                documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // User exists in this collection
+                        String getUserType = documentSnapshot.getString("userType");
+                        String getFirstName = documentSnapshot.getString("firstname");
+                        String getLastName = documentSnapshot.getString("lastname");
+                        String fullName = getFirstName + " " + getLastName;
+                        // Do something with the user's data
+                        // For example, display it or perform some action based on the collection
+                        if (getUserType != null) {
+                            // Determine the collection based on userType
 
-                        DataSnapshot driverSnapshot, seniorSnapshot, pwdSnapshot;
+                            switch (getUserType) {
+                                case "Driver":
+                                    binding.userTypeTextView.setText(getUserType);
+                                    binding.fullNameTextView.setText(fullName);
+                                    break;
 
-                        if (snapshot.child("driver").hasChild(userID)) {
+                                case "Senior Citizen":
+                                    binding.userTypeTextView.setText(getUserType);
+                                    binding.fullNameTextView.setText(fullName);
+                                    break;
 
-                            driverSnapshot = snapshot.child("driver").child(userID);
-                            getUserType = driverSnapshot.child("userType").getValue(String.class);
-                            getFirstname = driverSnapshot.child("firstname").getValue(String.class);
-                            getLastname = driverSnapshot.child("lastname").getValue(String.class);
-                            getUserVerificationStatus = driverSnapshot.child("verificationStatus").getValue(String.class);
-                            getAge = driverSnapshot.child("age").getValue(Integer.class);
-                            getProfilePic = driverSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = driverSnapshot.child("birthdate").getValue(String.class);
-                            getSex = driverSnapshot.child("sex").getValue(String.class);
-                            getDriverStatus = driverSnapshot.child("isAvailable").getValue(Boolean.class);
+                                case "PWD":
+                                    binding.userTypeTextView.setText(getUserType);
+                                    binding.fullNameTextView.setText(fullName);
+                                    break;
 
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
-                            } else {
-                                binding.profilePic.setImageResource(R.drawable.account);
+                                default:
+                                    binding.userTypeTextView.setText("Unknown");
+                                    binding.fullNameTextView.setText("Unknown");
+                                    break;
                             }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-                            binding.userTypeTextView.setText(getUserType);
-                            binding.ageTextView.setText("Age: " + getAge);
-                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            binding.sexTextView.setText("Sex: " + getSex);
-
-                            if (getUserVerificationStatus.equals("Verified")) {
-                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-                            } else {
-                                binding. statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                            }
-                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
-
-                            binding.driverStatusTextView.setVisibility(View.VISIBLE);
-                            if (getDriverStatus) {
-                                binding.driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-                                binding.driverStatusTextView.setText("Driver Status: Available");
-                            } else {
-                                binding.driverStatusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                                binding.driverStatusTextView.setText("Driver Status: Busy");
-
-                            }
-
-                            closePleaseWaitDialog();
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-
-                            seniorSnapshot = snapshot.child("senior").child(userID);
-                            getUserVerificationStatus = seniorSnapshot.child("verificationStatus").getValue(String.class);
-                            getAge = seniorSnapshot.child("age").getValue(Integer.class);
-                            getUserType = seniorSnapshot.child("userType").getValue(String.class);
-                            getFirstname = seniorSnapshot.child("firstname").getValue(String.class);
-                            getLastname = seniorSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = seniorSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = seniorSnapshot.child("birthdate").getValue(String.class);
-                            getSex = seniorSnapshot.child("sex").getValue(String.class);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
-                            } else {
-                                binding.profilePic.setImageResource(R.drawable.account);
-                            }
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-                            binding.userTypeTextView.setText(getUserType);
-                            binding.ageTextView.setText("Age: " + getAge);
-                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            binding.sexTextView.setText("Sex: " + getSex);
-
-                            if (getUserVerificationStatus.equals("Verified")) {
-                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-
-                            } else {
-                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                            }
-                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
-
-                            closePleaseWaitDialog();
-
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-
-                            pwdSnapshot = snapshot.child("pwd").child(userID);
-                            getUserVerificationStatus = pwdSnapshot.child("verificationStatus").getValue(String.class);
-                            getUserType = pwdSnapshot.child("userType").getValue(String.class);
-                            getAge = pwdSnapshot.child("age").getValue(Integer.class);
-                            getFirstname = pwdSnapshot.child("firstname").getValue(String.class);
-                            getLastname = pwdSnapshot.child("lastname").getValue(String.class);
-                            getProfilePic = pwdSnapshot.child("profilePic").getValue(String.class);
-                            getBirthdate = pwdSnapshot.child("birthdate").getValue(String.class);
-                            getSex = pwdSnapshot.child("sex").getValue(String.class);
-                            getDisability = pwdSnapshot.child("disability").getValue(String.class);
-
-                            if (!getProfilePic.equals("default")) {
-                                Glide.with(context).load(getProfilePic).placeholder(R.drawable.loading_gif).into(binding.profilePic);
-                            } else {
-                                binding.profilePic.setImageResource(R.drawable.account);
-                            }
-
-                            fullName = String.format("%s %s", getFirstname, getLastname);
-                            binding.fullNameTextView.setText(fullName);
-                            binding.userTypeTextView.setText(getUserType);
-                            binding.ageTextView.setText("Age: " + getAge);
-                            binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-                            binding.sexTextView.setText("Sex: " + getSex);
-                            binding.disabilityTextView.setVisibility(View.VISIBLE);
-                            binding.disabilityTextView.setText("Disability: " + getDisability);
-
-                            if (getUserVerificationStatus.equals("Verified")) {
-                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.green));
-
-                            } else {
-                                binding.statusTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red));
-                            }
-                            binding.statusTextView.setText("Status: " + getUserVerificationStatus);
-
-                            closePleaseWaitDialog();
-
                         }
-                    } else {
+
                         closePleaseWaitDialog();
+                        Log.i(TAG, "Exists");
 
-                        Log.e(TAG, "Not Exist");
+                    } else {
+
+                        Log.e(TAG, "Not Exists");
+                        closePleaseWaitDialog();
                     }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                }).addOnFailureListener(e -> {
+                    Log.e(TAG, e.getMessage());
                     closePleaseWaitDialog();
-
-                    Log.e(TAG, error.getMessage());
-                }
-            });
+                });
+            }
 
         } else {
+            Log.e(TAG, "User is null");
             closePleaseWaitDialog();
-            showIncompleteProfileInfoDialog();
-
-            intent = new Intent(getActivity(), Login.class);
-            startActivity(intent);
         }
+    }
+
+
+    private void loadUserProfileInfo() {
+        showPleaseWaitDialog();
+        getTheUserType();
     }
 
 

@@ -22,8 +22,6 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,8 +31,6 @@ import java.util.List;
 public class HomeFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference;
     private String userID;
     private String TAG = "HomeFragment";
     private int currentPage = 0;

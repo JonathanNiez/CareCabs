@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Fragments.AboutFragment;
 import com.capstone.carecabs.Fragments.AccountFragment;
 import com.capstone.carecabs.Fragments.AppSettingsFragment;
@@ -27,11 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
-    private String TAG = "MainActivity";
-    private static final int CAMERA_REQUEST_CODE = 1;
-    private static final int GALLERY_REQUEST_CODE = 2;
-    private static final int CAMERA_PERMISSION_REQUEST = 101;
-    private static final int STORAGE_PERMISSION_REQUEST = 102;
+    private final String TAG = "MainActivity";
     private boolean shouldExit = false;
     private EditAccountFragment editAccountFragment;
     private ActivityMainBinding binding;
@@ -56,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (item.getItemId() == R.id.map) {
                 intent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
             return true;
         });

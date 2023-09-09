@@ -19,21 +19,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,11 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterSenior extends AppCompatActivity {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
+    private DocumentReference documentReference;
     private String userID;
-    private String TAG = "RegisterSenior";
+    private final String TAG = "RegisterSenior";
     private String verificationStatus = "Not Verified";
     private boolean shouldExit = false;
     private boolean isIDScanned = false;
@@ -67,8 +60,8 @@ public class RegisterSenior extends AppCompatActivity {
 
         initializeNetworkChecker();
 
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        FirebaseMain.getAuth();
+        FirebaseMain.getUser();
         FirebaseApp.initializeApp(this);
 
         intent = getIntent();
@@ -153,7 +146,7 @@ public class RegisterSenior extends AppCompatActivity {
                 startActivity(intent);
                 finish();
 
-                auth.signOut();
+                FirebaseMain.signOutUser();
                 showAgeReqDialog();
 
                 binding.progressBarLayout.setVisibility(View.GONE);
@@ -166,7 +159,7 @@ public class RegisterSenior extends AppCompatActivity {
                     showIDNotScannedDialog();
                 } else {
                     verificationStatus = "Verified";
-                    registerSenior(verificationStatus);
+                    updateUserRegisterToFireStore(verificationStatus);
                 }
             }
         });
@@ -206,52 +199,35 @@ public class RegisterSenior extends AppCompatActivity {
         closeRegisterFailedDialog();
     }
 
-    private void registerSenior(String xVerificationStatus) {
-        if (currentUser != null) {
-            userID = currentUser.getUid();
-            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("senior").child(userID);
+    private void updateUserRegisterToFireStore(String verificationStatus) {
+        userID = FirebaseMain.getUser().getUid();
+        documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.seniorCollection).document(userID);
 
-            Map<String, Object> registerUser = new HashMap<>();
-            registerUser.put("firstname", StaticDataPasser.storeFirstName);
-            registerUser.put("lastname", StaticDataPasser.storeLastName);
-            registerUser.put("age", StaticDataPasser.storeCurrentAge);
-            registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
-            registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-            registerUser.put("userType", "Senior Citizen");
-            registerUser.put("verificationStatus", xVerificationStatus);
+        Map<String, Object> registerUser = new HashMap<>();
+        registerUser.put("firstname", StaticDataPasser.storeFirstName);
+        registerUser.put("lastname", StaticDataPasser.storeLastName);
+        registerUser.put("age", StaticDataPasser.storeCurrentAge);
+        registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
+        registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+        registerUser.put("userType", "Senior Citizen");
+        registerUser.put("verificationStatus", verificationStatus);
 
-            databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
+        documentReference.update(registerUser).addOnSuccessListener(unused -> {
 
-                    StaticDataPasser.storeFirstName = null;
-                    StaticDataPasser.storeLastName = null;
-                    StaticDataPasser.storeSelectedSex = null;
-                    StaticDataPasser.storeCurrentAge = 0;
-                    StaticDataPasser.storeCurrentBirthDate = null;
-                    StaticDataPasser.storeSelectedMedicalCondition = null;
+            showRegisterSuccessNotification();
 
-                    showRegisterSuccessNotification();
+            intent = new Intent(RegisterSenior.this, MainActivity.class);
+            startActivity(intent);
+            finish();
 
-                    intent = new Intent(RegisterSenior.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    showRegisterFailedDialog();
-
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
-
-                    Log.e(TAG, String.valueOf(task.getException()));
-                }
-            });
-        } else {
+        }).addOnFailureListener(e -> {
             showRegisterFailedDialog();
+
+            Log.e(TAG, e.getMessage());
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.doneBtn.setVisibility(View.VISIBLE);
-        }
+        });
     }
 
     private void showIDNotScannedDialog() {
@@ -264,7 +240,7 @@ public class RegisterSenior extends AppCompatActivity {
 
         yesBtn.setOnClickListener(v -> {
             verificationStatus = "Not Verified";
-            registerSenior(verificationStatus);
+            updateUserRegisterToFireStore(verificationStatus);
         });
 
         noBtn.setOnClickListener(v -> {
@@ -299,7 +275,6 @@ public class RegisterSenior extends AppCompatActivity {
             StaticDataPasser.storeCurrentAge = 0;
             StaticDataPasser.storeCurrentBirthDate = null;
             StaticDataPasser.storeSelectedMedicalCondition = null;
-
 
             intent = new Intent(this, Login.class);
             startActivity(intent);

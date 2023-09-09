@@ -25,12 +25,14 @@
     <string name="acknowledgments">We would like to extend our heartfelt gratitude to Holy Cross of Davao College for their unwavering support and mentorship throughout the development of this capstone project.</string>
 
     <string name="for_any_inquiries">For any inquiries, questions, or feedback about CareCabs, please feel free to get in touch with us. We value your input and look forward to hearing from you.</string>
-    
+
     <string name="your_feedback_helps_us_improve">Your feedback helps us improve our service and make it more accessible to everyone. Thank you for your support!</string>
 
     <string name="admin_emails">louisandrew.roque@hcdc.edu.ph\nmarnichol.sarillana@hcdc.edu.ph\njonathan.niez@hcdc.edu.ph</string>
 
     <string name="admin_phones">09068001245</string>
+
     <string name="font_size_preview">The quick brown fox jumps over the lazy dog</string>
+
     <string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
 </resources>

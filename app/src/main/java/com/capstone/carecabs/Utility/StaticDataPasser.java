@@ -8,10 +8,11 @@ public class StaticDataPasser {
     public static String storeSelectedDisability = null;
     public static String storeCurrentBirthDate = null;
     public static String storeRegisterType = null;
-    public static String storeRegisterData = null;
+    public static String storeRegisterUserType = null;
     public static String storeSelectedMedicalCondition = null;
     public static int storeCurrentAge = 0;
     public static String storeHashedPassword = null;
     public static String storeUserType = null;
+    public static String storePhoneNumber = null;
 
 }

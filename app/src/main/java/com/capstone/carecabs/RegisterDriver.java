@@ -21,19 +21,23 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterDriverBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,11 +47,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterDriver extends AppCompatActivity {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private DatabaseReference databaseReference;
+    private DocumentReference documentReference;
     private String userID;
-    private String TAG = "RegisterDriver";
+    private final String TAG = "RegisterDriver";
     private String verificationStatus = "Not Verified";
     private boolean shouldExit = false;
     private boolean isIDScanned = false;
@@ -67,8 +69,8 @@ public class RegisterDriver extends AppCompatActivity {
 
         initializeNetworkChecker();
 
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        FirebaseMain.getAuth();
+        FirebaseMain.getUser();
         FirebaseApp.initializeApp(this);
 
         intent = getIntent();
@@ -135,7 +137,7 @@ public class RegisterDriver extends AppCompatActivity {
                     showIDNotScannedDialog();
                 } else {
                     verificationStatus = "Verified";
-                    registerDriver(verificationStatus);
+                    updateUserRegisterToFireStore(verificationStatus);
                 }
 
 
@@ -176,11 +178,9 @@ public class RegisterDriver extends AppCompatActivity {
         closeRegisterFailedDialog();
     }
 
-    private void registerDriver(String xVerificationStatus) {
-        if (currentUser != null) {
-            userID = currentUser.getUid();
-
-            databaseReference = FirebaseDatabase.getInstance().getReference("users").child("driver").child(userID);
+    private void updateUserRegisterToFireStore(String verificationStatus) {
+            userID = FirebaseMain.getUser().getUid();
+            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.driverCollection).document(userID);
 
             Map<String, Object> registerUser = new HashMap<>();
             registerUser.put("firstname", StaticDataPasser.storeFirstName);
@@ -191,40 +191,31 @@ public class RegisterDriver extends AppCompatActivity {
             registerUser.put("sex", StaticDataPasser.storeSelectedSex);
             registerUser.put("userType", "Driver");
             registerUser.put("driverRating", 0.0);
-            registerUser.put("verificationStatus", xVerificationStatus);
+            registerUser.put("verificationStatus", verificationStatus);
 
-            databaseReference.updateChildren(registerUser).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
+            documentReference.update(registerUser).addOnSuccessListener(unused -> {
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.doneBtn.setVisibility(View.VISIBLE);
 
-                    StaticDataPasser.storeFirstName = null;
-                    StaticDataPasser.storeLastName = null;
-                    StaticDataPasser.storeSelectedSex = null;
-                    StaticDataPasser.storeCurrentAge = 0;
-                    StaticDataPasser.storeCurrentBirthDate = null;
+                StaticDataPasser.storeFirstName = null;
+                StaticDataPasser.storeLastName = null;
+                StaticDataPasser.storeSelectedSex = null;
+                StaticDataPasser.storeCurrentAge = 0;
+                StaticDataPasser.storeCurrentBirthDate = null;
 
-                    showRegisterSuccessNotification();
+                showRegisterSuccessNotification();
 
-                    intent = new Intent(RegisterDriver.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                intent = new Intent(RegisterDriver.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            }).addOnFailureListener(e -> {
+                showRegisterFailedDialog();
 
-                } else {
-                    showRegisterFailedDialog();
+                binding.progressBarLayout.setVisibility(View.GONE);
+                binding.doneBtn.setVisibility(View.VISIBLE);
 
-                    binding.progressBarLayout.setVisibility(View.GONE);
-                    binding.doneBtn.setVisibility(View.VISIBLE);
-
-                    Log.e(TAG, String.valueOf(task.getException()));
-                }
+                Log.e(TAG, e.getMessage());
             });
-        } else {
-            showRegisterFailedDialog();
-
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.doneBtn.setVisibility(View.VISIBLE);
-        }
     }
 
     private void showIDNotScannedDialog() {
@@ -237,7 +228,7 @@ public class RegisterDriver extends AppCompatActivity {
 
         yesBtn.setOnClickListener(v -> {
             verificationStatus = "Not Verified";
-            registerDriver(verificationStatus);
+            updateUserRegisterToFireStore(verificationStatus);
         });
 
         noBtn.setOnClickListener(v -> {
@@ -271,7 +262,6 @@ public class RegisterDriver extends AppCompatActivity {
             StaticDataPasser.storeSelectedSex = null;
             StaticDataPasser.storeCurrentAge = 0;
             StaticDataPasser.storeCurrentBirthDate = null;
-
 
             intent = new Intent(this, Login.class);
             startActivity(intent);

@@ -22,11 +22,6 @@ import androidx.core.graphics.drawable.toBitmap
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.mapbox.geojson.Point
@@ -59,7 +54,6 @@ class MapActivity : AppCompatActivity() {
     private val TAG: String = "MapActivity"
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
 
-    private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
     private lateinit var whereToLayout: FrameLayout
@@ -279,44 +273,6 @@ class MapActivity : AppCompatActivity() {
 
         if (currentUser != null) {
 
-            val userID = currentUser.uid
-            databaseReference = FirebaseDatabase.getInstance().getReference("users")
-
-            databaseReference.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-
-                    if (snapshot.exists()) {
-                        val driverSnapshot: DataSnapshot
-                        val seniorSnapshot: DataSnapshot
-                        val pwdSnapshot: DataSnapshot
-
-                        //Pag Driver kay mu display ang mga markers sa passenger
-                        if (snapshot.child("driver").hasChild(userID)) {
-                            driverSnapshot = snapshot.child("driver").child(userID)
-
-                            showPassengerMarkerOnMap()
-
-                            whereToLayout.visibility = View.GONE
-
-
-                        } else if (snapshot.child("senior").hasChild(userID)) {
-                            seniorSnapshot = snapshot.child("senior").child(userID)
-
-
-                        } else if (snapshot.child("pwd").hasChild(userID)) {
-                            pwdSnapshot = snapshot.child("pwd").child(userID)
-
-                        }
-                    } else {
-                        Log.e(TAG, "Not Exist")
-                    }
-
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    databaseError.message
-                }
-            })
 
         } else {
             val intent = Intent(this, Login::class.java)
