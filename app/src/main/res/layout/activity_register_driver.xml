@@ -247,23 +247,23 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/scanIDBtn"
-                android:layout_width="120dp"
-                android:layout_height="50dp"
-                android:layout_below="@id/textLayout"
-                android:layout_centerHorizontal="true"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/custom_button"
-                android:backgroundTint="@color/dark_gray"
-                android:drawableEnd="@drawable/scan"
+                android:backgroundTint="@color/gray"
+                android:drawableStart="@drawable/scan_id_64"
                 android:fontFamily="@font/opensans_bold"
                 android:text="Scan ID"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:layout_below="@id/textLayout"
+                android:layout_centerHorizontal="true"/>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/doneBtn"
-                android:layout_width="120dp"
-                android:layout_height="50dp"
+                android:layout_width="150dp"
+                android:layout_height="60dp"
                 android:layout_below="@id/scanIDBtn"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
@@ -272,7 +272,7 @@
                 android:fontFamily="@font/opensans_bold"
                 android:text="Done"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="20sp" />
 
         </RelativeLayout>
 

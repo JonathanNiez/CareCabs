@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanID;
@@ -46,6 +48,7 @@ import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -57,10 +60,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EditAccountFragment extends Fragment {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
     private String userID;
-    private String TAG = "EditAccountFragment";
+    private final String TAG = "EditAccountFragment";
     private Intent intent, cameraIntent, galleryIntent;
     private Calendar selectedDate;
     private AlertDialog.Builder builder;
@@ -68,7 +69,7 @@ public class EditAccountFragment extends Fragment {
             editDisabilityDialog, editSexDialog, editAgeDialog,
             cameraGalleryOptionsDialog, noInternetDialog,
             profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
-            profilePicUpdateSuccessConfirmation;
+            profilePicUpdateSuccessConfirmation, pleaseWaitDialog;
     private Uri imageUri;
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int GALLERY_REQUEST_CODE = 2;
@@ -80,6 +81,7 @@ public class EditAccountFragment extends Fragment {
     private StorageReference imagesRef;
     private StorageReference fileRef;
     private RequestManager requestManager;
+    private DocumentReference documentReference;
 
     private FragmentEditAccountBinding binding;
 
@@ -103,23 +105,19 @@ public class EditAccountFragment extends Fragment {
         binding = FragmentEditAccountBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        binding.editMedConBtn.setVisibility(View.GONE);
+        binding.editDisabilityBtn.setVisibility(View.GONE);
+
         context = getContext();
         initializeNetworkChecker();
 
         requestManager = Glide.with(context);
-
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
         FirebaseApp.initializeApp(context);
 
         storageRef = FirebaseStorage.getInstance().getReference();
         imagesRef = storageRef.child("images");
 
         loadUserProfileInfo();
-
-        binding.userTypeBtn.setOnClickListener(v -> {
-
-        });
 
         binding.editFirstnameBtn.setOnClickListener(v -> {
             showEditFirstNameDialog();
@@ -226,16 +224,109 @@ public class EditAccountFragment extends Fragment {
     }
 
     private void loadUserProfileInfo() {
+        showPleaseWaitDialog();
 
-        if (currentUser != null) {
-            userID = currentUser.getUid();
+        if (FirebaseMain.getUser() != null) {
+            userID = FirebaseMain.getUser().getUid();
 
+            userID = FirebaseMain.getUser().getUid();
+            documentReference = FirebaseMain.getFireStoreInstance()
+                    .collection("users").document(userID);
+
+            documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot != null) {
+                    closePleaseWaitDialog();
+
+                    String getProfilePicture = documentSnapshot.getString("profilePicture");
+                    String getUserType = documentSnapshot.getString("userType");
+                    String getFirstName = documentSnapshot.getString("firstname");
+                    String getLastName = documentSnapshot.getString("lastname");
+                    Long getAgeLong = documentSnapshot.getLong("age");
+                    int getAge = getAgeLong.intValue();
+                    String fullName = getFirstName + " " + getLastName;
+                    String getEmail = documentSnapshot.getString("email");
+                    String getPhoneNumber = documentSnapshot.getString("phoneNumber");
+                    String getSex = documentSnapshot.getString("sex");
+                    String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+                    String getBirthdate = documentSnapshot.getString("birthdate");
+
+
+                    switch (getUserType) {
+                        case "Driver":
+
+                            break;
+
+                        case "Persons with Disabilities (PWD)":
+                            String getDisability = documentSnapshot.getString("disability");
+                            binding.editDisabilityBtn.setVisibility(View.VISIBLE);
+                            binding.editDisabilityBtn.setText("Disability: " + getDisability);
+                            binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+
+
+                            break;
+
+                        case "Senior Citizen":
+                            String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+
+                            binding.editMedConBtn.setVisibility(View.VISIBLE);
+                            binding.editMedConBtn.setText(getMedicalCondition);
+                            binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+
+
+                            break;
+                    }
+
+                    if (!getProfilePicture.equals("default")) {
+                        Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
+                    }
+
+                    StaticDataPasser.storeFirstName = getFirstName;
+                    StaticDataPasser.storeLastName = getLastName;
+                    StaticDataPasser.storeCurrentAge = getAge;
+                    StaticDataPasser.storeCurrentBirthDate = getBirthdate;
+                    StaticDataPasser.storeSelectedSex = getSex;
+
+                    binding.fullNameTextView.setText(fullName);
+                    binding.editFirstnameBtn.setText(getFirstName);
+                    binding.editLastnameBtn.setText(getLastName);
+                    binding.userTypeTextView.setText(getUserType);
+                    binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+                    binding.editAgeBtn.setText("Age: " + getAge);
+                    binding.editSexBtn.setText("Sex: " + getSex);
+
+                } else {
+                    closePleaseWaitDialog();
+
+                }
+            }).addOnFailureListener(e -> {
+                closePleaseWaitDialog();
+
+                Log.e(TAG, e.getMessage());
+            });
 
         } else {
             intent = new Intent(getActivity(), Login.class);
             startActivity(intent);
         }
 
+    }
+
+    private void showPleaseWaitDialog() {
+        builder = new AlertDialog.Builder(context);
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+
+        builder.setView(dialogView);
+
+        pleaseWaitDialog = builder.create();
+        pleaseWaitDialog.show();
+    }
+
+    private void closePleaseWaitDialog() {
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+            pleaseWaitDialog.dismiss();
+        }
     }
 
     private void showProfilePicUpdateSuccess() {
@@ -422,7 +513,7 @@ public class EditAccountFragment extends Fragment {
 
         Button editBtn = dialogView.findViewById(R.id.editBtn);
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-        Spinner spinnerSexDialog = dialogView.findViewById(R.id.spinnerSexDialog);
+        Spinner spinnerSexDialog = dialogView.findViewById(R.id.spinnerSex);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(),
@@ -645,8 +736,8 @@ public class EditAccountFragment extends Fragment {
     }
 
     private void uploadImageUriInDatabase(String xImageUrl) {
-        if (currentUser != null) {
-            userID = currentUser.getUid();
+        if (FirebaseMain.getUser() != null) {
+            userID = FirebaseMain.getUser().getUid();
 
 
         } else {

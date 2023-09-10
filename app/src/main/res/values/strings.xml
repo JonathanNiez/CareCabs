@@ -37,4 +37,8 @@
     <string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
 
     <string name="password_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
+
+    <string name="pwd_id_required_string">PWD ID is Required to be scanned for Verification</string>
+
+    <string name="tap_the_scan_id_string">Tap the Scan ID button below to scan your ID</string>
 </resources>

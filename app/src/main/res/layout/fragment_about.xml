@@ -73,39 +73,10 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="150dp"
-                        android:layout_height="150dp"
-                        android:layout_marginTop="10dp"
-                        android:src="@drawable/hcdc_logo" />
-
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/custom_card_view"
-                        android:backgroundTint="@color/light_gray"
-                        android:fontFamily="@font/opensans_bold"
-                        android:padding="5dp"
-                        android:text="Acknowledgements"
-                        android:textColor="@color/black"
-                        android:textSize="25sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp"
-                        android:fontFamily="sans-serif"
-                        android:text="@string/acknowledgments"
-                        android:textAlignment="center"
-                        android:textColor="@color/black"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="20dp"
                         android:background="@drawable/custom_card_view"
                         android:backgroundTint="@color/light_gray"
                         android:fontFamily="@font/opensans_bold"
@@ -248,6 +219,36 @@
                         android:textColor="@color/black"
                         android:textSize="17sp"
                         android:textStyle="bold" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:layout_width="150dp"
+                        android:layout_height="150dp"
+                        android:layout_marginTop="10dp"
+                        android:src="@drawable/hcdc_logo" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/custom_card_view"
+                        android:backgroundTint="@color/light_gray"
+                        android:fontFamily="@font/opensans_bold"
+                        android:padding="5dp"
+                        android:text="Acknowledgements"
+                        android:textColor="@color/black"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:fontFamily="sans-serif"
+                        android:text="@string/acknowledgments"
+                        android:textAlignment="center"
+                        android:textColor="@color/black"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
 
                 </LinearLayout>
 

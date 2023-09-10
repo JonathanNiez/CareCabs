@@ -40,381 +40,383 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class AccountFragment extends Fragment {
-    private DocumentReference documentReference;
-    private final String TAG = "AccountFragment";
-    private String userID;
-    private Intent intent;
-    private AlertDialog signOutDialog, pleaseWaitDialog,
-            noInternetDialog, profileInfoNotCompleteDialog;
-    private AlertDialog.Builder builder;
-    private NetworkChangeReceiver networkChangeReceiver;
-    private Context context;
-    private FragmentAccountBinding binding;
+	private DocumentReference documentReference;
+	private final String TAG = "AccountFragment";
+	private String userID;
+	private Intent intent;
+	private AlertDialog signOutDialog, pleaseWaitDialog,
+			noInternetDialog, profileInfoNotCompleteDialog;
+	private AlertDialog.Builder builder;
+	private NetworkChangeReceiver networkChangeReceiver;
+	private Context context;
+	private FragmentAccountBinding binding;
+	private FragmentTransaction fragmentTransaction;
+	private FragmentManager fragmentManager;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentAccountBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		binding = FragmentAccountBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
 
-        binding.disabilityTextView.setVisibility(View.GONE);
-        binding.medConTextView.setVisibility(View.GONE);
-        binding.driverStatusTextView.setVisibility(View.GONE);
+		binding.disabilityTextView.setVisibility(View.GONE);
+		binding.medConTextView.setVisibility(View.GONE);
+		binding.driverStatusTextView.setVisibility(View.GONE);
 
-        context = getContext();
-        initializeNetworkChecker();
+		context = getContext();
+		initializeNetworkChecker();
 
-        FirebaseApp.initializeApp(context);
-        loadUserProfileInfo();
+		FirebaseApp.initializeApp(context);
+		loadUserProfileInfo();
 
-        binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
+		binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
-        binding.aboutBtn.setOnClickListener(v -> goToAboutFragment());
+		binding.aboutBtn.setOnClickListener(v -> goToAboutFragment());
 
-        binding.contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
+		binding.contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
 
-        binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
+		binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
 
-        binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
+		binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
-        binding.imgBackBtn.setOnClickListener(v -> backToHomeFragment());
+		binding.imgBackBtn.setOnClickListener(v -> backToHomeFragment());
 
-        binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
+		binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
-        return view;
-    }
+		return view;
+	}
 
-    private void logoutUser() {
-        intent = new Intent(getActivity(), LoggingOut.class);
-        startActivity(intent);
-        getActivity().finish();
-    }
+	private void logoutUser() {
+		intent = new Intent(getActivity(), LoggingOut.class);
+		startActivity(intent);
+		getActivity().finish();
+	}
 
 
-    private void loadUserProfileInfo() {
-        showPleaseWaitDialog();
+	private void loadUserProfileInfo() {
+		showPleaseWaitDialog();
 
-        if (FirebaseMain.getUser() != null) {
-            userID = FirebaseMain.getUser().getUid();
-            documentReference = FirebaseMain.getFireStoreInstance()
-                    .collection("users").document(userID);
+		if (FirebaseMain.getUser() != null) {
+			userID = FirebaseMain.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection("users").document(userID);
 
-            documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot != null) {
-                    closePleaseWaitDialog();
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null) {
+					closePleaseWaitDialog();
 
-                    String getProfilePicture = documentSnapshot.getString("profilePicture");
-                    String getUserType = documentSnapshot.getString("userType");
-                    String getFirstName = documentSnapshot.getString("firstname");
-                    String getLastName = documentSnapshot.getString("lastname");
-                    Long getAgeLong = documentSnapshot.getLong("age");
-                    int getAge = getAgeLong.intValue();
-                    String fullName = getFirstName + " " + getLastName;
-                    String getEmail = documentSnapshot.getString("email");
-                    String getPhoneNumber = documentSnapshot.getString("phoneNumber");
-                    String getSex = documentSnapshot.getString("sex");
-                    String getVerificationStatus = documentSnapshot.getString("verificationStatus");
-                    String getBirthdate = documentSnapshot.getString("birthdate");
+					String getProfilePicture = documentSnapshot.getString("profilePicture");
+					String getUserType = documentSnapshot.getString("userType");
+					String getFirstName = documentSnapshot.getString("firstname");
+					String getLastName = documentSnapshot.getString("lastname");
+					Long getAgeLong = documentSnapshot.getLong("age");
+					int getAge = getAgeLong.intValue();
+					String fullName = getFirstName + " " + getLastName;
+					String getEmail = documentSnapshot.getString("email");
+					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
+					String getSex = documentSnapshot.getString("sex");
+					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+					String getBirthdate = documentSnapshot.getString("birthdate");
 
-                    switch (getUserType) {
-                        case "Driver":
-                            boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
-                            binding.driverStatusTextView.setVisibility(View.VISIBLE);
-                            binding.userTypeImageView.setImageResource(R.drawable.driver_64);
+					switch (getUserType) {
+						case "Driver":
+							boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+							binding.driverStatusTextView.setVisibility(View.VISIBLE);
+							binding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
-                            if (getDriverStatus) {
-                                binding.driverStatusTextView.setTextColor(Color.GREEN);
-                                binding.driverStatusTextView.setText("Driver Availability: Available");
+							if (getDriverStatus) {
+								binding.driverStatusTextView.setTextColor(Color.GREEN);
+								binding.driverStatusTextView.setText("Driver Availability: Available");
 
-                            } else {
-                                binding.driverStatusTextView.setTextColor(Color.RED);
-                                binding.driverStatusTextView.setText("Driver Availability: Busy");
+							} else {
+								binding.driverStatusTextView.setTextColor(Color.RED);
+								binding.driverStatusTextView.setText("Driver Availability: Busy");
 
-                            }
+							}
 
-                            break;
+							break;
 
-                        case "Persons with Disabilities (PWD)":
-                            String getDisability = documentSnapshot.getString("disability");
+						case "Persons with Disabilities (PWD)":
+							String getDisability = documentSnapshot.getString("disability");
 
-                            binding.disabilityTextView.setVisibility(View.VISIBLE);
-                            binding.disabilityTextView.setText(getDisability);
-                            binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+							binding.disabilityTextView.setVisibility(View.VISIBLE);
+							binding.disabilityTextView.setText(getDisability);
+							binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
 
 
-                            break;
+							break;
 
-                        case "Senior Citizen":
-                            String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+						case "Senior Citizen":
+							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-                            binding.medConTextView.setVisibility(View.VISIBLE);
-                            binding.medConTextView.setText(getMedicalCondition);
-                            binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+							binding.medConTextView.setVisibility(View.VISIBLE);
+							binding.medConTextView.setText(getMedicalCondition);
+							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 
-                            break;
-                    }
+							break;
+					}
 
-                    if (!getProfilePicture.equals("default")) {
-                        Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.profilePic);
-                    }
+					if (!getProfilePicture.equals("default")) {
+						Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.profilePic);
+					}
 
-                    if (getVerificationStatus.equals("Not Verified")){
-                        binding.statusTextView.setTextColor(Color.RED);
+					if (getVerificationStatus.equals("Not Verified")) {
+						binding.statusTextView.setTextColor(Color.RED);
 
-                    }else{
-                        binding.statusTextView.setTextColor(Color.GREEN);
+					} else {
+						binding.statusTextView.setTextColor(Color.GREEN);
 
-                    }
-                    binding.fullNameTextView.setText(fullName);
-                    binding.userTypeTextView.setText(getUserType);
-                    binding.emailTextView.setText(getEmail);
-                    binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
-                    binding.statusTextView.setText("Verification Status: " + getVerificationStatus);
-                    binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-                    binding.ageTextView.setText("Age: " + getAge);
-                    binding.sexTextView.setText("Sex: " + getSex);
+					}
+					binding.fullNameTextView.setText(fullName);
+					binding.userTypeTextView.setText(getUserType);
+					binding.emailTextView.setText(getEmail);
+					binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
+					binding.statusTextView.setText("Verification Status: " + getVerificationStatus);
+					binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+					binding.ageTextView.setText("Age: " + getAge);
+					binding.sexTextView.setText("Sex: " + getSex);
 
-                } else {
-                    closePleaseWaitDialog();
+				} else {
+					closePleaseWaitDialog();
 
-                }
-            }).addOnFailureListener(e -> {
-                closePleaseWaitDialog();
+				}
+			}).addOnFailureListener(e -> {
+				closePleaseWaitDialog();
 
-                Log.e(TAG, e.getMessage());
-            });
-        } else {
-            closePleaseWaitDialog();
+				Log.e(TAG, e.getMessage());
+			});
+		} else {
+			closePleaseWaitDialog();
 
-        }
+		}
 
-    }
+	}
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 
-        if (networkChangeReceiver != null) {
-            getContext().unregisterReceiver(networkChangeReceiver);
-        }
+		if (networkChangeReceiver != null) {
+			getContext().unregisterReceiver(networkChangeReceiver);
+		}
 
-        closeSignOutDialog();
-        closePleaseWaitDialog();
-        closeIncompleteProfileInfoDialog();
-        closeNoInternetDialog();
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeIncompleteProfileInfoDialog();
+		closeNoInternetDialog();
 
-        Log.i(TAG, "onDestroy");
-    }
+		Log.i(TAG, "onDestroy");
+	}
 
 
-    @Override
-    public void onPause() {
-        super.onPause();
+	@Override
+	public void onPause() {
+		super.onPause();
 
-        closeSignOutDialog();
-        closePleaseWaitDialog();
-        closeIncompleteProfileInfoDialog();
-        closeNoInternetDialog();
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeIncompleteProfileInfoDialog();
+		closeNoInternetDialog();
 
-        Log.i(TAG, "onPause");
+		Log.i(TAG, "onPause");
 
-    }
+	}
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
 
-        closeSignOutDialog();
-        closePleaseWaitDialog();
-        closeIncompleteProfileInfoDialog();
-        closeNoInternetDialog();
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeIncompleteProfileInfoDialog();
+		closeNoInternetDialog();
 
-        Log.i(TAG, "onDestroyView");
+		Log.i(TAG, "onDestroyView");
 
-    }
+	}
 
-    private void showIncompleteProfileInfoDialog() {
-        builder = new AlertDialog.Builder(context);
-        builder.setCancelable(false);
+	private void showIncompleteProfileInfoDialog() {
+		builder = new AlertDialog.Builder(context);
+		builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-        okBtn.setOnClickListener(v -> {
+		okBtn.setOnClickListener(v -> {
 
-            intent = new Intent(getActivity(), LoggingOut.class);
-            startActivity(intent);
-            getActivity().finish();
-        });
+			intent = new Intent(getActivity(), LoggingOut.class);
+			startActivity(intent);
+			getActivity().finish();
+		});
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        profileInfoNotCompleteDialog = builder.create();
-        profileInfoNotCompleteDialog.show();
-    }
+		profileInfoNotCompleteDialog = builder.create();
+		profileInfoNotCompleteDialog.show();
+	}
 
-    private void closeIncompleteProfileInfoDialog() {
-        if (profileInfoNotCompleteDialog != null && profileInfoNotCompleteDialog.isShowing()) {
-            profileInfoNotCompleteDialog.isShowing();
-        }
-    }
+	private void closeIncompleteProfileInfoDialog() {
+		if (profileInfoNotCompleteDialog != null && profileInfoNotCompleteDialog.isShowing()) {
+			profileInfoNotCompleteDialog.isShowing();
+		}
+	}
 
-    private void showSignOutDialog() {
-        builder = new AlertDialog.Builder(context);
-        builder.setCancelable(false);
+	private void showSignOutDialog() {
+		builder = new AlertDialog.Builder(context);
+		builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_sign_out, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_sign_out, null);
 
-        Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
-        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-        signOutBtn.setOnClickListener(v -> {
-            logoutUser();
+		signOutBtn.setOnClickListener(v -> {
+			logoutUser();
 
-        });
+		});
 
-        cancelBtn.setOnClickListener(v -> {
-            closeSignOutDialog();
-        });
+		cancelBtn.setOnClickListener(v -> {
+			closeSignOutDialog();
+		});
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        signOutDialog = builder.create();
-        signOutDialog.show();
-    }
+		signOutDialog = builder.create();
+		signOutDialog.show();
+	}
 
-    private void closeSignOutDialog() {
-        if (signOutDialog != null && signOutDialog.isShowing()) {
-            signOutDialog.dismiss();
-        }
-    }
+	private void closeSignOutDialog() {
+		if (signOutDialog != null && signOutDialog.isShowing()) {
+			signOutDialog.dismiss();
+		}
+	}
 
-    private void showPleaseWaitDialog() {
-        builder = new AlertDialog.Builder(context);
-        builder.setCancelable(false);
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(context);
+		builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        pleaseWaitDialog = builder.create();
-        pleaseWaitDialog.show();
-    }
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
 
-    private void closePleaseWaitDialog() {
-        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
-            pleaseWaitDialog.dismiss();
-        }
-    }
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
+	}
 
 
-    private void goToEditAccountFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new EditAccountFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void goToEditAccountFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new EditAccountFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void goToAppSettingsFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new AppSettingsFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void goToAppSettingsFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new AppSettingsFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void goToAboutFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new AboutFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void goToAboutFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new AboutFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void goToContactUsFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ContactUsFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void goToContactUsFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new ContactUsFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void goToChangePasswordFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ChangePasswordFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void goToChangePasswordFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new ChangePasswordFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void backToHomeFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new HomeFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	private void backToHomeFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new HomeFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
-    private void showNoInternetDialog() {
-        builder = new AlertDialog.Builder(context);
-        builder.setCancelable(false);
+	private void showNoInternetDialog() {
+		builder = new AlertDialog.Builder(context);
+		builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
-        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-        tryAgainBtn.setOnClickListener(v -> {
-            closeNoInternetDialog();
-        });
+		tryAgainBtn.setOnClickListener(v -> {
+			closeNoInternetDialog();
+		});
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
-    }
+		noInternetDialog = builder.create();
+		noInternetDialog.show();
+	}
 
-    private void closeNoInternetDialog() {
-        if (noInternetDialog != null && noInternetDialog.isShowing()) {
-            noInternetDialog.dismiss();
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
 
-            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
-            updateConnectionStatus(isConnected);
-        }
-    }
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
+			updateConnectionStatus(isConnected);
+		}
+	}
 
-    private void initializeNetworkChecker() {
-        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-            @Override
-            public void onNetworkChanged(boolean isConnected) {
-                updateConnectionStatus(isConnected);
-            }
-        });
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
 
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        getContext().registerReceiver(networkChangeReceiver, intentFilter);
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		getContext().registerReceiver(networkChangeReceiver, intentFilter);
 
-        // Initial network status check
-        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
-        updateConnectionStatus(isConnected);
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+		updateConnectionStatus(isConnected);
 
-    }
+	}
 
-    private void updateConnectionStatus(boolean isConnected) {
-        if (isConnected) {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-            }
-        } else {
-            showNoInternetDialog();
-        }
-    }
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
+		}
+	}
 }

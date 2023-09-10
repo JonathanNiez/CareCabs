@@ -85,21 +85,51 @@
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/userTypeBtn"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/fullNameTextView"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_centerHorizontal="true"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:padding="10dp"
-                    android:text="User Type"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:layout_marginStart="20dp"
+                    android:elevation="4dp"
+                    app:cardCornerRadius="8dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="10dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/userTypeTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:textAlignment="center"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/custom_card_view"
+                            android:padding="5dp"
+                            android:fontFamily="@font/opensans_semibold"
+                            android:text="User Type"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <ImageView
+                            android:id="@+id/userTypeImageView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/driver_64"
+                            android:layout_margin="10dp"/>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
 
 
             </RelativeLayout>
@@ -125,102 +155,126 @@
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editFirstnameBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:autofillHints="firstname"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
-                    android:hint="FIRSTNAME"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:text="FIRSTNAME"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editLastnameBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:hint="LASTNAME"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/black"
-                    android:textSize="20sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editDisabilityBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:autofillHints="firstname"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
-                    android:hint="DISABILITY"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:text="LASTNAME"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+                    android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editAgeBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:autofillHints="firstname"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
-                    android:hint="AGE"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:text="AGE"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editSexBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
-                    android:hint="SEX"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:text="SEX"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editBirthdateBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:background="@drawable/stroke_button"
                     android:fontFamily="@font/opensans_bold"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
                     android:text="Date of Birth"
+                    android:padding="10dp"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editDisabilityBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginBottom="10dp"
+                    android:autofillHints="firstname"
+                    android:background="@drawable/stroke_button"
+                    android:fontFamily="@font/opensans_bold"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:text="DISABILITY"
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/editMedConBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:autofillHints="firstname"
+                    android:background="@drawable/stroke_button"
+                    android:fontFamily="@font/opensans_bold"
+                    android:drawableStart="@drawable/edit_32"
+                    android:textAlignment="center"
+                    android:hint="MEDICAL CONDITION"
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/black"
+                    android:textSize="20sp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/scanIDBtn"
-                    android:layout_width="160dp"
-                    android:layout_height="70dp"
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/custom_button"
-                    android:backgroundTint="@color/dark_gray"
-                    android:drawableEnd="@drawable/scan"
+                    android:backgroundTint="@color/gray"
+                    android:drawableStart="@drawable/scan_id_64"
                     android:fontFamily="@font/opensans_bold"
                     android:text="Scan ID"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/doneBtn"
-                    android:layout_width="160dp"
-                    android:layout_height="70dp"
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="20dp"
                     android:background="@drawable/custom_button"
@@ -228,6 +282,8 @@
                     android:text="Done"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
+
+
             </LinearLayout>
 
 
