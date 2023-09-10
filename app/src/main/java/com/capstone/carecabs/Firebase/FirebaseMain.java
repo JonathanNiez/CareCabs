@@ -9,7 +9,6 @@ public class FirebaseMain {
 
     private static FirebaseFirestore firebaseFirestore;
     private static FirebaseAuth auth;
-    private static FirebaseUser currentUser;
     private static FirebaseStorage firebaseStorage;
 
     public static FirebaseFirestore getFireStoreInstance() {

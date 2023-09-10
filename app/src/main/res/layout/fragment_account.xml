@@ -58,6 +58,7 @@
                     app:civ_border_color="@color/black"
                     app:civ_border_width="2dp"/>
 
+
                 <TextView
                     android:id="@+id/fullNameTextView"
                     android:layout_width="match_parent"
@@ -76,22 +77,50 @@
                     android:textColor="@color/black"
                     android:textSize="23sp" />
 
-                <TextView
-                    android:id="@+id/userTypeTextView"
+                <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/fullNameTextView"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="20dp"
-                    android:textAlignment="center"
                     android:layout_marginEnd="20dp"
                     android:layout_marginStart="20dp"
-                    android:background="@drawable/custom_card_view"
-                    android:padding="5dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="User Type"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:elevation="4dp"
+                    app:cardCornerRadius="8dp"
+                    >
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/userTypeTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:textAlignment="center"
+                            android:layout_margin="10dp"
+                            android:background="@drawable/custom_card_view"
+                            android:padding="5dp"
+                            android:fontFamily="@font/opensans_semibold"
+                            android:text="User Type"
+                            android:textColor="@color/black"
+                            android:textSize="20sp" />
+
+                        <ImageView
+                            android:id="@+id/userTypeImageView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:src="@drawable/driver_64"
+                            android:layout_margin="10dp"/>
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
 
             </RelativeLayout>
 
@@ -99,74 +128,127 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:padding="5dp"
+                android:padding="10dp"
                 android:orientation="vertical"
                 android:background="@drawable/custom_card_view">
 
+                <TextView
+                    android:id="@+id/emailTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Email"
+                    android:drawableStart="@drawable/email_24"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:id="@+id/phoneTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Phone No"
+                    android:drawableStart="@drawable/phone_24"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/statusTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="Status:"
+                    android:text="Status"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/birthdateTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Birthdate"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/ageTextView"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Age"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp"
+                    >
 
-                <TextView
-                    android:id="@+id/sexTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Sex"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/ageTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/opensans_semibold"
+                        android:text="Age"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/sexTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/opensans_semibold"
+                        android:text="Sex"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+
 
                 <TextView
                     android:id="@+id/disabilityTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:textAlignment="center"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Disability"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/medConTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:text="Medical Condition"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
                     />
 
 
                 <TextView
                     android:id="@+id/driverStatusTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginBottom="10dp"
+                    android:textAlignment="center"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="Driver Status"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:visibility="gone" />
+                     />
 
             </LinearLayout>
 

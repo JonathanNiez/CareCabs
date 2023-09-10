@@ -1,5 +1,6 @@
 package com.capstone.carecabs;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,9 +25,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -36,12 +40,11 @@ import java.util.List;
 
 public class Login extends AppCompatActivity {
     private Intent intent;
-    private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private GoogleSignInOptions googleSignInOptions;
     private GoogleSignInAccount googleSignInAccount;
     private GoogleSignInClient googleSignInClient;
-    private String TAG = "Login";
+    private final String TAG = "Login";
     private boolean shouldExit = false;
     private static final int RC_SIGN_IN = 69;
     private AlertDialog noInternetDialog, emailDialog,
@@ -102,53 +105,58 @@ public class Login extends AppCompatActivity {
                 showPleaseWaitDialog();
                 binding.googleSignInLayout.setVisibility(View.GONE);
 
-                auth.fetchSignInMethodsForEmail(stringEmail)
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
+                FirebaseMain.getAuth().fetchSignInMethodsForEmail(stringEmail)
+                        .addOnSuccessListener(signInMethodQueryResult -> {
+                            List<String> signInMethods = signInMethodQueryResult.getSignInMethods();
+                            if (signInMethods != null && !signInMethods.isEmpty()) {
+                                FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
+                                        .addOnSuccessListener(authResult -> {
+
+                                            closePleaseWaitDialog();
+
+                                            binding.progressBarLayout.setVisibility(View.GONE);
+                                            binding.loginBtn.setVisibility(View.VISIBLE);
+
+                                            intent = new Intent(Login.this, LoggingIn.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                            startActivity(intent);
+                                            finish();
+
+                                            Log.i(TAG, "Login Success");
+
+                                        }).addOnFailureListener(e -> {
+
+                                            closePleaseWaitDialog();
+                                            showLoginFailedDialog();
+
+                                            binding.progressBarLayout.setVisibility(View.GONE);
+                                            binding.loginBtn.setVisibility(View.VISIBLE);
+
+                                            Log.e(TAG, e.getMessage());
+
+                                        });
+                            } else {
+                                showLoginFailedDialog();
+
                                 binding.progressBarLayout.setVisibility(View.GONE);
                                 binding.loginBtn.setVisibility(View.VISIBLE);
 
-                                List<String> signInMethods = task.getResult().getSignInMethods();
-                                if (signInMethods != null && !signInMethods.isEmpty()) {
-                                    auth.signInWithEmailAndPassword(stringEmail, stringPassword)
-                                            .addOnCompleteListener(task1 -> {
-                                                if (task1.isSuccessful()) {
-                                                    closePleaseWaitDialog();
-
-                                                    intent = new Intent(Login.this, LoggingIn.class);
-                                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    startActivity(intent);
-                                                    finish();
-
-                                                    Log.i(TAG, "Login Success");
-                                                } else {
-                                                    closePleaseWaitDialog();
-                                                    showLoginFailedDialog();
-
-                                                    binding.progressBarLayout.setVisibility(View.GONE);
-                                                    binding.loginBtn.setVisibility(View.VISIBLE);
-
-                                                    Log.e(TAG, String.valueOf(task1.getException()));
-                                                }
-                                            });
-                                } else {
-                                    showIncorrectEmailOrPasswordDialog();
-                                    closePleaseWaitDialog();
-
-                                    Log.e(TAG, String.valueOf(task.getException()));
-                                }
-
-                            } else {
-                                showLoginFailedDialog();
-                                closePleaseWaitDialog();
-
-                                Log.e(TAG, String.valueOf(task.getException()));
+                                Log.e(TAG, "Login Failed");
                             }
+                        }).addOnFailureListener(e -> {
+                            closePleaseWaitDialog();
+                            showLoginFailedDialog();
+
+                            binding.progressBarLayout.setVisibility(View.GONE);
+                            binding.loginBtn.setVisibility(View.VISIBLE);
+
+                            Log.e(TAG, e.getMessage());
 
                         });
             }
         });
     }
+
 
     @Override
     protected void onDestroy() {
@@ -352,7 +360,7 @@ public class Login extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     SignInMethodQueryResult result = task.getResult();
                     if (!result.getSignInMethods().isEmpty()) {
-                        auth.signInWithCredential(credential).addOnCompleteListener(task1 -> {
+                        FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 intent = new Intent(Login.this, LoggingIn.class);
                                 startActivity(intent);

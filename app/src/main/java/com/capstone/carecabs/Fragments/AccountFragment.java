@@ -3,7 +3,9 @@ package com.capstone.carecabs.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,11 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOut;
 import com.capstone.carecabs.R;
@@ -23,14 +28,21 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class AccountFragment extends Fragment {
     private DocumentReference documentReference;
     private final String TAG = "AccountFragment";
+    private String userID;
     private Intent intent;
     private AlertDialog signOutDialog, pleaseWaitDialog,
             noInternetDialog, profileInfoNotCompleteDialog;
@@ -50,11 +62,15 @@ public class AccountFragment extends Fragment {
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        binding.disabilityTextView.setVisibility(View.GONE);
+        binding.medConTextView.setVisibility(View.GONE);
+        binding.driverStatusTextView.setVisibility(View.GONE);
+
         context = getContext();
         initializeNetworkChecker();
 
         FirebaseApp.initializeApp(context);
-        searchTheFireStoreCollectionName();
+        loadUserProfileInfo();
 
         binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
@@ -77,103 +93,107 @@ public class AccountFragment extends Fragment {
         intent = new Intent(getActivity(), LoggingOut.class);
         startActivity(intent);
         getActivity().finish();
-
-        StaticDataPasser.storeSelectedSex = null;
-        StaticDataPasser.storeSelectedDisability = null;
-        StaticDataPasser.storeCurrentBirthDate = null;
-        StaticDataPasser.storeRegisterType = null;
-        StaticDataPasser.storeRegisterUserType = null;
-        StaticDataPasser.storeCurrentAge = 0;
-        StaticDataPasser.storeFirstName = null;
-        StaticDataPasser.storeLastName = null;
-        StaticDataPasser.storeHashedPassword = null;
-    }
-
-    private void getTheUserType() {
-        showPleaseWaitDialog();
-
-        if (FirebaseMain.getUser() != null) {
-
-            searchTheFireStoreCollectionName();
-
-        } else {
-            closePleaseWaitDialog();
-            showIncompleteProfileInfoDialog();
-        }
-    }
-
-    private void searchTheFireStoreCollectionName() {
-        showPleaseWaitDialog();
-
-        if (FirebaseMain.getUser() != null) {
-            String getUserID = FirebaseMain.getUser().getUid();
-
-            String[] collectionsToCheck = {"Drivers", "Senior Citizen", "PWD"};
-
-            for (String collection : collectionsToCheck) {
-                // Construct a reference to the user's document in the current collection
-                documentReference = FirebaseMain.getFireStoreInstance()
-                        .collection(collection).document(getUserID);
-
-                documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // User exists in this collection
-                        String getUserType = documentSnapshot.getString("userType");
-                        String getFirstName = documentSnapshot.getString("firstname");
-                        String getLastName = documentSnapshot.getString("lastname");
-                        String fullName = getFirstName + " " + getLastName;
-                        // Do something with the user's data
-                        // For example, display it or perform some action based on the collection
-                        if (getUserType != null) {
-                            // Determine the collection based on userType
-
-                            switch (getUserType) {
-                                case "Driver":
-                                    binding.userTypeTextView.setText(getUserType);
-                                    binding.fullNameTextView.setText(fullName);
-                                    break;
-
-                                case "Senior Citizen":
-                                    binding.userTypeTextView.setText(getUserType);
-                                    binding.fullNameTextView.setText(fullName);
-                                    break;
-
-                                case "PWD":
-                                    binding.userTypeTextView.setText(getUserType);
-                                    binding.fullNameTextView.setText(fullName);
-                                    break;
-
-                                default:
-                                    binding.userTypeTextView.setText("Unknown");
-                                    binding.fullNameTextView.setText("Unknown");
-                                    break;
-                            }
-                        }
-
-                        closePleaseWaitDialog();
-                        Log.i(TAG, "Exists");
-
-                    } else {
-
-                        Log.e(TAG, "Not Exists");
-                        closePleaseWaitDialog();
-                    }
-                }).addOnFailureListener(e -> {
-                    Log.e(TAG, e.getMessage());
-                    closePleaseWaitDialog();
-                });
-            }
-
-        } else {
-            Log.e(TAG, "User is null");
-            closePleaseWaitDialog();
-        }
     }
 
 
     private void loadUserProfileInfo() {
         showPleaseWaitDialog();
-        getTheUserType();
+
+        if (FirebaseMain.getUser() != null) {
+            userID = FirebaseMain.getUser().getUid();
+            documentReference = FirebaseMain.getFireStoreInstance()
+                    .collection("users").document(userID);
+
+            documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot != null) {
+                    closePleaseWaitDialog();
+
+                    String getProfilePicture = documentSnapshot.getString("profilePicture");
+                    String getUserType = documentSnapshot.getString("userType");
+                    String getFirstName = documentSnapshot.getString("firstname");
+                    String getLastName = documentSnapshot.getString("lastname");
+                    Long getAgeLong = documentSnapshot.getLong("age");
+                    int getAge = getAgeLong.intValue();
+                    String fullName = getFirstName + " " + getLastName;
+                    String getEmail = documentSnapshot.getString("email");
+                    String getPhoneNumber = documentSnapshot.getString("phoneNumber");
+                    String getSex = documentSnapshot.getString("sex");
+                    String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+                    String getBirthdate = documentSnapshot.getString("birthdate");
+
+                    switch (getUserType) {
+                        case "Driver":
+                            boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+                            binding.driverStatusTextView.setVisibility(View.VISIBLE);
+                            binding.userTypeImageView.setImageResource(R.drawable.driver_64);
+
+                            if (getDriverStatus) {
+                                binding.driverStatusTextView.setTextColor(Color.GREEN);
+                                binding.driverStatusTextView.setText("Driver Availability: Available");
+
+                            } else {
+                                binding.driverStatusTextView.setTextColor(Color.RED);
+                                binding.driverStatusTextView.setText("Driver Availability: Busy");
+
+                            }
+
+                            break;
+
+                        case "Persons with Disabilities (PWD)":
+                            String getDisability = documentSnapshot.getString("disability");
+
+                            binding.disabilityTextView.setVisibility(View.VISIBLE);
+                            binding.disabilityTextView.setText(getDisability);
+                            binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+
+
+                            break;
+
+                        case "Senior Citizen":
+                            String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+
+                            binding.medConTextView.setVisibility(View.VISIBLE);
+                            binding.medConTextView.setText(getMedicalCondition);
+                            binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+
+
+                            break;
+                    }
+
+                    if (!getProfilePicture.equals("default")) {
+                        Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.profilePic);
+                    }
+
+                    if (getVerificationStatus.equals("Not Verified")){
+                        binding.statusTextView.setTextColor(Color.RED);
+
+                    }else{
+                        binding.statusTextView.setTextColor(Color.GREEN);
+
+                    }
+                    binding.fullNameTextView.setText(fullName);
+                    binding.userTypeTextView.setText(getUserType);
+                    binding.emailTextView.setText(getEmail);
+                    binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
+                    binding.statusTextView.setText("Verification Status: " + getVerificationStatus);
+                    binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+                    binding.ageTextView.setText("Age: " + getAge);
+                    binding.sexTextView.setText("Sex: " + getSex);
+
+                } else {
+                    closePleaseWaitDialog();
+
+                }
+            }).addOnFailureListener(e -> {
+                closePleaseWaitDialog();
+
+                Log.e(TAG, e.getMessage());
+            });
+        } else {
+            closePleaseWaitDialog();
+
+        }
+
     }
 
 
@@ -189,6 +209,8 @@ public class AccountFragment extends Fragment {
         closePleaseWaitDialog();
         closeIncompleteProfileInfoDialog();
         closeNoInternetDialog();
+
+        Log.i(TAG, "onDestroy");
     }
 
 
@@ -200,6 +222,22 @@ public class AccountFragment extends Fragment {
         closePleaseWaitDialog();
         closeIncompleteProfileInfoDialog();
         closeNoInternetDialog();
+
+        Log.i(TAG, "onPause");
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        closeSignOutDialog();
+        closePleaseWaitDialog();
+        closeIncompleteProfileInfoDialog();
+        closeNoInternetDialog();
+
+        Log.i(TAG, "onDestroyView");
+
     }
 
     private void showIncompleteProfileInfoDialog() {
@@ -211,7 +249,6 @@ public class AccountFragment extends Fragment {
         Button okBtn = dialogView.findViewById(R.id.okBtn);
 
         okBtn.setOnClickListener(v -> {
-            getTheUserType();
 
             intent = new Intent(getActivity(), LoggingOut.class);
             startActivity(intent);

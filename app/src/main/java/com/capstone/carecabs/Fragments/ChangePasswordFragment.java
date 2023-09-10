@@ -15,9 +15,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.databinding.FragmentChangePasswordBinding;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -29,20 +31,13 @@ import com.google.firebase.auth.UserInfo;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ChangePasswordFragment extends Fragment {
-
-    private ImageButton imgBackBtn;
-    private Button changePasswordBtn, okBtn;
-    private EditText oldPassword, newPassword;
-    private TextInputLayout oldPasswordLayout, newPasswordLayout;
-    private TextView textView;
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
     private AlertDialog.Builder builder;
     private AlertDialog passwordWarningDialog, passwordChangeSuccessDialog,
             passwordChangeFailedDialog;
     private String userID;
     private Intent intent;
-    private String TAG = "ChangePasswordFragment";
+    private final String TAG = "ChangePasswordFragment";
+    private FragmentChangePasswordBinding binding;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,44 +48,33 @@ public class ChangePasswordFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_change_password, container, false);
-
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
-
-        imgBackBtn = view.findViewById(R.id.imgBackBtn);
-        changePasswordBtn = view.findViewById(R.id.changePasswordBtn);
-        okBtn = view.findViewById(R.id.okBtn);
-        oldPassword = view.findViewById(R.id.oldPassword);
-        newPassword = view.findViewById(R.id.newPassword);
-        newPasswordLayout = view.findViewById(R.id.newPasswordLayout);
-        oldPasswordLayout = view.findViewById(R.id.oldPasswordLayout);
-        textView = view.findViewById(R.id.textView);
+        binding = FragmentChangePasswordBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         checkUserSignInMethod();
 
-        imgBackBtn.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
 
-        okBtn.setOnClickListener(v -> {
+        binding.okBtn.setOnClickListener(v -> {
             backToAccountFragment();
         });
 
-        changePasswordBtn.setOnClickListener(v -> {
-            String stringOldPassword = oldPassword.getText().toString();
-            String stringNewPassword = newPassword.getText().toString();
+        binding.changePasswordBtn.setOnClickListener(v -> {
+            String stringOldPassword = binding.oldPassword.getText().toString();
+            String stringNewPassword = binding.newPassword.getText().toString();
 
             if (stringOldPassword.isEmpty()) {
-                oldPassword.setError("Please Enter your Old Password");
+                binding.oldPassword.setError("Please Enter your Old Password");
             } else if (stringNewPassword.isEmpty()) {
-                newPassword.setError("Please Enter your New Password");
+                binding.newPassword.setError("Please Enter your New Password");
             } else {
-                if (currentUser != null) {
-                    AuthCredential credential = EmailAuthProvider.getCredential(currentUser.getEmail(), stringOldPassword);
-                    currentUser.reauthenticate(credential).addOnCompleteListener(task -> {
+                if (FirebaseMain.getUser() != null) {
+                    AuthCredential credential = EmailAuthProvider.getCredential(FirebaseMain.getUser().getEmail(), stringOldPassword);
+                    FirebaseMain.getUser().reauthenticate(credential).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            currentUser.updatePassword(stringNewPassword)
+                            FirebaseMain.getUser().updatePassword(stringNewPassword)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
                                             getCurrentUser(stringNewPassword);
@@ -113,10 +97,10 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private void checkUserSignInMethod() {
-        if (currentUser != null) {
+        if (FirebaseMain.getUser() != null) {
             boolean isGoogleSignIn = false;
 
-            for (UserInfo userInfo : currentUser.getProviderData()) {
+            for (UserInfo userInfo : FirebaseMain.getUser().getProviderData()) {
                 if (userInfo.getProviderId().equals(GoogleAuthProvider.PROVIDER_ID)) {
 
                     isGoogleSignIn = true;
@@ -127,11 +111,11 @@ public class ChangePasswordFragment extends Fragment {
             }
 
             if (isGoogleSignIn) {
-                changePasswordBtn.setVisibility(View.GONE);
-                okBtn.setVisibility(View.VISIBLE);
-                oldPasswordLayout.setVisibility(View.GONE);
-                newPasswordLayout.setVisibility(View.GONE);
-                textView.setText("You are using Google Sign-in \n" +
+                binding.changePasswordBtn.setVisibility(View.GONE);
+                binding.okBtn.setVisibility(View.VISIBLE);
+                binding.oldPasswordLayout.setVisibility(View.GONE);
+                binding.newPasswordLayout.setVisibility(View.GONE);
+                binding.textView.setText("You are using Google Sign-in \n" +
                         "Google Sign-in cannot change Password");
             } else {
                 showPasswordWarningDialog();
@@ -144,9 +128,8 @@ public class ChangePasswordFragment extends Fragment {
         String hashedPassword = BCrypt.hashpw(xNewPassword, BCrypt.gensalt());
         StaticDataPasser.storeHashedPassword = hashedPassword;
 
-        if (currentUser != null) {
-            userID = currentUser.getUid();
-
+        if (FirebaseMain.getUser() != null) {
+            userID = FirebaseMain.getUser().getUid();
 
         } else {
             intent = new Intent(getActivity(), Login.class);

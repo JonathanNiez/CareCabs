@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.google.firebase.FirebaseApp;
@@ -129,6 +128,7 @@ public class RegisterPWD extends AppCompatActivity {
         binding.doneBtn.setOnClickListener(v -> {
             binding.progressBarLayout.setVisibility(View.VISIBLE);
             binding.doneBtn.setVisibility(View.GONE);
+            binding.scanIDBtn.setVisibility(View.GONE);
 
             String stringFirstname = binding.firstname.getText().toString().trim();
             String stringLastname = binding.lastname.getText().toString().trim();
@@ -141,6 +141,7 @@ public class RegisterPWD extends AppCompatActivity {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
             } else {
                 StaticDataPasser.storeFirstName = stringFirstname;
@@ -189,7 +190,7 @@ public class RegisterPWD extends AppCompatActivity {
 
     private void updateUserRegisterToFireStore(String verificationStatus) {
         userID = FirebaseMain.getUser().getUid();
-        documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.pwdCollection).document(userID);
+        documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(userID);
 
         Map<String, Object> registerUser = new HashMap<>();
         registerUser.put("firstname", StaticDataPasser.storeFirstName);
@@ -205,13 +206,7 @@ public class RegisterPWD extends AppCompatActivity {
             if (task.isSuccessful()) {
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
-
-                StaticDataPasser.storeFirstName = null;
-                StaticDataPasser.storeLastName = null;
-                StaticDataPasser.storeSelectedSex = null;
-                StaticDataPasser.storeCurrentAge = 0;
-                StaticDataPasser.storeCurrentBirthDate = null;
-                StaticDataPasser.storeSelectedDisability = null;
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
                 showRegisterSuccessNotification();
 
@@ -224,6 +219,7 @@ public class RegisterPWD extends AppCompatActivity {
 
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
                 Log.e(TAG, String.valueOf(task.getException()));
             }

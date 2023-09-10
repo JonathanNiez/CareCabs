@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
 import com.google.firebase.FirebaseApp;
@@ -63,9 +62,6 @@ public class RegisterSenior extends AppCompatActivity {
         FirebaseMain.getAuth();
         FirebaseMain.getUser();
         FirebaseApp.initializeApp(this);
-
-        intent = getIntent();
-        String getRegisterData = intent.getStringExtra("registerData");
 
         binding.imgBackBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();
@@ -128,6 +124,7 @@ public class RegisterSenior extends AppCompatActivity {
         binding.doneBtn.setOnClickListener(v -> {
             binding.progressBarLayout.setVisibility(View.VISIBLE);
             binding.doneBtn.setVisibility(View.GONE);
+            binding.scanIDBtn.setVisibility(View.GONE);
 
             String stringFirstname = binding.firstname.getText().toString().trim();
             String stringLastname = binding.lastname.getText().toString().trim();
@@ -140,6 +137,7 @@ public class RegisterSenior extends AppCompatActivity {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
             } else if (StaticDataPasser.storeCurrentAge <= 60) {
                 intent = new Intent(this, Login.class);
@@ -151,6 +149,8 @@ public class RegisterSenior extends AppCompatActivity {
 
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
+
             } else {
                 StaticDataPasser.storeFirstName = stringFirstname;
                 StaticDataPasser.storeLastName = stringLastname;
@@ -201,7 +201,7 @@ public class RegisterSenior extends AppCompatActivity {
 
     private void updateUserRegisterToFireStore(String verificationStatus) {
         userID = FirebaseMain.getUser().getUid();
-        documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.seniorCollection).document(userID);
+        documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(userID);
 
         Map<String, Object> registerUser = new HashMap<>();
         registerUser.put("firstname", StaticDataPasser.storeFirstName);
@@ -210,6 +210,7 @@ public class RegisterSenior extends AppCompatActivity {
         registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
         registerUser.put("sex", StaticDataPasser.storeSelectedSex);
         registerUser.put("userType", "Senior Citizen");
+        registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
         registerUser.put("verificationStatus", verificationStatus);
 
         documentReference.update(registerUser).addOnSuccessListener(unused -> {
@@ -227,6 +228,8 @@ public class RegisterSenior extends AppCompatActivity {
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.doneBtn.setVisibility(View.VISIBLE);
+            binding.scanIDBtn.setVisibility(View.VISIBLE);
+
         });
     }
 

@@ -15,13 +15,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -29,14 +24,9 @@ import androidx.core.app.NotificationCompat;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterDriverBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.text.SimpleDateFormat;
@@ -72,9 +62,6 @@ public class RegisterDriver extends AppCompatActivity {
         FirebaseMain.getAuth();
         FirebaseMain.getUser();
         FirebaseApp.initializeApp(this);
-
-        intent = getIntent();
-        String getRegisterData = intent.getStringExtra("registerData");
 
         binding.imgBackBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();
@@ -117,6 +104,7 @@ public class RegisterDriver extends AppCompatActivity {
         binding.doneBtn.setOnClickListener(v -> {
             binding.progressBarLayout.setVisibility(View.VISIBLE);
             binding.doneBtn.setVisibility(View.GONE);
+            binding.scanIDBtn.setVisibility(View.GONE);
 
             String stringFirstname = binding.firstname.getText().toString().trim();
             String stringLastname = binding.lastname.getText().toString().trim();
@@ -128,6 +116,7 @@ public class RegisterDriver extends AppCompatActivity {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
             } else {
                 StaticDataPasser.storeFirstName = stringFirstname;
@@ -180,7 +169,7 @@ public class RegisterDriver extends AppCompatActivity {
 
     private void updateUserRegisterToFireStore(String verificationStatus) {
             userID = FirebaseMain.getUser().getUid();
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.driverCollection).document(userID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(userID);
 
             Map<String, Object> registerUser = new HashMap<>();
             registerUser.put("firstname", StaticDataPasser.storeFirstName);
@@ -196,23 +185,20 @@ public class RegisterDriver extends AppCompatActivity {
             documentReference.update(registerUser).addOnSuccessListener(unused -> {
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
-
-                StaticDataPasser.storeFirstName = null;
-                StaticDataPasser.storeLastName = null;
-                StaticDataPasser.storeSelectedSex = null;
-                StaticDataPasser.storeCurrentAge = 0;
-                StaticDataPasser.storeCurrentBirthDate = null;
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
                 showRegisterSuccessNotification();
 
                 intent = new Intent(RegisterDriver.this, MainActivity.class);
                 startActivity(intent);
                 finish();
+
             }).addOnFailureListener(e -> {
                 showRegisterFailedDialog();
 
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
+                binding.scanIDBtn.setVisibility(View.VISIBLE);
 
                 Log.e(TAG, e.getMessage());
             });

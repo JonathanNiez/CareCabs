@@ -37,6 +37,8 @@ public class RegisterUserType extends AppCompatActivity {
 
         initializeNetworkChecker();
 
+        binding.googleRegisterLayout.setVisibility(View.GONE);
+
         intent = getIntent();
         //From Login
         String getRegisterType = intent.getStringExtra("registerType");

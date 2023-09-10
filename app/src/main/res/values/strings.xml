@@ -35,4 +35,6 @@
     <string name="font_size_preview">The quick brown fox jumps over the lazy dog</string>
 
     <string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
+
+    <string name="password_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
 </resources>

@@ -37,7 +37,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/noBtn"
-            android:layout_width="130dp"
+            android:layout_width="120dp"
             android:layout_height="50dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/custom_button"
@@ -48,7 +48,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/yesBtn"
-            android:layout_width="130dp"
+            android:layout_width="120dp"
             android:layout_height="50dp"
             android:layout_marginStart="5dp"
             android:background="@drawable/custom_button"

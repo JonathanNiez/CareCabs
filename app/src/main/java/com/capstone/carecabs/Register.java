@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataCollectors;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -24,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
@@ -40,7 +38,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Register extends AppCompatActivity {
-
     private DocumentReference documentReference;
     private GoogleSignInClient googleSignInClient;
     private GoogleSignInAccount googleSignInAccount;
@@ -156,10 +153,12 @@ public class Register extends AppCompatActivity {
         FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.driverCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
         }).addOnFailureListener(e -> {
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
 
             Log.e(TAG, e.getMessage());
@@ -174,10 +173,12 @@ public class Register extends AppCompatActivity {
         FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.seniorCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
         }).addOnFailureListener(e -> {
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
 
             Log.e(TAG, e.getMessage());
@@ -192,10 +193,12 @@ public class Register extends AppCompatActivity {
         FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.pwdCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
         }).addOnFailureListener(e -> {
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
 
             Log.e(TAG, e.getMessage());
@@ -218,35 +221,36 @@ public class Register extends AppCompatActivity {
         registerUser.put("profilePicture", "default");
         registerUser.put("phoneNumber", phoneNumber);
         registerUser.put("accountCreationDate", formattedDate);
-        documentReference.set(registerUser).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
+        documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
-                switch (userType) {
-                    case "Driver":
-                        intent = new Intent(Register.this, RegisterDriver.class);
-                        break;
+            switch (userType) {
+                case "Driver":
+                    intent = new Intent(Register.this, RegisterDriver.class);
 
-                    case "Senior Citizen":
-                        intent = new Intent(Register.this, RegisterSenior.class);
+                    break;
 
-                        break;
+                case "Senior Citizen":
+                    intent = new Intent(Register.this, RegisterSenior.class);
 
-                    case "PWD":
-                        intent = new Intent(Register.this, RegisterPWD.class);
+                    break;
 
-                        break;
-                }
-                StaticDataPasser.storePhoneNumber = null;
+                case "PWD":
+                    intent = new Intent(Register.this, RegisterPWD.class);
 
-                startActivity(intent);
-                finish();
+                    break;
             }
+            StaticDataPasser.storePhoneNumber = null;
+
+            startActivity(intent);
+            finish();
+
         }).addOnFailureListener(e -> {
             Log.e(TAG, e.getMessage());
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.nextBtn.setVisibility(View.VISIBLE);
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
         });
     }
@@ -485,7 +489,7 @@ public class Register extends AppCompatActivity {
         FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.driverCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
         }).addOnFailureListener(e -> {
@@ -493,6 +497,8 @@ public class Register extends AppCompatActivity {
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.nextBtn.setVisibility(View.VISIBLE);
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
         });
     }
@@ -500,7 +506,7 @@ public class Register extends AppCompatActivity {
     private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
         FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.pwdCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
         }).addOnFailureListener(e -> {
@@ -508,6 +514,8 @@ public class Register extends AppCompatActivity {
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.nextBtn.setVisibility(View.VISIBLE);
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
         });
     }
@@ -516,7 +524,7 @@ public class Register extends AppCompatActivity {
         FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
             getUserID = authResult.getUser().getUid();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataCollectors.pwdCollection).document(getUserID);
+            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
             storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
         }).addOnFailureListener(e -> {
@@ -524,6 +532,8 @@ public class Register extends AppCompatActivity {
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.nextBtn.setVisibility(View.VISIBLE);
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
         });
     }
@@ -565,6 +575,8 @@ public class Register extends AppCompatActivity {
 
             binding.progressBarLayout.setVisibility(View.GONE);
             binding.nextBtn.setVisibility(View.VISIBLE);
+            FirebaseMain.signOutUser();
+
             showRegisterFailedDialog();
         });
     }
