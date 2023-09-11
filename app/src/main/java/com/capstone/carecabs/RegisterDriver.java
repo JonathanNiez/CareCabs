@@ -57,6 +57,8 @@ public class RegisterDriver extends AppCompatActivity {
         binding = ActivityRegisterDriverBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.progressBarLayout.setVisibility(View.GONE);
+
         initializeNetworkChecker();
 
         FirebaseMain.getAuth();
@@ -104,7 +106,7 @@ public class RegisterDriver extends AppCompatActivity {
         binding.doneBtn.setOnClickListener(v -> {
             binding.progressBarLayout.setVisibility(View.VISIBLE);
             binding.doneBtn.setVisibility(View.GONE);
-            binding.scanIDBtn.setVisibility(View.GONE);
+            binding.scanIDLayout.setVisibility(View.GONE);
 
             String stringFirstname = binding.firstname.getText().toString().trim();
             String stringLastname = binding.lastname.getText().toString().trim();
@@ -116,7 +118,7 @@ public class RegisterDriver extends AppCompatActivity {
                 Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
-                binding.scanIDBtn.setVisibility(View.VISIBLE);
+                binding.scanIDLayout.setVisibility(View.VISIBLE);
 
             } else {
                 StaticDataPasser.storeFirstName = stringFirstname;
@@ -185,7 +187,7 @@ public class RegisterDriver extends AppCompatActivity {
             documentReference.update(registerUser).addOnSuccessListener(unused -> {
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
-                binding.scanIDBtn.setVisibility(View.VISIBLE);
+                binding.scanIDLayout.setVisibility(View.VISIBLE);
 
                 showRegisterSuccessNotification();
 
@@ -198,7 +200,7 @@ public class RegisterDriver extends AppCompatActivity {
 
                 binding.progressBarLayout.setVisibility(View.GONE);
                 binding.doneBtn.setVisibility(View.VISIBLE);
-                binding.scanIDBtn.setVisibility(View.VISIBLE);
+                binding.scanIDLayout.setVisibility(View.VISIBLE);
 
                 Log.e(TAG, e.getMessage());
             });

@@ -48,12 +48,6 @@ public class RegisterUserType extends AppCompatActivity {
 
         if (getRegisterType != null) {
             if (getRegisterType.equals("googleRegister")) {
-                binding.userTypeParentLayout.invalidate();
-                binding.passengerImgBtn.invalidate();
-                binding.driverImgBtn.invalidate();
-                binding.cancelBtn.invalidate();
-                binding.googleRegisterLayout.invalidate();
-
                 binding.googleRegisterLayout.setVisibility(View.VISIBLE);
 
                 registerType = "googleRegister";
@@ -63,6 +57,8 @@ public class RegisterUserType extends AppCompatActivity {
         } else {
             return;
         }
+
+
 
         binding.cancelBtn.setOnClickListener(v -> {
             showCancelRegisterDialog();

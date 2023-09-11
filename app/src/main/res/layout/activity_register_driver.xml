@@ -34,16 +34,26 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
                 android:src="@drawable/logo"
-
                 />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/driver_64" />
 
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/logo"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:fontFamily="@font/opensans_semibold"
                 android:text="Additional Registration for Drivers"
                 android:textAlignment="center"
@@ -59,9 +69,11 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:background="@drawable/edit_text"
                     app:endIconMode="clear_text"
                     app:helperText="*Required"
@@ -69,8 +81,8 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/firstname"
-                        android:layout_width="340dp"
-                        android:layout_height="60dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:autofillHints="firstname"
                         android:background="@drawable/edit_text"
                         android:fontFamily="@font/opensans_semibold"
@@ -81,9 +93,11 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
                     android:background="@drawable/edit_text"
                     app:endIconMode="clear_text"
                     app:helperText="*Required"
@@ -91,8 +105,8 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/lastname"
-                        android:layout_width="340dp"
-                        android:layout_height="60dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:autofillHints="lastname"
                         android:background="@drawable/edit_text"
                         android:fontFamily="@font/opensans_semibold"
@@ -108,12 +122,16 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="20dp"
+                    >
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="2.5dp"
+                        android:layout_weight="2"
+                        android:layout_marginEnd="5dp"
                         android:background="@drawable/edit_text"
                         app:helperText="*Required"
                         app:helperTextTextColor="@color/red"
@@ -122,7 +140,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/birthdateBtn"
-                            android:layout_width="240dp"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:background="@drawable/edit_text"
                             android:fontFamily="@font/opensans_bold"
@@ -134,9 +152,10 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="2.5dp"
+                        android:layout_weight="1"
+                        android:layout_marginStart="5dp"
                         android:background="@drawable/edit_text"
                         app:helperText="*Required"
                         app:helperTextTextColor="@color/red"
@@ -144,7 +163,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/ageBtn"
-                            android:layout_width="90dp"
+                            android:layout_width="match_parent"
                             android:layout_height="60dp"
                             android:background="@drawable/edit_text"
                             android:fontFamily="@font/opensans_bold"
@@ -155,7 +174,6 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
-
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"
@@ -188,24 +206,25 @@
                 android:id="@+id/progressBarLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/linearLayout"
+                android:layout_below="@id/textLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:visibility="gone">
+                >
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Please Wait..."
                     android:textColor="@color/black"
-                    android:textSize="10pt" />
+                    android:textSize="25sp"
+                    android:fontFamily="@font/opensans_semibold"/>
 
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="50pt"
-                    android:layout_height="50pt" />
+                <pl.droidsonroids.gif.GifImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/loading_gif"/>
 
             </LinearLayout>
 
@@ -220,23 +239,26 @@
 
                 <TextView
                     android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="Driver's License is Required to be
-                scanned for Verification"
+                    android:text="@string/string_driver_license_scan"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="Tap the Scan ID button below \n to scan your ID"
+                    android:text="@string/string_tap_the_id_scan_below"
                     android:textAlignment="center"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
@@ -245,26 +267,47 @@
             </LinearLayout>
 
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/scanIDBtn"
-                android:layout_width="150dp"
-                android:layout_height="60dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/custom_button"
-                android:backgroundTint="@color/gray"
-                android:drawableStart="@drawable/scan_id_64"
-                android:fontFamily="@font/opensans_bold"
-                android:text="Scan ID"
-                android:textColor="@color/black"
-                android:textSize="20sp"
+            <LinearLayout
+                android:id="@+id/scanIDLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
                 android:layout_below="@id/textLayout"
-                android:layout_centerHorizontal="true"/>
+                android:layout_marginTop="20dp"
+                >
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/scanIDBtn"
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/custom_button"
+                    android:backgroundTint="@color/gray"
+                    android:drawableStart="@drawable/scan_id_64"
+                    android:fontFamily="@font/opensans_bold"
+                    android:text="Scan ID"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:layout_marginStart="5dp"/>
+
+                <ImageButton
+                    android:id="@+id/helpImgBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/circular_button"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/help_64"
+                    android:textSize="20sp"
+                    android:layout_marginStart="5dp"/>
+
+            </LinearLayout>
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/doneBtn"
                 android:layout_width="150dp"
                 android:layout_height="60dp"
-                android:layout_below="@id/scanIDBtn"
+                android:layout_below="@id/scanIDLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="50dp"

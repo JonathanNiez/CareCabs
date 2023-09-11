@@ -107,6 +107,7 @@ public class EditAccountFragment extends Fragment {
 
         binding.editMedConBtn.setVisibility(View.GONE);
         binding.editDisabilityBtn.setVisibility(View.GONE);
+        binding.idScannedTextView.setVisibility(View.GONE);
 
         context = getContext();
         initializeNetworkChecker();
@@ -250,7 +251,6 @@ public class EditAccountFragment extends Fragment {
                     String getVerificationStatus = documentSnapshot.getString("verificationStatus");
                     String getBirthdate = documentSnapshot.getString("birthdate");
 
-
                     switch (getUserType) {
                         case "Driver":
 
@@ -278,6 +278,10 @@ public class EditAccountFragment extends Fragment {
 
                     if (!getProfilePicture.equals("default")) {
                         Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
+                    }
+
+                    if (getVerificationStatus.equals("Not Verified")){
+                        binding.idScannedTextView.setVisibility(View.VISIBLE);
                     }
 
                     StaticDataPasser.storeFirstName = getFirstName;

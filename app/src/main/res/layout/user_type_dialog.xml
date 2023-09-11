@@ -28,29 +28,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="vertical">
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:orientation="horizontal">
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
             android:backgroundTint="@color/white"
             android:elevation="4dp"
             app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
+                    android:background="@drawable/custom_card_view"
+                    android:backgroundTint="@color/background"
+                    android:padding="5dp"
+                    android:layout_margin="5dp"
                     android:text="SENIOR CITIZEN"
                     android:textAlignment="center"
                     android:textColor="@color/black"
@@ -63,7 +68,7 @@
                     android:layout_marginBottom="10dp"
                     android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/senior_128" />
+                    android:src="@drawable/senior_128_2" />
 
             </LinearLayout>
 
@@ -72,28 +77,33 @@
 
 
         <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
+            android:layout_width="0dp"
+            android:layout_height="250dp"
+            android:layout_weight="1"
             android:backgroundTint="@color/white"
+            android:layout_marginStart="5dp"
             android:elevation="4dp"
             app:cardCornerRadius="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:background="@drawable/custom_card_view"
+                    android:backgroundTint="@color/background"
+                    android:padding="5dp"
+                    android:layout_margin="5dp"
                     android:fontFamily="@font/opensans_bold"
                     android:text="PWD"
                     android:textColor="@color/black"
-                    android:textSize="25sp" />
+                    android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/pwdImgBtn"
@@ -102,7 +112,7 @@
                     android:layout_marginBottom="10dp"
                     android:backgroundTint="@color/white"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/pwd_128" />
+                    android:src="@drawable/pwd_128_2" />
 
             </LinearLayout>
 

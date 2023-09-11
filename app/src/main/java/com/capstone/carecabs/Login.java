@@ -1,484 +1,514 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Fragments.FragmentIdScanInfo1;
+import com.capstone.carecabs.Fragments.FragmentIdScanInfo2;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.TabAdapter;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
 import java.util.List;
 
 public class Login extends AppCompatActivity {
-    private Intent intent;
-    private FirebaseUser currentUser;
-    private GoogleSignInOptions googleSignInOptions;
-    private GoogleSignInAccount googleSignInAccount;
-    private GoogleSignInClient googleSignInClient;
-    private final String TAG = "Login";
-    private boolean shouldExit = false;
-    private static final int RC_SIGN_IN = 69;
-    private AlertDialog noInternetDialog, emailDialog,
-            emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
-            pleaseWaitDialog, registerUsingDialog, loginFailedDialog,
-            exitAppDialog;
-    private NetworkChangeReceiver networkChangeReceiver;
-    private AlertDialog.Builder builder;
-    private ActivityLoginBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        initializeNetworkChecker();
+	private Intent intent;
+	private GoogleSignInOptions googleSignInOptions;
+	private GoogleSignInAccount googleSignInAccount;
+	private GoogleSignInClient googleSignInClient;
+	private final String TAG = "Login";
+	private boolean shouldExit = false;
+	private static final int RC_SIGN_IN = 69;
+	private AlertDialog noInternetDialog, emailDialog,
+			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
+			pleaseWaitDialog, registerUsingDialog, loginFailedDialog,
+			exitAppDialog, idScanInfoDialog;
+	private NetworkChangeReceiver networkChangeReceiver;
+	private AlertDialog.Builder builder;
+	private ActivityLoginBinding binding;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		binding = ActivityLoginBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
-        FirebaseMain.getAuth();
-        FirebaseApp.initializeApp(this);
-
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("205073319244-lrk1l36m7kcnojhb8u4vpqq4sm5j04lm.apps.googleusercontent.com")
-                .requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-
-        binding.registerTextView.setOnClickListener(v -> {
-            showRegisterUsingDialog();
-        });
-
-        binding.googleImgBtn.setOnClickListener(v -> {
-            showPleaseWaitDialog();
-
-            intent = googleSignInClient.getSignInIntent();
-            startActivityForResult(intent, RC_SIGN_IN);
-        });
-
-        binding.loginBtn.setOnClickListener(v -> {
-            binding.progressBarLayout.setVisibility(View.VISIBLE);
-            binding.loginBtn.setVisibility(View.GONE);
-
-            final String stringEmail = binding.email.getText().toString().trim();
-            final String stringPassword = binding.password.getText().toString();
-
-            if (stringEmail.isEmpty()) {
-                binding.email.setError("Please Enter your Email");
-
-                binding.progressBarLayout.setVisibility(View.GONE);
-                binding.loginBtn.setVisibility(View.VISIBLE);
-
-            } else if (stringPassword.isEmpty()) {
-                binding.password.setError("Please Enter your Password");
-                binding.progressBarLayout.setVisibility(View.GONE);
-                binding.loginBtn.setVisibility(View.VISIBLE);
-
-            } else {
-                showPleaseWaitDialog();
-                binding.googleSignInLayout.setVisibility(View.GONE);
-
-                FirebaseMain.getAuth().fetchSignInMethodsForEmail(stringEmail)
-                        .addOnSuccessListener(signInMethodQueryResult -> {
-                            List<String> signInMethods = signInMethodQueryResult.getSignInMethods();
-                            if (signInMethods != null && !signInMethods.isEmpty()) {
-                                FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
-                                        .addOnSuccessListener(authResult -> {
-
-                                            closePleaseWaitDialog();
-
-                                            binding.progressBarLayout.setVisibility(View.GONE);
-                                            binding.loginBtn.setVisibility(View.VISIBLE);
-
-                                            intent = new Intent(Login.this, LoggingIn.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                            startActivity(intent);
-                                            finish();
-
-                                            Log.i(TAG, "Login Success");
-
-                                        }).addOnFailureListener(e -> {
-
-                                            closePleaseWaitDialog();
-                                            showLoginFailedDialog();
-
-                                            binding.progressBarLayout.setVisibility(View.GONE);
-                                            binding.loginBtn.setVisibility(View.VISIBLE);
+		initializeNetworkChecker();
+
+		FirebaseMain.getAuth();
+		FirebaseApp.initializeApp(this);
+
+		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+				.requestIdToken(getString(R.string.default_web_client_id))
+				.requestEmail().build();
+		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+		binding.registerTextView.setOnClickListener(v -> {
+			showRegisterUsingDialog();
+		});
+
+		binding.googleImgBtn.setOnClickListener(v -> {
+			showPleaseWaitDialog();
+
+			intent = googleSignInClient.getSignInIntent();
+			startActivityForResult(intent, RC_SIGN_IN);
+		});
+
+		binding.loginBtn.setOnClickListener(v -> {
+			binding.progressBarLayout.setVisibility(View.VISIBLE);
+			binding.loginBtn.setVisibility(View.GONE);
+
+			final String stringEmail = binding.email.getText().toString().trim();
+			final String stringPassword = binding.password.getText().toString();
+
+			if (stringEmail.isEmpty()) {
+				binding.email.setError("Please Enter your Email");
+
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.loginBtn.setVisibility(View.VISIBLE);
+
+			} else if (stringPassword.isEmpty()) {
+				binding.password.setError("Please Enter your Password");
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.loginBtn.setVisibility(View.VISIBLE);
+
+			} else {
+				showPleaseWaitDialog();
+				binding.googleSignInLayout.setVisibility(View.GONE);
+
+				FirebaseMain.getAuth().fetchSignInMethodsForEmail(stringEmail)
+						.addOnSuccessListener(signInMethodQueryResult -> {
+							List<String> signInMethods = signInMethodQueryResult.getSignInMethods();
+							if (signInMethods != null && !signInMethods.isEmpty()) {
+								FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
+										.addOnSuccessListener(authResult -> {
+
+											closePleaseWaitDialog();
+
+											binding.progressBarLayout.setVisibility(View.GONE);
+											binding.loginBtn.setVisibility(View.VISIBLE);
 
-                                            Log.e(TAG, e.getMessage());
+											intent = new Intent(Login.this, LoggingIn.class);
+											intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+											startActivity(intent);
+											finish();
+
+											Log.i(TAG, "Login Success");
+
+										}).addOnFailureListener(e -> {
+
+											closePleaseWaitDialog();
+											showLoginFailedDialog();
 
-                                        });
-                            } else {
-                                showLoginFailedDialog();
-
-                                binding.progressBarLayout.setVisibility(View.GONE);
-                                binding.loginBtn.setVisibility(View.VISIBLE);
+											binding.progressBarLayout.setVisibility(View.GONE);
+											binding.loginBtn.setVisibility(View.VISIBLE);
 
-                                Log.e(TAG, "Login Failed");
-                            }
-                        }).addOnFailureListener(e -> {
-                            closePleaseWaitDialog();
-                            showLoginFailedDialog();
+											Log.e(TAG, e.getMessage());
+
+										});
+							} else {
+								closePleaseWaitDialog();
+								showLoginFailedDialog();
 
-                            binding.progressBarLayout.setVisibility(View.GONE);
-                            binding.loginBtn.setVisibility(View.VISIBLE);
+								binding.progressBarLayout.setVisibility(View.GONE);
+								binding.loginBtn.setVisibility(View.VISIBLE);
 
-                            Log.e(TAG, e.getMessage());
+								Log.e(TAG, "Login Failed");
+							}
+						}).addOnFailureListener(e -> {
+							closePleaseWaitDialog();
+							showLoginFailedDialog();
 
-                        });
-            }
-        });
-    }
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.loginBtn.setVisibility(View.VISIBLE);
 
+							Log.e(TAG, e.getMessage());
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+						});
+			}
+		});
+	}
 
-        if (networkChangeReceiver != null) {
-            unregisterReceiver(networkChangeReceiver);
-        }
 
-        closeExitConfirmationDialog();
-        closeLoginFailedDialog();
-        closePleaseWaitDialog();
-        closeRegisterUsingDialog();
-        closeNoInternetDialog();
-    }
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
 
-        closeExitConfirmationDialog();
-        closeLoginFailedDialog();
-        closePleaseWaitDialog();
-        closeRegisterUsingDialog();
-        closeNoInternetDialog();
-    }
+		closeExitConfirmationDialog();
+		closeLoginFailedDialog();
+		closePleaseWaitDialog();
+		closeRegisterUsingDialog();
+		closeNoInternetDialog();
+	}
 
-    @Override
-    public void onBackPressed() {
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-        if (shouldExit) {
-            super.onBackPressed(); // Exit the app
-        } else {
-            // Show an exit confirmation dialog
-            showExitConfirmationDialog();
-        }
+		closeExitConfirmationDialog();
+		closeLoginFailedDialog();
+		closePleaseWaitDialog();
+		closeRegisterUsingDialog();
+		closeNoInternetDialog();
+	}
 
-    }
+	@Override
+	public void onBackPressed() {
 
-    private void showExitConfirmationDialog() {
-        builder = new AlertDialog.Builder(this);
+		if (shouldExit) {
+			super.onBackPressed(); // Exit the app
+		} else {
+			// Show an exit confirmation dialog
+			showExitConfirmationDialog();
+		}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
+	}
 
-        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-        Button noBtn = dialogView.findViewById(R.id.noBtn);
+	private void showExitConfirmationDialog() {
+		builder = new AlertDialog.Builder(this);
 
-        yesBtn.setOnClickListener(v -> {
-            finish();
-        });
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
-        noBtn.setOnClickListener(v -> {
-            closeExitConfirmationDialog();
-        });
+		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
-        builder.setView(dialogView);
+		yesBtn.setOnClickListener(v -> {
+			finish();
+		});
 
-        exitAppDialog = builder.create();
-        exitAppDialog.show();
-    }
+		noBtn.setOnClickListener(v -> {
+			closeExitConfirmationDialog();
+		});
 
-    private void closeExitConfirmationDialog() {
-        if (exitAppDialog != null && exitAppDialog.isShowing()) {
-            exitAppDialog.dismiss();
-        }
-    }
+		builder.setView(dialogView);
 
-    private void showEmailNotRegisterDialog() {
-        builder = new AlertDialog.Builder(this);
+		exitAppDialog = builder.create();
+		exitAppDialog.show();
+	}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.email_not_registered_dialog, null);
+	private void closeExitConfirmationDialog() {
+		if (exitAppDialog != null && exitAppDialog.isShowing()) {
+			exitAppDialog.dismiss();
+		}
+	}
 
-        Button noBtn = dialogView.findViewById(R.id.noBtn);
-        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+	private void showIDScanInfoDialog() {
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_scan_info, null);
 
-        noBtn.setOnClickListener(v -> {
-            if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
-                emailNotRegisteredDialog.dismiss();
-            }
-        });
+		builder = new AlertDialog.Builder(this);
+		builder.setView(dialogView);
 
-        yesBtn.setOnClickListener(v -> {
-            if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
-                emailNotRegisteredDialog.dismiss();
-            }
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button nextBtn = dialogView.findViewById(R.id.nextBtn);
 
-            intent = new Intent(this, Register.class);
-            startActivity(intent);
-            finish();
-        });
+		okBtn.setOnClickListener(v -> {
+			closeIDScanInfoDialog();
+		});
 
-        builder.setView(dialogView);
+		nextBtn.setOnClickListener(v -> {
 
-        emailNotRegisteredDialog = builder.create();
-        emailNotRegisteredDialog.show();
-    }
+		});
 
-    private void showIncorrectEmailOrPasswordDialog() {
-        builder = new AlertDialog.Builder(this);
+		builder.setView(dialogView);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.incorrect_email_or_password_dialog, null);
+		idScanInfoDialog = builder.create();
+		idScanInfoDialog.show();
+	}
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+	private void closeIDScanInfoDialog() {
+		if (idScanInfoDialog != null & idScanInfoDialog.isShowing()) {
+			idScanInfoDialog.dismiss();
+		}
+	}
 
-        okBtn.setOnClickListener(v -> {
-            if (incorrectEmailOrPasswordDialog != null && incorrectEmailOrPasswordDialog.isShowing()) {
-                incorrectEmailOrPasswordDialog.dismiss();
-            }
-        });
+	private void showEmailNotRegisterDialog() {
+		builder = new AlertDialog.Builder(this);
 
-        builder.setView(dialogView);
+		View dialogView = getLayoutInflater().inflate(R.layout.email_not_registered_dialog, null);
 
-        incorrectEmailOrPasswordDialog = builder.create();
-        incorrectEmailOrPasswordDialog.show();
-    }
+		Button noBtn = dialogView.findViewById(R.id.noBtn);
+		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 
-    private void showEmailAlreadyRegisteredDialog() {
+		noBtn.setOnClickListener(v -> {
+			if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
+				emailNotRegisteredDialog.dismiss();
+			}
+		});
 
-        builder = new AlertDialog.Builder(this);
+		yesBtn.setOnClickListener(v -> {
+			if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
+				emailNotRegisteredDialog.dismiss();
+			}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
+			intent = new Intent(this, Register.class);
+			startActivity(intent);
+			finish();
+		});
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		builder.setView(dialogView);
 
-        okBtn.setOnClickListener(v -> {
-            emailDialog.dismiss();
-        });
+		emailNotRegisteredDialog = builder.create();
+		emailNotRegisteredDialog.show();
+	}
 
-        builder.setView(dialogView);
+	private void showIncorrectEmailOrPasswordDialog() {
+		builder = new AlertDialog.Builder(this);
 
-        emailDialog = builder.create();
-        emailDialog.show();
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.incorrect_email_or_password_dialog, null);
 
-    private void showRegisterUsingDialog() {
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-        builder = new AlertDialog.Builder(this);
+		okBtn.setOnClickListener(v -> {
+			if (incorrectEmailOrPasswordDialog != null && incorrectEmailOrPasswordDialog.isShowing()) {
+				incorrectEmailOrPasswordDialog.dismiss();
+			}
+		});
 
-        View dialogView = getLayoutInflater().inflate(R.layout.register_using_dialog, null);
+		builder.setView(dialogView);
 
-        ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
-        ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
-        Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		incorrectEmailOrPasswordDialog = builder.create();
+		incorrectEmailOrPasswordDialog.show();
+	}
 
-        googleImgBtn.setOnClickListener(v -> {
-            intent = new Intent(Login.this, RegisterUserType.class);
-            intent.putExtra("registerType", "googleRegister");
-            startActivity(intent);
-            finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+	private void showEmailAlreadyRegisteredDialog() {
 
-            closeRegisterUsingDialog();
-        });
+		builder = new AlertDialog.Builder(this);
 
-        emailImgBtn.setOnClickListener(v -> {
-            intent = new Intent(Login.this, RegisterUserType.class);
-            intent.putExtra("registerType", "emailRegister");
-            startActivity(intent);
-            finish();
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+		View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
 
-            closeRegisterUsingDialog();
-        });
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-        cancelBtn.setOnClickListener(v -> {
-            closeRegisterUsingDialog();
-        });
+		okBtn.setOnClickListener(v -> {
+			emailDialog.dismiss();
+		});
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        registerUsingDialog = builder.create();
-        registerUsingDialog.show();
+		emailDialog = builder.create();
+		emailDialog.show();
+	}
 
-    }
+	private void showRegisterUsingDialog() {
 
-    private void closeRegisterUsingDialog() {
-        if (registerUsingDialog != null && registerUsingDialog.isShowing()) {
-            registerUsingDialog.dismiss();
-        }
-    }
+		builder = new AlertDialog.Builder(this);
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+		View dialogView = getLayoutInflater().inflate(R.layout.register_using_dialog, null);
 
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+		ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
+		ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        String getGoogleEmail = acct.getEmail();
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
-                .addOnCompleteListener(task -> {
-                    SignInMethodQueryResult result = task.getResult();
-                    if (!result.getSignInMethods().isEmpty()) {
-                        FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
-                            if (task1.isSuccessful()) {
-                                intent = new Intent(Login.this, LoggingIn.class);
-                                startActivity(intent);
-                                finish();
+		googleImgBtn.setOnClickListener(v -> {
+			intent = new Intent(Login.this, RegisterUserType.class);
+			intent.putExtra("registerType", "googleRegister");
+			startActivity(intent);
+			finish();
+			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
-                                closePleaseWaitDialog();
-                            } else {
-                                closePleaseWaitDialog();
-                                showLoginFailedDialog();
-                            }
+			closeRegisterUsingDialog();
+		});
 
-                        });
-                    } else {
-                        closePleaseWaitDialog();
+		emailImgBtn.setOnClickListener(v -> {
+			intent = new Intent(Login.this, RegisterUserType.class);
+			intent.putExtra("registerType", "emailRegister");
+			startActivity(intent);
+			finish();
+			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 
-                        intent = new Intent(this, RegisterUserType.class);
-                        intent.putExtra("registerType", "googleRegister");
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-    }
+			closeRegisterUsingDialog();
+		});
 
-    private void showPleaseWaitDialog() {
-        builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+		cancelBtn.setOnClickListener(v -> {
+			closeRegisterUsingDialog();
+		});
 
-        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		builder.setView(dialogView);
 
-        builder.setView(dialogView);
+		registerUsingDialog = builder.create();
+		registerUsingDialog.show();
 
-        pleaseWaitDialog = builder.create();
-        pleaseWaitDialog.show();
-    }
+	}
 
-    private void closePleaseWaitDialog() {
-        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
-            pleaseWaitDialog.dismiss();
-        }
-    }
+	private void closeRegisterUsingDialog() {
+		if (registerUsingDialog != null && registerUsingDialog.isShowing()) {
+			registerUsingDialog.dismiss();
+		}
+	}
 
-    private void showNoInternetDialog() {
-        builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+		if (requestCode == RC_SIGN_IN) {
+			Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+			try {
+				GoogleSignInAccount account = task.getResult(ApiException.class);
+				firebaseAuthWithGoogle(account);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
-        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+	private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+		String getGoogleEmail = acct.getEmail();
+		AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+		FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
+				.addOnCompleteListener(task -> {
+					SignInMethodQueryResult result = task.getResult();
+					if (!result.getSignInMethods().isEmpty()) {
+						FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
+							if (task1.isSuccessful()) {
+								intent = new Intent(Login.this, LoggingIn.class);
+								startActivity(intent);
+								finish();
 
-        tryAgainBtn.setOnClickListener(v -> {
-            closeNoInternetDialog();
-        });
+								closePleaseWaitDialog();
+							} else {
+								closePleaseWaitDialog();
+								showLoginFailedDialog();
+							}
 
-        builder.setView(dialogView);
+						});
+					} else {
+						closePleaseWaitDialog();
 
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
-    }
+						showEmailAlreadyRegisteredDialog();
 
-    private void closeNoInternetDialog() {
-        if (noInternetDialog != null && noInternetDialog.isShowing()) {
-            noInternetDialog.dismiss();
+						intent = new Intent(this, RegisterUserType.class);
+						intent.putExtra("registerType", "googleRegister");
+						startActivity(intent);
+						finish();
+					}
+				});
+	}
 
-            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-            updateConnectionStatus(isConnected);
-        }
-    }
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
 
-    private void initializeNetworkChecker() {
-        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-            @Override
-            public void onNetworkChanged(boolean isConnected) {
-                updateConnectionStatus(isConnected);
-            }
-        });
+		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, intentFilter);
+		builder.setView(dialogView);
 
-        // Initial network status check
-        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-        updateConnectionStatus(isConnected);
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
 
-    }
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
+	}
 
-    private void updateConnectionStatus(boolean isConnected) {
-        if (isConnected) {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-            }
-        } else {
-            showNoInternetDialog();
-        }
-    }
+	private void showNoInternetDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
 
-    private void showLoginFailedDialog() {
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
-        builder = new AlertDialog.Builder(this);
+		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.login_failed_dialog, null);
+		tryAgainBtn.setOnClickListener(v -> {
+			closeNoInternetDialog();
+		});
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		builder.setView(dialogView);
 
-        okBtn.setOnClickListener(v -> {
-            closeLoginFailedDialog();
-        });
+		noInternetDialog = builder.create();
+		noInternetDialog.show();
+	}
 
-        builder.setView(dialogView);
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
 
-        loginFailedDialog = builder.create();
-        loginFailedDialog.show();
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+			updateConnectionStatus(isConnected);
+		}
+	}
 
-    }
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
 
-    private void closeLoginFailedDialog() {
-        if (loginFailedDialog != null && loginFailedDialog.isShowing()) {
-            loginFailedDialog.dismiss();
-        }
-    }
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		registerReceiver(networkChangeReceiver, intentFilter);
+
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+		updateConnectionStatus(isConnected);
+
+	}
+
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
+		}
+	}
+
+	private void showLoginFailedDialog() {
+
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.login_failed_dialog, null);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+		okBtn.setOnClickListener(v -> {
+			closeLoginFailedDialog();
+		});
+
+		builder.setView(dialogView);
+
+		loginFailedDialog = builder.create();
+		loginFailedDialog.show();
+
+	}
+
+	private void closeLoginFailedDialog() {
+		if (loginFailedDialog != null && loginFailedDialog.isShowing()) {
+			loginFailedDialog.dismiss();
+		}
+	}
 
 }

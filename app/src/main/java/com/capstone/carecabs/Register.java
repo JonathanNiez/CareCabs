@@ -38,575 +38,594 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Register extends AppCompatActivity {
-    private DocumentReference documentReference;
-    private GoogleSignInClient googleSignInClient;
-    private GoogleSignInAccount googleSignInAccount;
-    private GoogleSignInOptions googleSignInOptions;
-    private Calendar calendar;
-    private Date date;
-    private String getUserID;
-    private final String TAG = "Register";
-    private boolean shouldExit = false;
-    private Intent intent;
-    private static final int RC_SIGN_IN = 69;
-    private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
-            ageInfoDialog, registerFailedDialog, cancelRegisterDialog;
-    private AlertDialog.Builder builder;
-    private NetworkChangeReceiver networkChangeReceiver;
-    private ActivityRegisterBinding binding;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = ActivityRegisterBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        initializeNetworkChecker();
-
-        FirebaseMain.getAuth();
-        FirebaseApp.initializeApp(this);
-
-        calendar = Calendar.getInstance();
-        date = calendar.getTime();
-
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("205073319244-lrk1l36m7kcnojhb8u4vpqq4sm5j04lm.apps.googleusercontent.com").requestEmail().build();
-        googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-
-        intent = getIntent();
-        String getRegisterUserType = intent.getStringExtra("registerUserType");
-        String getRegisterType = intent.getStringExtra("registerType");
-        StaticDataPasser.storeRegisterType = getRegisterType;
-        StaticDataPasser.storeRegisterUserType = getRegisterUserType;
-
-        binding.userTypeImageBtn.setOnClickListener(v -> {
-            showUserTypeImageDialog();
-        });
-
-        if (getRegisterType != null && getRegisterUserType != null) {
-            if (getRegisterType.equals("googleRegister")) {
-                intent = googleSignInClient.getSignInIntent();
-                startActivityForResult(intent, RC_SIGN_IN);
-
-                showPleaseWaitDialog();
-
-            } else if (getRegisterUserType.equals("Senior Citizen")) {
-                showAgeInfoDialog();
-            } else if (getRegisterType.equals("googleRegister") &&
-                    getRegisterUserType.equals("Senior Citizen")) {
-                showAgeInfoDialog();
-            }
-        } else {
-            return;
-        }
-
-        binding.imgBackBtn.setOnClickListener(v -> {
-            showCancelRegisterDialog();
-        });
-
-        binding.nextBtn.setOnClickListener(v -> {
-            binding.progressBarLayout.setVisibility(View.VISIBLE);
-            binding.nextBtn.setVisibility(View.GONE);
-
-            String stringEmail = binding.email.getText().toString().trim();
-            String stringPassword = binding.password.getText().toString();
-            String stringConfirmPassword = binding.confirmPassword.getText().toString();
-            String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
-            String prefixPhoneNumber = "+63" + stringPhoneNumber;
-            String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
-            StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
-
-            if (stringEmail.isEmpty() || stringPassword.isEmpty()
-                    || stringPhoneNumber.isEmpty()) {
-                binding.email.setError("Please enter your Email");
-                binding.progressBarLayout.setVisibility(View.GONE);
-                binding.nextBtn.setVisibility(View.VISIBLE);
-
-            } else if (!stringConfirmPassword.equals(stringPassword)) {
-                binding.confirmPassword.setError("Password did not matched");
-                binding.progressBarLayout.setVisibility(View.GONE);
-                binding.nextBtn.setVisibility(View.VISIBLE);
-
-            } else {
-                switch (getRegisterUserType) {
-                    case "Driver":
-
-                        registerDriver(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
-                        break;
+	private DocumentReference documentReference;
+	private GoogleSignInClient googleSignInClient;
+	private GoogleSignInAccount googleSignInAccount;
+	private GoogleSignInOptions googleSignInOptions;
+	private Calendar calendar;
+	private Date date;
+	private String getUserID;
+	private final String TAG = "Register";
+	private boolean shouldExit = false;
+	private Intent intent;
+	private static final int RC_SIGN_IN = 69;
+	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
+			ageInfoDialog, registerFailedDialog, cancelRegisterDialog;
+	private AlertDialog.Builder builder;
+	private NetworkChangeReceiver networkChangeReceiver;
+	private ActivityRegisterBinding binding;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		binding = ActivityRegisterBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
+
+		initializeNetworkChecker();
+
+		FirebaseMain.getAuth();
+		FirebaseApp.initializeApp(this);
+
+		calendar = Calendar.getInstance();
+		date = calendar.getTime();
+
+		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+				.requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+		intent = getIntent();
+		String getRegisterUserType = intent.getStringExtra("registerUserType");
+		String getRegisterType = intent.getStringExtra("registerType");
+		StaticDataPasser.storeRegisterType = getRegisterType;
+		StaticDataPasser.storeRegisterUserType = getRegisterUserType;
+
+		if (getRegisterType != null && getRegisterUserType != null) {
+
+			switch (getRegisterUserType){
+				case "Driver":
+					binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
+					break;
+
+				case "Persons with Disability (PWD)":
+					binding.userTypeImageBtn.setImageResource(R.drawable.pwd_64);
+					break;
+
+				case "Senior Citizen":
+					binding.userTypeImageBtn.setImageResource(R.drawable.senior_64_2);
+					break;
+			}
+
+			if (getRegisterType.equals("googleRegister")) {
+				intent = googleSignInClient.getSignInIntent();
+				startActivityForResult(intent, RC_SIGN_IN);
+
+				showPleaseWaitDialog();
+
+			} else if (getRegisterUserType.equals("Senior Citizen")) {
+				showAgeInfoDialog();
+
+			} else if (getRegisterType.equals("googleRegister") &&
+					getRegisterUserType.equals("Senior Citizen")) {
+				intent = googleSignInClient.getSignInIntent();
+				startActivityForResult(intent, RC_SIGN_IN);
+
+				showAgeInfoDialog();
+			}
+		} else {
+			return;
+		}
+
+		binding.userTypeImageBtn.setOnClickListener(v -> {
+			showUserTypeImageDialog();
+		});
+
+		binding.imgBackBtn.setOnClickListener(v -> {
+			showCancelRegisterDialog();
+		});
 
-                    case "Persons with Disability (PWD)":
-                        registerPWD(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+		binding.nextBtn.setOnClickListener(v -> {
+			binding.progressBarLayout.setVisibility(View.VISIBLE);
+			binding.nextBtn.setVisibility(View.GONE);
 
-                        break;
+			String stringEmail = binding.email.getText().toString().trim();
+			String stringPassword = binding.password.getText().toString();
+			String stringConfirmPassword = binding.confirmPassword.getText().toString();
+			String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
+			String prefixPhoneNumber = "+63" + stringPhoneNumber;
+			String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
+			StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
 
-                    case "Senior Citizen":
-                        registerSenior(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+			if (stringEmail.isEmpty() || stringPassword.isEmpty()
+					|| stringPhoneNumber.isEmpty()) {
+				binding.email.setError("Please enter your Email");
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.nextBtn.setVisibility(View.VISIBLE);
 
-                        break;
-                }
-            }
-        });
-    }
+			} else if (!stringConfirmPassword.equals(stringPassword)) {
+				binding.confirmPassword.setError("Password did not matched");
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.nextBtn.setVisibility(View.VISIBLE);
 
-    private void registerDriver(String email, String password, String userType, String phoneNumber) {
-        FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
+			} else {
+				switch (getRegisterUserType) {
+					case "Driver":
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+						registerDriver(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						break;
 
-        }).addOnFailureListener(e -> {
-            FirebaseMain.signOutUser();
+					case "Persons with Disability (PWD)":
+						registerPWD(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
 
-            showRegisterFailedDialog();
+						break;
 
-            Log.e(TAG, e.getMessage());
+					case "Senior Citizen":
+						registerSenior(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-        });
+						break;
+				}
+			}
+		});
+	}
 
-    }
+	private void registerDriver(String email, String password, String userType, String phoneNumber) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
 
-    private void registerSenior(String email, String password, String userType, String phoneNumber) {
-        FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+		}).addOnFailureListener(e -> {
+			FirebaseMain.signOutUser();
 
-        }).addOnFailureListener(e -> {
-            FirebaseMain.signOutUser();
+			showRegisterFailedDialog();
 
-            showRegisterFailedDialog();
+			Log.e(TAG, e.getMessage());
 
-            Log.e(TAG, e.getMessage());
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+		});
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-        });
+	}
 
-    }
+	private void registerSenior(String email, String password, String userType, String phoneNumber) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
 
-    private void registerPWD(String email, String password, String userType, String phoneNumber) {
-        FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+		}).addOnFailureListener(e -> {
+			FirebaseMain.signOutUser();
 
-        }).addOnFailureListener(e -> {
-            FirebaseMain.signOutUser();
+			showRegisterFailedDialog();
 
-            showRegisterFailedDialog();
+			Log.e(TAG, e.getMessage());
 
-            Log.e(TAG, e.getMessage());
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+		});
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-        });
+	}
 
-    }
+	private void registerPWD(String email, String password, String userType, String phoneNumber) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
 
-    private void storeUserDataToFireStore(String userID, String email, String password, String userType, String phoneNumber) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
-        String formattedDate = dateFormat.format(date);
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
 
-        Map<String, Object> registerUser = new HashMap<>();
-        registerUser.put("userID", userID);
-        registerUser.put("email", email);
-        registerUser.put("password", password);
-        registerUser.put("userType", userType);
-        registerUser.put("profilePicture", "default");
-        registerUser.put("phoneNumber", phoneNumber);
-        registerUser.put("accountCreationDate", formattedDate);
-        documentReference.set(registerUser).addOnSuccessListener(unused -> {
+		}).addOnFailureListener(e -> {
+			FirebaseMain.signOutUser();
 
-            switch (userType) {
-                case "Driver":
-                    intent = new Intent(Register.this, RegisterDriver.class);
+			showRegisterFailedDialog();
 
-                    break;
+			Log.e(TAG, e.getMessage());
 
-                case "Senior Citizen":
-                    intent = new Intent(Register.this, RegisterSenior.class);
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+		});
 
-                    break;
+	}
 
-                case "PWD":
-                    intent = new Intent(Register.this, RegisterPWD.class);
+	private void storeUserDataToFireStore(String userID, String email, String password, String userType, String phoneNumber) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
+		String formattedDate = dateFormat.format(date);
 
-                    break;
-            }
-            StaticDataPasser.storePhoneNumber = null;
+		Map<String, Object> registerUser = new HashMap<>();
+		registerUser.put("userID", userID);
+		registerUser.put("email", email);
+		registerUser.put("password", password);
+		registerUser.put("userType", userType);
+		registerUser.put("profilePicture", "default");
+		registerUser.put("phoneNumber", phoneNumber);
+		registerUser.put("accountCreationDate", formattedDate);
+		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
-            startActivity(intent);
-            finish();
+			switch (userType) {
+				case "Driver":
+					intent = new Intent(Register.this, RegisterDriver.class);
 
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, e.getMessage());
+					break;
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-            FirebaseMain.signOutUser();
+				case "Senior Citizen":
+					intent = new Intent(Register.this, RegisterSenior.class);
 
-            showRegisterFailedDialog();
-        });
-    }
+					break;
 
-    @Override
-    public void onBackPressed() {
-        if (shouldExit) {
-            super.onBackPressed(); // Exit the app
-        } else {
-            // Show an exit confirmation dialog
-            showCancelRegisterDialog();
-        }
-    }
+				case "PWD":
+					intent = new Intent(Register.this, RegisterPWD.class);
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+					break;
+			}
+			StaticDataPasser.storePhoneNumber = null;
 
-        closeRegisterFailedDialog();
-        closePleaseWaitDialog();
-        closeAgeInfoDialog();
-        closeCancelRegisterDialog();
-        closeNoInternetDialog();
-        closeUserTypeImageDialog();
-    }
+			startActivity(intent);
+			finish();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, e.getMessage());
 
-        if (networkChangeReceiver != null) {
-            unregisterReceiver(networkChangeReceiver);
-        }
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			FirebaseMain.signOutUser();
 
-        closeRegisterFailedDialog();
-        closePleaseWaitDialog();
-        closeAgeInfoDialog();
-        closeCancelRegisterDialog();
-        closeNoInternetDialog();
-        closeUserTypeImageDialog();
-    }
+			showRegisterFailedDialog();
+		});
+	}
 
-    private void showAgeInfoDialog() {
-        builder = new AlertDialog.Builder(this);
+	@Override
+	public void onBackPressed() {
+		if (shouldExit) {
+			super.onBackPressed(); // Exit the app
+		} else {
+			// Show an exit confirmation dialog
+			showCancelRegisterDialog();
+		}
+	}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.age_required_dialog, null);
+	@Override
+	protected void onPause() {
+		super.onPause();
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		closeRegisterFailedDialog();
+		closePleaseWaitDialog();
+		closeAgeInfoDialog();
+		closeCancelRegisterDialog();
+		closeNoInternetDialog();
+		closeUserTypeImageDialog();
+	}
 
-        okBtn.setOnClickListener(v -> {
-            closeAgeInfoDialog();
-        });
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
-        builder.setView(dialogView);
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
 
-        ageInfoDialog = builder.create();
-        ageInfoDialog.show();
-    }
+		closeRegisterFailedDialog();
+		closePleaseWaitDialog();
+		closeAgeInfoDialog();
+		closeCancelRegisterDialog();
+		closeNoInternetDialog();
+		closeUserTypeImageDialog();
+	}
 
-    private void closeAgeInfoDialog() {
-        if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
-            ageInfoDialog.dismiss();
-        }
-    }
+	private void showAgeInfoDialog() {
+		builder = new AlertDialog.Builder(this);
 
-    private void showUserTypeImageDialog() {
-        builder = new AlertDialog.Builder(this);
+		View dialogView = getLayoutInflater().inflate(R.layout.age_required_dialog, null);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_you_are_registering_as, null);
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
-        TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
+		okBtn.setOnClickListener(v -> {
+			closeAgeInfoDialog();
+		});
 
-        registerAsTextView.setText(StaticDataPasser.storeRegisterUserType);
+		builder.setView(dialogView);
 
-        okBtn.setOnClickListener(v -> {
-            closeUserTypeImageDialog();
-        });
+		ageInfoDialog = builder.create();
+		ageInfoDialog.show();
+	}
 
-        builder.setView(dialogView);
+	private void closeAgeInfoDialog() {
+		if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
+			ageInfoDialog.dismiss();
+		}
+	}
 
-        userTypeImageDialog = builder.create();
-        userTypeImageDialog.show();
-    }
+	private void showUserTypeImageDialog() {
+		builder = new AlertDialog.Builder(this);
 
-    private void closeUserTypeImageDialog() {
-        if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
-            userTypeImageDialog.dismiss();
-        }
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_you_are_registering_as, null);
 
-    private void showCancelRegisterDialog() {
-        builder = new AlertDialog.Builder(this);
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+		registerAsTextView.setText(StaticDataPasser.storeRegisterUserType);
 
-        Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-        Button noBtn = dialogView.findViewById(R.id.noBtn);
+		okBtn.setOnClickListener(v -> {
+			closeUserTypeImageDialog();
+		});
 
-        yesBtn.setOnClickListener(v -> {
-            FirebaseMain.signOutUser();
+		builder.setView(dialogView);
 
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
-            finish();
-        });
+		userTypeImageDialog = builder.create();
+		userTypeImageDialog.show();
+	}
 
-        noBtn.setOnClickListener(v -> {
-            closeCancelRegisterDialog();
-        });
+	private void closeUserTypeImageDialog() {
+		if (userTypeImageDialog != null && userTypeImageDialog.isShowing()) {
+			userTypeImageDialog.dismiss();
+		}
+	}
 
-        builder.setView(dialogView);
+	private void showCancelRegisterDialog() {
+		builder = new AlertDialog.Builder(this);
 
-        cancelRegisterDialog = builder.create();
-        cancelRegisterDialog.show();
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
 
-    private void closeCancelRegisterDialog() {
-        if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
-            cancelRegisterDialog.dismiss();
-        }
-    }
+		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
+		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
-    private void showPleaseWaitDialog() {
-        builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+		yesBtn.setOnClickListener(v -> {
+			FirebaseMain.signOutUser();
 
-        View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+			intent = new Intent(this, Login.class);
+			startActivity(intent);
+			finish();
+		});
 
-        builder.setView(dialogView);
+		noBtn.setOnClickListener(v -> {
+			closeCancelRegisterDialog();
+		});
 
-        pleaseWaitDialog = builder.create();
-        pleaseWaitDialog.show();
-    }
+		builder.setView(dialogView);
 
-    private void closePleaseWaitDialog() {
-        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
-            pleaseWaitDialog.dismiss();
-        }
-    }
+		cancelRegisterDialog = builder.create();
+		cancelRegisterDialog.show();
+	}
 
-    private void showNoInternetDialog() {
-        builder = new AlertDialog.Builder(this);
-        builder.setCancelable(false);
+	private void closeCancelRegisterDialog() {
+		if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
+			cancelRegisterDialog.dismiss();
+		}
+	}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
 
-        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
 
-        tryAgainBtn.setOnClickListener(v -> {
-            closeNoInternetDialog();
-        });
+		builder.setView(dialogView);
 
-        builder.setView(dialogView);
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
 
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
-    }
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
+	}
 
-    private void closeNoInternetDialog() {
-        if (noInternetDialog != null && noInternetDialog.isShowing()) {
-            noInternetDialog.dismiss();
+	private void showNoInternetDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
 
-            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-            updateConnectionStatus(isConnected);
-        }
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
-    private void initializeNetworkChecker() {
-        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-            @Override
-            public void onNetworkChanged(boolean isConnected) {
-                updateConnectionStatus(isConnected);
-            }
-        });
+		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkChangeReceiver, intentFilter);
+		tryAgainBtn.setOnClickListener(v -> {
+			closeNoInternetDialog();
+		});
 
-        // Initial network status check
-        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-        updateConnectionStatus(isConnected);
+		builder.setView(dialogView);
 
-    }
+		noInternetDialog = builder.create();
+		noInternetDialog.show();
+	}
 
-    private void updateConnectionStatus(boolean isConnected) {
-        if (isConnected) {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-            }
-        } else {
-            showNoInternetDialog();
-        }
-    }
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
 
-    private void showRegisterFailedDialog() {
-        builder = new AlertDialog.Builder(this);
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+			updateConnectionStatus(isConnected);
+		}
+	}
 
-        View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		registerReceiver(networkChangeReceiver, intentFilter);
 
-        okBtn.setOnClickListener(v -> {
-            closeRegisterFailedDialog();
-        });
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+		updateConnectionStatus(isConnected);
 
-        builder.setView(dialogView);
+	}
 
-        registerFailedDialog = builder.create();
-        registerFailedDialog.show();
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
+		}
+	}
 
-    }
+	private void showRegisterFailedDialog() {
+		builder = new AlertDialog.Builder(this);
 
-    private void closeRegisterFailedDialog() {
-        if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
-            registerFailedDialog.dismiss();
-        }
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
-                fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-            }
-        }
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-    }
+		okBtn.setOnClickListener(v -> {
+			closeRegisterFailedDialog();
+		});
 
-    private void googleRegisterDriver(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-        FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
+		builder.setView(dialogView);
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+		registerFailedDialog = builder.create();
+		registerFailedDialog.show();
 
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, e.getMessage());
+	}
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-            FirebaseMain.signOutUser();
+	private void closeRegisterFailedDialog() {
+		if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
+			registerFailedDialog.dismiss();
+		}
+	}
 
-            showRegisterFailedDialog();
-        });
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == RC_SIGN_IN) {
+			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+			try {
+				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
+				fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
+			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
+			}
+		}
 
-    private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-        FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+	}
 
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, e.getMessage());
+	private void googleRegisterDriver(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-            FirebaseMain.signOutUser();
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
-            showRegisterFailedDialog();
-        });
-    }
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, e.getMessage());
 
-    private void googleRegisterPWD(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-        FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-            getUserID = authResult.getUser().getUid();
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			FirebaseMain.signOutUser();
 
-            documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-            storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+			showRegisterFailedDialog();
+		});
+	}
 
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, e.getMessage());
+	private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-            FirebaseMain.signOutUser();
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, e.getMessage());
 
-            showRegisterFailedDialog();
-        });
-    }
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			FirebaseMain.signOutUser();
 
-    private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
-        String formattedDate = dateFormat.format(date);
+			showRegisterFailedDialog();
+		});
+	}
 
-        Map<String, Object> registerUser = new HashMap<>();
-        registerUser.put("userID", userID);
-        registerUser.put("email", googleEmail);
-        registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
-        registerUser.put("profilePicture", profilePic);
-        registerUser.put("phoneNumber", StaticDataPasser.storePhoneNumber);
-        registerUser.put("accountCreationDate", formattedDate);
+	private void googleRegisterPWD(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
 
-        documentReference.set(registerUser).addOnSuccessListener(unused -> {
-            switch (StaticDataPasser.storeRegisterUserType) {
-                case "Driver":
-                    intent = new Intent(Register.this, RegisterDriver.class);
-                    break;
+			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
-                case "Senior Citizen":
-                    intent = new Intent(Register.this, RegisterSenior.class);
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, e.getMessage());
 
-                    break;
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			FirebaseMain.signOutUser();
 
-                case "PWD":
-                    intent = new Intent(Register.this, RegisterPWD.class);
+			showRegisterFailedDialog();
+		});
+	}
 
-                    break;
-            }
-            StaticDataPasser.storePhoneNumber = null;
+	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
+		String formattedDate = dateFormat.format(date);
 
-            startActivity(intent);
-            finish();
-        }).addOnFailureListener(e -> {
-            Log.e(TAG, e.getMessage());
+		Map<String, Object> registerUser = new HashMap<>();
+		registerUser.put("userID", userID);
+		registerUser.put("email", googleEmail);
+		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
+		registerUser.put("profilePicture", profilePic);
+		registerUser.put("phoneNumber", StaticDataPasser.storePhoneNumber);
+		registerUser.put("accountCreationDate", formattedDate);
 
-            binding.progressBarLayout.setVisibility(View.GONE);
-            binding.nextBtn.setVisibility(View.VISIBLE);
-            FirebaseMain.signOutUser();
+		documentReference.set(registerUser).addOnSuccessListener(unused -> {
+			switch (StaticDataPasser.storeRegisterUserType) {
+				case "Driver":
+					intent = new Intent(Register.this, RegisterDriver.class);
+					break;
 
-            showRegisterFailedDialog();
-        });
-    }
+				case "Senior Citizen":
+					intent = new Intent(Register.this, RegisterSenior.class);
 
-    //register using google
-    private void fireBaseAuthWithGoogle(String idToken) {
+					break;
 
-        AuthCredential authCredential = GoogleAuthProvider.getCredential(idToken, null);
-        if (googleSignInAccount != null) {
-            googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+				case "PWD":
+					intent = new Intent(Register.this, RegisterPWD.class);
 
-            String getGoogleEmail = googleSignInAccount.getEmail();
-            String getGoogleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+					break;
+			}
+			StaticDataPasser.storePhoneNumber = null;
 
-            switch (StaticDataPasser.storeRegisterUserType) {
-                case "Driver":
+			startActivity(intent);
+			finish();
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, e.getMessage());
 
-                    googleRegisterDriver(authCredential, getGoogleEmail, getGoogleProfilePic);
-                    break;
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			FirebaseMain.signOutUser();
 
-                case "Persons with Disability (PWD)":
-                    googleRegisterPWD(authCredential, getGoogleEmail, getGoogleProfilePic);
+			showRegisterFailedDialog();
+		});
+	}
 
-                    break;
+	//register using google
+	private void fireBaseAuthWithGoogle(String idToken) {
 
-                case "Senior Citizen":
-                    googleRegisterSenior(authCredential, getGoogleEmail, getGoogleProfilePic);
+		AuthCredential authCredential = GoogleAuthProvider.getCredential(idToken, null);
+		if (googleSignInAccount != null) {
+			googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-                    break;
-            }
-        }
-    }
+			String getGoogleEmail = googleSignInAccount.getEmail();
+			String getGoogleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+
+			switch (StaticDataPasser.storeRegisterUserType) {
+				case "Driver":
+
+					googleRegisterDriver(authCredential, getGoogleEmail, getGoogleProfilePic);
+					break;
+
+				case "Persons with Disability (PWD)":
+					googleRegisterPWD(authCredential, getGoogleEmail, getGoogleProfilePic);
+
+					break;
+
+				case "Senior Citizen":
+					googleRegisterSenior(authCredential, getGoogleEmail, getGoogleProfilePic);
+
+					break;
+			}
+		}
+	}
 }

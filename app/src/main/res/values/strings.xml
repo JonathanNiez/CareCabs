@@ -1,44 +1,49 @@
 <resources>
-    <string name="app_name">CareCabs</string>
+	<string name="app_name">CareCabs</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+	<string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <string name="mapbox_access_token">sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA</string>
+	<string name="mapbox_access_token">sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA</string>
 
-    <string name="custom_map_url">mapbox://styles/jonathanniez/clkg9pvym005j01qy0im6hk22</string>
+	<string name="custom_map_url">mapbox://styles/jonathanniez/clkg9pvym005j01qy0im6hk22</string>
 
-    <string name="not_senior_citizen">Your age needs to meet the requirement
+	<string name="not_senior_citizen">Your age needs to meet the requirement
     </string>
 
-    <string name="about_p1">Welcome to CareCabs, your go-to transportation solution designed exclusively for Persons with Disabilities (PWDs) and Senior Citizens.</string>
+	<string name="about_p1">Welcome to CareCabs, your go-to transportation solution designed exclusively for Persons with Disabilities (PWDs) and Senior Citizens.</string>
 
-    <string name="our_mission">At CareCabs, we are on a mission to make transportation more accessible, convenient, and safe for individuals who may face mobility challenges. Our project represents the culmination of our dedication to improving the lives of PWDs and Senior Citizens in our community.</string>
+	<string name="our_mission">At CareCabs, we are on a mission to make transportation more accessible, convenient, and safe for individuals who may face mobility challenges. Our project represents the culmination of our dedication to improving the lives of PWDs and Senior Citizens in our community.</string>
 
-    <string name="what_set_us_apart">CareCabs is not just another ride-sharing platform. It\'s a project born out of a passion for inclusivity and accessibility. We understand that PWDs and Senior Citizens deserve tailored transportation options that address their unique needs. That\'s why our app goes the extra mile to provide a seamless and user-friendly experience.</string>
+	<string name="what_set_us_apart">CareCabs is not just another ride-sharing platform. It\'s a project born out of a passion for inclusivity and accessibility. We understand that PWDs and Senior Citizens deserve tailored transportation options that address their unique needs. That\'s why our app goes the extra mile to provide a seamless and user-friendly experience.</string>
 
-    <string name="accessible_vehicles">We partner with drivers who have accessible vehicles to ensure a comfortable and hassle-free journey.</string>
+	<string name="accessible_vehicles">We partner with drivers who have accessible vehicles to ensure a comfortable and hassle-free journey.</string>
 
-    <string name="personalized_assistance">Our drivers are trained to provide respectful and helpful assistance, including securing mobility aids and accommodating individual needs.</string>
+	<string name="personalized_assistance">Our drivers are trained to provide respectful and helpful assistance, including securing mobility aids and accommodating individual needs.</string>
 
-    <string name="safety_first">We prioritize the safety and well-being of our passengers, implementing strict safety measures and background checks for all drivers.</string>
+	<string name="safety_first">We prioritize the safety and well-being of our passengers, implementing strict safety measures and background checks for all drivers.</string>
 
-    <string name="acknowledgments">We would like to extend our heartfelt gratitude to Holy Cross of Davao College for their unwavering support and mentorship throughout the development of this capstone project.</string>
+	<string name="acknowledgments">We would like to extend our heartfelt gratitude to Holy Cross of Davao College for their unwavering support and mentorship throughout the development of this capstone project.</string>
 
-    <string name="for_any_inquiries">For any inquiries, questions, or feedback about CareCabs, please feel free to get in touch with us. We value your input and look forward to hearing from you.</string>
+	<string name="for_any_inquiries">For any inquiries, questions, or feedback about CareCabs, please feel free to get in touch with us. We value your input and look forward to hearing from you.</string>
 
-    <string name="your_feedback_helps_us_improve">Your feedback helps us improve our service and make it more accessible to everyone. Thank you for your support!</string>
+	<string name="your_feedback_helps_us_improve">Your feedback helps us improve our service and make it more accessible to everyone. Thank you for your support!</string>
 
-    <string name="admin_emails">louisandrew.roque@hcdc.edu.ph\nmarnichol.sarillana@hcdc.edu.ph\njonathan.niez@hcdc.edu.ph</string>
+	<string name="admin_emails">louisandrew.roque@hcdc.edu.ph\nmarnichol.sarillana@hcdc.edu.ph\njonathan.niez@hcdc.edu.ph</string>
 
-    <string name="admin_phones">09068001245</string>
+	<string name="admin_phones">09068001245</string>
 
-    <string name="font_size_preview">The quick brown fox jumps over the lazy dog</string>
+	<string name="font_size_preview">The quick brown fox jumps over the lazy dog</string>
 
-    <string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
+	<string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
 
-    <string name="password_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
+	<string name="password_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
 
-    <string name="pwd_id_required_string">PWD ID is Required to be scanned for Verification</string>
+	<string name="pwd_id_required_string">PWD ID is Required to be scanned for Verification</string>
 
-    <string name="tap_the_scan_id_string">Tap the Scan ID button below to scan your ID</string>
+	<string name="about_id_scan">Unverified accounts will not be able to use this Services</string>
+
+	<string name="senior_id_scan_required_string">Valid Senior Citizen ID is Required to be scanned for Verification</string>
+
+	<string name="string_tap_the_id_scan_below">Tap the Scan ID button below to scan your ID</string>
+	<string name="string_driver_license_scan">Driver\'s License is Required to be scanned for Verification</string>
 </resources>

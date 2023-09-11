@@ -258,11 +258,26 @@
                     android:textSize="20sp"
                     />
 
+                <TextView
+                    android:id="@+id/idScannedTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="You have not scanned your ID"
+                    android:textSize="20sp"
+                    android:textColor="@color/red"
+                    android:background="@drawable/custom_card_view"
+                    android:padding="5dp"
+                    android:fontFamily="@font/opensans_semibold"
+                    android:textAlignment="center"/>
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/scanIDBtn"
                     android:layout_width="150dp"
                     android:layout_height="60dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/custom_button"
                     android:backgroundTint="@color/gray"
                     android:drawableStart="@drawable/scan_id_64"

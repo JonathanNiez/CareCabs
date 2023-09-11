@@ -13,25 +13,20 @@ import android.widget.ImageButton;
 
 import com.capstone.carecabs.Fragments.BookingHistoryFragment;
 import com.capstone.carecabs.Fragments.PendingBookingFragment;
+import com.capstone.carecabs.databinding.ActivityBookingsBinding;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
 public class Bookings extends AppCompatActivity {
-
-    private ImageButton imageButton;
-
+    private ActivityBookingsBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bookings);
+        binding = ActivityBookingsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        ViewPager viewPager = findViewById(R.id.viewPager);
-
-        imageButton = findViewById(R.id.imgBackBtn);
-
-        imageButton.setOnClickListener(v -> {
+        binding.imgBackBtn.setOnClickListener(v -> {
             finish();
         });
 
@@ -40,8 +35,8 @@ public class Bookings extends AppCompatActivity {
         viewPagerAdapter.addFragment(new PendingBookingFragment(), "Pending");
         viewPagerAdapter.addFragment(new BookingHistoryFragment(), "History");
 
-        viewPager.setAdapter(viewPagerAdapter);
-        tabLayout.setupWithViewPager(viewPager);
+        binding.viewPager.setAdapter(viewPagerAdapter);
+        binding.tabLayout.setupWithViewPager(binding.viewPager);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

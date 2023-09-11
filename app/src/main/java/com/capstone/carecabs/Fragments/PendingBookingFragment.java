@@ -13,7 +13,6 @@ import com.capstone.carecabs.R;
 public class PendingBookingFragment extends Fragment {
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
