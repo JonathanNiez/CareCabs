@@ -82,6 +82,16 @@
 
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Never share your Password to anyone"
+                    android:textColor="@color/black"
+                    android:layout_margin="10dp"
+                    android:textAlignment="center"
+                    android:textSize="17sp"
+                    android:fontFamily="@font/opensans_semibold"/>
+
             </LinearLayout>
 
             <LinearLayout

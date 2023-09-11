@@ -11,17 +11,18 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.ImageButton
+import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.capstone.carecabs.Firebase.FirebaseMain
+import com.capstone.carecabs.Utility.StaticDataPasser
+import com.capstone.carecabs.databinding.ActivityMapBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.mapbox.geojson.Point
@@ -54,28 +55,25 @@ class MapActivity : AppCompatActivity() {
     private val TAG: String = "MapActivity"
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
 
-    private lateinit var auth: FirebaseAuth
+    private lateinit var documentReference: DocumentReference
+    private lateinit var intent: Intent
+    private lateinit var builder: AlertDialog.Builder
+    private lateinit var userNotVerifiedDialog: AlertDialog
 
-    private lateinit var whereToLayout: FrameLayout
-    private lateinit var setLocationLayout: FrameLayout
-    private lateinit var imgBackBtn: ImageButton
+    private lateinit var binding: ActivityMapBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_map)
+        binding = ActivityMapBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setLocationLayout = findViewById(R.id.setLocationLayout)
-        whereToLayout = findViewById(R.id.whereToLayout)
         mapView = findViewById(R.id.mapView)
-        imgBackBtn = findViewById(R.id.imgBackBtn)
 
-        auth = FirebaseAuth.getInstance()
-
-        createDummyMarkers()
+        checkIfUserIsVerified()
         checkLocationPermission()
 
-        imgBackBtn.setOnClickListener {
+        binding.imgBackBtn.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -87,17 +85,19 @@ class MapActivity : AppCompatActivity() {
         bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.setLocation -> {
-                    setLocationLayout.visibility = View.VISIBLE
+                    binding.setLocationLayout.visibility = View.VISIBLE
                 }
 
                 R.id.myBookings -> {
-                    setLocationLayout.visibility = View.GONE
-                    val intent = Intent(this, Bookings::class.java)
+                    binding.setLocationLayout.visibility = View.GONE
+
+                    intent = Intent(this, Bookings::class.java)
                     startActivity(intent)
+                    finish()
                 }
 
                 R.id.help -> {
-                    setLocationLayout.visibility = View.GONE
+                    binding.setLocationLayout.visibility = View.GONE
 
                 }
             }
@@ -120,7 +120,6 @@ class MapActivity : AppCompatActivity() {
                     pointAnnotationManager =
                         annotationApi?.createPointAnnotationManager(annotationConfig)
 
-                    checkUserType()
                 }
             }
         )
@@ -190,6 +189,92 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkIfUserIsVerified() {
+        if (FirebaseMain.getUser() != null) {
+            documentReference = FirebaseMain.getFireStoreInstance()
+                .collection(StaticDataPasser.userCollection).document(FirebaseMain.getUser().uid)
+
+            documentReference.get().addOnSuccessListener {
+                if (it != null && it.exists()) {
+                    val getVerificationStatus = it.getString("verificationStatus")
+
+                    if (getVerificationStatus == "Not Verified") {
+                        showUserNotVerifiedDialog()
+
+                    } else {
+                        checkUserType()
+                    }
+                } else {
+
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+
+        } else {
+            FirebaseMain.signOutUser()
+
+            val intent = Intent(this, Login::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
+
+    private fun checkUserType() {
+        if (FirebaseMain.getUser() != null) {
+            documentReference = FirebaseMain.getFireStoreInstance()
+                .collection(StaticDataPasser.userCollection).document(FirebaseMain.getUser().uid)
+
+            documentReference.get().addOnSuccessListener {
+                if (it != null && it.exists()) {
+                    val getUserType = it.getString("userType")
+
+                    if (getUserType == "Driver") {
+                        createDummyMarkers()
+                    } else {
+
+                    }
+                } else {
+                    Log.e(TAG, "Document not Exist")
+
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+
+        } else {
+            intent = Intent(this, Login::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+    }
+
+    private fun showUserNotVerifiedDialog() {
+        builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_user_not_verified, null)
+        val okBtn = dialogView.findViewById<Button>(R.id.okBtn)
+
+        okBtn.setOnClickListener { v: View? ->
+            intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+
+            closeUserNotVerifiendDialog()
+        }
+
+        builder.setView(dialogView)
+        userNotVerifiedDialog = builder.create()
+        userNotVerifiedDialog.show()
+    }
+
+    private fun closeUserNotVerifiendDialog() {
+        if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
+            userNotVerifiedDialog.dismiss()
+        }
+    }
 
     private fun zoomCamera() {
         mapView!!.getMapboxMap().setCamera(
@@ -268,19 +353,6 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkUserType() {
-        val currentUser: FirebaseUser? = auth.currentUser
-
-        if (currentUser != null) {
-
-
-        } else {
-            val intent = Intent(this, Login::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-    }
 
     private fun flyToCameraPosition() {
         var cameraCenterCoordinates = com.mapbox.geojson.Point.fromLngLat(8.0061, 46.5778)
@@ -349,8 +421,15 @@ class MapActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         mapView?.onDestroy()
+
+        closeUserNotVerifiendDialog()
     }
 
+    override fun onPause() {
+        super.onPause()
+
+        closeUserNotVerifiendDialog()
+    }
 }
 
 

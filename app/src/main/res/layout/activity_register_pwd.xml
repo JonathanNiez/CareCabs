@@ -185,9 +185,10 @@
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spinnerDisability"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
+                    android:layout_height="60dp"
                     android:layout_marginBottom="10dp"
-                    android:background="@drawable/edit_text" />
+                    android:background="@drawable/edit_text"
+                    android:theme="@style/SpinnerTextStyle"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -195,7 +196,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/edit_text"

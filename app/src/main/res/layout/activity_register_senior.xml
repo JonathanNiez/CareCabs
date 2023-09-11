@@ -135,6 +135,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:background="@drawable/edit_text"
+                        android:theme="@style/SpinnerTextStyle"
                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -208,7 +209,8 @@
                         android:id="@+id/spinnerSex"
                         android:layout_width="150dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/edit_text" />
+                        android:background="@drawable/edit_text"
+                        android:theme="@style/SpinnerTextStyle"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

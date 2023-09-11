@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -27,11 +28,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
@@ -48,7 +53,8 @@ public class Login extends AppCompatActivity {
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
 			pleaseWaitDialog, registerUsingDialog, loginFailedDialog,
-			exitAppDialog, idScanInfoDialog;
+			exitAppDialog, idScanInfoDialog, unknownOccurredDialog,
+			invalidCredentialsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private AlertDialog.Builder builder;
 	private ActivityLoginBinding binding;
@@ -103,34 +109,42 @@ public class Login extends AppCompatActivity {
 				showPleaseWaitDialog();
 				binding.googleSignInLayout.setVisibility(View.GONE);
 
-				FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
-						.addOnSuccessListener(authResult -> {
-
-							closePleaseWaitDialog();
-
-							binding.progressBarLayout.setVisibility(View.GONE);
-							binding.loginBtn.setVisibility(View.VISIBLE);
-
-							intent = new Intent(Login.this, LoggingIn.class);
-							startActivity(intent);
-							finish();
-
-							Log.i(TAG, "Login Success");
-
-						}).addOnFailureListener(e -> {
-
-							closePleaseWaitDialog();
-							showLoginFailedDialog();
-
-							binding.progressBarLayout.setVisibility(View.GONE);
-							binding.loginBtn.setVisibility(View.VISIBLE);
-
-							Log.e(TAG, e.getMessage());
-							Log.e(TAG, "Login Failed");
-
-						});
+				loginUser(stringEmail, stringPassword);
 			}
 		});
+	}
+
+	private void loginUser(String email, String password) {
+		FirebaseMain.getAuth().signInWithEmailAndPassword(email, password)
+				.addOnCompleteListener(task -> {
+					if (task.isSuccessful()) {
+						closePleaseWaitDialog();
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.loginBtn.setVisibility(View.VISIBLE);
+
+						intent = new Intent(Login.this, LoggingIn.class);
+						startActivity(intent);
+						finish();
+
+						Log.i(TAG, "Login Success");
+
+					} else {
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.loginBtn.setVisibility(View.VISIBLE);
+
+						closePleaseWaitDialog();
+
+						Exception exception = task.getException();
+						if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+							showInvalidCredentialsDialog();
+						} else {
+							showUnknownOccurredDialog();
+						}
+						Log.e(TAG, String.valueOf(task.getException()));
+						Log.e(TAG, "Login Failed");
+					}
+				});
 	}
 
 	@Override
@@ -146,6 +160,8 @@ public class Login extends AppCompatActivity {
 		closePleaseWaitDialog();
 		closeRegisterUsingDialog();
 		closeNoInternetDialog();
+		closeUnknownOccurredDialog();
+		closeInvalidCredentialsDialog();
 	}
 
 	@Override
@@ -157,6 +173,8 @@ public class Login extends AppCompatActivity {
 		closePleaseWaitDialog();
 		closeRegisterUsingDialog();
 		closeNoInternetDialog();
+		closeUnknownOccurredDialog();
+		closeInvalidCredentialsDialog();
 	}
 
 	@Override
@@ -169,6 +187,52 @@ public class Login extends AppCompatActivity {
 			showExitConfirmationDialog();
 		}
 
+	}
+
+	private void showInvalidCredentialsDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_invalid_credentials, null);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+		okBtn.setOnClickListener(v -> {
+			closeInvalidCredentialsDialog();
+		});
+
+		builder.setView(dialogView);
+
+		invalidCredentialsDialog = builder.create();
+		invalidCredentialsDialog.show();
+	}
+
+	private void closeInvalidCredentialsDialog() {
+		if (invalidCredentialsDialog != null && invalidCredentialsDialog.isShowing()) {
+			invalidCredentialsDialog.dismiss();
+		}
+	}
+
+	private void showUnknownOccurredDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_login_unknown_error_occured, null);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+		okBtn.setOnClickListener(v -> {
+			closeUnknownOccurredDialog();
+		});
+
+		builder.setView(dialogView);
+
+		unknownOccurredDialog = builder.create();
+		unknownOccurredDialog.show();
+	}
+
+	private void closeUnknownOccurredDialog() {
+		if (unknownOccurredDialog != null && unknownOccurredDialog.isShowing()) {
+			unknownOccurredDialog.dismiss();
+		}
 	}
 
 	private void showExitConfirmationDialog() {

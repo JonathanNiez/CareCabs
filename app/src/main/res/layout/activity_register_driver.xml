@@ -178,7 +178,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="20dp"
                     android:background="@drawable/edit_text"
                     app:helperText="*Required"
                     app:helperTextTextColor="@color/red"
@@ -189,7 +189,8 @@
                         android:id="@+id/spinnerSex"
                         android:layout_width="150dp"
                         android:layout_height="60dp"
-                        android:background="@drawable/edit_text" />
+                        android:background="@drawable/edit_text"
+                        android:theme="@style/SpinnerTextStyle"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

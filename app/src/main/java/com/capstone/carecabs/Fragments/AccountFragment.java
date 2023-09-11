@@ -139,7 +139,7 @@ public class AccountFragment extends Fragment {
 					.collection(StaticDataPasser.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot.exists()) {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
 					closePleaseWaitDialog();
 
 					String getProfilePicture = documentSnapshot.getString("profilePicture");

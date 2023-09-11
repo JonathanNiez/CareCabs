@@ -194,6 +194,9 @@ public class HomeFragment extends Fragment {
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if (documentSnapshot.exists()){
                         boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+                        String getRegisterUserType = documentSnapshot.getString("userType");
+
+                        StaticDataPasser.storeUserType = getRegisterUserType;
 
                         if (!getUserRegisterStatus){
                             showRegisterNotCompleteDialog();
@@ -225,7 +228,7 @@ public class HomeFragment extends Fragment {
         Button okBtn = dialogView.findViewById(R.id.okBtn);
 
         okBtn.setOnClickListener(v -> {
-            switch (StaticDataPasser.storeRegisterUserType) {
+            switch (StaticDataPasser.storeUserType) {
                 case "Driver":
                     intent = new Intent(getActivity(), RegisterDriver.class);
 
