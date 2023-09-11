@@ -82,7 +82,7 @@ public class Register extends AppCompatActivity {
 
 		if (getRegisterType != null && getRegisterUserType != null) {
 
-			switch (getRegisterUserType){
+			switch (getRegisterUserType) {
 				case "Driver":
 					binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
 					break;
@@ -148,19 +148,21 @@ public class Register extends AppCompatActivity {
 				binding.nextBtn.setVisibility(View.VISIBLE);
 
 			} else {
+				showPleaseWaitDialog();
+
 				switch (getRegisterUserType) {
 					case "Driver":
 
-						registerDriver(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerDriver(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
 						break;
 
 					case "Persons with Disability (PWD)":
-						registerPWD(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerPWD(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
 
 						break;
 
 					case "Senior Citizen":
-						registerSenior(stringEmail, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerSenior(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
 
 						break;
 				}
@@ -168,12 +170,12 @@ public class Register extends AppCompatActivity {
 		});
 	}
 
-	private void registerDriver(String email, String password, String userType, String phoneNumber) {
+	private void registerDriver(String email, String password, String hashedPassword, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -188,12 +190,12 @@ public class Register extends AppCompatActivity {
 
 	}
 
-	private void registerSenior(String email, String password, String userType, String phoneNumber) {
+	private void registerSenior(String email, String password, String hashedPassword, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -208,12 +210,12 @@ public class Register extends AppCompatActivity {
 
 	}
 
-	private void registerPWD(String email, String password, String userType, String phoneNumber) {
+	private void registerPWD(String email, String password, String hashedPassword, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
-			storeUserDataToFireStore(getUserID, email, password, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -258,8 +260,6 @@ public class Register extends AppCompatActivity {
 
 					break;
 			}
-			StaticDataPasser.storePhoneNumber = null;
-
 			startActivity(intent);
 			finish();
 
@@ -269,6 +269,10 @@ public class Register extends AppCompatActivity {
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
 			FirebaseMain.signOutUser();
+
+			intent = new Intent(Register.this, Login.class);
+			startActivity(intent);
+			finish();
 
 			showRegisterFailedDialog();
 		});
@@ -508,7 +512,7 @@ public class Register extends AppCompatActivity {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -516,6 +520,7 @@ public class Register extends AppCompatActivity {
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
+
 			FirebaseMain.signOutUser();
 
 			showRegisterFailedDialog();
@@ -525,7 +530,7 @@ public class Register extends AppCompatActivity {
 	private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -533,6 +538,7 @@ public class Register extends AppCompatActivity {
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
+
 			FirebaseMain.signOutUser();
 
 			showRegisterFailedDialog();
@@ -543,7 +549,7 @@ public class Register extends AppCompatActivity {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -551,6 +557,7 @@ public class Register extends AppCompatActivity {
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
+
 			FirebaseMain.signOutUser();
 
 			showRegisterFailedDialog();
@@ -590,6 +597,7 @@ public class Register extends AppCompatActivity {
 			startActivity(intent);
 			finish();
 		}).addOnFailureListener(e -> {
+
 			Log.e(TAG, e.getMessage());
 
 			binding.progressBarLayout.setVisibility(View.GONE);

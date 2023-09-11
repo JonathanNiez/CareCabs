@@ -14,5 +14,6 @@ public class StaticDataPasser {
     public static String storeHashedPassword = null;
     public static String storeUserType = null;
     public static String storePhoneNumber = null;
+    public static String userCollection = "users";
 
 }

@@ -1,11 +1,5 @@
 package com.capstone.carecabs;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,22 +11,21 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Fragments.FragmentIdScanInfo1;
-import com.capstone.carecabs.Fragments.FragmentIdScanInfo2;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
-import com.capstone.carecabs.Utility.TabAdapter;
 import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
@@ -68,9 +61,9 @@ public class RegisterPWD extends AppCompatActivity {
 
 		initializeNetworkChecker();
 
-		FirebaseMain.getAuth();
-		FirebaseMain.getUser();
 		FirebaseApp.initializeApp(this);
+
+		StaticDataPasser.storeRegisterUserType = "Persons with Disabilities (PWD)";
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
@@ -101,7 +94,7 @@ public class RegisterPWD extends AppCompatActivity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// Handle case when nothing is selected
+				binding.spinnerSex.setSelection(0);
 			}
 		});
 
@@ -232,7 +225,7 @@ public class RegisterPWD extends AppCompatActivity {
 
 	private void updateUserRegisterToFireStore(String verificationStatus) {
 		userID = FirebaseMain.getUser().getUid();
-		documentReference = FirebaseMain.getFireStoreInstance().collection("users").document(userID);
+		documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(userID);
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("firstname", StaticDataPasser.storeFirstName);
@@ -241,8 +234,9 @@ public class RegisterPWD extends AppCompatActivity {
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", "Persons with Disabilities (PWD)");
+		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 		registerUser.put("verificationStatus", verificationStatus);
+		registerUser.put("isRegisterComplete", true);
 
 		documentReference.update(registerUser).addOnCompleteListener(task -> {
 			if (task.isSuccessful()) {
@@ -267,6 +261,34 @@ public class RegisterPWD extends AppCompatActivity {
 			}
 		});
 	}
+
+	private void updateCancelledRegister(String userID) {
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection).document(userID);
+
+		Map<String, Object> updateRegister = new HashMap<>();
+		updateRegister.put("isRegisterComplete", false);
+		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+
+			FirebaseMain.signOutUser();
+
+			intent = new Intent(RegisterPWD.this, Login.class);
+			startActivity(intent);
+			finish();
+
+		}).addOnFailureListener(e -> {
+
+			FirebaseMain.signOutUser();
+
+			Log.e(TAG, e.getMessage());
+
+			intent = new Intent(getApplicationContext(), Login.class);
+			startActivity(intent);
+			finish();
+		});
+	}
+
 
 	private void showIDNotScannedDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -307,16 +329,7 @@ public class RegisterPWD extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			StaticDataPasser.storeFirstName = null;
-			StaticDataPasser.storeLastName = null;
-			StaticDataPasser.storeSelectedSex = null;
-			StaticDataPasser.storeCurrentAge = 0;
-			StaticDataPasser.storeCurrentBirthDate = null;
-			StaticDataPasser.storeSelectedDisability = null;
-
-			intent = new Intent(this, Login.class);
-			startActivity(intent);
-			finish();
+			updateCancelledRegister(FirebaseMain.getUser().getUid());
 		});
 
 		noBtn.setOnClickListener(v -> {

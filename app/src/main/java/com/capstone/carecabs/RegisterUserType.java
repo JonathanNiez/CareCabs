@@ -102,6 +102,7 @@ public class RegisterUserType extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         if (shouldExit) {
             super.onBackPressed(); // Exit the app
         } else {
@@ -123,6 +124,7 @@ public class RegisterUserType extends AppCompatActivity {
             intent = new Intent(this, Login.class);
             startActivity(intent);
             finish();
+
         });
 
         noBtn.setOnClickListener(v -> {

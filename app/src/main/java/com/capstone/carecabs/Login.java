@@ -61,7 +61,6 @@ public class Login extends AppCompatActivity {
 
 		initializeNetworkChecker();
 
-		FirebaseMain.getAuth();
 		FirebaseApp.initializeApp(this);
 
 		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -95,6 +94,7 @@ public class Login extends AppCompatActivity {
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
 			} else if (stringPassword.isEmpty()) {
+
 				binding.password.setError("Please Enter your Password");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
@@ -103,46 +103,22 @@ public class Login extends AppCompatActivity {
 				showPleaseWaitDialog();
 				binding.googleSignInLayout.setVisibility(View.GONE);
 
-				FirebaseMain.getAuth().fetchSignInMethodsForEmail(stringEmail)
-						.addOnSuccessListener(signInMethodQueryResult -> {
-							List<String> signInMethods = signInMethodQueryResult.getSignInMethods();
-							if (signInMethods != null && !signInMethods.isEmpty()) {
-								FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
-										.addOnSuccessListener(authResult -> {
+				FirebaseMain.getAuth().signInWithEmailAndPassword(stringEmail, stringPassword)
+						.addOnSuccessListener(authResult -> {
 
-											closePleaseWaitDialog();
+							closePleaseWaitDialog();
 
-											binding.progressBarLayout.setVisibility(View.GONE);
-											binding.loginBtn.setVisibility(View.VISIBLE);
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.loginBtn.setVisibility(View.VISIBLE);
 
-											intent = new Intent(Login.this, LoggingIn.class);
-											intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-											startActivity(intent);
-											finish();
+							intent = new Intent(Login.this, LoggingIn.class);
+							startActivity(intent);
+							finish();
 
-											Log.i(TAG, "Login Success");
+							Log.i(TAG, "Login Success");
 
-										}).addOnFailureListener(e -> {
-
-											closePleaseWaitDialog();
-											showLoginFailedDialog();
-
-											binding.progressBarLayout.setVisibility(View.GONE);
-											binding.loginBtn.setVisibility(View.VISIBLE);
-
-											Log.e(TAG, e.getMessage());
-
-										});
-							} else {
-								closePleaseWaitDialog();
-								showLoginFailedDialog();
-
-								binding.progressBarLayout.setVisibility(View.GONE);
-								binding.loginBtn.setVisibility(View.VISIBLE);
-
-								Log.e(TAG, "Login Failed");
-							}
 						}).addOnFailureListener(e -> {
+
 							closePleaseWaitDialog();
 							showLoginFailedDialog();
 
@@ -150,12 +126,12 @@ public class Login extends AppCompatActivity {
 							binding.loginBtn.setVisibility(View.VISIBLE);
 
 							Log.e(TAG, e.getMessage());
+							Log.e(TAG, "Login Failed");
 
 						});
 			}
 		});
 	}
-
 
 	@Override
 	protected void onDestroy() {
@@ -390,6 +366,7 @@ public class Login extends AppCompatActivity {
 					if (!result.getSignInMethods().isEmpty()) {
 						FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
 							if (task1.isSuccessful()) {
+
 								intent = new Intent(Login.this, LoggingIn.class);
 								startActivity(intent);
 								finish();

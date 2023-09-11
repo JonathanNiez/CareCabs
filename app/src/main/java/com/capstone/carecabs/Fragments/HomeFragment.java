@@ -2,26 +2,40 @@ package com.capstone.carecabs.Fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
+import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.RegisterDriver;
+import com.capstone.carecabs.RegisterPWD;
+import com.capstone.carecabs.RegisterSenior;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,20 +43,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-    private FirebaseAuth auth;
-    private FirebaseUser currentUser;
-    private String userID;
-    private String TAG = "HomeFragment";
+
+    private final String TAG = "HomeFragment";
     private int currentPage = 0;
     private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
     private Handler handler;
     private Runnable runnable;
     private List<Fragment> slideFragments = new ArrayList<>();
-    private AlertDialog noInternetDialog;
+    private AlertDialog noInternetDialog, registerNotCompleteDialog;
     private AlertDialog.Builder builder;
     private Context context;
+    private Intent intent;
     private NetworkChangeReceiver networkChangeReceiver;
     private FragmentHomeBinding binding;
+    private DocumentReference documentReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,8 +72,9 @@ public class HomeFragment extends Fragment {
         context = getContext();
         initializeNetworkChecker();
 
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+        checkUserIfRegisterComplete();
+
+        FirebaseApp.initializeApp(context);
 
         slideFragments.add(new CarouselFragment1());
         slideFragments.add(new CarouselFragment2());
@@ -150,6 +165,7 @@ public class HomeFragment extends Fragment {
 
         stopAutoSlide();
         closeNoInternetDialog();
+        closeRegisterNotCompleteDialog();
     }
 
     @Override
@@ -158,6 +174,7 @@ public class HomeFragment extends Fragment {
 
         stopAutoSlide();
         closeNoInternetDialog();
+        closeRegisterNotCompleteDialog();
     }
 
     @Override
@@ -165,6 +182,80 @@ public class HomeFragment extends Fragment {
         super.onStart();
 
         startAutoSlide();
+    }
+
+    private void checkUserIfRegisterComplete(){
+        if (FirebaseMain.getUser() != null){
+            String getUserID = FirebaseMain.getUser().getUid();
+            documentReference = FirebaseMain.getFireStoreInstance()
+                    .collection(StaticDataPasser.userCollection).document(getUserID);
+            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()){
+                        boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+
+                        if (!getUserRegisterStatus){
+                            showRegisterNotCompleteDialog();
+                        }
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e(TAG, e.getMessage());
+                }
+            });
+
+        }else{
+            FirebaseMain.signOutUser();
+
+            Intent intent = new Intent(context, Login.class);
+            startActivity(intent);
+            getActivity().finish();
+        }
+    }
+
+    private void showRegisterNotCompleteDialog() {
+        builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
+
+        View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+
+        Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+        okBtn.setOnClickListener(v -> {
+            switch (StaticDataPasser.storeRegisterUserType) {
+                case "Driver":
+                    intent = new Intent(getActivity(), RegisterDriver.class);
+
+                    break;
+
+                case "Senior Citizen":
+                    intent = new Intent(getActivity(), RegisterSenior.class);
+
+                    break;
+
+                case "Persons with Disabilities (PWD)":
+                    intent = new Intent(getActivity(), RegisterPWD.class);
+
+                    break;
+
+            }
+            startActivity(intent);
+            getActivity().finish();
+        });
+
+        builder.setView(dialogView);
+
+        registerNotCompleteDialog = builder.create();
+        registerNotCompleteDialog.show();
+    }
+
+    private void closeRegisterNotCompleteDialog(){
+        if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()){
+            registerNotCompleteDialog.dismiss();
+        }
     }
 
     private void showNoInternetDialog() {

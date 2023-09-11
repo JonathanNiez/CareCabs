@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -23,7 +21,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOut;
+import com.capstone.carecabs.Login;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.RegisterDriver;
+import com.capstone.carecabs.RegisterPWD;
+import com.capstone.carecabs.RegisterSenior;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -33,11 +35,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-
-import java.util.Arrays;
-import java.util.Objects;
 
 public class AccountFragment extends Fragment {
 	private DocumentReference documentReference;
@@ -45,7 +42,7 @@ public class AccountFragment extends Fragment {
 	private String userID;
 	private Intent intent;
 	private AlertDialog signOutDialog, pleaseWaitDialog,
-			noInternetDialog, profileInfoNotCompleteDialog;
+			noInternetDialog, registerNotCompleteDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
@@ -72,7 +69,8 @@ public class AccountFragment extends Fragment {
 		initializeNetworkChecker();
 
 		FirebaseApp.initializeApp(context);
-		loadUserProfileInfo();
+
+		checkUserIfRegisterComplete();
 
 		binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
@@ -97,6 +95,40 @@ public class AccountFragment extends Fragment {
 		getActivity().finish();
 	}
 
+	private void checkUserIfRegisterComplete() {
+		if (FirebaseMain.getUser() != null) {
+			String getUserID = FirebaseMain.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+				@Override
+				public void onSuccess(DocumentSnapshot documentSnapshot) {
+					if (documentSnapshot.exists()) {
+						boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+
+						if (!getUserRegisterStatus) {
+							showRegisterNotCompleteDialog();
+						} else {
+							loadUserProfileInfo();
+						}
+					}
+				}
+			}).addOnFailureListener(new OnFailureListener() {
+				@Override
+				public void onFailure(@NonNull Exception e) {
+					Log.e(TAG, e.getMessage());
+				}
+			});
+
+		} else {
+			FirebaseMain.signOutUser();
+
+			Intent intent = new Intent(context, Login.class);
+			startActivity(intent);
+			getActivity().finish();
+		}
+	}
+
 
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
@@ -104,10 +136,10 @@ public class AccountFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection("users").document(userID);
+					.collection(StaticDataPasser.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null) {
+				if (documentSnapshot.exists()) {
 					closePleaseWaitDialog();
 
 					String getProfilePicture = documentSnapshot.getString("profilePicture");
@@ -157,7 +189,6 @@ public class AccountFragment extends Fragment {
 							binding.medConTextView.setVisibility(View.VISIBLE);
 							binding.medConTextView.setText(getMedicalCondition);
 							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
-
 
 							break;
 					}
@@ -209,7 +240,7 @@ public class AccountFragment extends Fragment {
 
 		closeSignOutDialog();
 		closePleaseWaitDialog();
-		closeIncompleteProfileInfoDialog();
+		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
 		Log.i(TAG, "onDestroy");
@@ -222,7 +253,7 @@ public class AccountFragment extends Fragment {
 
 		closeSignOutDialog();
 		closePleaseWaitDialog();
-		closeIncompleteProfileInfoDialog();
+		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
 		Log.i(TAG, "onPause");
@@ -235,14 +266,14 @@ public class AccountFragment extends Fragment {
 
 		closeSignOutDialog();
 		closePleaseWaitDialog();
-		closeIncompleteProfileInfoDialog();
+		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
 		Log.i(TAG, "onDestroyView");
 
 	}
 
-	private void showIncompleteProfileInfoDialog() {
+	private void showRegisterNotCompleteDialog() {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
@@ -252,20 +283,37 @@ public class AccountFragment extends Fragment {
 
 		okBtn.setOnClickListener(v -> {
 
-			intent = new Intent(getActivity(), LoggingOut.class);
+			switch (StaticDataPasser.storeRegisterUserType) {
+				case "Driver":
+					intent = new Intent(getActivity(), RegisterDriver.class);
+
+					break;
+
+				case "Senior Citizen":
+					intent = new Intent(getActivity(), RegisterSenior.class);
+
+					break;
+
+				case "Persons with Disabilities (PWD)":
+					intent = new Intent(getActivity(), RegisterPWD.class);
+
+					break;
+
+			}
 			startActivity(intent);
 			getActivity().finish();
+
 		});
 
 		builder.setView(dialogView);
 
-		profileInfoNotCompleteDialog = builder.create();
-		profileInfoNotCompleteDialog.show();
+		registerNotCompleteDialog = builder.create();
+		registerNotCompleteDialog.show();
 	}
 
-	private void closeIncompleteProfileInfoDialog() {
-		if (profileInfoNotCompleteDialog != null && profileInfoNotCompleteDialog.isShowing()) {
-			profileInfoNotCompleteDialog.isShowing();
+	private void closeRegisterNotCompleteDialog() {
+		if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()) {
+			registerNotCompleteDialog.isShowing();
 		}
 	}
 
