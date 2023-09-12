@@ -75,10 +75,13 @@ public class HomeFragment extends Fragment {
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		binding.driverStatsLayout.setVisibility(View.GONE);
+
 		context = getContext();
 		initializeNetworkChecker();
 
 		checkUserIfRegisterComplete();
+		getUserType();
 
 		FirebaseApp.initializeApp(context);
 
@@ -215,22 +218,22 @@ public class HomeFragment extends Fragment {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection).document(getUserID);
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
 					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
-                    String getRegisterUserType = documentSnapshot.getString("userType");
+					String getRegisterUserType = documentSnapshot.getString("userType");
 
-                    StaticDataPasser.storeUserType = getRegisterUserType;
+					StaticDataPasser.storeUserType = getRegisterUserType;
 
-                    if (!getUserRegisterStatus) {
-                        showRegisterNotCompleteDialog();
-                    }
+					if (!getUserRegisterStatus) {
+						showRegisterNotCompleteDialog();
+					}
 
-					if (getVerificationStatus.equals("Not Verified")){
+					if (getVerificationStatus.equals("Not Verified")) {
 						showUserNotVerifiedNotification();
 					}
-                }
-            }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				}
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
 		} else {
 			FirebaseMain.signOutUser();
@@ -239,6 +242,53 @@ public class HomeFragment extends Fragment {
 			startActivity(intent);
 			getActivity().finish();
 		}
+	}
+
+	private void getUserType() {
+		if (FirebaseMain.getUser() != null) {
+			String getUserID = FirebaseMain.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					binding.progressBarLayout.setVisibility(View.GONE);
+
+					String getUserType = documentSnapshot.getString("userType");
+
+					switch (getUserType) {
+						case "Driver":
+							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
+							int getDriverRatings = getDriverRatingsLong.intValue();
+
+							binding.driverStatsLayout.setVisibility(View.VISIBLE);
+							binding.driverRatingTextView.setText(String.valueOf(getDriverRatings));
+
+							break;
+
+						case "Persons with Disability (PWD)":
+
+							break;
+
+						case "Senior Citizen":
+
+							break;
+					}
+
+				}
+			}).addOnFailureListener(e -> {
+				binding.progressBarLayout.setVisibility(View.GONE);
+
+				Log.e(TAG, e.getMessage());
+			});
+
+		} else {
+			FirebaseMain.signOutUser();
+
+			Intent intent = new Intent(context, LoginActivity.class);
+			startActivity(intent);
+			getActivity().finish();
+		}
+
 	}
 
 	private void showRegisterNotCompleteDialog() {

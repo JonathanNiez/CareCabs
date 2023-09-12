@@ -83,18 +83,18 @@ public class LoginActivity extends AppCompatActivity {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 			binding.loginBtn.setVisibility(View.GONE);
 
-			final String stringEmail = binding.email.getText().toString().trim();
-			final String stringPassword = binding.password.getText().toString();
+			final String stringEmail = binding.emailEditText.getText().toString().trim();
+			final String stringPassword = binding.passwordEditText.getText().toString();
 
 			if (stringEmail.isEmpty()) {
-				binding.email.setError("Please enter your Email");
+				binding.emailEditText.setError("Please enter your Email");
 
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
 			} else if (stringPassword.isEmpty()) {
 
-				binding.password.setError("Please enter your Password");
+				binding.passwordEditText.setError("Please enter your Password");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
@@ -105,6 +105,11 @@ public class LoginActivity extends AppCompatActivity {
 				loginUser(stringEmail, stringPassword);
 			}
 		});
+	}
+
+	public boolean isValidEmail(String email) {
+		String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}";
+		return email.matches(emailPattern);
 	}
 
 	private void loginUser(String email, String password) {

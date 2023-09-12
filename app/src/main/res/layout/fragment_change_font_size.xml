@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".Fragments.ChangeFontSizeFragment">
 
@@ -16,39 +17,47 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <RelativeLayout
-                android:id="@+id/upperLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rectangle_one">
-
-                <ImageButton
-                    android:id="@+id/imgBackBtn"
-                    android:layout_width="wrap_content"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/customActionBarLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@color/yellow"
-                    android:src="@drawable/back64" />
+                    app:cardElevation="5dp"
+                    app:cardBackgroundColor="@color/light_gray"
+                    >
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/imgBackBtn"
-                    android:layout_centerHorizontal="true"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:textColor="@color/black"
-                    android:text="Change\n Font Size"
-                    android:textAlignment="center"
-                    android:textSize="25sp"
-                    android:layout_alignParentTop="true"
-                    android:layout_marginTop="30dp"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-            </RelativeLayout>
+                        <ImageButton
+                            android:id="@+id/imgBackBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="@color/light_gray"
+                            android:src="@drawable/back_50_2" />
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:fontFamily="@font/opensans_bold"
+                            android:text="Change Font Size"
+                            android:textColor="@color/black"
+                            android:textSize="25sp" />
+
+
+                    </RelativeLayout>
+
+
+                </androidx.cardview.widget.CardView>
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -59,9 +68,9 @@
                 android:fontFamily="@font/opensans_semibold"
                 android:textSize="18sp"
                 android:layout_marginBottom="5dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
                 />
 
             <RelativeLayout
@@ -75,10 +84,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_margin="10dp"
                     android:fontFamily="@font/opensans_semibold"
                     android:text="@string/font_size_preview"
                     android:textAlignment="center"
@@ -89,14 +95,15 @@
 
             <TextView
                 android:id="@+id/fontSizeLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Move the slider below\n to change the font size"
+                android:text="Move the slider below to change the font size"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 android:fontFamily="@font/opensans_semibold"
                 android:textSize="18sp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 />
 
             <LinearLayout
@@ -128,12 +135,12 @@
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/saveBtn"
-                    android:layout_width="180dp"
-                    android:layout_height="70dp"
+                    android:layout_width="150dp"
+                    android:layout_height="60dp"
                     android:background="@drawable/custom_button"
                     android:text="Save"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/opensans_bold"
+                    android:textSize="20sp"
+                    android:fontFamily="@font/opensans_semibold"
                     android:textColor="@color/white"
                     android:layout_marginTop="20dp"/>
 

@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -46,7 +48,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog noInternetDialog, registerFailedDialog,
-			idNotScannedDialog, cancelRegisterDialog;
+			idNotScannedDialog, cancelRegisterDialog, birthdateInputChoiceDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterDriverBinding binding;
@@ -100,7 +102,12 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		});
 
 		binding.birthdateBtn.setOnClickListener(v -> {
-			showDatePickerDialog();
+			showBirthdateInputChoiceDialog();
+		});
+
+		binding.scanIDBtn.setOnClickListener(view -> {
+			intent = new Intent(RegisterDriverActivity.this, ScanIDActivity.class);
+			startActivity(intent);
 		});
 
 		binding.doneBtn.setOnClickListener(v -> {
@@ -108,8 +115,8 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			binding.doneBtn.setVisibility(View.GONE);
 			binding.scanIDLayout.setVisibility(View.GONE);
 
-			String stringFirstname = binding.firstname.getText().toString().trim();
-			String stringLastname = binding.lastname.getText().toString().trim();
+			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
+			String stringLastname = binding.lastnameEditText.getText().toString().trim();
 
 			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
 					|| StaticDataPasser.storeCurrentBirthDate == null
@@ -121,14 +128,11 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
 			} else {
-				StaticDataPasser.storeFirstName = stringFirstname;
-				StaticDataPasser.storeLastName = stringLastname;
-
 				if (!isIDScanned) {
-					showIDNotScannedDialog();
+					showIDNotScannedDialog(stringFirstname, stringLastname);
 				} else {
 					verificationStatus = "Verified";
-					updateUserRegisterToFireStore(verificationStatus);
+					updateUserRegisterToFireStore(stringFirstname, stringFirstname, verificationStatus);
 				}
 
 
@@ -154,6 +158,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
+		closeBirthdateInputChoiceDialog();
 	}
 
 	@Override
@@ -167,15 +172,18 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
+		closeBirthdateInputChoiceDialog();
 	}
 
-	private void updateUserRegisterToFireStore(String verificationStatus) {
+	private void updateUserRegisterToFireStore(String firstname, String lastname,
+	                                           String verificationStatus) {
 		userID = FirebaseMain.getUser().getUid();
-		documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(userID);
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection).document(userID);
 
 		Map<String, Object> registerUser = new HashMap<>();
-		registerUser.put("firstname", StaticDataPasser.storeFirstName);
-		registerUser.put("lastname", StaticDataPasser.storeLastName);
+		registerUser.put("firstname", firstname);
+		registerUser.put("lastname", lastname);
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("isAvailable", true);
 		registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
@@ -234,7 +242,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		});
 	}
 
-	private void showIDNotScannedDialog() {
+	private void showIDNotScannedDialog(String firstname, String lastname) {
 		builder = new AlertDialog.Builder(this);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.id_not_scanned_dialog, null);
@@ -244,7 +252,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		yesBtn.setOnClickListener(v -> {
 			verificationStatus = "Not Verified";
-			updateUserRegisterToFireStore(verificationStatus);
+			updateUserRegisterToFireStore(firstname, lastname, verificationStatus);
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -333,6 +341,49 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 
 		datePickerDialog.show();
+	}
+
+	private void showBirthdateInputChoiceDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_birthdate_input_choice, null);
+
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
+		EditText monthEditText = dialogView.findViewById(R.id.monthEditText);
+		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
+		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
+		ImageButton openDatePickerImgBtn = dialogView.findViewById(R.id.openDatePickerImgBtn);
+
+		openDatePickerImgBtn.setOnClickListener(view -> {
+			showDatePickerDialog();
+		});
+
+		doneBtn.setOnClickListener(view -> {
+			String month = monthEditText.getText().toString();
+			String year = yearEditText.getText().toString();
+			String day = dayEditText.getText().toString();
+			String fullBirthdate = month + "-" + day + "-" + year;
+
+			binding.birthdateBtn.setText(fullBirthdate);
+
+			closeBirthdateInputChoiceDialog();
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeBirthdateInputChoiceDialog();
+		});
+
+		builder.setView(dialogView);
+
+		birthdateInputChoiceDialog = builder.create();
+		birthdateInputChoiceDialog.show();
+	}
+
+	private void closeBirthdateInputChoiceDialog() {
+		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
+			birthdateInputChoiceDialog.dismiss();
+		}
 	}
 
 	private void showRegisterSuccessNotification() {

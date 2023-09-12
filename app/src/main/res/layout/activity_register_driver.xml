@@ -80,7 +80,7 @@
                     app:helperTextTextColor="@color/red">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/firstname"
+                        android:id="@+id/firstnameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints="firstname"
@@ -104,7 +104,7 @@
                     app:helperTextTextColor="@color/red">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/lastname"
+                        android:id="@+id/lastnameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints="lastname"
