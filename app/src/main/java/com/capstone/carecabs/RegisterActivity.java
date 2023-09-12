@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private GoogleSignInClient googleSignInClient;
 	private GoogleSignInAccount googleSignInAccount;
@@ -63,7 +63,6 @@ public class Register extends AppCompatActivity {
 
 		initializeNetworkChecker();
 
-		FirebaseMain.getAuth();
 		FirebaseApp.initializeApp(this);
 
 		calendar = Calendar.getInstance();
@@ -153,16 +152,16 @@ public class Register extends AppCompatActivity {
 				switch (getRegisterUserType) {
 					case "Driver":
 
-						registerDriver(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerDriver(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
 						break;
 
 					case "Persons with Disability (PWD)":
-						registerPWD(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerPWD(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
 
 						break;
 
 					case "Senior Citizen":
-						registerSenior(stringEmail, stringPassword, hashedPassword, getRegisterUserType, prefixPhoneNumber);
+						registerSenior(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
 
 						break;
 				}
@@ -170,12 +169,13 @@ public class Register extends AppCompatActivity {
 		});
 	}
 
-	private void registerDriver(String email, String password, String hashedPassword, String userType, String phoneNumber) {
+	private void registerDriver(String email, String password, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -190,12 +190,13 @@ public class Register extends AppCompatActivity {
 
 	}
 
-	private void registerSenior(String email, String password, String hashedPassword, String userType, String phoneNumber) {
+	private void registerSenior(String email, String password, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -210,12 +211,13 @@ public class Register extends AppCompatActivity {
 
 	}
 
-	private void registerPWD(String email, String password, String hashedPassword, String userType, String phoneNumber) {
+	private void registerPWD(String email, String password, String userType, String phoneNumber) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, hashedPassword, userType, phoneNumber);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
 			FirebaseMain.signOutUser();
@@ -230,33 +232,34 @@ public class Register extends AppCompatActivity {
 
 	}
 
-	private void storeUserDataToFireStore(String userID, String email, String password, String userType, String phoneNumber) {
+	private void storeUserDataToFireStore(String userID, String email,
+	                                      String userType, String phoneNumber) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
 		String formattedDate = dateFormat.format(date);
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("userID", userID);
 		registerUser.put("email", email);
-		registerUser.put("password", password);
 		registerUser.put("userType", userType);
 		registerUser.put("profilePicture", "default");
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
+
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
 			switch (userType) {
 				case "Driver":
-					intent = new Intent(Register.this, RegisterDriver.class);
+					intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
 
 					break;
 
 				case "Senior Citizen":
-					intent = new Intent(Register.this, RegisterSenior.class);
+					intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
 
 					break;
 
 				case "PWD":
-					intent = new Intent(Register.this, RegisterPWD.class);
+					intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
 					break;
 			}
@@ -268,9 +271,10 @@ public class Register extends AppCompatActivity {
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
+
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(Register.this, Login.class);
+			intent = new Intent(RegisterActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -376,7 +380,7 @@ public class Register extends AppCompatActivity {
 		yesBtn.setOnClickListener(v -> {
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(this, Login.class);
+			intent = new Intent(this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 		});
@@ -579,16 +583,16 @@ public class Register extends AppCompatActivity {
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 			switch (StaticDataPasser.storeRegisterUserType) {
 				case "Driver":
-					intent = new Intent(Register.this, RegisterDriver.class);
+					intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
 					break;
 
 				case "Senior Citizen":
-					intent = new Intent(Register.this, RegisterSenior.class);
+					intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
 
 					break;
 
 				case "PWD":
-					intent = new Intent(Register.this, RegisterPWD.class);
+					intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
 					break;
 			}

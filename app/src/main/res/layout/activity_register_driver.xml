@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".RegisterDriver">
+    tools:context=".RegisterDriverActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:fontFamily="@font/opensans_semibold"
+                android:fontFamily="@font/opensans_bold"
                 android:text="Additional Registration for Drivers"
                 android:textAlignment="center"
                 android:textColor="@color/black"

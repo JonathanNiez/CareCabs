@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class RegisterDriver extends AppCompatActivity {
+public class RegisterDriverActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private String userID;
 	private final String TAG = "RegisterDriver";
@@ -95,7 +95,7 @@ public class RegisterDriver extends AppCompatActivity {
 
 
 		binding.scanIDBtn.setOnClickListener(v -> {
-			intent = new Intent(this, ScanID.class);
+			intent = new Intent(this, ScanIDActivity.class);
 			startActivity(intent);
 		});
 
@@ -192,7 +192,7 @@ public class RegisterDriver extends AppCompatActivity {
 
 			showRegisterSuccessNotification();
 
-			intent = new Intent(RegisterDriver.this, MainActivity.class);
+			intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -218,7 +218,7 @@ public class RegisterDriver extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterDriver.this, Login.class);
+			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -228,7 +228,7 @@ public class RegisterDriver extends AppCompatActivity {
 
 			Log.e(TAG, e.getMessage());
 
-			intent = new Intent(RegisterDriver.this, Login.class);
+			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 		});

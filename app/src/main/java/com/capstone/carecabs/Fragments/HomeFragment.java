@@ -1,10 +1,16 @@
 package com.capstone.carecabs.Fragments;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,19 +18,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Login;
+import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.RegisterDriver;
-import com.capstone.carecabs.RegisterPWD;
-import com.capstone.carecabs.RegisterSenior;
+import com.capstone.carecabs.RegisterDriverActivity;
+import com.capstone.carecabs.RegisterPWDActivity;
+import com.capstone.carecabs.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -32,287 +39,330 @@ import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    private final String TAG = "HomeFragment";
-    private int currentPage = 0;
-    private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
-    private Handler handler;
-    private Runnable runnable;
-    private List<Fragment> slideFragments = new ArrayList<>();
-    private AlertDialog noInternetDialog, registerNotCompleteDialog;
-    private AlertDialog.Builder builder;
-    private Context context;
-    private Intent intent;
-    private NetworkChangeReceiver networkChangeReceiver;
-    private FragmentHomeBinding binding;
-    private DocumentReference documentReference;
+	private final String TAG = "HomeFragment";
+	private int currentPage = 0;
+	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
+	private Handler handler;
+	private Runnable runnable;
+	private List<Fragment> slideFragments = new ArrayList<>();
+	private AlertDialog noInternetDialog, registerNotCompleteDialog;
+	private AlertDialog.Builder builder;
+	private Context context;
+	private Intent intent;
+	private NetworkChangeReceiver networkChangeReceiver;
+	private FragmentHomeBinding binding;
+	private DocumentReference documentReference;
+	private FragmentManager fragmentManager;
+	private FragmentTransaction fragmentTransaction;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		binding = FragmentHomeBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
 
-        context = getContext();
-        initializeNetworkChecker();
+		context = getContext();
+		initializeNetworkChecker();
 
-        checkUserIfRegisterComplete();
+		checkUserIfRegisterComplete();
 
-        FirebaseApp.initializeApp(context);
+		FirebaseApp.initializeApp(context);
 
-        slideFragments.add(new CarouselFragment1());
-        slideFragments.add(new CarouselFragment2());
-        slideFragments.add(new CarouselFragment3());
-        slideFragments.add(new CarouselFragment4());
+		slideFragments.add(new CarouselFragment1());
+		slideFragments.add(new CarouselFragment2());
+		slideFragments.add(new CarouselFragment3());
+		slideFragments.add(new CarouselFragment4());
 
-        CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
-        binding.viewPager.setAdapter(adapter);
+		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
+		binding.viewPager.setAdapter(adapter);
 
-        startAutoSlide();
-        getCurrentTime();
+		startAutoSlide();
+		getCurrentTime();
 
-        return view;
-    }
+		return view;
+	}
 
-    private void getCurrentTime() {
-        // Get the current time
-        LocalDateTime currentTime = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            currentTime = LocalDateTime.now();
-        }
+	private void getCurrentTime() {
+		// Get the current time
+		LocalDateTime currentTime = null;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			currentTime = LocalDateTime.now();
+		}
 
-        // Get the hour of the day
-        int hour = 0;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            hour = currentTime.getHour();
-        }
+		// Get the hour of the day
+		int hour = 0;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			hour = currentTime.getHour();
+		}
 
-        // Set the greeting message based on the time
-        String greeting;
-        if (hour >= 0 && hour < 12) {
-            greeting = "Good Morning!";
-        } else if (hour >= 12 && hour < 18) {
-            greeting = "Good Afternoon!";
-        } else {
-            greeting = "Good Evening!";
-        }
+		// Set the greeting message based on the time
+		String greeting;
+		if (hour >= 0 && hour < 12) {
+			greeting = "Good Morning!";
+		} else if (hour >= 12 && hour < 18) {
+			greeting = "Good Afternoon!";
+		} else {
+			greeting = "Good Evening!";
+		}
 
-        // Display the greeting message and formatted time in a TextView
-        String amPm = (hour < 12) ? "AM" : "PM";
-        if (hour > 12) {
-            hour -= 12;
-        } else if (hour == 0) {
-            hour = 12;
-        }
+		// Display the greeting message and formatted time in a TextView
+		String amPm = (hour < 12) ? "AM" : "PM";
+		if (hour > 12) {
+			hour -= 12;
+		} else if (hour == 0) {
+			hour = 12;
+		}
 
-        // Format the time
-        String formattedTime = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            formattedTime = String.format("%02d:%02d %s", hour, currentTime.getMinute(), amPm);
-        }
+		// Format the time
+		String formattedTime = null;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+			formattedTime = String.format("%02d:%02d %s", hour, currentTime.getMinute(), amPm);
+		}
 
-        // Concatenate the greeting message and formatted time
-        binding.greetTextView.setText(greeting);
-        binding.currentTimeTextView.setText("The time is " + formattedTime);
-    }
+		// Concatenate the greeting message and formatted time
+		binding.greetTextView.setText(greeting);
+		binding.currentTimeTextView.setText("The time is " + formattedTime);
+	}
 
-    private void startAutoSlide() {
+	private void startAutoSlide() {
 
-        if (handler == null) {
-            handler = new Handler();
-        }
+		if (handler == null) {
+			handler = new Handler();
+		}
 
-        if (runnable == null) {
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    currentPage = (currentPage + 1) % slideFragments.size();
-                    binding.viewPager.setCurrentItem(currentPage, true);
-                    handler.postDelayed(this, AUTOSLIDE_DELAY);
-                }
-            };
-        }
+		if (runnable == null) {
+			runnable = new Runnable() {
+				@Override
+				public void run() {
+					currentPage = (currentPage + 1) % slideFragments.size();
+					binding.viewPager.setCurrentItem(currentPage, true);
+					handler.postDelayed(this, AUTOSLIDE_DELAY);
+				}
+			};
+		}
 
-        handler.removeCallbacks(runnable);
-        handler.postDelayed(runnable, AUTOSLIDE_DELAY);
-    }
+		handler.removeCallbacks(runnable);
+		handler.postDelayed(runnable, AUTOSLIDE_DELAY);
+	}
 
-    private void stopAutoSlide() {
-        if (handler != null && runnable != null) {
-            handler.removeCallbacks(runnable);
-        }
-    }
+	private void stopAutoSlide() {
+		if (handler != null && runnable != null) {
+			handler.removeCallbacks(runnable);
+		}
+	}
 
-    @Override
-    public void onPause() {
-        super.onPause();
+	@Override
+	public void onPause() {
+		super.onPause();
 
-        stopAutoSlide();
-        closeNoInternetDialog();
-        closeRegisterNotCompleteDialog();
-    }
+		stopAutoSlide();
+		closeNoInternetDialog();
+		closeRegisterNotCompleteDialog();
+	}
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
 
-        stopAutoSlide();
-        closeNoInternetDialog();
-        closeRegisterNotCompleteDialog();
-    }
+		stopAutoSlide();
+		closeNoInternetDialog();
+		closeRegisterNotCompleteDialog();
+	}
 
-    @Override
-    public void onStart() {
-        super.onStart();
+	@Override
+	public void onStart() {
+		super.onStart();
 
-        startAutoSlide();
-    }
+		startAutoSlide();
+	}
 
-    private void checkUserIfRegisterComplete(){
-        if (FirebaseMain.getUser() != null){
-            String getUserID = FirebaseMain.getUser().getUid();
-            documentReference = FirebaseMain.getFireStoreInstance()
-                    .collection(StaticDataPasser.userCollection).document(getUserID);
-            documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()){
-                        boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
-                        String getRegisterUserType = documentSnapshot.getString("userType");
+	public class NotificationReceiver extends BroadcastReceiver {
 
-                        StaticDataPasser.storeUserType = getRegisterUserType;
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if ("user_not_verified_action".equals(intent.getAction())) {
+				goToEditAccountFragment(context);
+			}
+		}
 
-                        if (!getUserRegisterStatus){
-                            showRegisterNotCompleteDialog();
-                        }
+	}
+
+	private void goToEditAccountFragment(Context context) {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new EditAccountFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
+
+	private void checkUserIfRegisterComplete() {
+		if (FirebaseMain.getUser() != null) {
+			String getUserID = FirebaseMain.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+                    String getRegisterUserType = documentSnapshot.getString("userType");
+
+                    StaticDataPasser.storeUserType = getRegisterUserType;
+
+                    if (!getUserRegisterStatus) {
+                        showRegisterNotCompleteDialog();
                     }
+
+					if (getVerificationStatus.equals("Not Verified")){
+						showUserNotVerifiedNotification();
+					}
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
-            });
+            }).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
-        }else{
-            FirebaseMain.signOutUser();
+		} else {
+			FirebaseMain.signOutUser();
 
-            Intent intent = new Intent(context, Login.class);
-            startActivity(intent);
-            getActivity().finish();
-        }
-    }
+			Intent intent = new Intent(context, LoginActivity.class);
+			startActivity(intent);
+			getActivity().finish();
+		}
+	}
 
-    private void showRegisterNotCompleteDialog() {
-        builder = new AlertDialog.Builder(getContext());
-        builder.setCancelable(false);
+	private void showRegisterNotCompleteDialog() {
+		builder = new AlertDialog.Builder(getContext());
+		builder.setCancelable(false);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
 
-        Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-        okBtn.setOnClickListener(v -> {
-            switch (StaticDataPasser.storeUserType) {
-                case "Driver":
-                    intent = new Intent(getActivity(), RegisterDriver.class);
+		okBtn.setOnClickListener(v -> {
+			switch (StaticDataPasser.storeUserType) {
+				case "Driver":
+					intent = new Intent(getActivity(), RegisterDriverActivity.class);
 
-                    break;
+					break;
 
-                case "Senior Citizen":
-                    intent = new Intent(getActivity(), RegisterSenior.class);
+				case "Senior Citizen":
+					intent = new Intent(getActivity(), RegisterSeniorActivity.class);
 
-                    break;
+					break;
 
-                case "Persons with Disabilities (PWD)":
-                    intent = new Intent(getActivity(), RegisterPWD.class);
+				case "Persons with Disabilities (PWD)":
+					intent = new Intent(getActivity(), RegisterPWDActivity.class);
 
-                    break;
+					break;
 
-            }
-            startActivity(intent);
-            getActivity().finish();
-        });
+			}
+			startActivity(intent);
+			getActivity().finish();
+		});
 
-        builder.setView(dialogView);
+		builder.setView(dialogView);
 
-        registerNotCompleteDialog = builder.create();
-        registerNotCompleteDialog.show();
-    }
+		registerNotCompleteDialog = builder.create();
+		registerNotCompleteDialog.show();
+	}
 
-    private void closeRegisterNotCompleteDialog(){
-        if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()){
-            registerNotCompleteDialog.dismiss();
-        }
-    }
+	private void closeRegisterNotCompleteDialog() {
+		if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()) {
+			registerNotCompleteDialog.dismiss();
+		}
+	}
 
-    private void showNoInternetDialog() {
+	private void showUserNotVerifiedNotification() {
+		String channelId = "verification_channel_id"; // Change this to your desired channel ID
+		String channelName = "CareCabs"; // Change this to your desired channel name
+		int notificationId = 4; // Change this to a unique ID for each notification
 
-        builder = new AlertDialog.Builder(getContext());
-        builder.setCancelable(false);
+		intent = new Intent(context, NotificationReceiver.class);
+		intent.setAction("user_not_verified_action"); // Define a custom action
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+		NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
 
-        Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+			notificationManager.createNotificationChannel(channel);
+		}
 
-        tryAgainBtn.setOnClickListener(v -> {
-            closeNoInternetDialog();
-        });
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+				.setSmallIcon(R.drawable.logo)
+				.setContentTitle("CareCabs")
+				.setContentText("Your Account is not Verified, Please Scan you ID to Verify")
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setAutoCancel(true)
+				.setContentIntent(pendingIntent);
 
-        builder.setView(dialogView);
+		Notification notification = builder.build();
+		notificationManager.notify(notificationId, notification);
+	}
 
-        noInternetDialog = builder.create();
-        noInternetDialog.show();
-    }
+	private void showNoInternetDialog() {
 
-    private void closeNoInternetDialog() {
-        if (noInternetDialog != null && noInternetDialog.isShowing()) {
-            noInternetDialog.dismiss();
+		builder = new AlertDialog.Builder(getContext());
+		builder.setCancelable(false);
 
-            boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
-            updateConnectionStatus(isConnected);
-        }
-    }
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
 
-    private void initializeNetworkChecker() {
-        networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-            @Override
-            public void onNetworkChanged(boolean isConnected) {
-                updateConnectionStatus(isConnected);
-            }
-        });
+		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-        IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        getContext().registerReceiver(networkChangeReceiver, intentFilter);
+		tryAgainBtn.setOnClickListener(v -> {
+			closeNoInternetDialog();
+		});
 
-        // Initial network status check
-        boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
-        updateConnectionStatus(isConnected);
+		builder.setView(dialogView);
 
-    }
+		noInternetDialog = builder.create();
+		noInternetDialog.show();
+	}
 
-    private void updateConnectionStatus(boolean isConnected) {
-        if (isConnected) {
-            if (noInternetDialog != null && noInternetDialog.isShowing()) {
-                noInternetDialog.dismiss();
-            }
-        } else {
-            showNoInternetDialog();
-        }
-    }
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
+
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
+			updateConnectionStatus(isConnected);
+		}
+	}
+
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
+
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		getContext().registerReceiver(networkChangeReceiver, intentFilter);
+
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());
+		updateConnectionStatus(isConnected);
+
+	}
+
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
+		}
+	}
 }

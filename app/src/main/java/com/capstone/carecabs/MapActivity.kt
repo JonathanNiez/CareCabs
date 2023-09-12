@@ -91,7 +91,7 @@ class MapActivity : AppCompatActivity() {
                 R.id.myBookings -> {
                     binding.setLocationLayout.visibility = View.GONE
 
-                    intent = Intent(this, Bookings::class.java)
+                    intent = Intent(this, BookingsActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
@@ -214,7 +214,7 @@ class MapActivity : AppCompatActivity() {
         } else {
             FirebaseMain.signOutUser()
 
-            val intent = Intent(this, Login::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -243,7 +243,7 @@ class MapActivity : AppCompatActivity() {
             }
 
         } else {
-            intent = Intent(this, Login::class.java)
+            intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }

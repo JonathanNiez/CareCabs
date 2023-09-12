@@ -13,10 +13,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,13 +24,9 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.google.firebase.storage.StorageReference;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.TextRecognizer;
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
@@ -42,7 +34,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScanID extends AppCompatActivity {
+public class ScanIDActivity extends AppCompatActivity {
     private Uri imageUri;
     private AlertDialog.Builder builder;
     private AlertDialog optionsDialog, cancelScanIDDialog, noInternetDialog;
@@ -52,7 +44,7 @@ public class ScanID extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 101;
     private static final int STORAGE_PERMISSION_REQUEST = 102;
     private Intent intent;
-    private String TAG = "ScanID";
+    private final String TAG = "ScanID";
     private boolean shouldExit = false;
     private boolean isIDScanningCancelled = false;
     private NetworkChangeReceiver networkChangeReceiver;
@@ -71,7 +63,9 @@ public class ScanID extends AppCompatActivity {
         initializeNetworkChecker();
         checkPermission();
 
-        textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS);
+        binding.imgBackBtn.setOnClickListener(view -> {
+            showCancelScanIDDialog();
+        });
 
         binding.getImageBtn.setOnClickListener(v -> {
             showOptionsDialog();
@@ -85,7 +79,7 @@ public class ScanID extends AppCompatActivity {
             super.onBackPressed(); // Exit the app
         } else {
             // Show an exit confirmation dialog
-            showCancelRegisterDialog();
+            showCancelScanIDDialog();
         }
     }
 
@@ -111,7 +105,7 @@ public class ScanID extends AppCompatActivity {
         closeOptionsDialog();
     }
 
-    private void showCancelRegisterDialog() {
+    private void showCancelScanIDDialog() {
         builder = new AlertDialog.Builder(this);
 
         View dialogView = getLayoutInflater().inflate(R.layout.cancel_scan_id_dialog, null);
@@ -120,8 +114,6 @@ public class ScanID extends AppCompatActivity {
         Button noBtn = dialogView.findViewById(R.id.noBtn);
 
         yesBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
-            startActivity(intent);
             finish();
         });
 

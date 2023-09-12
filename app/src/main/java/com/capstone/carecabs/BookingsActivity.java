@@ -6,19 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
-import android.widget.ImageButton;
 
 import com.capstone.carecabs.Fragments.BookingHistoryFragment;
 import com.capstone.carecabs.Fragments.PendingBookingFragment;
 import com.capstone.carecabs.databinding.ActivityBookingsBinding;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class Bookings extends AppCompatActivity {
+public class BookingsActivity extends AppCompatActivity {
     private ActivityBookingsBinding binding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

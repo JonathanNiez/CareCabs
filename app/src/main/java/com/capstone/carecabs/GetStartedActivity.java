@@ -11,10 +11,8 @@ import android.widget.Button;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.databinding.ActivityGetStartedBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class GetStarted extends AppCompatActivity {
+public class GetStartedActivity extends AppCompatActivity {
     private Intent intent;
     private AlertDialog exitAppDialog;
     private AlertDialog.Builder builder;
@@ -36,7 +34,7 @@ public class GetStarted extends AppCompatActivity {
         }
 
         binding.getStartedBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
+            intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
         });

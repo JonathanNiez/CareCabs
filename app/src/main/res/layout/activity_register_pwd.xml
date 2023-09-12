@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".RegisterPWD">
+    tools:context=".RegisterPWDActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -53,11 +53,11 @@
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginStart="10dp"
-                android:fontFamily="@font/opensans_semibold"
+                android:fontFamily="@font/opensans_bold"
                 android:text="Additional Registration for PWD"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
             <LinearLayout
                 android:id="@+id/linearLayout"
@@ -87,7 +87,9 @@
                         android:fontFamily="@font/opensans_bold"
                         android:hint="FIRSTNAME"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black" />
+                        android:textColorHint="@color/black"
+                        android:textSize="18sp"
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -112,7 +114,9 @@
                         android:fontFamily="@font/opensans_bold"
                         android:hint="LASTNAME"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black" />
+                        android:textColorHint="@color/black"
+                        android:textSize="18sp"
+                        />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -143,7 +147,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Date of Birth"
                             android:textColor="@color/black"
-                            android:textSize="15sp" />
+                            android:textSize="18sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -165,7 +169,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Age"
                             android:textColor="@color/black"
-                            android:textSize="15sp" />
+                            android:textSize="18sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 

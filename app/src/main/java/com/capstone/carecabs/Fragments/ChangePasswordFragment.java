@@ -7,24 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Login;
+import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentChangePasswordBinding;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
 
@@ -132,7 +126,7 @@ public class ChangePasswordFragment extends Fragment {
             userID = FirebaseMain.getUser().getUid();
 
         } else {
-            intent = new Intent(getActivity(), Login.class);
+            intent = new Intent(getActivity(), LoginActivity.class);
             startActivity(intent);
         }
     }
@@ -178,7 +172,7 @@ public class ChangePasswordFragment extends Fragment {
     private void showPasswordWarningDialog() {
         builder = new AlertDialog.Builder(getContext());
 
-        View dialogView = getLayoutInflater().inflate(R.layout.change_password_warning_dialog, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_confirmation, null);
 
         Button okBtn = dialogView.findViewById(R.id.okBtn);
 

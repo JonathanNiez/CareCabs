@@ -9,12 +9,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -30,24 +28,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Login;
+import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.ScanID;
+import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -157,7 +151,7 @@ public class EditAccountFragment extends Fragment {
 		});
 
 		binding.scanIDBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), ScanID.class);
+			intent = new Intent(getActivity(), ScanIDActivity.class);
 			startActivity(intent);
 		});
 
@@ -308,7 +302,7 @@ public class EditAccountFragment extends Fragment {
 			});
 
 		} else {
-			intent = new Intent(getActivity(), Login.class);
+			intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
 		}
 
@@ -750,7 +744,7 @@ public class EditAccountFragment extends Fragment {
 
 
 		} else {
-			intent = new Intent(getActivity(), Login.class);
+			intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
 
 			Log.e(TAG, "currentUser is null");

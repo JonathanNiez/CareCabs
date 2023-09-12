@@ -1,10 +1,5 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -20,15 +15,19 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
-import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
@@ -39,25 +38,26 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class RegisterSenior extends AppCompatActivity {
+public class RegisterPWDActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private String userID;
-	private final String TAG = "RegisterSenior";
+	private final String TAG = "RegisterPWD";
 	private String verificationStatus = "Not Verified";
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
-	private AlertDialog ageReqDialog, noInternetDialog,
-			registerFailedDialog, cancelRegisterDialog, idNotScannedDialog;
+	private AlertDialog noInternetDialog, registerFailedDialog,
+			cancelRegisterDialog, idNotScannedDialog, idScanInfoDialog,
+			birthdateInputChoiceDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterSeniorBinding binding;
+	private ActivityRegisterPwdBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = ActivityRegisterSeniorBinding.inflate(getLayoutInflater());
+		binding = ActivityRegisterPwdBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.progressBarLayout.setVisibility(View.GONE);
@@ -66,10 +66,14 @@ public class RegisterSenior extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		StaticDataPasser.storeRegisterUserType = "Senior Citizen";
+		StaticDataPasser.storeRegisterUserType = "Persons with Disabilities (PWD)";
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
+		});
+
+		binding.helpImgBtn.setOnClickListener(v -> {
+			showIDScanInfoDialog();
 		});
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -97,33 +101,34 @@ public class RegisterSenior extends AppCompatActivity {
 			}
 		});
 
-		ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(
+		ArrayAdapter<CharSequence> disabilityAdapter = ArrayAdapter.createFromResource(
 				this,
-				R.array.senior_citizen_medical_condition,
+				R.array.disability_type,
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerMedicalCondition.setAdapter(adapter1);
-		binding.spinnerMedicalCondition.setSelection(0);
-		binding.spinnerMedicalCondition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		binding.spinnerDisability.setVisibility(View.VISIBLE);
+		binding.spinnerDisability.setAdapter(disabilityAdapter);
+		binding.spinnerDisability.setSelection(0);
+		binding.spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					binding.spinnerMedicalCondition.setSelection(0);
+					binding.spinnerDisability.setSelection(0);
 				} else {
-					String selectedMedicalCondition = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedMedicalCondition = selectedMedicalCondition;
+					String selectedDisability = parent.getItemAtPosition(position).toString();
+					StaticDataPasser.storeSelectedDisability = selectedDisability;
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// Handle case when nothing is selected
+				binding.spinnerDisability.setSelection(0);
 			}
 		});
 
 		binding.birthdateBtn.setOnClickListener(v -> {
-			showDatePickerDialog();
+			showBirthdateInputChoiceDialog();
 		});
 
 		binding.doneBtn.setOnClickListener(v -> {
@@ -138,22 +143,8 @@ public class RegisterSenior extends AppCompatActivity {
 					|| StaticDataPasser.storeCurrentBirthDate == null
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")) {
+					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")) {
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
-
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
-
-			} else if (StaticDataPasser.storeCurrentAge <= 60) {
-				intent = new Intent(this, Login.class);
-				startActivity(intent);
-				finish();
-
-				showAgeReqDialog();
-
-				updateCancelledRegister(FirebaseMain.getUser().getUid());
-
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.scanIDLayout.setVisibility(View.VISIBLE);
@@ -168,9 +159,11 @@ public class RegisterSenior extends AppCompatActivity {
 					verificationStatus = "Verified";
 					updateUserRegisterToFireStore(verificationStatus);
 				}
+
 			}
 		});
 	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -181,7 +174,6 @@ public class RegisterSenior extends AppCompatActivity {
 			// Show an exit confirmation dialog
 			showCancelRegisterDialog();
 		}
-
 	}
 
 	@Override
@@ -190,20 +182,51 @@ public class RegisterSenior extends AppCompatActivity {
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
+		closeIDScanInfoDialog();
+		closeNoInternetDialog();
+		closeBirthdateInputChoiceDialog();
 	}
 
-	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
 		if (networkChangeReceiver != null) {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
+		closeIDScanInfoDialog();
+		closeNoInternetDialog();
+		closeBirthdateInputChoiceDialog();
+	}
+
+	private void showIDScanInfoDialog() {
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_scan_info, null);
+
+		builder = new AlertDialog.Builder(this);
+		builder.setView(dialogView);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button nextBtn = dialogView.findViewById(R.id.nextBtn);
+
+		okBtn.setOnClickListener(v -> {
+			closeIDScanInfoDialog();
+		});
+
+		nextBtn.setOnClickListener(v -> {
+
+		});
+
+		builder.setView(dialogView);
+
+		idScanInfoDialog = builder.create();
+		idScanInfoDialog.show();
+	}
+
+	private void closeIDScanInfoDialog() {
+		if (idScanInfoDialog != null & idScanInfoDialog.isShowing()) {
+			idScanInfoDialog.dismiss();
+		}
 	}
 
 	private void updateUserRegisterToFireStore(String verificationStatus) {
@@ -213,31 +236,35 @@ public class RegisterSenior extends AppCompatActivity {
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("firstname", StaticDataPasser.storeFirstName);
 		registerUser.put("lastname", StaticDataPasser.storeLastName);
+		registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
 		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
-		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
 		registerUser.put("verificationStatus", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
 
-		documentReference.update(registerUser).addOnSuccessListener(unused -> {
+		documentReference.update(registerUser).addOnCompleteListener(task -> {
+			if (task.isSuccessful()) {
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			showRegisterSuccessNotification();
+				showRegisterSuccessNotification();
 
-			intent = new Intent(RegisterSenior.this, MainActivity.class);
-			startActivity(intent);
-			finish();
+				intent = new Intent(RegisterPWDActivity.this, MainActivity.class);
+				startActivity(intent);
+				finish();
 
-		}).addOnFailureListener(e -> {
-			showRegisterFailedDialog();
+			} else {
+				showRegisterFailedDialog();
 
-			Log.e(TAG, e.getMessage());
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
-
+				Log.e(TAG, String.valueOf(task.getException()));
+			}
 		});
 	}
 
@@ -252,7 +279,7 @@ public class RegisterSenior extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterSenior.this, Login.class);
+			intent = new Intent(RegisterPWDActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -262,11 +289,12 @@ public class RegisterSenior extends AppCompatActivity {
 
 			Log.e(TAG, e.getMessage());
 
-			intent = new Intent(RegisterSenior.this, Login.class);
+			intent = new Intent(getApplicationContext(), LoginActivity.class);
 			startActivity(intent);
 			finish();
 		});
 	}
+
 
 	private void showIDNotScannedDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -314,6 +342,7 @@ public class RegisterSenior extends AppCompatActivity {
 			closeCancelRegisterDialog();
 		});
 
+
 		builder.setView(dialogView);
 
 		cancelRegisterDialog = builder.create();
@@ -324,26 +353,6 @@ public class RegisterSenior extends AppCompatActivity {
 		if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
 			cancelRegisterDialog.dismiss();
 		}
-	}
-
-
-	private void showAgeReqDialog() {
-		builder = new AlertDialog.Builder(this);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.you_are_not_a_senior_ciitizen_dialog, null);
-
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
-
-		okBtn.setOnClickListener(v -> {
-			if (ageReqDialog != null && ageReqDialog.isShowing()) {
-				ageReqDialog.dismiss();
-			}
-		});
-
-		builder.setView(dialogView);
-
-		ageReqDialog = builder.create();
-		ageReqDialog.show();
 	}
 
 	private void calculateAge() {
@@ -375,7 +384,7 @@ public class RegisterSenior extends AppCompatActivity {
 					selectedDate.set(year1, monthOfYear, dayOfMonth);
 
 					// Update the birthdateTextView with the selected date in a desired format
-					SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+					SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy", Locale.getDefault());
 					binding.birthdateBtn.setText("Birthdate: " + dateFormat.format(selectedDate.getTime()));
 					StaticDataPasser.storeCurrentBirthDate = dateFormat.format(selectedDate.getTime());
 
@@ -385,10 +394,53 @@ public class RegisterSenior extends AppCompatActivity {
 		datePickerDialog.show();
 	}
 
+	private void showBirthdateInputChoiceDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_birthdate_input_choice, null);
+
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
+		EditText monthEditText = dialogView.findViewById(R.id.monthEditText);
+		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
+		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
+		ImageButton openDatePickerImgBtn = dialogView.findViewById(R.id.openDatePickerImgBtn);
+
+		openDatePickerImgBtn.setOnClickListener(view -> {
+			showDatePickerDialog();
+		});
+
+		doneBtn.setOnClickListener(view -> {
+			String month = monthEditText.getText().toString();
+			String year = yearEditText.getText().toString();
+			String day = dayEditText.getText().toString();
+			String fullBirthdate = month + "-" + day + "-" + year;
+
+			binding.birthdateBtn.setText(fullBirthdate);
+
+			closeBirthdateInputChoiceDialog();
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeBirthdateInputChoiceDialog();
+		});
+
+		builder.setView(dialogView);
+
+		birthdateInputChoiceDialog = builder.create();
+		birthdateInputChoiceDialog.show();
+	}
+
+	private void closeBirthdateInputChoiceDialog() {
+		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
+			birthdateInputChoiceDialog.dismiss();
+		}
+	}
+
 	private void showRegisterSuccessNotification() {
 		String channelId = "registration_channel_id"; // Change this to your desired channel ID
 		String channelName = "CareCabs"; // Change this to your desired channel name
-		int notificationId = 2; // Change this to a unique ID for each notification
+		int notificationId = 3; // Change this to a unique ID for each notification
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -400,7 +452,7 @@ public class RegisterSenior extends AppCompatActivity {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
 				.setSmallIcon(R.drawable.logo)
 				.setContentTitle("Registration Successful")
-				.setContentText("You have successfully registered as a Senior Citizen!");
+				.setContentText("You have successfully registered as a PWD");
 
 		Notification notification = builder.build();
 		notificationManager.notify(notificationId, notification);
@@ -414,19 +466,23 @@ public class RegisterSenior extends AppCompatActivity {
 		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
 		tryAgainBtn.setOnClickListener(v -> {
-			if (noInternetDialog != null && noInternetDialog.isShowing()) {
-				noInternetDialog.dismiss();
-
-				boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-				updateConnectionStatus(isConnected);
-
-			}
+			closeNoInternetDialog();
 		});
 
 		builder.setView(dialogView);
 
 		noInternetDialog = builder.create();
 		noInternetDialog.show();
+	}
+
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
+
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+			updateConnectionStatus(isConnected);
+
+		}
 	}
 
 	private void initializeNetworkChecker() {

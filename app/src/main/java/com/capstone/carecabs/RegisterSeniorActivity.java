@@ -1,5 +1,9 @@
 package com.capstone.carecabs;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,15 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
-import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
+import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
@@ -36,25 +36,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class RegisterPWD extends AppCompatActivity {
+public class RegisterSeniorActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private String userID;
-	private final String TAG = "RegisterPWD";
+	private final String TAG = "RegisterSenior";
 	private String verificationStatus = "Not Verified";
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
-	private AlertDialog noInternetDialog, registerFailedDialog,
-			cancelRegisterDialog, idNotScannedDialog, idScanInfoDialog;
+	private AlertDialog ageReqDialog, noInternetDialog,
+			registerFailedDialog, cancelRegisterDialog, idNotScannedDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterPwdBinding binding;
+	private ActivityRegisterSeniorBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = ActivityRegisterPwdBinding.inflate(getLayoutInflater());
+		binding = ActivityRegisterSeniorBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.progressBarLayout.setVisibility(View.GONE);
@@ -63,14 +63,10 @@ public class RegisterPWD extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		StaticDataPasser.storeRegisterUserType = "Persons with Disabilities (PWD)";
+		StaticDataPasser.storeRegisterUserType = "Senior Citizen";
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
-		});
-
-		binding.helpImgBtn.setOnClickListener(v -> {
-			showIDScanInfoDialog();
 		});
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -98,29 +94,28 @@ public class RegisterPWD extends AppCompatActivity {
 			}
 		});
 
-		ArrayAdapter<CharSequence> disabilityAdapter = ArrayAdapter.createFromResource(
+		ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(
 				this,
-				R.array.disability_type,
+				R.array.senior_citizen_medical_condition,
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerDisability.setVisibility(View.VISIBLE);
-		binding.spinnerDisability.setAdapter(disabilityAdapter);
-		binding.spinnerDisability.setSelection(0);
-		binding.spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		binding.spinnerMedicalCondition.setAdapter(adapter1);
+		binding.spinnerMedicalCondition.setSelection(0);
+		binding.spinnerMedicalCondition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					binding.spinnerDisability.setSelection(0);
+					binding.spinnerMedicalCondition.setSelection(0);
 				} else {
-					String selectedDisability = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedDisability = selectedDisability;
+					String selectedMedicalCondition = parent.getItemAtPosition(position).toString();
+					StaticDataPasser.storeSelectedMedicalCondition = selectedMedicalCondition;
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerDisability.setSelection(0);
+				// Handle case when nothing is selected
 			}
 		});
 
@@ -140,8 +135,22 @@ public class RegisterPWD extends AppCompatActivity {
 					|| StaticDataPasser.storeCurrentBirthDate == null
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")) {
+					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")) {
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
+
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.scanIDLayout.setVisibility(View.VISIBLE);
+
+			} else if (StaticDataPasser.storeCurrentAge <= 60) {
+				intent = new Intent(this, LoginActivity.class);
+				startActivity(intent);
+				finish();
+
+				showAgeReqDialog();
+
+				updateCancelledRegister(FirebaseMain.getUser().getUid());
+
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.scanIDLayout.setVisibility(View.VISIBLE);
@@ -156,11 +165,9 @@ public class RegisterPWD extends AppCompatActivity {
 					verificationStatus = "Verified";
 					updateUserRegisterToFireStore(verificationStatus);
 				}
-
 			}
 		});
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -171,6 +178,7 @@ public class RegisterPWD extends AppCompatActivity {
 			// Show an exit confirmation dialog
 			showCancelRegisterDialog();
 		}
+
 	}
 
 	@Override
@@ -179,48 +187,20 @@ public class RegisterPWD extends AppCompatActivity {
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
-
+		closeRegisterFailedDialog();
 	}
 
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+
 		if (networkChangeReceiver != null) {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
-	}
-
-	private void showIDScanInfoDialog() {
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_scan_info, null);
-
-		builder = new AlertDialog.Builder(this);
-		builder.setView(dialogView);
-
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
-		Button nextBtn = dialogView.findViewById(R.id.nextBtn);
-
-		okBtn.setOnClickListener(v -> {
-			closeIDScanInfoDialog();
-		});
-
-		nextBtn.setOnClickListener(v -> {
-
-		});
-
-		builder.setView(dialogView);
-
-		idScanInfoDialog = builder.create();
-		idScanInfoDialog.show();
-	}
-
-	private void closeIDScanInfoDialog() {
-		if (idScanInfoDialog != null & idScanInfoDialog.isShowing()) {
-			idScanInfoDialog.dismiss();
-		}
+		closeRegisterFailedDialog();
 	}
 
 	private void updateUserRegisterToFireStore(String verificationStatus) {
@@ -230,35 +210,31 @@ public class RegisterPWD extends AppCompatActivity {
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("firstname", StaticDataPasser.storeFirstName);
 		registerUser.put("lastname", StaticDataPasser.storeLastName);
-		registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
 		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
+		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
 		registerUser.put("verificationStatus", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
 
-		documentReference.update(registerUser).addOnCompleteListener(task -> {
-			if (task.isSuccessful()) {
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
+		documentReference.update(registerUser).addOnSuccessListener(unused -> {
 
-				showRegisterSuccessNotification();
+			showRegisterSuccessNotification();
 
-				intent = new Intent(RegisterPWD.this, MainActivity.class);
-				startActivity(intent);
-				finish();
+			intent = new Intent(RegisterSeniorActivity.this, MainActivity.class);
+			startActivity(intent);
+			finish();
 
-			} else {
-				showRegisterFailedDialog();
+		}).addOnFailureListener(e -> {
+			showRegisterFailedDialog();
 
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
+			Log.e(TAG, e.getMessage());
 
-				Log.e(TAG, String.valueOf(task.getException()));
-			}
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.doneBtn.setVisibility(View.VISIBLE);
+			binding.scanIDLayout.setVisibility(View.VISIBLE);
+
 		});
 	}
 
@@ -273,7 +249,7 @@ public class RegisterPWD extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterPWD.this, Login.class);
+			intent = new Intent(RegisterSeniorActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -283,12 +259,11 @@ public class RegisterPWD extends AppCompatActivity {
 
 			Log.e(TAG, e.getMessage());
 
-			intent = new Intent(getApplicationContext(), Login.class);
+			intent = new Intent(RegisterSeniorActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
 		});
 	}
-
 
 	private void showIDNotScannedDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -336,7 +311,6 @@ public class RegisterPWD extends AppCompatActivity {
 			closeCancelRegisterDialog();
 		});
 
-
 		builder.setView(dialogView);
 
 		cancelRegisterDialog = builder.create();
@@ -347,6 +321,26 @@ public class RegisterPWD extends AppCompatActivity {
 		if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
 			cancelRegisterDialog.dismiss();
 		}
+	}
+
+
+	private void showAgeReqDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.you_are_not_a_senior_ciitizen_dialog, null);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+		okBtn.setOnClickListener(v -> {
+			if (ageReqDialog != null && ageReqDialog.isShowing()) {
+				ageReqDialog.dismiss();
+			}
+		});
+
+		builder.setView(dialogView);
+
+		ageReqDialog = builder.create();
+		ageReqDialog.show();
 	}
 
 	private void calculateAge() {
@@ -391,7 +385,7 @@ public class RegisterPWD extends AppCompatActivity {
 	private void showRegisterSuccessNotification() {
 		String channelId = "registration_channel_id"; // Change this to your desired channel ID
 		String channelName = "CareCabs"; // Change this to your desired channel name
-		int notificationId = 3; // Change this to a unique ID for each notification
+		int notificationId = 2; // Change this to a unique ID for each notification
 
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -403,7 +397,7 @@ public class RegisterPWD extends AppCompatActivity {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
 				.setSmallIcon(R.drawable.logo)
 				.setContentTitle("Registration Successful")
-				.setContentText("You have successfully registered as a PWD");
+				.setContentText("You have successfully registered as a Senior Citizen!");
 
 		Notification notification = builder.build();
 		notificationManager.notify(notificationId, notification);

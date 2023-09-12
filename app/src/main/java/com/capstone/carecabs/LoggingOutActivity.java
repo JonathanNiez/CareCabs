@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class LoggingOut extends AppCompatActivity {
+public class LoggingOutActivity extends AppCompatActivity {
     private static final long SPLASH_SCREEN_DELAY = 2000; // 2 seconds
 
     @Override
@@ -23,7 +21,7 @@ public class LoggingOut extends AppCompatActivity {
 
             FirebaseMain.signOutUser();
 
-            Intent intent = new Intent(LoggingOut.this, Login.class);
+            Intent intent = new Intent(LoggingOutActivity.this, LoginActivity.class);
             startActivity(intent);
             finish();
 

@@ -7,12 +7,19 @@
     android:gravity="center"
     android:background="@color/yellow">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/warning_128"
+        android:layout_marginTop="20dp"/>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:elevation="4dp"
         app:cardCornerRadius="8dp">
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,23 +27,17 @@
             android:orientation="vertical"
             android:gravity="center">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/warning_128"
-                android:layout_marginTop="20dp"/>
+
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="You have not scanned your ID"
-                android:textSize="20sp"
+                android:textSize="25sp"
                 android:fontFamily="@font/opensans_semibold"
-                android:textColor="@color/black"
+                android:textColor="@color/red"
                 android:textAlignment="center"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"/>
+                android:layout_margin="10dp"/>
 
             <TextView
                 android:layout_width="match_parent"
@@ -79,14 +80,11 @@
 
     </androidx.cardview.widget.CardView>
 
-
-
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginBottom="20dp">

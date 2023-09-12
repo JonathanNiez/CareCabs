@@ -36,9 +36,10 @@
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/spinnerDisabilityDialog"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/edit_text"
+            android:theme="@style/SpinnerTextStyle"
             />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -58,7 +59,7 @@
             android:background="@drawable/custom_button"
             android:fontFamily="@font/opensans_bold"
             android:text="Edit"
-            android:layout_marginEnd="3dp"
+            android:layout_marginEnd="5dp"
             android:textColor="@color/white"
             android:textSize="20sp" />
 
@@ -66,7 +67,7 @@
             android:id="@+id/cancelBtn"
             android:layout_width="130dp"
             android:layout_height="50dp"
-            android:layout_marginStart="3dp"
+            android:layout_marginStart="5dp"
             android:background="@drawable/custom_button"
             android:backgroundTint="@color/red"
             android:fontFamily="@font/opensans_bold"

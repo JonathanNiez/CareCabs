@@ -20,12 +20,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.LoggingOut;
-import com.capstone.carecabs.Login;
+import com.capstone.carecabs.LoggingOutActivity;
+import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.RegisterDriver;
-import com.capstone.carecabs.RegisterPWD;
-import com.capstone.carecabs.RegisterSenior;
+import com.capstone.carecabs.RegisterDriverActivity;
+import com.capstone.carecabs.RegisterPWDActivity;
+import com.capstone.carecabs.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -90,7 +90,7 @@ public class AccountFragment extends Fragment {
 	}
 
 	private void logoutUser() {
-		intent = new Intent(getActivity(), LoggingOut.class);
+		intent = new Intent(getActivity(), LoggingOutActivity.class);
 		startActivity(intent);
 		getActivity().finish();
 	}
@@ -100,35 +100,26 @@ public class AccountFragment extends Fragment {
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection).document(getUserID);
-			documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-				@Override
-				public void onSuccess(DocumentSnapshot documentSnapshot) {
-					if (documentSnapshot.exists()) {
-						boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot.exists()) {
+					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
 
-						if (!getUserRegisterStatus) {
-							showRegisterNotCompleteDialog();
-						} else {
-							loadUserProfileInfo();
-						}
+					if (!getUserRegisterStatus) {
+						showRegisterNotCompleteDialog();
+					} else {
+						loadUserProfileInfo();
 					}
 				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-					Log.e(TAG, e.getMessage());
-				}
-			});
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
 		} else {
 			FirebaseMain.signOutUser();
 
-			Intent intent = new Intent(context, Login.class);
+			Intent intent = new Intent(context, LoginActivity.class);
 			startActivity(intent);
 			getActivity().finish();
 		}
 	}
-
 
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
@@ -285,17 +276,17 @@ public class AccountFragment extends Fragment {
 
 			switch (StaticDataPasser.storeRegisterUserType) {
 				case "Driver":
-					intent = new Intent(getActivity(), RegisterDriver.class);
+					intent = new Intent(getActivity(), RegisterDriverActivity.class);
 
 					break;
 
 				case "Senior Citizen":
-					intent = new Intent(getActivity(), RegisterSenior.class);
+					intent = new Intent(getActivity(), RegisterSeniorActivity.class);
 
 					break;
 
 				case "Persons with Disabilities (PWD)":
-					intent = new Intent(getActivity(), RegisterPWD.class);
+					intent = new Intent(getActivity(), RegisterPWDActivity.class);
 
 					break;
 

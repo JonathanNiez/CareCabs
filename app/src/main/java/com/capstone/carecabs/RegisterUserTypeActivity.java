@@ -16,10 +16,8 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityRegisterUserTypeBinding;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-public class RegisterUserType extends AppCompatActivity {
+public class RegisterUserTypeActivity extends AppCompatActivity {
     private Intent intent;
     private String registerUserType, registerType;
     private AlertDialog.Builder builder;
@@ -66,7 +64,7 @@ public class RegisterUserType extends AppCompatActivity {
 
 
         binding.driverImgBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Register.class);
+            intent = new Intent(this, RegisterActivity.class);
             registerUserType = "Driver";
             intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
@@ -121,7 +119,7 @@ public class RegisterUserType extends AppCompatActivity {
         Button noBtn = dialogView.findViewById(R.id.noBtn);
 
         yesBtn.setOnClickListener(v -> {
-            intent = new Intent(this, Login.class);
+            intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
 
@@ -159,7 +157,7 @@ public class RegisterUserType extends AppCompatActivity {
         Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
         seniorImgBtn.setOnClickListener(v -> {
-            intent = new Intent(RegisterUserType.this, Register.class);
+            intent = new Intent(RegisterUserTypeActivity.this, RegisterActivity.class);
             registerUserType = "Senior Citizen";
             intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
@@ -170,7 +168,7 @@ public class RegisterUserType extends AppCompatActivity {
         });
 
         pwdImgBtn.setOnClickListener(v -> {
-            intent = new Intent(RegisterUserType.this, Register.class);
+            intent = new Intent(RegisterUserTypeActivity.this, RegisterActivity.class);
             registerUserType = "Persons with Disability (PWD)";
             intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
@@ -202,7 +200,7 @@ public class RegisterUserType extends AppCompatActivity {
             if (emailAlreadyRegisteredDialog != null && emailAlreadyRegisteredDialog.isShowing()) {
                 emailAlreadyRegisteredDialog.dismiss();
             }
-            intent = new Intent(RegisterUserType.this, Register.class);
+            intent = new Intent(RegisterUserTypeActivity.this, RegisterActivity.class);
             startActivity(intent);
             finish();
         });

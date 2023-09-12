@@ -5,44 +5,31 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Fragments.FragmentIdScanInfo1;
-import com.capstone.carecabs.Fragments.FragmentIdScanInfo2;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.TabAdapter;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
-import java.util.List;
-
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 	private Intent intent;
 	private GoogleSignInOptions googleSignInOptions;
 	private GoogleSignInAccount googleSignInAccount;
@@ -79,6 +66,12 @@ public class Login extends AppCompatActivity {
 			showRegisterUsingDialog();
 		});
 
+		binding.resetPasswordTextView.setOnClickListener(view -> {
+			intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+			startActivity(intent);
+			finish();
+		});
+
 		binding.googleImgBtn.setOnClickListener(v -> {
 			showPleaseWaitDialog();
 
@@ -94,14 +87,14 @@ public class Login extends AppCompatActivity {
 			final String stringPassword = binding.password.getText().toString();
 
 			if (stringEmail.isEmpty()) {
-				binding.email.setError("Please Enter your Email");
+				binding.email.setError("Please enter your Email");
 
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
 			} else if (stringPassword.isEmpty()) {
 
-				binding.password.setError("Please Enter your Password");
+				binding.password.setError("Please enter your Password");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
@@ -123,7 +116,7 @@ public class Login extends AppCompatActivity {
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.loginBtn.setVisibility(View.VISIBLE);
 
-						intent = new Intent(Login.this, LoggingIn.class);
+						intent = new Intent(LoginActivity.this, LoggingInActivity.class);
 						startActivity(intent);
 						finish();
 
@@ -311,7 +304,7 @@ public class Login extends AppCompatActivity {
 				emailNotRegisteredDialog.dismiss();
 			}
 
-			intent = new Intent(this, Register.class);
+			intent = new Intent(this, RegisterActivity.class);
 			startActivity(intent);
 			finish();
 		});
@@ -370,7 +363,7 @@ public class Login extends AppCompatActivity {
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
 		googleImgBtn.setOnClickListener(v -> {
-			intent = new Intent(Login.this, RegisterUserType.class);
+			intent = new Intent(LoginActivity.this, RegisterUserTypeActivity.class);
 			intent.putExtra("registerType", "googleRegister");
 			startActivity(intent);
 			finish();
@@ -380,7 +373,7 @@ public class Login extends AppCompatActivity {
 		});
 
 		emailImgBtn.setOnClickListener(v -> {
-			intent = new Intent(Login.this, RegisterUserType.class);
+			intent = new Intent(LoginActivity.this, RegisterUserTypeActivity.class);
 			intent.putExtra("registerType", "emailRegister");
 			startActivity(intent);
 			finish();
@@ -431,7 +424,7 @@ public class Login extends AppCompatActivity {
 						FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
 							if (task1.isSuccessful()) {
 
-								intent = new Intent(Login.this, LoggingIn.class);
+								intent = new Intent(LoginActivity.this, LoggingInActivity.class);
 								startActivity(intent);
 								finish();
 
@@ -447,7 +440,7 @@ public class Login extends AppCompatActivity {
 
 						showEmailAlreadyRegisteredDialog();
 
-						intent = new Intent(this, RegisterUserType.class);
+						intent = new Intent(this, RegisterUserTypeActivity.class);
 						intent.putExtra("registerType", "googleRegister");
 						startActivity(intent);
 						finish();
