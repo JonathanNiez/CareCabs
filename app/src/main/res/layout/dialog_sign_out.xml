@@ -47,7 +47,7 @@
             android:text="Are you sure you want to Sign out?"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_margin="10dp"
             />
 
@@ -71,8 +71,8 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/cancelBtn"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/custom_button"
             android:text="Cancel"
@@ -82,8 +82,8 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/signOutBtn"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
             android:layout_marginStart="5dp"
             android:background="@drawable/custom_button"
             android:backgroundTint="@color/red"

@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+	<item
+		android:id="@+id/account"
+		android:icon="@drawable/user_32"
+		android:title="Account" />
 
-    <item
-        android:title="Account"
-        android:icon="@drawable/account_icon"
-        android:id="@+id/account"/>
-
-    <item
-        android:title="Home"
-        android:icon="@drawable/home"
-        android:id="@+id/home"/>
+	<item
+		android:id="@+id/home"
+		android:icon="@drawable/home"
+		android:title="Home" />
 
 
-    <item
-        android:title="Map"
-        android:icon="@drawable/map"
-        android:id="@+id/map"/>
+	<item
+		android:id="@+id/map"
+		android:icon="@drawable/map_32_2"
+		android:title="Map" />
 
 </menu>

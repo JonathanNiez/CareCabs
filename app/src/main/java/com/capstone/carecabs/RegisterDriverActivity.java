@@ -190,6 +190,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
 		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 		registerUser.put("driverRating", 0.0);
+		registerUser.put("passengersTransported", 0);
 		registerUser.put("verificationStatus", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
 

@@ -167,7 +167,7 @@
 						android:text="Email"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 					<TextView
 						android:id="@+id/phoneTextView"
@@ -181,7 +181,7 @@
 						android:text="Phone No"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 					<TextView
 						android:id="@+id/statusTextView"
@@ -194,7 +194,7 @@
 						android:text="Status"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 					<TextView
 						android:id="@+id/birthdateTextView"
@@ -207,7 +207,7 @@
 						android:text="Birthdate"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 					<LinearLayout
 						android:layout_width="match_parent"
@@ -227,7 +227,7 @@
 							android:text="Age"
 							android:textAlignment="center"
 							android:textColor="@color/black"
-							android:textSize="20sp" />
+							android:textSize="18sp" />
 
 						<TextView
 							android:id="@+id/sexTextView"
@@ -238,7 +238,7 @@
 							android:text="Sex"
 							android:textAlignment="center"
 							android:textColor="@color/black"
-							android:textSize="20sp" />
+							android:textSize="18sp" />
 
 					</LinearLayout>
 
@@ -254,7 +254,7 @@
 						android:text="Disability"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 					<TextView
 						android:id="@+id/medConTextView"
@@ -267,7 +267,7 @@
 						android:text="Medical Condition"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 
 					<TextView
@@ -281,7 +281,7 @@
 						android:text="Driver Status"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 				</LinearLayout>
 
@@ -317,7 +317,7 @@
 					android:text="Edit Profile"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 
 				<androidx.appcompat.widget.AppCompatButton
@@ -333,7 +333,7 @@
 					android:text="Change Password"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/appSettingsBtn"
@@ -348,7 +348,7 @@
 					android:text="App Settings"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/aboutBtn"
@@ -363,7 +363,7 @@
 					android:text="About"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/contactUsBtn"
@@ -378,7 +378,7 @@
 					android:text="Contact Us"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/secAndPriBtn"
@@ -393,7 +393,7 @@
 					android:text="Security And Privacy"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
-					android:textSize="18sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/signOutBtn"

@@ -184,7 +184,7 @@
                     android:text="FIRSTNAME"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editLastnameBtn"
@@ -199,7 +199,7 @@
                     android:text="LASTNAME"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editAgeBtn"
@@ -214,7 +214,7 @@
                     android:text="AGE"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editSexBtn"
@@ -228,7 +228,7 @@
                     android:text="SEX"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editBirthdateBtn"
@@ -242,7 +242,7 @@
                     android:text="Date of Birth"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="17sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/editDisabilityBtn"
@@ -257,7 +257,7 @@
                     android:text="DISABILITY"
                     android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="17sp"
                     />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -274,7 +274,7 @@
                     android:padding="10dp"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="17sp"
                     />
 
                 <TextView
@@ -285,7 +285,7 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:text="You have not scanned your ID"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textColor="@color/red"
                     android:background="@drawable/custom_card_view"
                     android:padding="5dp"

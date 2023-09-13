@@ -259,9 +259,11 @@ public class HomeFragment extends Fragment {
 						case "Driver":
 							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
 							int getDriverRatings = getDriverRatingsLong.intValue();
+							Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 
 							binding.driverStatsLayout.setVisibility(View.VISIBLE);
 							binding.driverRatingTextView.setText(String.valueOf(getDriverRatings));
+							binding.passengerTransportedTextView.setText("Passenger Transported: " + getPassengerTransported);
 
 							break;
 
