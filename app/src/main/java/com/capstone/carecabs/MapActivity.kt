@@ -172,6 +172,21 @@ class MapActivity : AppCompatActivity() {
 //        }
     }
 
+    override fun onBackPressed() {
+        var shouldExit = false
+
+        if (shouldExit){
+            super.onBackPressed()
+
+        }else{
+            intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+
+
+    }
+
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -262,7 +277,7 @@ class MapActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
 
-            closeUserNotVerifiendDialog()
+            closeUserNotVerifiedDialog()
         }
 
         builder.setView(dialogView)
@@ -270,7 +285,7 @@ class MapActivity : AppCompatActivity() {
         userNotVerifiedDialog.show()
     }
 
-    private fun closeUserNotVerifiendDialog() {
+    private fun closeUserNotVerifiedDialog() {
         if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
             userNotVerifiedDialog.dismiss()
         }
@@ -422,13 +437,13 @@ class MapActivity : AppCompatActivity() {
         super.onDestroy()
         mapView?.onDestroy()
 
-        closeUserNotVerifiendDialog()
+        closeUserNotVerifiedDialog()
     }
 
     override fun onPause() {
         super.onPause()
 
-        closeUserNotVerifiendDialog()
+        closeUserNotVerifiedDialog()
     }
 }
 

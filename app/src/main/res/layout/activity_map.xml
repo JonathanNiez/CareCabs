@@ -6,38 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
-    <RelativeLayout
-        android:id="@+id/upperLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/customActionBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/yellow"
-        android:padding="10dp">
+        android:layout_alignParentTop="true"
+        app:cardBackgroundColor="@color/light_gray"
+        app:cardElevation="5dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/opensans_bold"
-            android:text="Map"
-            android:textColor="@color/black"
-            android:textSize="30sp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <ImageButton
-            android:id="@+id/imgBackBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@color/transparent"
-            android:src="@drawable/back64" />
+            <ImageButton
+                android:id="@+id/imgBackBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/light_gray"
+                android:src="@drawable/back_50_2" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/opensans_semibold"
+                android:text="Map"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
+
+
+        </RelativeLayout>
+
+
+    </androidx.cardview.widget.CardView>
 
     <FrameLayout
         android:id="@+id/whereToLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/upperLayout"
+        android:layout_below="@id/customActionBarLayout"
         android:layout_centerHorizontal="true">
 
         <androidx.cardview.widget.CardView
@@ -67,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigationView"
-        android:layout_below="@id/upperLayout" />
+        android:layout_below="@id/customActionBarLayout" />
 
     <FrameLayout
         android:id="@+id/setLocationLayout"

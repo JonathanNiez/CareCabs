@@ -141,7 +141,7 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/opensans_condensed_extrabold"
-						android:text="⭐⭐ Your Ratings ⭐⭐"
+						android:text="Driver Dashboard"
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
@@ -191,7 +191,7 @@
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
 									android:fontFamily="@font/opensans_medium"
-									android:text="Passenger Transported: 0"
+									android:text="Passengers Transported: 0"
 									android:textAlignment="center"
 									android:textSize="17sp"
 									android:textColor="@color/black" />

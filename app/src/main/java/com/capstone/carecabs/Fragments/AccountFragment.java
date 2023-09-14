@@ -153,7 +153,7 @@ public class AccountFragment extends Fragment {
 							binding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
 							if (getDriverStatus) {
-								binding.driverStatusTextView.setTextColor(Color.GREEN);
+								binding.driverStatusTextView.setTextColor(Color.BLUE);
 								binding.driverStatusTextView.setText("Driver Availability: Available");
 
 							} else {

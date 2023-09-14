@@ -1,16 +1,16 @@
 package com.capstone.carecabs;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Fragments.AboutFragment;
@@ -21,9 +21,9 @@ import com.capstone.carecabs.Fragments.ChangePasswordFragment;
 import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
+import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 	private Intent intent;
@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 	private boolean shouldExit = false;
 	private EditAccountFragment editAccountFragment;
 	private ActivityMainBinding binding;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +53,15 @@ public class MainActivity extends AppCompatActivity {
 				showFragment(new AccountFragment());
 
 			} else if (item.getItemId() == R.id.map) {
-				intent = new Intent(MainActivity.this, MapActivity.class);
+
+				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
+					intent = new Intent(MainActivity.this, MapActivity.class);
+				} else {
+					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
+
+				}
 				startActivity(intent);
+
 			}
 			return true;
 		});
