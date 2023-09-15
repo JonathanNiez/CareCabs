@@ -262,8 +262,9 @@ public class HomeFragment extends Fragment {
 							Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 
 							binding.driverStatsLayout.setVisibility(View.VISIBLE);
-							binding.driverRatingTextView.setText(String.valueOf(getDriverRatings));
-							binding.passengerTransportedTextView.setText("Passengers Transported: " + getPassengerTransported);
+							binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
+							binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
+
 
 							break;
 

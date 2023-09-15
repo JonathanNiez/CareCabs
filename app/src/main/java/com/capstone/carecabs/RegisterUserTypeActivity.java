@@ -69,7 +69,7 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
             intent.putExtra("registerUserType", registerUserType);
             intent.putExtra("registerType", registerType);
             startActivity(intent);
-
+            finish();
         });
 
         binding.passengerImgBtn.setOnClickListener(v -> {

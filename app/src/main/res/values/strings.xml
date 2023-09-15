@@ -5,7 +5,7 @@
 
 	<string name="mapbox_access_token">sk.eyJ1Ijoiam9uYXRoYW5uaWV6IiwiYSI6ImNsa2V0ODk1ZDA4enUzZXFzdmhhN2dpdHcifQ.sGyVZui6zrxPgSEjUydWLA</string>
 
-	<string name="custom_map_url">mapbox://styles/jonathanniez/clkg9pvym005j01qy0im6hk22</string>
+	<string name="custom_map_style_url">mapbox://styles/jonathanniez/clkg9pvym005j01qy0im6hk22</string>
 
 	<string name="not_senior_citizen">Your age needs to meet the requirement
     </string>
