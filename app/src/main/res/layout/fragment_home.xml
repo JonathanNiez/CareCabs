@@ -48,7 +48,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_centerInParent="true"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/opensans_medium"
 						android:text="Home"
 						android:textColor="@color/black"
 						android:textSize="25sp" />
@@ -62,7 +62,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_margin="10dp"
-				android:background="@color/background"
+				app:cardBackgroundColor="@color/yellow"
 				app:cardCornerRadius="8dp"
 				app:cardElevation="4dp">
 
@@ -77,8 +77,8 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Time"
+						android:fontFamily="@font/opensans_semicondensed_semibold"
+						android:text="Current Time"
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
@@ -123,6 +123,7 @@
 			</androidx.cardview.widget.CardView>
 
 			<androidx.cardview.widget.CardView
+				android:id="@+id/driverStatsLayout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -130,7 +131,6 @@
 				app:cardElevation="4dp">
 
 				<LinearLayout
-					android:id="@+id/driverStatsLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -144,6 +144,7 @@
 						android:text="Driver Dashboard"
 						android:textAlignment="center"
 						android:textColor="@color/black"
+						android:drawableEnd="@drawable/driver_32"
 						android:textSize="20sp" />
 
 					<TextView
@@ -231,7 +232,8 @@
 									android:fontFamily="@font/opensans_medium"
 									android:text="Total Distance Travelled: 0km"
 									android:textAlignment="center"
-									android:textColor="@color/black" />
+									android:textColor="@color/black"
+									android:textSize="17sp"/>
 
 							</LinearLayout>
 
@@ -243,6 +245,46 @@
 				</LinearLayout>
 
 			</androidx.cardview.widget.CardView>
+
+			<androidx.cardview.widget.CardView
+				android:id="@+id/passengerStatsLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				app:cardCornerRadius="8dp"
+				app:cardElevation="4dp">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/opensans_condensed_extrabold"
+						android:text="Your Ride/Trip Overview"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+					<TextView
+						android:id="@+id/totalTripsTextView"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/opensans_extrabold"
+						android:text="Total Rides"
+						android:textAlignment="center"
+						android:textColor="@color/blue"
+						android:textSize="30sp" />
+
+				</LinearLayout>
+
+			</androidx.cardview.widget.CardView>
+
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"

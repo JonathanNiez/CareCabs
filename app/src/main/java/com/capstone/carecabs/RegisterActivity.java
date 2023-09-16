@@ -244,6 +244,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("profilePicture", "default");
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
+		registerUser.put("fontSize", 17);
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 

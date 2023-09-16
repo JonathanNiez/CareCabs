@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment {
 		View view = binding.getRoot();
 
 		binding.driverStatsLayout.setVisibility(View.GONE);
+		binding.passengerStatsLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
@@ -254,7 +255,6 @@ public class HomeFragment extends Fragment {
 					binding.progressBarLayout.setVisibility(View.GONE);
 
 					String getUserType = documentSnapshot.getString("userType");
-
 					switch (getUserType) {
 						case "Driver":
 							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
@@ -270,11 +270,14 @@ public class HomeFragment extends Fragment {
 
 						case "Persons with Disability (PWD)":
 
-							break;
-
 						case "Senior Citizen":
+							Long getTotalTrips = documentSnapshot.getLong("totalTrips");
+							binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+							binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
+
 
 							break;
+
 					}
 
 				}

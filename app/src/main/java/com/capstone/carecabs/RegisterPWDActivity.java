@@ -44,7 +44,7 @@ import java.util.Objects;
 public class RegisterPWDActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private String userID;
-	private final String TAG = "RegisterPWD";
+	private final String TAG = "RegisterPWDActivity";
 	private String verificationStatus = "Not Verified";
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
@@ -250,6 +250,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 		registerUser.put("verificationStatus", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
+		registerUser.put("totalTrips", 0);
 
 		documentReference.update(registerUser).addOnSuccessListener(unused -> {
 			binding.progressBarLayout.setVisibility(View.GONE);

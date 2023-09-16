@@ -41,7 +41,7 @@ import java.util.Objects;
 public class RegisterSeniorActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private String userID;
-	private final String TAG = "RegisterSenior";
+	private final String TAG = "RegisterSeniorActivity";
 	private String verificationStatus = "Not Verified";
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
@@ -118,7 +118,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				// Handle case when nothing is selected
+				binding.spinnerMedicalCondition.setSelection(0);
 			}
 		});
 
@@ -229,6 +229,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
 		registerUser.put("verificationStatus", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
+		registerUser.put("totalTrips", 0);
 
 		documentReference.update(registerUser).addOnSuccessListener(unused -> {
 
