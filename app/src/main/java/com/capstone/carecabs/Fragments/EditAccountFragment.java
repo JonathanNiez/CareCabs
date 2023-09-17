@@ -13,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -21,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,8 +43,11 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -105,6 +110,7 @@ public class EditAccountFragment extends Fragment {
 
 		context = getContext();
 		initializeNetworkChecker();
+		getCurrentFontSizeFromUserSetting();
 
 		requestManager = Glide.with(context);
 		FirebaseApp.initializeApp(context);
@@ -199,6 +205,98 @@ public class EditAccountFragment extends Fragment {
 	public void onBackPressed() {
 		backToAccountFragment();
 	}
+
+	private void getCurrentFontSizeFromUserSetting() {
+
+		switch (StaticDataPasser.storeFontSize) {
+			case 15:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+				break;
+
+			case 17:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				break;
+
+			case 19:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+
+				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+
+				binding.editFirstnameBtn.setHeight(62);
+				binding.editLastnameBtn.setHeight(62);
+				binding.editAgeBtn.setHeight(62);
+				binding.editSexBtn.setHeight(62);
+				binding.editBirthdateBtn.setHeight(62);
+				binding.editDisabilityBtn.setHeight(62);
+				binding.editMedConBtn.setHeight(62);
+				break;
+
+			case 21:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+				binding.editFirstnameBtn.setHeight(64);
+				binding.editLastnameBtn.setHeight(64);
+				binding.editAgeBtn.setHeight(64);
+				binding.editSexBtn.setHeight(64);
+				binding.editBirthdateBtn.setHeight(64);
+				binding.editDisabilityBtn.setHeight(64);
+				binding.editMedConBtn.setHeight(64);
+
+				break;
+			default:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+
+				break;
+		}
+
+	}
+
 
 	private void showDatePickerDialog() {
 		final Calendar currentDate = Calendar.getInstance();
@@ -537,11 +635,11 @@ public class EditAccountFragment extends Fragment {
 			}
 		});
 
-        if (StaticDataPasser.storeSelectedSex.equals("Male")){
+		if (StaticDataPasser.storeSelectedSex.equals("Male")) {
 			spinnerSexDialog.setSelection(1);
-        }else {
-	        spinnerSexDialog.setSelection(2);
-        }
+		} else {
+			spinnerSexDialog.setSelection(2);
+		}
 
 		editBtn.setOnClickListener(v -> {
 

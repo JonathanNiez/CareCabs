@@ -14,10 +14,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.R;
@@ -33,7 +29,7 @@ import java.util.Map;
 
 public class ChangeFontSizeFragment extends Fragment {
 	private Context context;
-	private String TAG = "ChangeFontSizeFragment";
+	private final String TAG = "ChangeFontSizeFragment";
 	private DocumentReference documentReference;
 	private String fontSizeLabelString;
 	private AlertDialog pleaseWaitDialog;
@@ -53,22 +49,22 @@ public class ChangeFontSizeFragment extends Fragment {
 		View view = binding.getRoot();
 
 		context = getContext();
-		showCurrentFontSizeFromUserSetting();
+		getCurrentFontSizeFromUserSetting();
 
 		binding.smallFontSizeBtn.setOnClickListener(view1 -> {
-			updateFontSizeLabel(0);
+			updateFontSizeLabel(15);
 
 		});
 		binding.normalFontSizeBtn.setOnClickListener(view1 -> {
-			updateFontSizeLabel(1);
+			updateFontSizeLabel(17);
 
 		});
 		binding.largeFontSizeBtn.setOnClickListener(view1 -> {
-			updateFontSizeLabel(2);
+			updateFontSizeLabel(19);
 
 		});
 		binding.veryLargeFontSizeBtn.setOnClickListener(view1 -> {
-			updateFontSizeLabel(3);
+			updateFontSizeLabel(21);
 		});
 
 		binding.imgBackBtn.setOnClickListener(v -> {
@@ -112,7 +108,8 @@ public class ChangeFontSizeFragment extends Fragment {
 	}
 
 
-	private void showCurrentFontSizeFromUserSetting() {
+	private void getCurrentFontSizeFromUserSetting() {
+		showPleaseWaitDialog();
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection)
@@ -124,42 +121,53 @@ public class ChangeFontSizeFragment extends Fragment {
 						Long getFontSizeLong = documentSnapshot.getLong("fontSize");
 						int getFontSize = getFontSizeLong.intValue();
 
+						closePleaseWaitDialog();
 						StaticDataPasser.storeFontSize = getFontSize;
 
 						switch (getFontSize) {
 							case 15:
+								binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 								binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.currentFontSize.setText("Font Size: Small");
+								binding.currentFontSize.setText("Current Font Size: Small");
+								binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
 								break;
 
 							case 17:
+								binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.currentFontSize.setText("Font Size: Normal");
+								binding.currentFontSize.setText("Current Font Size: Normal");
+								binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
 								break;
 
 							case 19:
+								binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.currentFontSize.setText("Font Size: Large");
+								binding.currentFontSize.setText("Current Font Size: Large");
+								binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
 								break;
 
 							case 21:
+								binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 								binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.currentFontSize.setText("Font Size: Very Large");
+								binding.currentFontSize.setText("Current Font Size: Very Large");
+								binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
 								break;
 
 						}
 
 					} else {
-
+						closePleaseWaitDialog();
 					}
 				}
 			}).addOnFailureListener(new OnFailureListener() {
 				@Override
 				public void onFailure(@NonNull Exception e) {
+					closePleaseWaitDialog();
+
 					Log.e(TAG, e.getMessage());
 
 				}
@@ -169,31 +177,42 @@ public class ChangeFontSizeFragment extends Fragment {
 
 	private void updateFontSizeLabel(int fontSize) {
 		switch (fontSize) {
-			case 0:
-				fontSizeLabelString = "Font Size: Small";
+			case 15:
+				fontSizeLabelString = "Current Font Size: Small";
+				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				StaticDataPasser.storeFontSize = 15;
+				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
-			case 1:
-				fontSizeLabelString = "Font Size: Normal";
+			case 17:
+				fontSizeLabelString = "Current Font Size: Normal";
+				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				StaticDataPasser.storeFontSize = 17;
+				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
-			case 2:
-				fontSizeLabelString = "Font Size: Large";
+			case 19:
+				fontSizeLabelString = "Current Font Size: Large";
+				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				StaticDataPasser.storeFontSize = 19;
+				binding.currentFontSize.setText(fontSizeLabelString);
+				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
-			case 3:
-				fontSizeLabelString = "Font Size: Extra Large";
+			case 21:
+				fontSizeLabelString = "Current Font Size: Very Large";
+				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				StaticDataPasser.storeFontSize = 21;
+				binding.currentFontSize.setText(fontSizeLabelString);
+				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 

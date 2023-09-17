@@ -9,15 +9,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -80,7 +83,7 @@ public class HomeFragment extends Fragment {
 
 		context = getContext();
 		initializeNetworkChecker();
-
+		getCurrentFontSizeFromUserSetting();
 		checkUserIfRegisterComplete();
 		getUserType();
 
@@ -90,6 +93,8 @@ public class HomeFragment extends Fragment {
 		slideFragments.add(new CarouselFragment2());
 		slideFragments.add(new CarouselFragment3());
 		slideFragments.add(new CarouselFragment4());
+
+		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) -> updateDriverStatus(b));
 
 		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
 		binding.viewPager.setAdapter(adapter);
@@ -169,6 +174,16 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
+	private void updateDriverStatus(boolean isAvailable) {
+		if (FirebaseMain.getUser() != null) {
+			FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid())
+					.update("isAvailable", isAvailable);
+
+			getUserType();
+		}
+	}
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -203,6 +218,85 @@ public class HomeFragment extends Fragment {
 			}
 		}
 
+	}
+
+	private void getCurrentFontSizeFromUserSetting() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					Long getFontSizeLong = documentSnapshot.getLong("fontSize");
+					int getFontSize = getFontSizeLong.intValue();
+
+					StaticDataPasser.storeFontSize = getFontSize;
+
+					switch (StaticDataPasser.storeFontSize) {
+						case 15:
+							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+							break;
+
+						case 17:
+							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							break;
+
+						case 19:
+							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+							break;
+
+						case 21:
+							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+							break;
+						default:
+							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+							break;
+					}
+
+				} else {
+				}
+			}).addOnFailureListener(new OnFailureListener() {
+				@Override
+				public void onFailure(@NonNull Exception e) {
+
+					Log.e(TAG, e.getMessage());
+
+				}
+			});
+		}
 	}
 
 	private void goToEditAccountFragment(Context context) {
@@ -245,6 +339,7 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
+
 	private void getUserType() {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
@@ -260,10 +355,24 @@ public class HomeFragment extends Fragment {
 							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
 							int getDriverRatings = getDriverRatingsLong.intValue();
 							Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
+							boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
 
 							binding.driverStatsLayout.setVisibility(View.VISIBLE);
 							binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
 							binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
+
+							binding.driverStatusTextView.setVisibility(View.VISIBLE);
+
+							if (getDriverStatus) {
+								binding.driverStatusTextView.setTextColor(Color.BLUE);
+								binding.driverStatusTextView.setText("Driver Availability: Available");
+								binding.driverStatusSwitch.setChecked(true);
+
+							} else {
+								binding.driverStatusTextView.setTextColor(Color.RED);
+								binding.driverStatusTextView.setText("Driver Availability: Busy");
+
+							}
 
 
 							break;

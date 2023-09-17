@@ -49,7 +49,7 @@
 						android:fontFamily="@font/opensans_bold"
 						android:text="Change Font Size"
 						android:textColor="@color/black"
-						android:textSize="25sp" />
+						android:textSize="20sp" />
 
 
 				</RelativeLayout>
@@ -59,6 +59,7 @@
 
 
 			<TextView
+				android:id="@+id/textView1"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginStart="20dp"
@@ -95,6 +96,19 @@
 			</RelativeLayout>
 
 			<TextView
+				android:id="@+id/currentFontSize"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Current Font Size: "
+				android:layout_marginBottom="10dp"
+				android:background="@drawable/custom_card_view"
+				android:padding="5dp"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<TextView
+				android:id="@+id/textView2"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginStart="20dp"
@@ -125,7 +139,8 @@
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Small"
-						android:textAlignment="textStart"
+						android:textAlignment="center"
+						android:layout_marginBottom="5dp"
 						android:textColor="@color/black"
 						android:textSize="15sp" />
 
@@ -137,7 +152,8 @@
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Normal"
-						android:textAlignment="textStart"
+						android:textAlignment="center"
+						android:layout_marginBottom="5dp"
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
@@ -149,7 +165,8 @@
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Large"
-						android:textAlignment="textStart"
+						android:textAlignment="center"
+						android:layout_marginBottom="5dp"
 						android:textColor="@color/black"
 						android:textSize="19sp" />
 
@@ -161,27 +178,20 @@
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Very Large"
-						android:textAlignment="textStart"
+						android:textAlignment="center"
+						android:layout_marginBottom="5dp"
 						android:textColor="@color/black"
 						android:textSize="21sp" />
 
 				</LinearLayout>
 
-				<TextView
-					android:id="@+id/currentFontSize"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="10dp"
-					android:fontFamily="@font/opensans_semibold"
-					android:text="Current Font Size: "
-					android:textColor="@color/black"
-					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/saveBtn"
 					android:layout_width="150dp"
 					android:layout_height="60dp"
 					android:layout_marginTop="20dp"
+					android:layout_marginBottom="20dp"
 					android:background="@drawable/custom_button"
 					android:fontFamily="@font/opensans_semibold"
 					android:text="Save"

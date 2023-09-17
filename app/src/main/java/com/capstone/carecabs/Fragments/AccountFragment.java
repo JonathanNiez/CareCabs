@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,7 +68,7 @@ public class AccountFragment extends Fragment {
 
 		context = getContext();
 		initializeNetworkChecker();
-
+		getCurrentFontSizeFromUserSetting();
 		FirebaseApp.initializeApp(context);
 
 		checkUserIfRegisterComplete();
@@ -118,6 +119,132 @@ public class AccountFragment extends Fragment {
 			Intent intent = new Intent(context, LoginActivity.class);
 			startActivity(intent);
 			getActivity().finish();
+		}
+	}
+
+	private void getCurrentFontSizeFromUserSetting() {
+
+		switch (StaticDataPasser.storeFontSize) {
+			case 15:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+
+				break;
+
+			case 17:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				break;
+
+			case 19:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+
+				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+
+				binding.editProfileBtn.setHeight(62);
+				binding.changePasswordBtn.setHeight(62);
+				binding.editProfileBtn.setHeight(62);
+				binding.aboutBtn.setHeight(62);
+				binding.contactUsBtn.setHeight(62);
+				binding.signOutBtn.setHeight(62);
+				break;
+
+			case 21:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+				binding.editProfileBtn.setHeight(64);
+				binding.changePasswordBtn.setHeight(64);
+				binding.editProfileBtn.setHeight(64);
+				binding.aboutBtn.setHeight(64);
+				binding.contactUsBtn.setHeight(64);
+				binding.signOutBtn.setHeight(64);
+
+				break;
+			default:
+				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+
+				break;
 		}
 	}
 

@@ -45,5 +45,8 @@
 	<string name="senior_id_scan_required_string">Valid Senior Citizen ID is Required to be scanned for Verification</string>
 
 	<string name="string_tap_the_id_scan_below">Tap the Scan ID button below to scan your ID</string>
+
 	<string name="string_driver_license_scan">Driver\'s License is Required to be scanned for Verification</string>
+
+	<string name="driver_availability_info">Your availability will automatically updated once you\'re transporting a passenger</string>
 </resources>

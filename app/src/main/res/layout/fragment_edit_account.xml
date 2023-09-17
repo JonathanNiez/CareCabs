@@ -54,7 +54,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Edit Account"
                             android:textColor="@color/black"
-                            android:textSize="25sp" />
+                            android:textSize="20sp" />
 
 
                     </RelativeLayout>
