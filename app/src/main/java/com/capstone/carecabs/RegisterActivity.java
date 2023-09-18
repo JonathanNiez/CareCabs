@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
 	private GoogleSignInOptions googleSignInOptions;
 	private Calendar calendar;
 	private Date date;
-	private String getUserID;
+	private String getUserID, profilePictureUrl = "default";
 	private final String TAG = "Register";
 	private boolean shouldExit = false;
 	private Intent intent;
@@ -241,7 +241,6 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("userID", userID);
 		registerUser.put("email", email);
 		registerUser.put("userType", userType);
-		registerUser.put("profilePicture", "default");
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);

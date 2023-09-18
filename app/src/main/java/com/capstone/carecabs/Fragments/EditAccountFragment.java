@@ -38,6 +38,7 @@ import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -50,6 +51,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -76,12 +78,10 @@ public class EditAccountFragment extends Fragment {
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
-	private StorageReference storageRef;
-	private StorageReference imagesRef;
-	private StorageReference fileRef;
-	private RequestManager requestManager;
 	private DocumentReference documentReference;
-
+	private StorageReference storageReference, imageRef;
+	private FirebaseStorage firebaseStorage;
+	private RequestManager requestManager;
 	private FragmentEditAccountBinding binding;
 
 	@Override
@@ -115,10 +115,11 @@ public class EditAccountFragment extends Fragment {
 		requestManager = Glide.with(context);
 		FirebaseApp.initializeApp(context);
 
-		storageRef = FirebaseStorage.getInstance().getReference();
-		imagesRef = storageRef.child("images");
-
 		loadUserProfileInfo();
+
+		binding.imgBtnProfilePic.setOnClickListener(v -> {
+			showCameraOrGalleryOptionsDialog();
+		});
 
 		binding.editFirstnameBtn.setOnClickListener(v -> {
 			showEditFirstNameDialog();
@@ -147,13 +148,6 @@ public class EditAccountFragment extends Fragment {
 		binding.imgBtnProfilePic.setOnClickListener(v -> {
 			showOptionsDialog();
 			checkPermission();
-
-//            ImagePicker.with(this)
-//                    .crop()                    //Crop image(Optional), Check Customization for more option
-//                    .compress(1024)            //Final image size will be less than 1 MB(Optional)
-//                    .maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-//                    .start();
-
 		});
 
 		binding.scanIDBtn.setOnClickListener(v -> {
@@ -277,20 +271,6 @@ public class EditAccountFragment extends Fragment {
 				binding.editBirthdateBtn.setHeight(64);
 				binding.editDisabilityBtn.setHeight(64);
 				binding.editMedConBtn.setHeight(64);
-
-				break;
-			default:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
 
 				break;
 		}
@@ -813,39 +793,86 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		fileRef = imagesRef.child(imageUri.getLastPathSegment());
-		fileRef.putFile(imageUri).addOnCompleteListener(task -> {
-			if (task.isSuccessful()) {
-				fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		storageReference = firebaseStorage.getReference();
+
+		userID = FirebaseMain.getUser().getUid();
+
+		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		UploadTask uploadTask = imageRef.putFile(imageUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+				.addOnSuccessListener(uri -> {
 
 					String imageUrl = uri.toString();
-					Map<String, Object> data = new HashMap<>();
-					data.put("profilePicUrl", uri.toString());
-					binding.imgBtnProfilePic.setImageURI(imageUri);
-					uploadImageUriInDatabase(imageUrl);
+					storeImageUrlInFireStore(imageUrl);
+
+					Glide.with(context).load(uri).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
 
 				}).addOnFailureListener(e -> {
 
-					showProfilePicUpdateFailed();
+					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
-				});
-			} else {
-				showProfilePicUpdateFailed();
-				Log.e(TAG, String.valueOf(task.getException()));
-			}
+
+				})).addOnFailureListener(e -> {
+
+			Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+			Log.e(TAG, e.getMessage());
+
 		});
 	}
 
-	private void uploadImageUriInDatabase(String xImageUrl) {
-		if (FirebaseMain.getUser() != null) {
-			userID = FirebaseMain.getUser().getUid();
+	private void storeImageUrlInFireStore(String imageUrl) {
+		userID = FirebaseMain.getUser().getUid();
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection).document(userID);
 
+		Map<String, Object> profilePicture = new HashMap<>();
+		profilePicture.put("profilePicture", imageUrl);
 
-		} else {
-			intent = new Intent(getActivity(), LoginActivity.class);
-			startActivity(intent);
+		documentReference.update(profilePicture)
+				.addOnSuccessListener(unused ->
 
-			Log.e(TAG, "currentUser is null");
+						Toast.makeText(context, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+
+				.addOnFailureListener(e -> {
+
+					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, e.getMessage());
+
+				});
+	}
+
+	private void showCameraOrGalleryOptionsDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+
+		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
+		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+		openCameraBtn.setOnClickListener(v -> {
+			openCamera();
+		});
+
+		openGalleryBtn.setOnClickListener(v -> {
+			openGallery();
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeCameraOrGalleryOptionsDialog();
+		});
+
+		builder.setView(dialogView);
+
+		cameraGalleryOptionsDialog = builder.create();
+		cameraGalleryOptionsDialog.show();
+	}
+
+	private void closeCameraOrGalleryOptionsDialog() {
+		if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+			cameraGalleryOptionsDialog.dismiss();
 		}
 	}
 

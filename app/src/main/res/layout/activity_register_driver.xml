@@ -60,20 +60,47 @@
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgBtnProfilePic"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/textView"
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/account"
+                app:civ_border_color="@color/black"
+                app:civ_border_width="2dp" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imgBtnProfilePic"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:textAlignment="center"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/opensans_semibold"
+                android:text="Tap/Click on the picture icon to change your profile picture"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
             <LinearLayout
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textView"
+                android:layout_below="@id/textView4"
                 android:gravity="center"
+                android:layout_margin="20dp"
                 android:orientation="vertical">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
                     android:background="@drawable/edit_text"
                     app:endIconMode="clear_text"
                     app:helperText="*Required"
@@ -87,6 +114,7 @@
                         android:background="@drawable/edit_text"
                         android:fontFamily="@font/opensans_semibold"
                         android:hint="FIRSTNAME"
+                        android:textSize="17sp"
                         android:textColor="@color/black"
                         android:textColorHint="@color/black" />
 
@@ -96,8 +124,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
                     android:background="@drawable/edit_text"
                     app:endIconMode="clear_text"
                     app:helperText="*Required"
@@ -111,6 +137,7 @@
                         android:background="@drawable/edit_text"
                         android:fontFamily="@font/opensans_semibold"
                         android:hint="LASTNAME"
+                        android:textSize="17sp"
                         android:textColor="@color/black"
                         android:textColorHint="@color/black" />
 
@@ -123,8 +150,6 @@
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
                     >
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -146,7 +171,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Date of Birth"
                             android:textColor="@color/black"
-                            android:textSize="15sp"
+                            android:textSize="17sp"
                             />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -169,7 +194,7 @@
                             android:fontFamily="@font/opensans_bold"
                             android:text="Age"
                             android:textColor="@color/black"
-                            android:textSize="15sp" />
+                            android:textSize="17sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -197,8 +222,6 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="5dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
                     android:background="@color/dark_gray" />
 
             </LinearLayout>

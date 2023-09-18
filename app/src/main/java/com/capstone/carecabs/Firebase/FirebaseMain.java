@@ -11,6 +11,13 @@ public class FirebaseMain {
     private static FirebaseAuth auth;
     private static FirebaseStorage firebaseStorage;
 
+    public static FirebaseStorage getFirebaseStorageInstance(){
+        if (firebaseStorage == null){
+            firebaseStorage = FirebaseStorage.getInstance();
+        }
+        return firebaseStorage;
+    }
+
     public static FirebaseFirestore getFireStoreInstance() {
         if (firebaseFirestore == null) {
             firebaseFirestore = FirebaseFirestore.getInstance();

@@ -1,5 +1,7 @@
 package com.capstone.carecabs;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -7,21 +9,30 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -30,7 +41,11 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterDriverBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -40,15 +55,23 @@ import java.util.Objects;
 
 public class RegisterDriverActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
-	private String userID;
+	private StorageReference storageReference, imageRef;
+	private FirebaseStorage firebaseStorage;
+	private Uri imageUri;
+	private static final int CAMERA_REQUEST_CODE = 1;
+	private static final int GALLERY_REQUEST_CODE = 2;
+	private static final int CAMERA_PERMISSION_REQUEST = 101;
+	private static final int STORAGE_PERMISSION_REQUEST = 102;
+	private String userID, profilePictureUrl = "default";
 	private final String TAG = "RegisterDriver";
 	private String verificationStatus = "Not Verified";
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
-	private Intent intent;
+	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
 	private AlertDialog noInternetDialog, registerFailedDialog,
-			idNotScannedDialog, cancelRegisterDialog, birthdateInputChoiceDialog;
+			idNotScannedDialog, cancelRegisterDialog, birthdateInputChoiceDialog,
+			cameraGalleryOptionsDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterDriverBinding binding;
@@ -62,10 +85,15 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		initializeNetworkChecker();
+		checkPermission();
 
 		FirebaseApp.initializeApp(this);
 
 		StaticDataPasser.storeRegisterUserType = "Driver";
+
+		binding.imgBtnProfilePic.setOnClickListener(view -> {
+			showCameraOrGalleryOptionsDialog();
+		});
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
@@ -95,7 +123,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(this, ScanIDActivity.class);
 			startActivity(intent);
@@ -119,7 +146,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			String stringLastname = binding.lastnameEditText.getText().toString().trim();
 
 			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-					|| StaticDataPasser.storeCurrentBirthDate == null
+					|| StaticDataPasser.storeBirthdate == null
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
@@ -169,6 +196,8 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
+		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
+
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
@@ -177,43 +206,52 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
 	                                           String verificationStatus) {
-		userID = FirebaseMain.getUser().getUid();
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
 
-		Map<String, Object> registerUser = new HashMap<>();
-		registerUser.put("firstname", firstname);
-		registerUser.put("lastname", lastname);
-		registerUser.put("age", StaticDataPasser.storeCurrentAge);
-		registerUser.put("isAvailable", true);
-		registerUser.put("birthdate", StaticDataPasser.storeCurrentBirthDate);
-		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
-		registerUser.put("driverRating", 0.0);
-		registerUser.put("passengersTransported", 0);
-		registerUser.put("verificationStatus", verificationStatus);
-		registerUser.put("isRegisterComplete", true);
+		if (FirebaseMain.getUser() != null) {
+			userID = FirebaseMain.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(userID);
 
-		documentReference.update(registerUser).addOnSuccessListener(unused -> {
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
+			Map<String, Object> registerUser = new HashMap<>();
+			registerUser.put("firstname", firstname);
+			registerUser.put("lastname", lastname);
+			registerUser.put("age", StaticDataPasser.storeCurrentAge);
+			registerUser.put("isAvailable", true);
+			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
+			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
+			registerUser.put("driverRating", 0.0);
+			registerUser.put("passengersTransported", 0);
+			registerUser.put("verificationStatus", verificationStatus);
+			registerUser.put("isRegisterComplete", true);
 
-			showRegisterSuccessNotification();
+			documentReference.update(registerUser).addOnSuccessListener(unused -> {
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
+				uploadImageToFirebaseStorage(StaticDataPasser.storeUri);
+				showRegisterSuccessNotification();
+
+				intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
+				startActivity(intent);
+				finish();
+
+			}).addOnFailureListener(e -> {
+				showRegisterFailedDialog();
+
+				binding.progressBarLayout.setVisibility(View.GONE);
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.scanIDLayout.setVisibility(View.VISIBLE);
+
+				Log.e(TAG, e.getMessage());
+			});
+		} else {
+			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
 			startActivity(intent);
 			finish();
-
-		}).addOnFailureListener(e -> {
-			showRegisterFailedDialog();
-
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
-
-			Log.e(TAG, e.getMessage());
-		});
+		}
 	}
 
 	private void updateCancelledRegister(String userID) {
@@ -243,6 +281,27 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		});
 	}
 
+	private void updateInterruptedCancelledRegister(String userID) {
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection)
+				.document(userID);
+
+		Map<String, Object> updateRegister = new HashMap<>();
+		updateRegister.put("isRegisterComplete", false);
+		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+
+			FirebaseMain.signOutUser();
+
+		}).addOnFailureListener(e -> {
+
+			FirebaseMain.signOutUser();
+
+			Log.e(TAG, e.getMessage());
+		});
+	}
+
+
 	private void showIDNotScannedDialog(String firstname, String lastname) {
 		builder = new AlertDialog.Builder(this);
 
@@ -269,6 +328,141 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private void closeIDNotScannedDialog() {
 		if (idNotScannedDialog != null && idNotScannedDialog.isShowing()) {
 			idNotScannedDialog.dismiss();
+		}
+	}
+
+
+	private void checkPermission() {
+		// Check for camera permission
+		if (ContextCompat.checkSelfPermission(RegisterDriverActivity.this,
+				android.Manifest.permission.CAMERA)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(RegisterDriverActivity.this,
+					new String[]{android.Manifest.permission.CAMERA},
+					CAMERA_PERMISSION_REQUEST);
+		}
+
+		// Check for storage permission
+		if (ContextCompat.checkSelfPermission(RegisterDriverActivity.this,
+				android.Manifest.permission.READ_EXTERNAL_STORAGE)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(RegisterDriverActivity.this,
+					new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					STORAGE_PERMISSION_REQUEST);
+		}
+	}
+
+	private void openGallery() {
+		galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		galleryIntent.setType("image/*");
+		if (galleryIntent.resolveActivity(this.getPackageManager()) != null) {
+			startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+				cameraGalleryOptionsDialog.dismiss();
+			}
+			Toast.makeText(this, "Opened Gallery", Toast.LENGTH_LONG).show();
+
+		} else {
+			Toast.makeText(this, "No gallery app found", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private void openCamera() {
+		cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (cameraIntent.resolveActivity(this.getPackageManager()) != null) {
+			startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+				cameraGalleryOptionsDialog.dismiss();
+			}
+			Toast.makeText(this, "Opened Camera", Toast.LENGTH_LONG).show();
+
+
+		} else {
+			Toast.makeText(this, "No camera app found", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	private Uri getImageUri(Bitmap bitmap) {
+		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+		String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null);
+		return Uri.parse(path);
+	}
+
+	private void uploadImageToFirebaseStorage(Uri imageUri) {
+		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		storageReference = firebaseStorage.getReference();
+
+		userID = FirebaseMain.getUser().getUid();
+
+		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		UploadTask uploadTask = imageRef.putFile(imageUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+						.addOnSuccessListener(uri -> {
+							String imageUrl = uri.toString();
+
+							storeImageUrlInFireStore(imageUrl);
+
+						}).addOnFailureListener(e -> {
+							Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+							Log.e(TAG, e.getMessage());
+
+						})).addOnFailureListener(e -> {
+					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, e.getMessage());
+
+				});
+	}
+
+	private void storeImageUrlInFireStore(String imageUrl) {
+		userID = FirebaseMain.getUser().getUid();
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection).document(userID);
+
+		Map<String, Object> profilePicture = new HashMap<>();
+		profilePicture.put("profilePicture", imageUrl);
+
+		documentReference.update(profilePicture)
+				.addOnSuccessListener(unused ->
+						Toast.makeText(RegisterDriverActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+				.addOnFailureListener(e -> {
+					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, e.getMessage());
+				});
+	}
+
+	private void showCameraOrGalleryOptionsDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+
+		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
+		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+		openCameraBtn.setOnClickListener(v -> {
+			openCamera();
+		});
+
+		openGalleryBtn.setOnClickListener(v -> {
+			openGallery();
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeCameraOrGalleryOptionsDialog();
+		});
+
+		builder.setView(dialogView);
+
+		cameraGalleryOptionsDialog = builder.create();
+		cameraGalleryOptionsDialog.show();
+	}
+
+	private void closeCameraOrGalleryOptionsDialog() {
+		if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
+			cameraGalleryOptionsDialog.dismiss();
 		}
 	}
 
@@ -351,24 +545,103 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-		EditText monthEditText = dialogView.findViewById(R.id.monthEditText);
+		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
+		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
+		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
 		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
 		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-		ImageButton openDatePickerImgBtn = dialogView.findViewById(R.id.openDatePickerImgBtn);
+		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
 
-		openDatePickerImgBtn.setOnClickListener(view -> {
-			showDatePickerDialog();
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				this,
+				R.array.month,
+				android.R.layout.simple_spinner_item
+		);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerMonth.setAdapter(adapter);
+		spinnerMonth.setSelection(0);
+		spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if (position == 0) {
+					spinnerMonth.setSelection(0);
+				} else {
+					String selectedMonth = parent.getItemAtPosition(position).toString();
+					StaticDataPasser.storeSelectedMonth = selectedMonth;
+
+					monthTextView.setText(selectedMonth);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				spinnerMonth.setSelection(0);
+			}
+		});
+
+		dayEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+				String enteredText = charSequence.toString();
+				dayTextView.setText(enteredText);
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+
+			}
+		});
+
+		yearEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+				String enteredText = charSequence.toString();
+				yearTextView.setText(enteredText);
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+
+			}
 		});
 
 		doneBtn.setOnClickListener(view -> {
-			String month = monthEditText.getText().toString();
 			String year = yearEditText.getText().toString();
 			String day = dayEditText.getText().toString();
-			String fullBirthdate = month + "-" + day + "-" + year;
+			if (StaticDataPasser.storeSelectedMonth.equals("Month")
+					|| year.isEmpty() || day.isEmpty()) {
 
-			binding.birthdateBtn.setText(fullBirthdate);
+				Toast.makeText(RegisterDriverActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+			} else {
+				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
 
-			closeBirthdateInputChoiceDialog();
+				//Calculate age
+				Calendar today = Calendar.getInstance();
+				int age = today.get(Calendar.YEAR) - Integer.parseInt(year);
+
+				// Check if the user's birthday has already happened this year or not
+				if (today.get(Calendar.DAY_OF_YEAR) < Integer.parseInt(year)) {
+					age--;
+				}
+
+				StaticDataPasser.storeBirthdate = fullBirthdate;
+				StaticDataPasser.storeCurrentAge = age;
+
+				binding.birthdateBtn.setText(fullBirthdate);
+				binding.ageBtn.setText(String.valueOf(age));
+
+				closeBirthdateInputChoiceDialog();
+			}
 		});
 
 		cancelBtn.setOnClickListener(v -> {
@@ -482,4 +755,61 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerFailedDialog.dismiss();
 		}
 	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == Activity.RESULT_OK) {
+			if (requestCode == CAMERA_REQUEST_CODE) {
+				if (data != null) {
+
+					Bundle extras = data.getExtras();
+					Bitmap imageBitmap = (Bitmap) extras.get("data");
+
+					imageUri = getImageUri(imageBitmap);
+					StaticDataPasser.storeUri = imageUri;
+					binding.imgBtnProfilePic.setImageURI(imageUri);
+
+					Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+
+				} else {
+					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+				}
+
+			} else if (requestCode == GALLERY_REQUEST_CODE) {
+				if (data != null) {
+
+					imageUri = data.getData();
+					StaticDataPasser.storeUri = imageUri;
+					binding.imgBtnProfilePic.setImageURI(imageUri);
+
+					Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
+
+				} else {
+					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+				}
+			}
+
+		} else {
+			Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (requestCode == CAMERA_PERMISSION_REQUEST) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.i(TAG, "Camera Permission Granted");
+			}
+		} else if (requestCode == STORAGE_PERMISSION_REQUEST) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.i(TAG, "Gallery Permission Granted");
+			}
+		} else {
+			Log.e(TAG, "Permission Denied");
+		}
+	}
+
 }

@@ -24,7 +24,10 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
 		binding = ActivityRequestLocationPermissionBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		requestLocationPermission();
+		binding.allowLocationBtn.setOnClickListener(view -> {
+
+			requestLocationPermission();
+		});
 	}
 
 	private void requestLocationPermission() {

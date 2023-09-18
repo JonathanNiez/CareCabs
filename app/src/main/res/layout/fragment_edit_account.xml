@@ -27,7 +27,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
-                    android:elevation="8dp"
+                    app:cardElevation="10dp"
                     app:cardBackgroundColor="@color/light_gray">
 
                     <RelativeLayout
@@ -75,19 +75,6 @@
                     app:civ_border_color="@color/black"
                     app:civ_border_width="2dp" />
 
-
-                <TextView
-                    android:id="@+id/fullNameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/textView2"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/opensans_bold"
-                    android:text="Name"
-                    android:textColor="@color/black"
-                    android:textSize="23sp" />
-
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="match_parent"
@@ -99,9 +86,27 @@
                     android:textAlignment="center"
                     android:layout_marginTop="10dp"
                     android:fontFamily="@font/opensans_semibold"
-                    android:text="Click the picture to change your profile pic"
+                    android:text="Tap/Click on the picture icon to change your profile picture"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/fullNameTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textView2"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/custom_card_view"
+                    android:fontFamily="@font/opensans_bold"
+                    android:padding="5dp"
+                    android:text="Name"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"

@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -40,10 +39,8 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -85,7 +82,6 @@ public class HomeFragment extends Fragment {
 		initializeNetworkChecker();
 		getCurrentFontSizeFromUserSetting();
 		checkUserIfRegisterComplete();
-		getUserType();
 
 		FirebaseApp.initializeApp(context);
 
@@ -180,7 +176,7 @@ public class HomeFragment extends Fragment {
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 
-			getUserType();
+			getUserTypeAndLoadProfileInfo();
 		}
 	}
 
@@ -274,19 +270,11 @@ public class HomeFragment extends Fragment {
 							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
 							break;
-						default:
-							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-							break;
 					}
-
 				} else {
+
+					Log.e(TAG, "Not Exist");
+
 				}
 			}).addOnFailureListener(new OnFailureListener() {
 				@Override
@@ -311,21 +299,18 @@ public class HomeFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
+					.collection(StaticDataPasser.userCollection)
+					.document(getUserID);
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {
 					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
-					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
 					String getRegisterUserType = documentSnapshot.getString("userType");
 
-					StaticDataPasser.storeUserType = getRegisterUserType;
-
-					if (!getUserRegisterStatus) {
+					if (getUserRegisterStatus) {
+						getUserTypeAndLoadProfileInfo();
+					} else {
+						StaticDataPasser.storeUserType = getRegisterUserType;
 						showRegisterNotCompleteDialog();
-					}
-
-					if (getVerificationStatus.equals("Not Verified")) {
-						showUserNotVerifiedNotification();
 					}
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
@@ -340,7 +325,7 @@ public class HomeFragment extends Fragment {
 	}
 
 
-	private void getUserType() {
+	private void getUserTypeAndLoadProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -350,6 +335,12 @@ public class HomeFragment extends Fragment {
 					binding.progressBarLayout.setVisibility(View.GONE);
 
 					String getUserType = documentSnapshot.getString("userType");
+					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+
+					if (getVerificationStatus.equals("Not Verified")) {
+						showUserNotVerifiedNotification();
+					}
+
 					switch (getUserType) {
 						case "Driver":
 							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
@@ -407,7 +398,7 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void showRegisterNotCompleteDialog() {
-		builder = new AlertDialog.Builder(getContext());
+		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);

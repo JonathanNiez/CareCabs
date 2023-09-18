@@ -102,6 +102,7 @@
 					android:layout_centerHorizontal="true"
 					android:layout_marginStart="20dp"
 					android:layout_marginEnd="20dp"
+					android:layout_marginBottom="20dp"
 					app:cardElevation="5dp"
 					app:cardCornerRadius="10dp">
 

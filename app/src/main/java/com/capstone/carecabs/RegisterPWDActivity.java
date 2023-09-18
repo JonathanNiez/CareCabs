@@ -406,25 +406,10 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-		EditText monthEditText = dialogView.findViewById(R.id.monthEditText);
 		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
 		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-		ImageButton openDatePickerImgBtn = dialogView.findViewById(R.id.openDatePickerImgBtn);
 
-		openDatePickerImgBtn.setOnClickListener(view -> {
-			showDatePickerDialog();
-		});
 
-		doneBtn.setOnClickListener(view -> {
-			String month = monthEditText.getText().toString();
-			String year = yearEditText.getText().toString();
-			String day = dayEditText.getText().toString();
-			String fullBirthdate = month + "-" + day + "-" + year;
-
-			binding.birthdateBtn.setText(fullBirthdate);
-
-			closeBirthdateInputChoiceDialog();
-		});
 
 		cancelBtn.setOnClickListener(v -> {
 			closeBirthdateInputChoiceDialog();

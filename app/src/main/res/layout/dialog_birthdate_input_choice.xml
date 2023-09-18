@@ -1,162 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:orientation="vertical"
+	android:background="@color/yellow"
 	android:gravity="center"
-	android:background="@color/yellow">
+	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
-		android:elevation="4dp"
-		app:cardCornerRadius="8dp">
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			android:gravity="center">
+			android:gravity="center"
+			android:orientation="vertical">
 
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:text="Enter Date of Birth manually"
-				android:textAlignment="center"
-				android:fontFamily="@font/opensans_semibold"
-				android:textColor="@color/black"
-				android:textSize="18sp"
-				android:layout_marginEnd="20dp"
 				android:layout_marginStart="20dp"
-				android:layout_marginTop="10dp"
-				android:padding="5dp"/>
+				android:layout_marginTop="20dp"
+				android:layout_marginEnd="20dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Enter your Date of Birth"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="20dp"
+				android:orientation="vertical">
+
+				<com.google.android.material.textfield.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginEnd="2dp"
+					android:background="@drawable/edit_text"
+					app:helperText="Month"
+					android:layout_marginBottom="10dp">
+
+					<androidx.appcompat.widget.AppCompatSpinner
+						android:id="@+id/spinnerMonth"
+						android:layout_width="match_parent"
+						android:layout_height="60dp"
+						android:background="@drawable/edit_text"
+						android:theme="@style/SpinnerTextStyle"/>
+
+				</com.google.android.material.textfield.TextInputLayout>
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="horizontal">
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_marginEnd="5dp"
+						android:layout_weight="1"
+						android:background="@drawable/edit_text"
+						app:endIconMode="clear_text"
+						app:helperText="Day"
+						app:helperTextTextColor="@color/black">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/dayEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/edit_text"
+							android:fontFamily="@font/opensans_bold"
+							android:hint="DD"
+							android:inputType="number"
+							android:maxLength="2"
+							android:textColor="@color/black"
+							android:textColorHint="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_weight="2"
+						android:background="@drawable/edit_text"
+						app:endIconMode="clear_text"
+						app:helperText="Year"
+						app:helperTextTextColor="@color/black">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/yearEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/edit_text"
+							android:fontFamily="@font/opensans_bold"
+							android:hint="YYYY"
+							android:inputType="number"
+							android:maxLength="4"
+							android:textColor="@color/black"
+							android:textColorHint="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+				</LinearLayout>
+
+
+			</LinearLayout>
 
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:orientation="horizontal"
-				android:layout_margin="20dp">
+				android:gravity="center"
+				android:layout_marginStart="20dp"
+				android:layout_marginEnd="20dp"
+				android:layout_marginBottom="20dp"
+				>
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:background="@drawable/edit_text"
-					app:endIconMode="clear_text"
-					app:helperText="Month"
-					app:helperTextTextColor="@color/black"
-					android:layout_marginEnd="2dp"
-					>
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/monthEditText"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:background="@drawable/edit_text"
-						android:hint="MM"
-						android:inputType="number"
-						android:maxLength="2"
-						android:fontFamily="@font/opensans_bold"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="18sp"
-						/>
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="0dp"
-					android:layout_height="wrap_content"
-					android:layout_weight="1"
-					android:background="@drawable/edit_text"
-					app:endIconMode="clear_text"
-					app:helperText="Day"
-					app:helperTextTextColor="@color/black"
-					android:layout_marginEnd="2dp"
-					>
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/dayEditText"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:background="@drawable/edit_text"
-						android:hint="DD"
-						android:inputType="number"
-						android:maxLength="2"
-						android:fontFamily="@font/opensans_bold"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="18sp"
-						/>
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-				<com.google.android.material.textfield.TextInputLayout
+				<TextView
+					android:id="@+id/monthTextView"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="2"
-					android:background="@drawable/edit_text"
-					app:endIconMode="clear_text"
-					app:helperText="Year"
-					app:helperTextTextColor="@color/black"
-					>
+					android:fontFamily="@font/opensans_bold"
+					android:text="Month"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/yearEditText"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:background="@drawable/edit_text"
-						android:hint="YYYY"
-						android:inputType="number"
-						android:maxLength="4"
-						android:fontFamily="@font/opensans_bold"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="18sp"
-						/>
+				<TextView
+					android:id="@+id/dayTextView"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:fontFamily="@font/opensans_bold"
+					android:text="Day"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
 
-				</com.google.android.material.textfield.TextInputLayout>
+				<TextView
+					android:id="@+id/yearTextView"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:fontFamily="@font/opensans_bold"
+					android:text="Year"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
 
 			</LinearLayout>
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="Or"
-				android:textAlignment="center"
-				android:fontFamily="@font/opensans_bold"
-				android:textColor="@color/black"
-				android:textSize="25sp"
-				android:padding="5dp"
-				android:background="@drawable/custom_card_view"
-				/>
-
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:text="Open Date Picker"
-				android:textAlignment="center"
-				android:fontFamily="@font/opensans_semibold"
-				android:textColor="@color/black"
-				android:textSize="18sp"
-				android:layout_marginEnd="20dp"
-				android:layout_marginStart="20dp"
-				android:layout_marginTop="20dp"
-				android:layout_marginBottom="10dp"
-				android:padding="5dp"/>
-
-			<ImageButton
-				android:id="@+id/openDatePickerImgBtn"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:background="@drawable/custom_button"
-				android:backgroundTint="@color/gray"
-				android:src="@drawable/calendar_64"
-				android:textSize="20sp"
-				android:padding="10dp"
-				android:layout_marginBottom="20dp"/>
 
 		</LinearLayout>
 
