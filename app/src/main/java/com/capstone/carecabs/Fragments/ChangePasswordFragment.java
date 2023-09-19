@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,17 +21,17 @@ import androidx.fragment.app.FragmentTransaction;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.ResetPasswordActivity;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentChangePasswordBinding;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserInfo;
-
-import org.mindrot.jbcrypt.BCrypt;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class ChangePasswordFragment extends Fragment {
+	private DocumentReference documentReference;
 	private AlertDialog.Builder builder;
 	private AlertDialog passwordResetConfirmationDialog, cancelPasswordResetDialog,
 			passwordUpdateSuccessDialog, passwordUpdateFailedDialog;
@@ -55,7 +56,7 @@ public class ChangePasswordFragment extends Fragment {
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		checkUserSignInMethod();
+		checkUserRegisterMethod();
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			backToAccountFragment();
@@ -84,23 +85,23 @@ public class ChangePasswordFragment extends Fragment {
 		return view;
 	}
 
-	private void checkUserSignInMethod() {
+	private void checkUserRegisterMethod() {
 		if (FirebaseMain.getUser() != null) {
-			boolean isGoogleSignIn = false;
-			for (UserInfo userInfo : FirebaseMain.getUser().getProviderData()) {
-				if (userInfo.getProviderId().equals(GoogleAuthProvider.PROVIDER_ID)) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
-					isGoogleSignIn = true;
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null & documentSnapshot.exists()) {
+					String getRegisterType = documentSnapshot.getString("registerType");
 
-					break;
-
+					if (getRegisterType.equals("google")) {
+						binding.googleSignInLayout.setVisibility(View.VISIBLE);
+						binding.editTextLayout.setVisibility(View.GONE);
+						binding.resetPasswordBtn.setVisibility(View.GONE);
+					}
 				}
-			}
-			if (isGoogleSignIn) {
-				binding.resetPasswordBtn.setVisibility(View.GONE);
-				binding.editTextLayout.setVisibility(View.GONE);
-				binding.googleSignInLayout.setVisibility(View.VISIBLE);
-			}
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 		}
 	}
 
@@ -112,7 +113,7 @@ public class ChangePasswordFragment extends Fragment {
 	private void showPasswordUpdateSuccessDialog(String email) {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.password_change_success_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_success, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 		TextView emailTextView = dialogView.findViewById(R.id.emailTextView);
@@ -168,7 +169,7 @@ public class ChangePasswordFragment extends Fragment {
 	private void showPasswordUpdateFailedDialog() {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.password_change_failed_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

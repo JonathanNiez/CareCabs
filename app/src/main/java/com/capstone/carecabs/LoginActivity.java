@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
 			finish();
 		});
 
-		binding.googleImgBtn.setOnClickListener(v -> {
+		binding.loginUsingGoogleBtn.setOnClickListener(v -> {
 			showPleaseWaitDialog();
 
 			intent = googleSignInClient.getSignInIntent();
@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
 
 			} else {
 				showPleaseWaitDialog();
-				binding.googleSignInLayout.setVisibility(View.GONE);
+				binding.loginUsingGoogleBtn.setVisibility(View.GONE);
 
 				loginUser(stringEmail, stringPassword);
 			}
@@ -238,14 +238,14 @@ public class LoginActivity extends AppCompatActivity {
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
-		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-		Button noBtn = dialogView.findViewById(R.id.noBtn);
+		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		yesBtn.setOnClickListener(v -> {
+		exitBtn.setOnClickListener(v -> {
 			finish();
 		});
 
-		noBtn.setOnClickListener(v -> {
+		cancelBtn.setOnClickListener(v -> {
 			closeExitConfirmationDialog();
 		});
 
@@ -323,7 +323,7 @@ public class LoginActivity extends AppCompatActivity {
 	private void showIncorrectEmailOrPasswordDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.incorrect_email_or_password_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_incorrect_email_or_password, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
@@ -361,7 +361,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.register_using_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_register_using, null);
 
 		ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
 		ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
@@ -457,7 +457,7 @@ public class LoginActivity extends AppCompatActivity {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
@@ -529,7 +529,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.login_failed_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_login_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

@@ -20,6 +20,13 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+				android:src="@drawable/help_64" />
+
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
@@ -33,9 +40,29 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+                android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_semibold"
-				android:text="@string/about_id_scan"
+				android:text="Do you want to cancel the ID Scanning?"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="ID Scanning is required for Verification"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="17sp" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Are you sure you want to cancel?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
@@ -43,6 +70,7 @@
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
+
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -54,27 +82,26 @@
 		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/okBtn"
-			android:layout_width="150dp"
-			android:layout_height="60dp"
+			android:id="@+id/noBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
 			android:layout_marginEnd="5dp"
 			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/dark_blue"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Ok"
+			android:text="No"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/nextBtn"
-			android:layout_width="150dp"
-			android:layout_height="60dp"
+			android:id="@+id/yesBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
 			android:layout_marginStart="5dp"
 			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/gray"
+			android:backgroundTint="@color/red"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Next"
-			android:textColor="@color/black"
+			android:text="Yes"
+			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 	</LinearLayout>

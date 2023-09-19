@@ -7,9 +7,51 @@
 	android:background="@color/background"
 	tools:context=".Fragments.AccountFragment">
 
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardBackgroundColor="@color/light_gray"
+		app:cardElevation="10dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/light_gray"
+				android:src="@drawable/back_50_2" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="My Profile"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
+
+
 	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -20,280 +62,228 @@
 				android:id="@+id/upperLayout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/rectangle_one">
+				android:layout_marginBottom="10dp"
+				android:background="@drawable/rectangle_one"
+				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
-					android:id="@+id/customActionBarLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_alignParentTop="true"
-					app:cardElevation="5dp"
-					app:cardBackgroundColor="@color/light_gray"
-					>
+					android:layout_centerHorizontal="true"
+					android:layout_margin="10dp"
+					app:cardCornerRadius="10dp"
+					app:cardElevation="5dp">
 
-					<RelativeLayout
+					<LinearLayout
 						android:layout_width="match_parent"
-						android:layout_height="wrap_content">
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="vertical">
 
-						<ImageButton
-							android:id="@+id/imgBackBtn"
-							android:layout_width="wrap_content"
+						<LinearLayout
+							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:layout_alignParentStart="true"
-							android:layout_alignParentTop="true"
+							android:gravity="center"
+							android:orientation="horizontal">
+
+							<de.hdodenhof.circleimageview.CircleImageView
+								android:id="@+id/profilePic"
+								android:layout_width="0dp"
+								android:layout_height="100dp"
+								android:layout_margin="20dp"
+								android:layout_weight="1"
+								android:elevation="5dp"
+								android:scaleType="centerCrop"
+								android:src="@drawable/account"
+								app:civ_border_color="@color/black"
+								app:civ_border_width="2dp" />
+
+							<LinearLayout
+								android:layout_width="0dp"
+								android:layout_height="wrap_content"
+								android:layout_marginEnd="20dp"
+								android:layout_weight="2"
+								android:gravity="center"
+								android:orientation="vertical">
+
+								<TextView
+									android:id="@+id/firstnameTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:fontFamily="@font/opensans_bold"
+									android:padding="5dp"
+									android:text="Firstname"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="22sp" />
+
+
+								<TextView
+									android:id="@+id/lastnameTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:fontFamily="@font/opensans_bold"
+									android:padding="5dp"
+									android:text="Lastname"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="22sp" />
+
+							</LinearLayout>
+
+
+						</LinearLayout>
+
+						<TextView
+							android:id="@+id/verificationStatusTextView"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							android:fontFamily="@font/opensans_semibold"
+							android:text="Verification Status"
+							android:textAlignment="center"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+						<TextView
+							android:id="@+id/idScannedTextView"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
 							android:layout_marginStart="10dp"
-							android:layout_marginTop="10dp"
 							android:layout_marginEnd="10dp"
 							android:layout_marginBottom="10dp"
-							android:background="@color/light_gray"
-							android:src="@drawable/back_50_2" />
-
-						<TextView
-							android:id="@+id/textView"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_centerInParent="true"
-							android:fontFamily="@font/opensans_bold"
-							android:text="Account"
-							android:textColor="@color/black"
-							android:textSize="20sp" />
-
-
-					</RelativeLayout>
-
-
-				</androidx.cardview.widget.CardView>
-
-				<de.hdodenhof.circleimageview.CircleImageView
-					android:id="@+id/profilePic"
-					android:layout_width="100dp"
-					android:layout_height="100dp"
-					android:layout_below="@id/customActionBarLayout"
-					android:layout_centerHorizontal="true"
-					android:layout_marginTop="20dp"
-					android:scaleType="centerCrop"
-					android:src="@drawable/account"
-					app:civ_border_color="@color/black"
-					app:civ_border_width="2dp" />
-
-
-				<TextView
-					android:id="@+id/fullNameTextView"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_below="@id/profilePic"
-					android:layout_centerHorizontal="true"
-					android:layout_marginStart="20dp"
-					android:layout_marginTop="10dp"
-					android:layout_marginEnd="20dp"
-					android:layout_marginBottom="10dp"
-					android:background="@drawable/custom_card_view"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="5dp"
-					android:text="Name"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="20sp" />
-
-				<androidx.cardview.widget.CardView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_below="@id/fullNameTextView"
-					android:layout_centerHorizontal="true"
-					android:layout_marginStart="20dp"
-					android:layout_marginEnd="20dp"
-					android:layout_marginBottom="20dp"
-					app:cardElevation="5dp"
-					app:cardCornerRadius="10dp">
-
-					<LinearLayout
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:gravity="center"
-						android:orientation="horizontal">
-
-						<TextView
-							android:id="@+id/userTypeTextView"
-							android:layout_width="0dp"
-							android:layout_height="wrap_content"
-							android:layout_margin="10dp"
-							android:layout_weight="2"
 							android:background="@drawable/custom_card_view"
-							android:backgroundTint="@color/background"
+							android:backgroundTint="@color/yellow"
+							android:elevation="5dp"
 							android:fontFamily="@font/opensans_semibold"
 							android:padding="5dp"
-							android:text="User Type"
+							android:text="You have not scanned your ID"
 							android:textAlignment="center"
-							android:textColor="@color/black"
+							android:textColor="@color/red"
 							android:textSize="17sp" />
 
-						<ImageView
-							android:id="@+id/userTypeImageView"
-							android:layout_width="0dp"
+						<LinearLayout
+							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:layout_margin="10dp"
-							android:layout_weight="1"
-							android:src="@drawable/driver_64" />
+							android:gravity="center"
+							android:orientation="horizontal">
+
+							<LinearLayout
+								android:layout_width="0dp"
+								android:layout_height="wrap_content"
+								android:layout_weight="2"
+								android:orientation="vertical">
+
+								<TextView
+									android:id="@+id/userTypeTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_margin="10dp"
+									android:background="@drawable/custom_card_view"
+									android:backgroundTint="@color/background"
+									android:elevation="5dp"
+									android:fontFamily="@font/opensans_semibold"
+									android:padding="5dp"
+									android:text="User Type"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<TextView
+									android:id="@+id/disabilityTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_marginStart="20dp"
+									android:layout_marginEnd="20dp"
+									android:layout_marginBottom="10dp"
+									android:fontFamily="@font/opensans_semibold"
+									android:text="Disability"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<TextView
+									android:id="@+id/medConTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_marginStart="20dp"
+									android:layout_marginEnd="20dp"
+									android:layout_marginBottom="10dp"
+									android:fontFamily="@font/opensans_semibold"
+									android:text="Medical Condition"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<TextView
+									android:id="@+id/driverStatusTextView1"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_marginStart="20dp"
+									android:layout_marginEnd="20dp"
+									android:layout_marginBottom="10dp"
+									android:fontFamily="@font/opensans_semibold"
+									android:text="Driver Status:"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<TextView
+									android:id="@+id/driverStatusTextView2"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_marginStart="20dp"
+									android:layout_marginEnd="20dp"
+									android:layout_marginBottom="10dp"
+									android:fontFamily="@font/opensans_semibold"
+									android:text="Available"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+
+							</LinearLayout>
+
+							<LinearLayout
+								android:layout_width="0dp"
+								android:layout_height="wrap_content"
+								android:layout_margin="10dp"
+								android:layout_weight="1"
+								android:gravity="center"
+								android:orientation="vertical">
+
+								<ImageView
+									android:id="@+id/userTypeImageView"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:src="@drawable/driver_64" />
+
+								<TextView
+									android:id="@+id/driverRatingTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/opensans_condensed_semibold"
+									android:text="Driver Ratings: "
+									android:textAlignment="center"
+									android:textColor="@color/blue"
+									android:textSize="17sp" />
+
+							</LinearLayout>
+
+
+						</LinearLayout>
 
 					</LinearLayout>
 
 				</androidx.cardview.widget.CardView>
 
-
 			</RelativeLayout>
-
-			<androidx.cardview.widget.CardView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				app:cardElevation="5dp"
-				app:cardCornerRadius="10dp">
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:gravity="center"
-					android:orientation="vertical">
-
-					<TextView
-						android:id="@+id/emailTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginTop="10dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:drawableStart="@drawable/email_24"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Email"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<TextView
-						android:id="@+id/phoneTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:drawableStart="@drawable/phone_24"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Phone No"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<TextView
-						android:id="@+id/statusTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Status"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<TextView
-						android:id="@+id/birthdateTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Birthdate"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<LinearLayout
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:gravity="center"
-						android:orientation="horizontal">
-
-						<TextView
-							android:id="@+id/ageTextView"
-							android:layout_width="0dp"
-							android:layout_height="wrap_content"
-							android:layout_weight="1"
-							android:fontFamily="@font/opensans_semibold"
-							android:text="Age"
-							android:textAlignment="center"
-							android:textColor="@color/black"
-							android:textSize="17sp" />
-
-						<TextView
-							android:id="@+id/sexTextView"
-							android:layout_width="0dp"
-							android:layout_height="wrap_content"
-							android:layout_weight="1"
-							android:fontFamily="@font/opensans_semibold"
-							android:text="Sex"
-							android:textAlignment="center"
-							android:textColor="@color/black"
-							android:textSize="17sp" />
-
-					</LinearLayout>
-
-
-					<TextView
-						android:id="@+id/disabilityTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Disability"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<TextView
-						android:id="@+id/medConTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Medical Condition"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<TextView
-						android:id="@+id/driverStatusTextView"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginStart="20dp"
-						android:layout_marginEnd="20dp"
-						android:layout_marginBottom="10dp"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Driver Status"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-				</LinearLayout>
-
-
-			</androidx.cardview.widget.CardView>
-
 
 			<View
 				android:layout_width="match_parent"
 				android:layout_height="5dp"
-				android:layout_marginStart="10dp"
-				android:layout_marginEnd="10dp"
+				android:layout_margin="10dp"
 				android:background="@color/dark_gray" />
 
 
@@ -303,11 +293,27 @@
 				android:layout_margin="10dp"
 				android:orientation="vertical">
 
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/personalInfoBtn"
+					android:layout_width="match_parent"
+					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
+					android:background="@drawable/custom_card_view"
+					android:drawableStart="@drawable/personal_data_32"
+					android:drawableEnd="@drawable/right_arrow"
+					android:drawablePadding="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Personal Info"
+					android:textAlignment="textStart"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/editProfileBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableStart="@drawable/edit_32png"
 					android:drawableEnd="@drawable/right_arrow"
@@ -324,6 +330,7 @@
 					android:id="@+id/changePasswordBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableStart="@drawable/reset_password_32"
 					android:drawableEnd="@drawable/right_arrow"
@@ -339,6 +346,7 @@
 					android:id="@+id/appSettingsBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableStart="@drawable/settings_32"
 					android:drawableEnd="@drawable/right_arrow"
@@ -354,6 +362,7 @@
 					android:id="@+id/aboutBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableStart="@drawable/information_32"
 					android:drawableEnd="@drawable/right_arrow"
@@ -369,6 +378,7 @@
 					android:id="@+id/contactUsBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableStart="@drawable/contact_us_32"
 					android:drawableEnd="@drawable/right_arrow"
@@ -384,6 +394,7 @@
 					android:id="@+id/signOutBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view"
 					android:drawableEnd="@drawable/logout32"
 					android:fontFamily="@font/opensans_semibold"

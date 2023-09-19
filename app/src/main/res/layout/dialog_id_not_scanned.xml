@@ -7,6 +7,12 @@
 	android:gravity="center"
 	android:orientation="vertical">
 
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:src="@drawable/warning_128" />
+
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -14,18 +20,31 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
+
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
 
+
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="ID Scanning"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="You have not scanned your ID"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="25sp" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="You can scan it later"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
@@ -33,12 +52,22 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_marginBottom="10dp"
 				android:fontFamily="@font/opensans_semibold"
-				android:text="@string/about_id_scan"
+				android:text="ID Scanning is required for Verification"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="20sp" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Are you sure you want to proceed?"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
 
 		</LinearLayout>
 
@@ -54,27 +83,26 @@
 		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/okBtn"
+			android:id="@+id/yesBtn"
 			android:layout_width="150dp"
 			android:layout_height="60dp"
 			android:layout_marginEnd="5dp"
 			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/dark_blue"
+			android:backgroundTint="@color/red"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Ok"
+			android:text="Yes"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/nextBtn"
+			android:id="@+id/noBtn"
 			android:layout_width="150dp"
 			android:layout_height="60dp"
 			android:layout_marginStart="5dp"
 			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/gray"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Next"
-			android:textColor="@color/black"
+			android:text="No"
+			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 	</LinearLayout>

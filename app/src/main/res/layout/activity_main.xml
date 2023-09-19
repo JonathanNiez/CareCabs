@@ -1,26 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/background">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/background"
+	tools:context=".MainActivity">
 
-  <FrameLayout
-      android:id="@+id/fragmentContainer"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_above="@id/bottomNavigationView"/>
+	<FrameLayout
+		android:id="@+id/fragmentContainer"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@id/bottomNavigationCardView" />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu"
-        android:background="@color/yellow"
-        app:itemTextColor="@color/black"
-        android:layout_alignParentBottom="true"
-        app:labelVisibilityMode="labeled"/>
+	<androidx.cardview.widget.CardView
+		android:id="@+id/bottomNavigationCardView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:elevation="10dp"
+		android:layout_alignParentBottom="true"
+		>
+
+		<com.google.android.material.bottomnavigation.BottomNavigationView
+			android:id="@+id/bottomNavigationView"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="@color/yellow"
+			app:itemTextColor="@color/black"
+			app:labelVisibilityMode="labeled"
+			app:menu="@menu/bottom_nav_menu" />
+
+
+	</androidx.cardview.widget.CardView>
+
 
 </RelativeLayout>

@@ -21,6 +21,7 @@ import com.capstone.carecabs.Fragments.ChangePasswordFragment;
 import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
+import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 			if (item.getItemId() == R.id.home) {
 				showFragment(new HomeFragment());
 
-			} else if (item.getItemId() == R.id.account) {
+			} else if (item.getItemId() == R.id.myProfile) {
 				showFragment(new AccountFragment());
 
 			} else if (item.getItemId() == R.id.map) {
@@ -104,6 +105,14 @@ public class MainActivity extends AppCompatActivity {
 			((ChangeFontSizeFragment) currentFragment).onBackPressed();
 
 			return;
+		} else if (currentFragment instanceof AccountFragment) {
+			((AccountFragment) currentFragment).onBackPressed();
+
+			return;
+		} else if (currentFragment instanceof PersonalInfoFragment) {
+			((PersonalInfoFragment) currentFragment).onBackPressed();
+
+			return;
 		}
 
 
@@ -152,14 +161,14 @@ public class MainActivity extends AppCompatActivity {
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
 
-		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-		Button noBtn = dialogView.findViewById(R.id.noBtn);
+		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		yesBtn.setOnClickListener(v -> {
+		exitBtn.setOnClickListener(v -> {
 			exitApp();
 		});
 
-		noBtn.setOnClickListener(v -> {
+		cancelBtn.setOnClickListener(v -> {
 			closeExitConfirmationDialog();
 		});
 

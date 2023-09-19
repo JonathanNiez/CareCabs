@@ -401,7 +401,7 @@ public class HomeFragment extends Fragment {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_info_not_complete, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

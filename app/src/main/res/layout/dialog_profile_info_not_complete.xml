@@ -29,10 +29,17 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="20dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="20dp"
-				android:layout_marginBottom="10dp"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Account"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Your Profile Info is incomplete"
 				android:textAlignment="center"
@@ -42,9 +49,7 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="20dp"
-				android:layout_marginEnd="20dp"
-				android:layout_marginBottom="10dp"
+				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Please complete your Profile Info"
 				android:textAlignment="center"
@@ -61,7 +66,7 @@
 		android:layout_height="60dp"
 		android:layout_marginBottom="20dp"
 		android:background="@drawable/custom_button"
-		android:fontFamily="@font/opensans_bold"
+		android:fontFamily="@font/opensans_semibold"
 		android:text="Ok"
 		android:textColor="@color/white"
 		android:textSize="20sp" />

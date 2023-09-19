@@ -1,334 +1,331 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".Fragments.EditAccountFragment">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/background"
+	tools:context=".Fragments.EditAccountFragment">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardBackgroundColor="@color/light_gray"
+		app:cardElevation="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/upperLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/rectangle_one">
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/light_gray"
+				android:src="@drawable/back_50_2" />
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/customActionBarLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    app:cardElevation="10dp"
-                    app:cardBackgroundColor="@color/light_gray">
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Edit Profile"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+		</RelativeLayout>
 
-                        <ImageButton
-                            android:id="@+id/imgBackBtn"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentStart="true"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@color/light_gray"
-                            android:src="@drawable/back_50_2" />
+	</androidx.cardview.widget.CardView>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
-                            android:fontFamily="@font/opensans_bold"
-                            android:text="Edit Account"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
+	<ScrollView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout">
 
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="vertical">
 
-                    </RelativeLayout>
+			<RelativeLayout
+				android:id="@+id/upperLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@drawable/rectangle_one"
+				android:elevation="5dp">
 
+				<androidx.cardview.widget.CardView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_below="@id/customActionBarLayout"
+					android:layout_centerHorizontal="true"
+					android:layout_margin="10dp"
+					app:cardCornerRadius="10dp"
+					app:cardElevation="5dp">
 
-                </androidx.cardview.widget.CardView>
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="vertical">
 
+						<LinearLayout
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:gravity="center"
+							android:orientation="horizontal">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/imgBtnProfilePic"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_below="@id/customActionBarLayout"
-                    android:layout_centerHorizontal="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/account"
-                    app:civ_border_color="@color/black"
-                    app:civ_border_width="2dp" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/imgBtnProfilePic"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:textAlignment="center"
-                    android:layout_marginTop="10dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Tap/Click on the picture icon to change your profile picture"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/fullNameTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/textView2"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/custom_card_view"
-                    android:fontFamily="@font/opensans_bold"
-                    android:padding="5dp"
-                    android:text="Name"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/fullNameTextView"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginStart="20dp"
-                    android:elevation="4dp"
-                    app:cardCornerRadius="8dp"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginTop="10dp"
-                    >
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/userTypeTextView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="2"
-                            android:textAlignment="center"
-                            android:layout_margin="10dp"
-                            android:background="@drawable/custom_card_view"
-                            android:backgroundTint="@color/background"
-                            android:padding="5dp"
-                            android:fontFamily="@font/opensans_semibold"
-                            android:text="User Type"
-                            android:textColor="@color/black"
-                            android:textSize="20sp" />
-
-                        <ImageView
-                            android:id="@+id/userTypeImageView"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:src="@drawable/driver_64"
-                            android:layout_margin="10dp"/>
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
+							<de.hdodenhof.circleimageview.CircleImageView
+								android:id="@+id/imgBtnProfilePic"
+								android:layout_width="0dp"
+								android:layout_height="100dp"
+								android:layout_margin="20dp"
+								android:layout_weight="1"
+								android:elevation="5dp"
+								android:scaleType="centerCrop"
+								android:src="@drawable/account"
+								app:civ_border_color="@color/black"
+								app:civ_border_width="2dp" />
 
 
+							<LinearLayout
+								android:layout_width="0dp"
+								android:layout_height="wrap_content"
+								android:layout_marginEnd="20dp"
+								android:layout_weight="2"
+								android:gravity="center"
+								android:orientation="vertical">
 
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Tap the info you want to edit"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editFirstnameBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="FIRSTNAME"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editLastnameBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="LASTNAME"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editAgeBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="AGE"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editSexBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="SEX"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editBirthdateBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="Date of Birth"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editDisabilityBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:text="DISABILITY"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textSize="17sp"
-                    />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/editMedConBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:autofillHints="firstname"
-                    android:background="@drawable/stroke_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:drawableStart="@drawable/edit_32"
-                    android:textAlignment="center"
-                    android:hint="MEDICAL CONDITION"
-                    android:padding="10dp"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/black"
-                    android:textSize="17sp"
-                    />
-
-                <TextView
-                    android:id="@+id/idScannedTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:text="You have not scanned your ID"
-                    android:textSize="18sp"
-                    android:textColor="@color/red"
-                    android:background="@drawable/custom_card_view"
-                    android:padding="5dp"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:textAlignment="center"/>
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/scanIDBtn"
-                    android:layout_width="150dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/custom_button"
-                    android:backgroundTint="@color/gray"
-                    android:drawableStart="@drawable/scan_id_64"
-                    android:fontFamily="@font/opensans_bold"
-                    android:text="Scan ID"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/doneBtn"
-                    android:layout_width="150dp"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@drawable/custom_button"
-                    android:fontFamily="@font/opensans_bold"
-                    android:text="Done"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
+								<TextView
+									android:id="@+id/firstnameTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:fontFamily="@font/opensans_bold"
+									android:padding="5dp"
+									android:text="Firstname"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="22sp" />
 
 
-            </LinearLayout>
+								<TextView
+									android:id="@+id/lastnameTextView"
+									android:layout_width="match_parent"
+									android:layout_height="wrap_content"
+									android:fontFamily="@font/opensans_bold"
+									android:padding="5dp"
+									android:text="Lastname"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="22sp" />
+
+							</LinearLayout>
+
+						</LinearLayout>
+
+						<TextView
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							android:fontFamily="@font/opensans_semibold"
+							android:text="Tap on the profile picture to icon change your profile picture"
+							android:textAlignment="center"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
 
 
-        </LinearLayout>
+					</LinearLayout>
 
-    </ScrollView>
 
+				</androidx.cardview.widget.CardView>
+
+			</RelativeLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:gravity="center"
+				android:orientation="vertical">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:text="Tap the info you want to edit"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editFirstnameBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Firstname"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editLastnameBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Lastname"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editAgeBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Age"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editSexBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Sex"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editBirthdateBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Date of Birth"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editDisabilityBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Disability"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/editMedConBtn"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:background="@drawable/stroke_button"
+					android:drawableStart="@drawable/edit_32"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Medical Condition"
+					android:textAlignment="center"
+					android:textAllCaps="false"
+					android:textColor="@color/black"
+					android:textColorHint="@color/black"
+					android:textSize="17sp" />
+
+				<TextView
+					android:id="@+id/idScannedTextView"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:background="@drawable/custom_card_view"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="5dp"
+					android:text="You have not scanned your ID"
+					android:textAlignment="center"
+					android:textColor="@color/red"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/scanIDBtn"
+					android:layout_width="150dp"
+					android:layout_height="60dp"
+					android:layout_marginTop="10dp"
+					android:background="@drawable/custom_button"
+					android:backgroundTint="@color/gray"
+					android:drawableStart="@drawable/scan_id_64"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:text="Scan ID"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/doneBtn"
+					android:layout_width="150dp"
+					android:layout_height="60dp"
+					android:layout_marginTop="10dp"
+					android:layout_marginBottom="20dp"
+					android:background="@drawable/custom_button"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:text="Done"
+					android:textColor="@color/white"
+					android:textSize="20sp" />
+
+
+			</LinearLayout>
+
+		</LinearLayout>
+
+	</ScrollView>
 
 </RelativeLayout>

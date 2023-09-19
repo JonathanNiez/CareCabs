@@ -17,17 +17,12 @@ import android.widget.TextView;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityResetPasswordBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
-import org.mindrot.jbcrypt.BCrypt;
-
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 	private final String TAG = "ResetPasswordActivity";
@@ -186,7 +181,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 	private void showPasswordUpdateSuccessDialog(String email) {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.password_change_success_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_success, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 		TextView emailTextView = dialogView.findViewById(R.id.emailTextView);
@@ -219,7 +214,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 	private void showPasswordUpdateFailedDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.password_change_failed_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

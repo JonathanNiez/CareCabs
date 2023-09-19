@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/yellow"
+	android:orientation="vertical">
+
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@color/dark_gray"
+		android:fontFamily="@font/opensans_bold"
+		android:padding="20dp"
+		android:text="Select an Option"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/openCameraBtn"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:backgroundTint="@color/white"
+		android:drawableEnd="@drawable/camera"
+		android:fontFamily="@font/opensans_semibold"
+		android:padding="20dp"
+		android:text="Open Camera"
+		android:textAlignment="center"
+		android:textAllCaps="false"
+		android:textSize="20sp" />
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/openGalleryBtn"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:backgroundTint="@color/white"
+		android:drawableEnd="@drawable/gallery"
+		android:fontFamily="@font/opensans_semibold"
+		android:padding="20dp"
+		android:text="Open Gallery"
+		android:textAlignment="center"
+		android:textAllCaps="false"
+		android:textSize="20sp" />
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/cancelBtn"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:backgroundTint="@color/red"
+		android:fontFamily="@font/opensans_semibold"
+		android:padding="20dp"
+		android:text="Cancel"
+		android:textAllCaps="false"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
+
+
+</LinearLayout>

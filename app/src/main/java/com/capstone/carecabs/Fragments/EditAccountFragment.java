@@ -13,7 +13,6 @@ import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -21,6 +20,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -44,11 +46,8 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -70,7 +69,8 @@ public class EditAccountFragment extends Fragment {
 			editDisabilityDialog, editSexDialog, editAgeDialog,
 			cameraGalleryOptionsDialog, noInternetDialog,
 			profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
-			profilePicUpdateSuccessConfirmation, pleaseWaitDialog;
+			profilePicUpdateSuccessConfirmation, pleaseWaitDialog,
+			birthdateInputChoiceDialog;
 	private Uri imageUri;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -111,6 +111,7 @@ public class EditAccountFragment extends Fragment {
 		context = getContext();
 		initializeNetworkChecker();
 		getCurrentFontSizeFromUserSetting();
+		checkPermission();
 
 		requestManager = Glide.with(context);
 		FirebaseApp.initializeApp(context);
@@ -147,16 +148,17 @@ public class EditAccountFragment extends Fragment {
 
 		binding.imgBtnProfilePic.setOnClickListener(v -> {
 			showOptionsDialog();
-			checkPermission();
 		});
 
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), ScanIDActivity.class);
+			intent.putExtra("userType", "From Main");
 			startActivity(intent);
+			getActivity().finish();
 		});
 
 		binding.editBirthdateBtn.setOnClickListener(v -> {
-			showDatePickerDialog();
+			showEnterBirthdateDialog();
 		});
 
 		binding.imgBackBtn.setOnClickListener(v -> {
@@ -204,8 +206,8 @@ public class EditAccountFragment extends Fragment {
 
 		switch (StaticDataPasser.storeFontSize) {
 			case 15:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 
 				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -218,8 +220,8 @@ public class EditAccountFragment extends Fragment {
 				break;
 
 			case 17:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
 				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
@@ -232,8 +234,8 @@ public class EditAccountFragment extends Fragment {
 				break;
 
 			case 19:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
 				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
@@ -253,8 +255,8 @@ public class EditAccountFragment extends Fragment {
 				break;
 
 			case 21:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
 				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
@@ -316,7 +318,6 @@ public class EditAccountFragment extends Fragment {
 					String getLastName = documentSnapshot.getString("lastname");
 					Long getAgeLong = documentSnapshot.getLong("age");
 					int getAge = getAgeLong.intValue();
-					String fullName = getFirstName + " " + getLastName;
 					String getEmail = documentSnapshot.getString("email");
 					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 					String getSex = documentSnapshot.getString("sex");
@@ -332,8 +333,6 @@ public class EditAccountFragment extends Fragment {
 							String getDisability = documentSnapshot.getString("disability");
 							binding.editDisabilityBtn.setVisibility(View.VISIBLE);
 							binding.editDisabilityBtn.setText("Disability: " + getDisability);
-							binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
-
 
 							break;
 
@@ -342,13 +341,16 @@ public class EditAccountFragment extends Fragment {
 
 							binding.editMedConBtn.setVisibility(View.VISIBLE);
 							binding.editMedConBtn.setText(getMedicalCondition);
-							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 							break;
 					}
 
 					if (!getProfilePicture.equals("default")) {
-						Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
+						Glide.with(context)
+								.load(getProfilePicture)
+								.centerCrop()
+								.placeholder(R.drawable.loading_gif)
+								.into(binding.imgBtnProfilePic);
 					}
 
 					if (getVerificationStatus.equals("Not Verified")) {
@@ -361,10 +363,11 @@ public class EditAccountFragment extends Fragment {
 					StaticDataPasser.storeCurrentBirthDate = getBirthdate;
 					StaticDataPasser.storeSelectedSex = getSex;
 
-					binding.fullNameTextView.setText(fullName);
+					binding.firstnameTextView.setText(getFirstName);
+					binding.lastnameTextView.setText(getLastName);
+
 					binding.editFirstnameBtn.setText(getFirstName);
 					binding.editLastnameBtn.setText(getLastName);
-					binding.userTypeTextView.setText(getUserType);
 					binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
 					binding.editAgeBtn.setText("Age: " + getAge);
 					binding.editSexBtn.setText("Sex: " + getSex);
@@ -386,11 +389,133 @@ public class EditAccountFragment extends Fragment {
 
 	}
 
+	private void showEnterBirthdateDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_enter_birthdate, null);
+
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
+		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
+		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
+		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
+		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
+		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
+		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
+
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+				context,
+				R.array.month,
+				android.R.layout.simple_spinner_item
+		);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerMonth.setAdapter(adapter);
+		spinnerMonth.setSelection(0);
+		spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if (position == 0) {
+					spinnerMonth.setSelection(0);
+				} else {
+					String selectedMonth = parent.getItemAtPosition(position).toString();
+					StaticDataPasser.storeSelectedMonth = selectedMonth;
+
+					monthTextView.setText(selectedMonth);
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				spinnerMonth.setSelection(0);
+			}
+		});
+
+		dayEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+				String enteredText = charSequence.toString();
+				dayTextView.setText(enteredText);
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+
+			}
+		});
+
+		yearEditText.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+			}
+
+			@Override
+			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+				String enteredText = charSequence.toString();
+				yearTextView.setText(enteredText);
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable editable) {
+
+			}
+		});
+
+		doneBtn.setOnClickListener(view -> {
+			String year = yearEditText.getText().toString();
+			String day = dayEditText.getText().toString();
+			if (StaticDataPasser.storeSelectedMonth.equals("Month")
+					|| year.isEmpty() || day.isEmpty()) {
+
+				Toast.makeText(context, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+			} else {
+				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
+
+				//Calculate age
+				Calendar today = Calendar.getInstance();
+				int age = today.get(Calendar.YEAR) - Integer.parseInt(year);
+
+				// Check if the user's birthday has already happened this year or not
+				if (today.get(Calendar.DAY_OF_YEAR) < Integer.parseInt(year)) {
+					age--;
+				}
+
+				StaticDataPasser.storeBirthdate = fullBirthdate;
+				StaticDataPasser.storeCurrentAge = age;
+
+				binding.editBirthdateBtn.setText(fullBirthdate);
+				binding.editAgeBtn.setText(String.valueOf(age));
+
+				closeEnterBirthdateDialog();
+			}
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeEnterBirthdateDialog();
+		});
+
+		builder.setView(dialogView);
+
+		birthdateInputChoiceDialog = builder.create();
+		birthdateInputChoiceDialog.show();
+	}
+
+	private void closeEnterBirthdateDialog() {
+		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
+			birthdateInputChoiceDialog.dismiss();
+		}
+	}
+
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
@@ -698,7 +823,7 @@ public class EditAccountFragment extends Fragment {
 	private void showOptionsDialog() {
 		builder = new AlertDialog.Builder(getContext());
 
-		View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_gallery, null);
 
 		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
 		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
@@ -846,7 +971,7 @@ public class EditAccountFragment extends Fragment {
 	private void showCameraOrGalleryOptionsDialog() {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_gallery, null);
 
 		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
 		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);

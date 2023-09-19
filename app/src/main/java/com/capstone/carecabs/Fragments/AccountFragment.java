@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -31,11 +30,8 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 public class AccountFragment extends Fragment {
 	private DocumentReference documentReference;
@@ -64,14 +60,18 @@ public class AccountFragment extends Fragment {
 
 		binding.disabilityTextView.setVisibility(View.GONE);
 		binding.medConTextView.setVisibility(View.GONE);
-		binding.driverStatusTextView.setVisibility(View.GONE);
+		binding.driverStatusTextView1.setVisibility(View.GONE);
+		binding.driverStatusTextView2.setVisibility(View.GONE);
+		binding.driverRatingTextView.setVisibility(View.GONE);
+		binding.idScannedTextView.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
-		getCurrentFontSizeFromUserSetting();
 		FirebaseApp.initializeApp(context);
 
 		checkUserIfRegisterComplete();
+
+		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
 
 		binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
 
@@ -109,6 +109,7 @@ public class AccountFragment extends Fragment {
 						showRegisterNotCompleteDialog();
 					} else {
 						loadUserProfileInfo();
+						getCurrentFontSizeFromUserSetting();
 					}
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
@@ -126,18 +127,15 @@ public class AccountFragment extends Fragment {
 
 		switch (StaticDataPasser.storeFontSize) {
 			case 15:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
+				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
@@ -148,18 +146,15 @@ public class AccountFragment extends Fragment {
 				break;
 
 			case 17:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
+				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
@@ -170,18 +165,15 @@ public class AccountFragment extends Fragment {
 				break;
 
 			case 19:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
+				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
@@ -189,6 +181,7 @@ public class AccountFragment extends Fragment {
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
+				binding.personalInfoBtn.setHeight(62);
 				binding.editProfileBtn.setHeight(62);
 				binding.changePasswordBtn.setHeight(62);
 				binding.editProfileBtn.setHeight(62);
@@ -198,18 +191,15 @@ public class AccountFragment extends Fragment {
 				break;
 
 			case 21:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
+				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
@@ -217,32 +207,13 @@ public class AccountFragment extends Fragment {
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
+				binding.personalInfoBtn.setHeight(64);
 				binding.editProfileBtn.setHeight(64);
 				binding.changePasswordBtn.setHeight(64);
 				binding.editProfileBtn.setHeight(64);
 				binding.aboutBtn.setHeight(64);
 				binding.contactUsBtn.setHeight(64);
 				binding.signOutBtn.setHeight(64);
-
-				break;
-			default:
-				binding.fullNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.statusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
 				break;
 		}
@@ -264,38 +235,38 @@ public class AccountFragment extends Fragment {
 					String getUserType = documentSnapshot.getString("userType");
 					String getFirstName = documentSnapshot.getString("firstname");
 					String getLastName = documentSnapshot.getString("lastname");
-					Long getAgeLong = documentSnapshot.getLong("age");
-					int getAge = getAgeLong.intValue();
-					String fullName = getFirstName + " " + getLastName;
-					String getEmail = documentSnapshot.getString("email");
-					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
-					String getSex = documentSnapshot.getString("sex");
 					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
-					String getBirthdate = documentSnapshot.getString("birthdate");
 
 					switch (getUserType) {
 						case "Driver":
 							boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
-							binding.driverStatusTextView.setVisibility(View.VISIBLE);
+							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
+							int getDriverRatings = getDriverRatingsLong.intValue();
+							Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
+
+							binding.driverStatusTextView1.setVisibility(View.VISIBLE);
+							binding.driverStatusTextView2.setVisibility(View.VISIBLE);
+							binding.driverRatingTextView.setVisibility(View.VISIBLE);
 							binding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
 							if (getDriverStatus) {
-								binding.driverStatusTextView.setTextColor(Color.BLUE);
-								binding.driverStatusTextView.setText("Driver Availability: Available");
+								binding.driverStatusTextView2.setTextColor(Color.BLUE);
+								binding.driverStatusTextView2.setText("Available");
 
 							} else {
-								binding.driverStatusTextView.setTextColor(Color.RED);
-								binding.driverStatusTextView.setText("Driver Availability: Busy");
+								binding.driverStatusTextView2.setTextColor(Color.RED);
+								binding.driverStatusTextView2.setText("Busy");
 
 							}
 
+							binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
 							break;
 
 						case "Persons with Disabilities (PWD)":
 							String getDisability = documentSnapshot.getString("disability");
 
 							binding.disabilityTextView.setVisibility(View.VISIBLE);
-							binding.disabilityTextView.setText(getDisability);
+							binding.disabilityTextView.setText("Disabilities:\n" + getDisability);
 							binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
 
 
@@ -305,7 +276,7 @@ public class AccountFragment extends Fragment {
 							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
 							binding.medConTextView.setVisibility(View.VISIBLE);
-							binding.medConTextView.setText(getMedicalCondition);
+							binding.medConTextView.setText("Medical Conditions:\n" + getMedicalCondition);
 							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 							break;
@@ -316,20 +287,18 @@ public class AccountFragment extends Fragment {
 					}
 
 					if (getVerificationStatus.equals("Not Verified")) {
-						binding.statusTextView.setTextColor(Color.RED);
+						binding.verificationStatusTextView.setTextColor(Color.RED);
+						binding.verificationStatusTextView.setText(getVerificationStatus);
+						binding.idScannedTextView.setVisibility(View.VISIBLE);
 
 					} else {
-						binding.statusTextView.setTextColor(Color.GREEN);
-
+						binding.verificationStatusTextView.setTextColor(Color.GREEN);
+						binding.verificationStatusTextView.setText(getVerificationStatus);
 					}
-					binding.fullNameTextView.setText(fullName);
+
+					binding.firstnameTextView.setText(getFirstName);
+					binding.lastnameTextView.setText(getLastName);
 					binding.userTypeTextView.setText(getUserType);
-					binding.emailTextView.setText(getEmail);
-					binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
-					binding.statusTextView.setText("Verification Status: " + getVerificationStatus);
-					binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-					binding.ageTextView.setText("Age: " + getAge);
-					binding.sexTextView.setText("Sex: " + getSex);
 
 				} else {
 					closePleaseWaitDialog();
@@ -361,7 +330,6 @@ public class AccountFragment extends Fragment {
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
-		Log.i(TAG, "onDestroy");
 	}
 
 
@@ -374,8 +342,6 @@ public class AccountFragment extends Fragment {
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
-		Log.i(TAG, "onPause");
-
 	}
 
 	@Override
@@ -387,15 +353,17 @@ public class AccountFragment extends Fragment {
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 
-		Log.i(TAG, "onDestroyView");
+	}
 
+	public void onBackPressed() {
+		backToHomeFragment();
 	}
 
 	private void showRegisterNotCompleteDialog() {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.profile_info_not_complete_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_info_not_complete, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
@@ -469,7 +437,7 @@ public class AccountFragment extends Fragment {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
@@ -483,6 +451,13 @@ public class AccountFragment extends Fragment {
 		}
 	}
 
+	private void goToPersonalInfoFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new PersonalInfoFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 
 	private void goToEditAccountFragment() {
 		fragmentManager = requireActivity().getSupportFragmentManager();

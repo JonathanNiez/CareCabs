@@ -244,7 +244,7 @@ public class ChangeFontSizeFragment extends Fragment {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 

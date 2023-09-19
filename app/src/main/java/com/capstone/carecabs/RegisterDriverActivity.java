@@ -125,16 +125,20 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(this, ScanIDActivity.class);
+			intent.putExtra("userType", StaticDataPasser.storeRegisterUserType);
 			startActivity(intent);
+			finish();
 		});
 
 		binding.birthdateBtn.setOnClickListener(v -> {
-			showBirthdateInputChoiceDialog();
+			showEnterBirthdateDialog();
 		});
 
 		binding.scanIDBtn.setOnClickListener(view -> {
-			intent = new Intent(RegisterDriverActivity.this, ScanIDActivity.class);
+			intent = new Intent(this, ScanIDActivity.class);
+			intent.putExtra("userType", StaticDataPasser.storeRegisterUserType);
 			startActivity(intent);
+			finish();
 		});
 
 		binding.doneBtn.setOnClickListener(v -> {
@@ -185,7 +189,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
-		closeBirthdateInputChoiceDialog();
+		closeEnterBirthdateDialog();
 	}
 
 	@Override
@@ -201,7 +205,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
-		closeBirthdateInputChoiceDialog();
+		closeEnterBirthdateDialog();
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
@@ -301,11 +305,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		});
 	}
 
-
 	private void showIDNotScannedDialog(String firstname, String lastname) {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.id_not_scanned_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_not_scanned, null);
 
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
@@ -330,7 +333,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			idNotScannedDialog.dismiss();
 		}
 	}
-
 
 	private void checkPermission() {
 		// Check for camera permission
@@ -400,20 +402,20 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		UploadTask uploadTask = imageRef.putFile(imageUri);
 		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-						.addOnSuccessListener(uri -> {
-							String imageUrl = uri.toString();
+				.addOnSuccessListener(uri -> {
+					String imageUrl = uri.toString();
 
-							storeImageUrlInFireStore(imageUrl);
+					storeImageUrlInFireStore(imageUrl);
 
-						}).addOnFailureListener(e -> {
-							Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-							Log.e(TAG, e.getMessage());
-
-						})).addOnFailureListener(e -> {
+				}).addOnFailureListener(e -> {
 					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
 
-				});
+				})).addOnFailureListener(e -> {
+			Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+			Log.e(TAG, e.getMessage());
+
+		});
 	}
 
 	private void storeImageUrlInFireStore(String imageUrl) {
@@ -436,7 +438,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private void showCameraOrGalleryOptionsDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.camera_gallery_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_gallery, null);
 
 		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
 		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
@@ -470,7 +472,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_cancel_register, null);
 
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
@@ -538,10 +540,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		datePickerDialog.show();
 	}
 
-	private void showBirthdateInputChoiceDialog() {
+	private void showEnterBirthdateDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_birthdate_input_choice, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_enter_birthdate, null);
 
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
@@ -640,12 +642,12 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				binding.birthdateBtn.setText(fullBirthdate);
 				binding.ageBtn.setText(String.valueOf(age));
 
-				closeBirthdateInputChoiceDialog();
+				closeEnterBirthdateDialog();
 			}
 		});
 
 		cancelBtn.setOnClickListener(v -> {
-			closeBirthdateInputChoiceDialog();
+			closeEnterBirthdateDialog();
 		});
 
 		builder.setView(dialogView);
@@ -654,7 +656,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		birthdateInputChoiceDialog.show();
 	}
 
-	private void closeBirthdateInputChoiceDialog() {
+	private void closeEnterBirthdateDialog() {
 		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
 			birthdateInputChoiceDialog.dismiss();
 		}
@@ -735,7 +737,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_register_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

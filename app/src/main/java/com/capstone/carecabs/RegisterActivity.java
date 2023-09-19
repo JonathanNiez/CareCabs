@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -28,8 +29,6 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
-
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -69,7 +68,9 @@ public class RegisterActivity extends AppCompatActivity {
 		date = calendar.getTime();
 
 		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-				.requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
+				.requestIdToken(getString(R.string.default_web_client_id))
+				.requestEmail()
+				.build();
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -132,7 +133,6 @@ public class RegisterActivity extends AppCompatActivity {
 			String stringConfirmPassword = binding.confirmPassword.getText().toString();
 			String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
 			String prefixPhoneNumber = "+63" + stringPhoneNumber;
-			String hashedPassword = BCrypt.hashpw(stringPassword, BCrypt.gensalt());
 			StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
 
 			if (stringEmail.isEmpty() || stringPassword.isEmpty()
@@ -234,7 +234,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 	private void storeUserDataToFireStore(String userID, String email,
 	                                      String userType, String phoneNumber) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		String formattedDate = dateFormat.format(date);
 
 		Map<String, Object> registerUser = new HashMap<>();
@@ -244,6 +244,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);
+		registerUser.put("registerType", "email");
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
@@ -323,7 +324,7 @@ public class RegisterActivity extends AppCompatActivity {
 	private void showAgeInfoDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.age_required_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_age_required, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
@@ -350,8 +351,26 @@ public class RegisterActivity extends AppCompatActivity {
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 		TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
+		ImageView userTypeImageView = dialogView.findViewById(R.id.userTypeImageView);
 
 		registerAsTextView.setText(StaticDataPasser.storeRegisterUserType);
+
+		switch (StaticDataPasser.storeRegisterUserType) {
+			case "Driver":
+				userTypeImageView.setImageResource(R.drawable.driver_64);
+
+				break;
+
+			case "Senior Citizen":
+				userTypeImageView.setImageResource(R.drawable.senior_64_2);
+
+				break;
+
+			case "PWD":
+				userTypeImageView.setImageResource(R.drawable.pwd_64);
+
+				break;
+		}
 
 		okBtn.setOnClickListener(v -> {
 			closeUserTypeImageDialog();
@@ -372,7 +391,7 @@ public class RegisterActivity extends AppCompatActivity {
 	private void showCancelRegisterDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.cancel_register_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_cancel_register, null);
 
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
@@ -405,7 +424,7 @@ public class RegisterActivity extends AppCompatActivity {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.please_wait_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
@@ -476,7 +495,7 @@ public class RegisterActivity extends AppCompatActivity {
 	private void showRegisterFailedDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.register_failed_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_register_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
@@ -569,7 +588,7 @@ public class RegisterActivity extends AppCompatActivity {
 	}
 
 	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-yyyy-dd HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		String formattedDate = dateFormat.format(date);
 
 		Map<String, Object> registerUser = new HashMap<>();
@@ -579,6 +598,8 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("profilePicture", profilePic);
 		registerUser.put("phoneNumber", StaticDataPasser.storePhoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
+		registerUser.put("fontSize", 17);
+		registerUser.put("registerType", "google");
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 			switch (StaticDataPasser.storeRegisterUserType) {

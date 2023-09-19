@@ -7,6 +7,12 @@
 	android:gravity="center"
 	android:orientation="vertical">
 
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:src="@drawable/senior_128_2" />
+
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -23,30 +29,10 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="10dp"
 				android:fontFamily="@font/opensans_semibold"
-				android:text="You are registering as a:"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
-
-			<ImageView
-				android:id="@+id/userTypeImageView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:src="@drawable/senior_64_2" />
-
-			<TextView
-				android:id="@+id/registerAsTextView"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:background="@drawable/custom_card_view"
-				android:backgroundTint="@color/background"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
-				android:text="User Type"
+				android:text="Senior Citizens must be 60 Years old and above"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
@@ -54,6 +40,7 @@
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
+
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"

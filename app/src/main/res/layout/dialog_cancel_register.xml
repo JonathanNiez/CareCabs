@@ -1,53 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/yellow"
 	android:gravity="center"
 	android:orientation="vertical">
 
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:src="@drawable/help_64" />
+
 	<TextView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="20dp"
-		android:layout_marginTop="20dp"
-		android:layout_marginEnd="20dp"
+		android:layout_margin="20dp"
 		android:background="@drawable/custom_card_view"
-		android:elevation="5dp"
-		android:fontFamily="@font/opensans_bold"
+		android:fontFamily="@font/opensans_semibold"
 		android:padding="5dp"
-		android:text="Edit Age"
+		android:text="Do you want to cancel the Registration?"
 		android:textAlignment="center"
 		android:textColor="@color/black"
 		android:textSize="20sp" />
-
-	<com.google.android.material.textfield.TextInputLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
-		android:background="@drawable/edit_text"
-		android:elevation="5dp"
-		app:endIconMode="clear_text"
-		app:helperText="Edit your Age"
-		app:helperTextTextColor="@color/black">
-
-		<com.google.android.material.textfield.TextInputEditText
-			android:id="@+id/editAge"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@drawable/edit_text"
-			android:fontFamily="@font/opensans_semibold"
-			android:hint="AGE"
-			android:inputType="number"
-			android:maxLength="2"
-			android:padding="10dp"
-			android:textColor="@color/black"
-			android:textColorHint="@color/black"
-			android:textSize="17sp" />
-
-
-	</com.google.android.material.textfield.TextInputLayout>
 
 	<LinearLayout
 		android:layout_width="match_parent"
@@ -59,27 +34,25 @@
 		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/editBtn"
+			android:id="@+id/yesBtn"
 			android:layout_width="130dp"
-			android:layout_height="50dp"
+			android:layout_height="60dp"
 			android:layout_marginEnd="5dp"
 			android:background="@drawable/custom_button"
-			android:elevation="5dp"
+			android:backgroundTint="@color/red"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Edit"
+			android:text="Yes"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/cancelBtn"
+			android:id="@+id/noBtn"
 			android:layout_width="130dp"
-			android:layout_height="50dp"
+			android:layout_height="60dp"
 			android:layout_marginStart="5dp"
 			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/red"
-			android:elevation="5dp"
 			android:fontFamily="@font/opensans_semibold"
-			android:text="Cancel"
+			android:text="No"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
 

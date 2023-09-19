@@ -7,9 +7,50 @@
 	android:background="@color/background"
 	tools:context=".Fragments.HomeFragment">
 
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:cardBackgroundColor="@color/light_gray"
+		app:cardElevation="5dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageButton
+				android:id="@+id/logoImgBtn"
+				android:layout_width="75dp"
+				android:layout_height="75dp"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@drawable/custom_card_view"
+				android:scaleType="centerCrop"
+				android:src="@drawable/logo" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Home"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
+
 	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -17,46 +58,6 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<androidx.cardview.widget.CardView
-				android:id="@+id/customActionBarLayout"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_gravity="top"
-				app:cardBackgroundColor="@color/light_gray"
-				app:cardElevation="5dp">
-
-				<RelativeLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content">
-
-					<ImageButton
-						android:id="@+id/logoImgBtn"
-						android:layout_width="75dp"
-						android:layout_height="75dp"
-						android:layout_alignParentStart="true"
-						android:layout_alignParentTop="true"
-						android:layout_marginStart="10dp"
-						android:layout_marginTop="10dp"
-						android:layout_marginEnd="10dp"
-						android:layout_marginBottom="10dp"
-						android:background="@drawable/custom_card_view"
-						android:scaleType="centerCrop"
-						android:src="@drawable/logo" />
-
-					<TextView
-						android:id="@+id/textView"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_centerInParent="true"
-						android:fontFamily="@font/opensans_bold"
-						android:text="Home"
-						android:textColor="@color/black"
-						android:textSize="20sp" />
-
-
-				</RelativeLayout>
-
-			</androidx.cardview.widget.CardView>
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
@@ -162,24 +163,23 @@
 					<TextView
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:text="@string/driver_availability_info"
-						android:fontFamily="@font/opensans_regular"
-						android:textColor="@color/black"
-						android:textSize="17sp"
 						android:layout_margin="10dp"
-						android:textAlignment="center"/>
+						android:fontFamily="@font/opensans_regular"
+						android:text="@string/driver_availability_info"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.SwitchCompat
 						android:id="@+id/driverStatusSwitch"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:text="or set your Availability manually"
 						android:fontFamily="@font/opensans_regular"
-						android:textColor="@color/black"
-						android:textSize="17sp"
+						android:text="or set your Availability manually"
 						android:textAlignment="center"
-						/>
+						android:textColor="@color/black"
+						android:textSize="17sp" />
 
 					<TextView
 						android:id="@+id/driverStatusTextView"
