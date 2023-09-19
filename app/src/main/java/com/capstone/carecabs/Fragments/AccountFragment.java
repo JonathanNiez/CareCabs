@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -283,17 +285,43 @@ public class AccountFragment extends Fragment {
 					}
 
 					if (!getProfilePicture.equals("default")) {
-						Glide.with(context).load(getProfilePicture).centerCrop().placeholder(R.drawable.loading_gif).into(binding.profilePic);
+						Glide.with(context)
+								.load(getProfilePicture)
+								.centerCrop()
+								.placeholder(R.drawable.loading_gif)
+								.into(binding.profilePic);
 					}
 
+					Drawable drawable;
+
 					if (getVerificationStatus.equals("Not Verified")) {
-						binding.verificationStatusTextView.setTextColor(Color.RED);
+						drawable = getResources().getDrawable(R.drawable.x_24);
+
+						binding.verificationStatusTextView.setTextColor(
+								getResources().getColor(R.color.dark_red)
+						);
 						binding.verificationStatusTextView.setText(getVerificationStatus);
+						binding.verificationStatusTextView
+								.setCompoundDrawablesWithIntrinsicBounds(null,
+										null,
+										drawable,
+										null);
 						binding.idScannedTextView.setVisibility(View.VISIBLE);
 
 					} else {
-						binding.verificationStatusTextView.setTextColor(Color.GREEN);
+						drawable = getResources().getDrawable(R.drawable.check_24);
+
+						binding.verificationStatusTextView.setTextColor(
+								getResources().getColor(R.color.green)
+						);
 						binding.verificationStatusTextView.setText(getVerificationStatus);
+						binding.verificationStatusTextView
+								.setCompoundDrawablesWithIntrinsicBounds(null,
+										null,
+										drawable,
+										null);
+						binding.verificationStatusTextView.setBackgroundColor(getResources()
+								.getColor(R.color.green));
 					}
 
 					binding.firstnameTextView.setText(getFirstName);

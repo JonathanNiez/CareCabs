@@ -46,6 +46,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -119,7 +120,13 @@ public class EditAccountFragment extends Fragment {
 		loadUserProfileInfo();
 
 		binding.imgBtnProfilePic.setOnClickListener(v -> {
-			showCameraOrGalleryOptionsDialog();
+//			showCameraOrGalleryOptionsDialog();
+
+			ImagePicker.with(EditAccountFragment.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start();
 		});
 
 		binding.editFirstnameBtn.setOnClickListener(v -> {
@@ -146,9 +153,6 @@ public class EditAccountFragment extends Fragment {
 			backToAccountFragment();
 		});
 
-		binding.imgBtnProfilePic.setOnClickListener(v -> {
-			showOptionsDialog();
-		});
 
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), ScanIDActivity.class);
@@ -178,9 +182,9 @@ public class EditAccountFragment extends Fragment {
 		closeEditSexDialog();
 		closeEditDisabilityDialog();
 		closeNoInternetDialog();
-		closeOptionsDialog();
 		closeProfilePicUpdateFailed();
 		closeProfilePicUpdateSuccess();
+		closeCameraOrGalleryOptionsDialog();
 	}
 
 	@Override
@@ -193,9 +197,9 @@ public class EditAccountFragment extends Fragment {
 		closeEditSexDialog();
 		closeEditDisabilityDialog();
 		closeNoInternetDialog();
-		closeOptionsDialog();
 		closeProfilePicUpdateFailed();
 		closeProfilePicUpdateSuccess();
+		closeCameraOrGalleryOptionsDialog();
 	}
 
 	public void onBackPressed() {
@@ -820,38 +824,6 @@ public class EditAccountFragment extends Fragment {
 		}
 	}
 
-	private void showOptionsDialog() {
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_gallery, null);
-
-		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
-		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		openCameraBtn.setOnClickListener(v -> {
-			openCamera();
-		});
-
-		openGalleryBtn.setOnClickListener(v -> {
-			openGallery();
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeOptionsDialog();
-		});
-
-		builder.setView(dialogView);
-
-		cameraGalleryOptionsDialog = builder.create();
-		cameraGalleryOptionsDialog.show();
-	}
-
-	private void closeOptionsDialog() {
-		if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
-			cameraGalleryOptionsDialog.dismiss();
-		}
-	}
 
 	private void backToAccountFragment() {
 		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -918,6 +890,8 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	private void uploadImageToFirebaseStorage(Uri imageUri) {
+		showPleaseWaitDialog();
+
 		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
 		storageReference = firebaseStorage.getReference();
 
@@ -929,6 +903,8 @@ public class EditAccountFragment extends Fragment {
 		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
 				.addOnSuccessListener(uri -> {
 
+					closePleaseWaitDialog();
+
 					String imageUrl = uri.toString();
 					storeImageUrlInFireStore(imageUrl);
 
@@ -936,10 +912,15 @@ public class EditAccountFragment extends Fragment {
 
 				}).addOnFailureListener(e -> {
 
+					closePleaseWaitDialog();
+
 					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
 
 				})).addOnFailureListener(e -> {
+
+			closePleaseWaitDialog();
+
 
 			Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 			Log.e(TAG, e.getMessage());
@@ -1006,37 +987,44 @@ public class EditAccountFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == CAMERA_REQUEST_CODE) {
-				if (data != null) {
+			if (data != null) {
 
-					Bundle extras = data.getExtras();
-					Bitmap imageBitmap = (Bitmap) extras.get("data");
+				imageUri = data.getData();
+				uploadImageToFirebaseStorage(imageUri);
 
-					imageUri = getImageUri(context, imageBitmap);
-					uploadImageToFirebaseStorage(imageUri);
-
-					Toast.makeText(context, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
-
-
-				} else {
-					Toast.makeText(context, "Image is not Selected", Toast.LENGTH_LONG).show();
-				}
-
-			} else if (requestCode == GALLERY_REQUEST_CODE) {
-				if (data != null) {
-
-					imageUri = data.getData();
-					uploadImageToFirebaseStorage(imageUri);
-
-					Toast.makeText(getContext(), "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
-
-				} else {
-					Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
-				}
 			}
 
-		} else {
-			Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+//			if (requestCode == CAMERA_REQUEST_CODE) {
+//				if (data != null) {
+//
+////					Bundle extras = data.getExtras();
+////					Bitmap imageBitmap = (Bitmap) extras.get("data");
+//
+////					imageUri = getImageUri(context, imageBitmap);
+//
+//					imageUri = data.getData();
+//					uploadImageToFirebaseStorage(imageUri);
+//
+//					Toast.makeText(context, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+//
+//
+//				} else {
+//					Toast.makeText(context, "Image is not Selected", Toast.LENGTH_LONG).show();
+//				}
+//
+//			} else if (requestCode == GALLERY_REQUEST_CODE) {
+//				if (data != null) {
+//
+//					imageUri = data.getData();
+//					uploadImageToFirebaseStorage(imageUri);
+//
+//					Toast.makeText(getContext(), "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
+//
+//				} else {
+//					Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
+//				}
+//			}
+
 		}
 	}
 
