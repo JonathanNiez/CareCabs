@@ -65,7 +65,7 @@
 						android:hint="EMAIL"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 				</com.google.android.material.textfield.TextInputLayout>
 
@@ -90,7 +90,7 @@
 						android:inputType="textPassword"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 				</com.google.android.material.textfield.TextInputLayout>
 
@@ -98,7 +98,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_medium"
 					android:text="Never share your Password to anyone"
 					android:textAlignment="center"
 					android:textColor="@color/black"
@@ -112,8 +112,8 @@
 				android:layout_height="wrap_content"
 				android:layout_marginStart="20dp"
 				android:layout_marginEnd="20dp"
-				android:background="@drawable/custom_card_view"
-				android:backgroundTint="@color/dark_blue"
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:padding="10dp"
@@ -151,7 +151,8 @@
 				android:layout_width="150dp"
 				android:layout_height="60dp"
 				android:layout_marginTop="20dp"
-				android:background="@drawable/custom_button"
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/dark_blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Login"
@@ -179,7 +180,8 @@
 						android:layout_height="wrap_content"
 						android:layout_marginEnd="5dp"
 						android:layout_weight="1"
-						android:fontFamily="@font/opensans_semibold"
+						android:background="@drawable/button_shape_1"
+						android:backgroundTint="@color/white"
 						android:text="Login using Google"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -218,8 +220,8 @@
 					android:id="@+id/registerTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:background="@drawable/custom_card_view"
-					android:backgroundTint="@color/dark_blue"
+					android:background="@drawable/button_shape_1"
+					android:backgroundTint="@color/blue"
 					android:elevation="5dp"
 					android:fontFamily="@font/opensans_semibold"
 					android:padding="10dp"

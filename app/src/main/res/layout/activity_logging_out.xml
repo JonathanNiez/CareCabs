@@ -1,28 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".LoggingOutActivity">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/background"
+	tools:context=".LoggingOutActivity">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/loadingGif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/loading_gif" />
+	<pl.droidsonroids.gif.GifImageView
+		android:id="@+id/loadingGif"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:src="@drawable/loading_gif" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logging Out..."
-        android:layout_below="@+id/loadingGif"
-        android:textSize="30sp"
-        android:textColor="@color/black"
-        android:fontFamily="@font/opensans_semibold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+	<TextView
+		android:id="@+id/textView1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/loadingGif"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="10dp"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Signing Out"
+		android:textColor="@color/black"
+		android:textSize="25sp" />
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/textView1"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="10dp"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Please wait..."
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 </RelativeLayout>

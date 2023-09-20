@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	tools:context=".MapPassengerActivity">
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardBackgroundColor="@color/light_gray"
+		app:cardElevation="10dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/light_gray"
+				android:src="@drawable/back_50_2" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Map"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+
+		</RelativeLayout>
+
+
+	</androidx.cardview.widget.CardView>
+
+	<FrameLayout
+		android:id="@+id/whereToLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout"
+		android:layout_centerHorizontal="true">
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="50dp"
+			android:layout_gravity="center"
+			android:layout_margin="10dp"
+			android:background="@drawable/custom_card_view"
+			android:backgroundTint="@color/yellow"
+			android:elevation="5dp"
+			android:fontFamily="@font/opensans_bold"
+			android:padding="5dp"
+			android:text="Where are you going?"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
+	</FrameLayout>
+
+	<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
+		android:id="@+id/routeOverviewBtn"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout"
+		android:layout_alignParentEnd="true"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="15dp"
+		android:elevation="10dp" />
+
+	<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
+		android:id="@+id/recenterBtn"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/routeOverviewBtn"
+		android:layout_alignParentEnd="true"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="15dp"
+		android:elevation="10dp" />
+
+	<com.mapbox.maps.MapView
+		android:id="@+id/mapView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@id/bottomNavigationView"
+		android:layout_below="@id/customActionBarLayout" />
+
+
+	<FrameLayout
+		android:id="@+id/setLocationLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/bottomNavigationView"
+		android:layout_centerHorizontal="true"
+		android:layout_marginBottom="30dp">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/setLocationBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:background="@drawable/custom_button"
+			android:drawableStart="@drawable/location"
+			android:fontFamily="@font/opensans_semibold"
+			android:padding="10dp"
+			android:text="Set Location on Map"
+			android:textColor="@color/white"
+			android:textSize="16sp" />
+
+	</FrameLayout>
+
+	<com.google.android.material.bottomnavigation.BottomNavigationView
+		android:id="@+id/bottomNavigationView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:background="@color/yellow"
+		app:itemTextColor="@color/black"
+		app:labelVisibilityMode="labeled"
+		app:menu="@menu/map_bottom_nav_menu" />
+
+</RelativeLayout>

@@ -45,7 +45,7 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
 			// Check if the permission was granted
 			Intent intent;
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				intent = new Intent(RequestLocationPermissionActivity.this, MapActivity.class);
+				intent = new Intent(RequestLocationPermissionActivity.this, MapDriverActivity.class);
 
 				Toast.makeText(this, "Request Location Granted", Toast.LENGTH_SHORT).show();
 			} else {

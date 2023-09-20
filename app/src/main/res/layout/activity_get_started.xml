@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".GetStartedActivity"
-    android:background="@color/background">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/background"
+	tools:context=".GetStartedActivity">
 
-    <ImageView
-        android:id="@+id/logo"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="130dp"/>
+	<ImageView
+		android:id="@+id/logo"
+		android:layout_width="300dp"
+		android:layout_height="300dp"
+		android:layout_centerInParent="true"
+		android:src="@drawable/logo" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/getStartedBtn"
-        android:layout_width="185dp"
-        android:layout_height="78dp"
-        android:background="@drawable/custom_button"
-        android:text="Get Started"
-        android:textSize="24dp"
-        android:fontFamily="@font/opensans_bold"
-        android:textColor="@color/white"
-        android:layout_below="@id/logo"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"/>
-
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/getStartedBtn"
+		android:layout_width="250dp"
+		android:layout_height="60dp"
+		android:layout_below="@id/logo"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="50dp"
+		android:background="@drawable/button_shape_1"
+		android:fontFamily="@font/opensans_semibold"
+		android:backgroundTint="@color/dark_blue"
+		android:text="Get Started"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
 
 </RelativeLayout>

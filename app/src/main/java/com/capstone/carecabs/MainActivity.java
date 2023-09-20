@@ -2,6 +2,7 @@ package com.capstone.carecabs;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -25,6 +26,10 @@ import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public class MainActivity extends AppCompatActivity {
 	private Intent intent;
@@ -33,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 	private final String TAG = "MainActivity";
 	private boolean shouldExit = false;
 	private EditAccountFragment editAccountFragment;
+	private DocumentReference documentReference;
 	private ActivityMainBinding binding;
 
 
@@ -56,13 +62,12 @@ public class MainActivity extends AppCompatActivity {
 			} else if (item.getItemId() == R.id.map) {
 
 				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
-					intent = new Intent(MainActivity.this, MapActivity.class);
+					getUserType();
 				} else {
 					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
-
+					startActivity(intent);
+					finish();
 				}
-				startActivity(intent);
-				finish();
 
 			}
 			return true;
@@ -146,6 +151,40 @@ public class MainActivity extends AppCompatActivity {
 
 		closeExitConfirmationDialog();
 		updateDriverStatus(false);
+	}
+
+	private void getUserType() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					String getUserType = documentSnapshot.getString("userType");
+
+					switch (getUserType) {
+						case "Driver":
+							intent = new Intent(MainActivity.this, MapDriverActivity.class);
+							break;
+
+						case "Senior Citizen":
+						case "Persons with Disability (PWD)":
+							intent = new Intent(MainActivity.this, MapPassengerActivity.class);
+
+							break;
+
+					}
+					startActivity(intent);
+					finish();
+				}
+			}).addOnFailureListener(new OnFailureListener() {
+				@Override
+				public void onFailure(@NonNull Exception e) {
+					Log.e(TAG, e.getMessage());
+				}
+			});
+		}
 	}
 
 	private void updateDriverStatus(boolean isAvailable) {

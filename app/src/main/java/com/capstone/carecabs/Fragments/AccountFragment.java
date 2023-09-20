@@ -298,8 +298,10 @@ public class AccountFragment extends Fragment {
 						drawable = getResources().getDrawable(R.drawable.x_24);
 
 						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.dark_red)
+								getResources().getColor(R.color.white)
 						);
+						binding.verificationStatusTextView.setBackgroundColor(getResources()
+								.getColor(R.color.red));
 						binding.verificationStatusTextView.setText(getVerificationStatus);
 						binding.verificationStatusTextView
 								.setCompoundDrawablesWithIntrinsicBounds(null,
@@ -312,7 +314,7 @@ public class AccountFragment extends Fragment {
 						drawable = getResources().getDrawable(R.drawable.check_24);
 
 						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.green)
+								getResources().getColor(R.color.white)
 						);
 						binding.verificationStatusTextView.setText(getVerificationStatus);
 						binding.verificationStatusTextView

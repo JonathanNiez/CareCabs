@@ -39,6 +39,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterDriverBinding;
+import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -92,7 +93,11 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		StaticDataPasser.storeRegisterUserType = "Driver";
 
 		binding.imgBtnProfilePic.setOnClickListener(view -> {
-			showCameraOrGalleryOptionsDialog();
+			ImagePicker.with(RegisterDriverActivity.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start();
 		});
 
 		binding.imgBackBtn.setOnClickListener(v -> {
@@ -762,35 +767,44 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == CAMERA_REQUEST_CODE) {
-				if (data != null) {
 
-					Bundle extras = data.getExtras();
-					Bitmap imageBitmap = (Bitmap) extras.get("data");
+			if (data != null) {
 
-					imageUri = getImageUri(imageBitmap);
-					StaticDataPasser.storeUri = imageUri;
-					binding.imgBtnProfilePic.setImageURI(imageUri);
+				imageUri = data.getData();
+				StaticDataPasser.storeUri = imageUri;
+				binding.imgBtnProfilePic.setImageURI(imageUri);
 
-					Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
-
-				} else {
-					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-				}
-
-			} else if (requestCode == GALLERY_REQUEST_CODE) {
-				if (data != null) {
-
-					imageUri = data.getData();
-					StaticDataPasser.storeUri = imageUri;
-					binding.imgBtnProfilePic.setImageURI(imageUri);
-
-					Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
-
-				} else {
-					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-				}
 			}
+
+//			if (requestCode == CAMERA_REQUEST_CODE) {
+//				if (data != null) {
+//
+//					Bundle extras = data.getExtras();
+//					Bitmap imageBitmap = (Bitmap) extras.get("data");
+//
+//					imageUri = getImageUri(imageBitmap);
+//					StaticDataPasser.storeUri = imageUri;
+//					binding.imgBtnProfilePic.setImageURI(imageUri);
+//
+//					Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
+//
+//				} else {
+//					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+//				}
+//
+//			} else if (requestCode == GALLERY_REQUEST_CODE) {
+//				if (data != null) {
+//
+//					imageUri = data.getData();
+//					StaticDataPasser.storeUri = imageUri;
+//					binding.imgBtnProfilePic.setImageURI(imageUri);
+//
+//					Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
+//
+//				} else {
+//					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+//				}
+//			}
 
 		} else {
 			Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();

@@ -25,8 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Utility.StaticDataPasser
-import com.capstone.carecabs.databinding.ActivityMapBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.google.firebase.firestore.DocumentReference
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -36,8 +35,6 @@ import com.mapbox.bindgen.Expected
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
-import com.mapbox.maps.MapView
-import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
@@ -108,7 +105,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-class MapActivity : AppCompatActivity() {
+class MapDriverActivity : AppCompatActivity() {
 
     private companion object {
         private const val BUTTON_ANIMATION_DURATION = 1500L
@@ -345,7 +342,7 @@ class MapActivity : AppCompatActivity() {
         maneuvers.fold(
             { error ->
                 Toast.makeText(
-                    this@MapActivity,
+                    this@MapDriverActivity,
                     error.errorMessage,
                     Toast.LENGTH_SHORT
                 ).show()
@@ -425,9 +422,12 @@ class MapActivity : AppCompatActivity() {
                 mapboxNavigation.unregisterVoiceInstructionsObserver(voiceInstructionsObserver)
             }
         },
-        onInitialize = this::initNavigation
+        onInitialize = this::initializeNavigation
     )
-    private lateinit var mapboxMap: MapboxMap
+
+
+    private val viewAnnotationMap = mutableMapOf<Point, View>()
+
     private var annotationApi: AnnotationPlugin? = null
     private lateinit var annotationConfig: AnnotationConfig
     private var pointAnnotationManager: PointAnnotationManager? = null
@@ -444,12 +444,12 @@ class MapActivity : AppCompatActivity() {
     private lateinit var builder: AlertDialog.Builder
     private lateinit var userNotVerifiedDialog: AlertDialog
 
-    private lateinit var binding: ActivityMapBinding
+    private lateinit var binding: ActivityMapDriverBinding
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMapBinding.inflate(layoutInflater)
+        binding = ActivityMapDriverBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.tripProgressLayout.visibility = View.INVISIBLE
@@ -460,6 +460,7 @@ class MapActivity : AppCompatActivity() {
         checkIfUserIsVerified()
         checkLocationPermission()
         createDummyMarkers()
+        bottomNavButtons()
 
         binding.navigationView.api.routeReplayEnabled(true)
 
@@ -469,9 +470,11 @@ class MapActivity : AppCompatActivity() {
             binding.mapView.camera,
             viewportDataSource
         )
+
         binding.mapView.camera.addCameraAnimationsLifecycleListener(
             NavigationBasicGesturesHandler(navigationCamera)
         )
+
         navigationCamera.registerNavigationCameraStateChangeObserver { navigationCameraState ->
             // shows/hide the recenter button depending on the camera state
             when (navigationCameraState) {
@@ -563,6 +566,28 @@ class MapActivity : AppCompatActivity() {
 
         binding.soundBtn.unmute()
 
+        binding.mapView.getMapboxMap().loadStyleUri(
+            getString(R.string.custom_map_style_url),
+            // After the style is loaded, initialize the Location component.
+            object : Style.OnStyleLoaded {
+                override fun onStyleLoaded(style: Style) {
+                    zoomCamera()
+
+                    annotationApi = binding.mapView.annotations
+                    annotationConfig = AnnotationConfig(
+                        layerId = layerID
+                    )
+
+                    pointAnnotationManager =
+                        annotationApi?.createPointAnnotationManager(annotationConfig)
+
+                    showPassengerMarkersOnMap()
+
+                }
+            }
+        )
+    }
+    private fun bottomNavButtons() {
         binding.bottomNavigationView.selectedItemId = R.id.setLocation
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
@@ -584,50 +609,29 @@ class MapActivity : AppCompatActivity() {
             }
             true
         }
-        fun generateRandomTripId(): String {
-            val uuid = UUID.randomUUID()
-            return uuid.toString()
-        }
+    }
 
-        binding.mapView.getMapboxMap().loadStyleUri(
-            getString(R.string.custom_map_style_url),
-            // After the style is loaded, initialize the Location component.
-            object : Style.OnStyleLoaded {
-                override fun onStyleLoaded(style: Style) {
-                    zoomCamera()
-
-                    annotationApi = binding.mapView.annotations
-                    annotationConfig = AnnotationConfig(
-                        layerId = layerID
-                    )
-
-                    pointAnnotationManager =
-                        annotationApi?.createPointAnnotationManager(annotationConfig)
-
-                    showPassengerMarkerOnMap()
-
-                }
-            }
-        )
+    private fun generateRandomTripId(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
     }
 
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.userCollection).document(FirebaseMain.getUser().uid)
+                .collection(StaticDataPasser.userCollection)
+                .document(FirebaseMain.getUser().uid)
 
             documentReference.get().addOnSuccessListener {
                 if (it != null && it.exists()) {
                     val getVerificationStatus = it.getString("verificationStatus")
 
-                    if (getVerificationStatus == "Not Verified") {
+                    if (getVerificationStatus.equals("Not Verified")) {
                         showUserNotVerifiedDialog()
 
                     } else {
                         checkUserType()
                     }
-                } else {
-
                 }
             }.addOnFailureListener {
                 Log.e(TAG, it.message.toString())
@@ -698,7 +702,7 @@ class MapActivity : AppCompatActivity() {
         }
     }
 
-    private fun initNavigation() {
+    private fun initializeNavigation() {
         MapboxNavigationApp.setup(
             NavigationOptions.Builder(this)
                 .accessToken(getString(R.string.mapbox_access_token))
@@ -712,7 +716,7 @@ class MapActivity : AppCompatActivity() {
             setLocationProvider(navigationLocationProvider)
             this.locationPuck = LocationPuck2D(
                 bearingImage = ContextCompat.getDrawable(
-                    this@MapActivity,
+                    this@MapDriverActivity,
                     R.drawable.mapbox_navigation_puck_icon
                 )
             )
@@ -755,7 +759,10 @@ class MapActivity : AppCompatActivity() {
 
     private fun zoomCamera() {
         binding.mapView.getMapboxMap().setCamera(
-            CameraOptions.Builder().center(Point.fromLngLat(125.60288851565707, 7.065679527724293))
+            CameraOptions.Builder()
+                .center(Point.fromLngLat(
+                    125.60288851565707,
+                    7.065679527724293))
                 .zoom(10.0)
                 .build()
 
@@ -773,7 +780,7 @@ class MapActivity : AppCompatActivity() {
         longitudeList.add(125.55617682891864)
     }
 
-    private fun showPassengerMarkerOnMap() {
+    private fun showPassengerMarkersOnMap() {
 
         pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener { annotation: PointAnnotation ->
 
@@ -954,26 +961,16 @@ class MapActivity : AppCompatActivity() {
         binding.tripProgressLayout.visibility = View.INVISIBLE
     }
 
-    override fun onStart() {
-        super.onStart()
-        binding.mapView.onStart()
-    }
+    override fun onBackPressed() {
 
+        intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
 
-    override fun onStop() {
-        super.onStop()
-        binding.mapView.onStop()
-    }
-
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        binding.mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        binding.mapView.onDestroy()
         mapboxReplayer.finish()
         maneuverApi.cancel()
 //        routeLineApi.cancel()
