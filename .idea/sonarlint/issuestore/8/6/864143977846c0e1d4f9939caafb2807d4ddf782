@@ -1,0 +1,25 @@
+
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8Á‚µô§1
+o	java:S116'"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(—è–×ıÿÿÿÿ8İ‚µô§1
+C
+java:S1170'"!Make this final field static too.(—è–×ıÿÿÿÿ8â‚µô§1
+z
+java:S1659#"XDeclare "passwordChangeSuccessDialog" and all following declarations on a separate line.(±°ğòüÿÿÿÿ8ã‚µô§1
+w
+java:S1450&"URemove the "intent" field and declare it as a local variable in the relevant methods.(–Ô¼ùÿÿÿÿ8ä‚µô§1
+w
+java:S1450%"URemove the "userID" field and declare it as a local variable in the relevant methods.(³ ûÁÿÿÿÿÿ8ä‚µô§1
+E
+java:S1185+"(Remove this method to simply inherit it.(ßìê¯8í‚µô§1
+t
+java:S37761"RRefactor this method to reduce its Cognitive Complexity from 19 to the 15 allowed.(ËÄ•åûÿÿÿÿ8î‚µô§1
+N
+java:S16028",Remove useless curly braces around statement(×ùÛŞşÿÿÿÿ8õ‚µô§1
+N
+java:S1602<",Remove useless curly braces around statement(èµéøÿÿÿÿ8õ‚µô§1
+T
+java:S2696"6Make the enclosing method "static" or remove this set.(£šå»8ø‚µô§1
+L
+java:S1068%"*Remove this unused "userID" private field.(³ ûÁÿÿÿÿÿ8–ƒµô§1
+I
+java:S1068'"'Remove this unused "TAG" private field.(—è–×ıÿÿÿÿ8–ƒµô§1

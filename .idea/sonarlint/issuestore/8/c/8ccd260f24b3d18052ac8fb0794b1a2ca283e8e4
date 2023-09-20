@@ -1,0 +1,123 @@
+
+t
+java:S1192"VDefine a constant instead of duplicating this literal "Image is not Selected" 3 times.(Ä·£½8¯Ÿ‘÷§1
+F
+java:S1604Ä"(Make this anonymous inner class a lambda(ôÛ¥¹8±Ÿ‘÷§1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8¶Ÿ‘÷§1
+o	java:S116@"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(™ÔÅ¿ùÿÿÿÿ8ª¡‘÷§1
+C
+java:S1170@"!Make this final field static too.(™ÔÅ¿ùÿÿÿÿ8®¡‘÷§1
+k
+java:S1659A"IDeclare "cameraIntent" and all following declarations on a separate line.(‰¹İüÿÿÿÿ8±¡‘÷§1
+q
+java:S1659D"ODeclare "editLastNameDialog" and all following declarations on a separate line.(ã™Ğûûÿÿÿÿ8±¡‘÷§1
+}
+java:S1450A"[Remove the "cameraIntent" field and declare it as a local variable in the relevant methods.(‰¹İüÿÿÿÿ8±¡‘÷§1
+}
+java:S1450T"`Remove the "documentReference" field and declare it as a local variable in the relevant methods.( Êİ8²¡‘÷§1
+x
+java:S1450R"VRemove the "fileRef" field and declare it as a local variable in the relevant methods.(êÈıüÿÿÿÿ8²¡‘÷§1
+~
+java:S1450A"\Remove the "galleryIntent" field and declare it as a local variable in the relevant methods.(‰¹İüÿÿÿÿ8²¡‘÷§1
+y
+java:S1450I"WRemove the "imageUri" field and declare it as a local variable in the relevant methods.(Ø°´şÿÿÿÿ8²¡‘÷§1
+†
+java:S1450N"dRemove the "networkChangeReceiver" field and declare it as a local variable in the relevant methods.(½İŸÄûÿÿÿÿ8²¡‘÷§1
+v
+java:S1450P"YRemove the "storageRef" field and declare it as a local variable in the relevant methods.(õÛ¼½8²¡‘÷§1
+E
+java:S1185b"(Remove this method to simply inherit it.(ßìê¯8¿¡‘÷§1
+I
+java:S1602z",Remove useless curly braces around statement(§Àõ8Á¡‘÷§1
+I
+java:S1602~",Remove useless curly braces around statement(ĞÛÁ´8Ã¡‘÷§1
+O
+java:S1602‚",Remove useless curly braces around statement(ãñ®ıÿÿÿÿ8Ä¡‘÷§1
+O
+java:S1602†",Remove useless curly braces around statement(Ç…Üüÿÿÿÿ8Ä¡‘÷§1
+J
+java:S1602Š",Remove useless curly braces around statement(¥ç¸8Ä¡‘÷§1
+O
+java:S1602",Remove useless curly braces around statement(ìİÊ©ûÿÿÿÿ8Ä¡‘÷§1
+^	java:S125š"<This block of commented-out lines of code should be removed.(Æ–ºíøÿÿÿÿ8Å¡‘÷§1
+O
+java:S1602£",Remove useless curly braces around statement(øÒ†Øøÿÿÿÿ8Ç¡‘÷§1
+O
+java:S1602§",Remove useless curly braces around statement(×ùÛŞşÿÿÿÿ8Ç¡‘÷§1
+M
+java:S1481Û"/Remove this unused "dateFormat" local variable.(÷ß¡Ì8Ë¡‘÷§1
+T
+java:S2696Ü"6Make the enclosing method "static" or remove this set.(ÈÑø•8Ë¡‘÷§1
+K
+java:S1481÷"-Remove this unused "getEmail" local variable.(…¶¡§8Î¡‘÷§1
+V
+java:S1481ø"3Remove this unused "getPhoneNumber" local variable.(£•µøÿÿÿÿ8Î¡‘÷§1
+]
+java:S1481ú":Remove this unused "getVerificationStatus" local variable.(×¸Îüÿÿÿÿ8Î¡‘÷§1
+D	java:S131ş""Add a default case to this switch.(­ª¢†şÿÿÿÿ8Ï¡‘÷§1
+Y
+java:S2696›"6Make the enclosing method "static" or remove this set.(õßìÌøÿÿÿÿ8Ğ¡‘÷§1
+T
+java:S2696œ"6Make the enclosing method "static" or remove this set.(Ó¦…8Ğ¡‘÷§1
+S
+java:S2696"6Make the enclosing method "static" or remove this set.(½¢§8Ğ¡‘÷§1
+Y
+java:S2696"6Make the enclosing method "static" or remove this set.(£¬¾üÿÿÿÿÿ8Ğ¡‘÷§1
+Y
+java:S2696Ÿ"6Make the enclosing method "static" or remove this set.(á¸Ğùÿÿÿÿ8Ğ¡‘÷§1
+O
+java:S1602Ó",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8Ö¡‘÷§1
+O
+java:S1602ì",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8×¡‘÷§1
+O
+java:S1602†",Remove useless curly braces around statement(âøçÿÿÿÿÿ8Ù¡‘÷§1
+J
+java:S1602¬",Remove useless curly braces around statement(ˆŠ¦è8Û¡‘÷§1
+J
+java:S1602Ì",Remove useless curly braces around statement(ˆŠ¦è8İ¡‘÷§1
+J
+java:S1602í",Remove useless curly braces around statement(ˆŠ¦è8ß¡‘÷§1
+¤
+java:S1186š"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¹Æº×şÿÿÿÿ8á¡‘÷§1
+T
+java:S2696•"6Make the enclosing method "static" or remove this set.(àË¥ş8â¡‘÷§1
+J
+java:S1602£",Remove useless curly braces around statement(ˆŠ¦è8ã¡‘÷§1
+¤
+java:S1186Ğ"€Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.(¹Æº×şÿÿÿÿ8å¡‘÷§1
+Y
+java:S2696Ë"6Make the enclosing method "static" or remove this set.(ç­Ï‹ıÿÿÿÿ8æ¡‘÷§1
+J
+java:S1602Ù",Remove useless curly braces around statement(ˆŠ¦è8æ¡‘÷§1
+O
+java:S1602ò",Remove useless curly braces around statement(îòüŞıÿÿÿÿ8è¡‘÷§1
+O
+java:S1602ö",Remove useless curly braces around statement(Ä»ÎÎüÿÿÿÿ8è¡‘÷§1
+J
+java:S1602ú",Remove useless curly braces around statement(ˆŠ¦è8è¡‘÷§1
+a
+java:S1874©">Remove this use of "startActivityForResult"; it is deprecated.(Ğ¹ë½úÿÿÿÿ8ï¡‘÷§1
+\
+java:S1874·">Remove this use of "startActivityForResult"; it is deprecated.(¡¢ş8ğ¡‘÷§1
+Q
+java:S1874Æ"3Remove this use of "insertImage"; it is deprecated.(ˆçïÂ8ô¡‘÷§1
+S
+java:S1172â"0Remove this unused method parameter "xImageUrl".(ù‘ğ·şÿÿÿÿ8÷¡‘÷§1
+m
+java:S1874ğ"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(ÉÎÍïıÿÿÿÿ8ø¡‘÷§1
+[
+java:S1874ñ"8Remove this use of "onActivityResult"; it is deprecated.(ß¬©úÿÿÿÿ8ù¡‘÷§1
+H
+java:S1874ø"+Remove this use of "get"; it is deprecated.(¶õì>8ù¡‘÷§1
+m
+java:S1874—"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(Û›ë´øÿÿÿÿ8ú¡‘÷§1
+`
+java:S1874˜"BRemove this use of "onRequestPermissionsResult"; it is deprecated.(Öƒà8û¡‘÷§1
+O
+java:S1602°",Remove useless curly braces around statement(Ùâöüşÿÿÿÿ8ü¡‘÷§1
+^
+java:S1874Ë";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8€¢‘÷§1
+c
+java:S1144Ì"@Remove this unused private "showProfilePicUpdateSuccess" method.(à®äÕşÿÿÿÿ8¢‘÷§1
+h
+java:S1144ş"ERemove this unused private "showProfilePicUpdateConfirmation" method.(Êï§ûÿÿÿÿÿ8¢‘÷§1

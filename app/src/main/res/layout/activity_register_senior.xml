@@ -144,11 +144,11 @@
 						android:layout_height="wrap_content"
 						android:autofillHints="name"
 						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/opensans_bold"
 						android:hint="FIRSTNAME"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 				</com.google.android.material.textfield.TextInputLayout>
 
@@ -169,11 +169,11 @@
 						android:layout_height="wrap_content"
 						android:autofillHints="name"
 						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/opensans_bold"
 						android:hint="LASTNAME"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 				</com.google.android.material.textfield.TextInputLayout>
 
@@ -219,7 +219,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="60dp"
 							android:background="@drawable/edit_text"
-							android:fontFamily="@font/opensans_semibold"
+							android:fontFamily="@font/opensans_bold"
 							android:text="Date of Birth"
 							android:textColor="@color/black"
 							android:textSize="17sp" />
@@ -242,7 +242,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="60dp"
 							android:background="@drawable/edit_text"
-							android:fontFamily="@font/opensans_semibold"
+							android:fontFamily="@font/opensans_bold"
 							android:text="Age"
 							android:textColor="@color/black"
 							android:textSize="17sp" />
@@ -376,7 +376,8 @@
 				android:layout_height="60dp"
 				android:layout_marginTop="10dp"
 				android:layout_marginBottom="50dp"
-				android:background="@drawable/custom_button"
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/dark_blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Done"

@@ -1,0 +1,54 @@
+
+|
+java:S1104"ZMake storeFirstName a static final constant or non-public and provide accessors if needed.(Éÿ€ÿıÿÿÿÿ8œá• ¦1
+u
+java:S1104"YMake storeLastName a static final constant or non-public and provide accessors if needed.(ş»ş38œá• ¦1
+r
+java:S1104"\Make storeSelectedSex a static final constant or non-public and provide accessors if needed.(¢¿½İ
+y
+java:S1104"cMake storeSelectedDisability a static final constant or non-public and provide accessors if needed.(›ŸŞ
+|
+java:S1104	"aMake storeCurrentBirthDate a static final constant or non-public and provide accessors if needed.(íô¾÷ùÿÿÿÿ
+x
+java:S1104
+"]Make storeRegisterType a static final constant or non-public and provide accessors if needed.(•É¼‡ûÿÿÿÿ
+ƒ
+java:S1104"aMake storeRegisterUserType a static final constant or non-public and provide accessors if needed.(µÍ“Îùÿÿÿÿ8ÒöÍ§1
+…
+java:S1104"iMake storeSelectedMedicalCondition a static final constant or non-public and provide accessors if needed.(¨±ö#8ÜØ£ı£1
+v
+java:S1104"[Make storeCurrentAge a static final constant or non-public and provide accessors if needed.(•ıóôıÿÿÿÿ
+u
+java:S1104"_Make storeHashedPassword a static final constant or non-public and provide accessors if needed.(˜ÙİÖ
+{
+java:S1104"YMake storeUserType a static final constant or non-public and provide accessors if needed.(ºóÍêùÿÿÿÿ8«˜¦¢¦1
+~
+java:S1104"\Make storePhoneNumber a static final constant or non-public and provide accessors if needed.(¢£ßùşÿÿÿÿ8Ãé‘Í§1
+V
+java:S1444"4Make this "public static storeFirstName" field final(Éÿ€ÿıÿÿÿÿ8á• ¦1
+O
+java:S1444"3Make this "public static storeLastName" field final(ş»ş38á• ¦1
+L
+java:S1444"6Make this "public static storeSelectedSex" field final(¢¿½İ
+S
+java:S1444"=Make this "public static storeSelectedDisability" field final(›ŸŞ
+V
+java:S1444	";Make this "public static storeCurrentBirthDate" field final(íô¾÷ùÿÿÿÿ
+R
+java:S1444
+"7Make this "public static storeRegisterType" field final(•É¼‡ûÿÿÿÿ
+]
+java:S1444";Make this "public static storeRegisterUserType" field final(µÍ“Îùÿÿÿÿ8ÓöÍ§1
+_
+java:S1444"CMake this "public static storeSelectedMedicalCondition" field final(¨±ö#8ÜØ£ı£1
+P
+java:S1444"5Make this "public static storeCurrentAge" field final(•ıóôıÿÿÿÿ
+O
+java:S1444"9Make this "public static storeHashedPassword" field final(˜ÙİÖ
+U
+java:S1444"3Make this "public static storeUserType" field final(ºóÍêùÿÿÿÿ8«˜¦¢¦1
+X
+java:S1444"6Make this "public static storePhoneNumber" field final(¢£ßùşÿÿÿÿ8Äé‘Í§1
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(æÁÔ
+U
+java:S1118":Add a private constructor to hide the implicit public one.(§øûãÿÿÿÿÿ

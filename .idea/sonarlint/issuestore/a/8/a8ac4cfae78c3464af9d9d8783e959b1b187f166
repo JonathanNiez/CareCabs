@@ -1,0 +1,18 @@
+
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8ù£´±¥1
+g
+java:S1659"JDeclare "fontSizeLabel" and all following declarations on a separate line.(ÄìÈ‹8Æ¤´±¥1
+y
+java:S1450"\Remove the "fontSizeLabel" field and declare it as a local variable in the relevant methods.(ÄìÈ‹8ÚµØ±¥1
+„
+java:S1450"bRemove the "fontSizeLabelString" field and declare it as a local variable in the relevant methods.(€ï½ııÿÿÿÿ8úĞÙ±¥1
+{
+java:S1450"^Remove the "fontSizeSeekBar" field and declare it as a local variable in the relevant methods.(ş¦€è8Æ¤´±¥1
+v
+java:S1450"YRemove the "imgBackBtn" field and declare it as a local variable in the relevant methods.(­•ĞÓ8Æ¤´±¥1
+s
+java:S1450"VRemove the "saveBtn" field and declare it as a local variable in the relevant methods.(Âë–¾8Æ¤´±¥1
+E
+java:S1185"(Remove this method to simply inherit it.(ßìê¯8Ê¤´±¥1
+I
+java:S16021",Remove useless curly braces around statement(˜‡ŸÛ8Í¤´±¥1

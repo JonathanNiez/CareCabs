@@ -1,0 +1,58 @@
+
+F
+java:S1604ı"(Make this anonymous inner class a lambda(ôÛ¥¹8ä–Íó§1
+j	java:S116*"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤ûÖ8£šÜÏ§1
+>
+java:S1170*"!Make this final field static too.(¤ûÖ8Õ’ßÏ§1
+n
+java:S16591"QDeclare "registerFailedDialog" and all following declarations on a separate line.(ú¡±˜8ÅÇßÏ§1
+}
+java:S1450("`Remove the "documentReference" field and declare it as a local variable in the relevant methods.( Êİ8ƒ‰àÏ§1
+w
+java:S1450)"URemove the "userID" field and declare it as a local variable in the relevant methods.(³ ûÁÿÿÿÿÿ8¢‡ÛÏ§1
+`
+java:S1854C"CRemove this useless assignment to local variable "getRegisterData".(¶İÈ8ĞÇßÏ§1
+Q
+java:S1481C"4Remove this unused "getRegisterData" local variable.(¶İÈ8ÑÇßÏ§1
+N
+java:S1602E",Remove useless curly braces around statement(×ùÛŞşÿÿÿÿ8ÒÇßÏ§1
+S
+java:S2696X"6Make the enclosing method "static" or remove this set.(àË¥ş8ñÛ¸Ñ§1
+X
+java:S2696r"6Make the enclosing method "static" or remove this set.(ç­Ï‹ıÿÿÿÿ8óÛ¸Ñ§1
+N
+java:S1602|",Remove useless curly braces around statement(‰Ùõ¶ùÿÿÿÿ8ØÇßÏ§1
+Y
+java:S2696“"6Make the enclosing method "static" or remove this set.(««¬¿şÿÿÿÿ8Ç—Íó§1
+T
+java:S2696”"6Make the enclosing method "static" or remove this set.(ÔÇûÎ8Ç—Íó§1
+m
+java:S1874£"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8È—Íó§1
+X
+java:S1161µ":Add the "@Override" annotation above this method signature(ÍÙ÷¢8É—Íó§1
+O
+java:S1602ò",Remove useless curly braces around statement(âøçÿÿÿÿÿ8Ô—Íó§1
+T
+java:S2696Œ"6Make the enclosing method "static" or remove this set.(üò­ò8„Ü¸Ñ§1
+T
+java:S2696"6Make the enclosing method "static" or remove this set.(«µùû8„Ü¸Ñ§1
+T
+java:S2696"6Make the enclosing method "static" or remove this set.(ÜÊˆÉ8…Ü¸Ñ§1
+Y
+java:S2696"6Make the enclosing method "static" or remove this set.(Õ™‹áøÿÿÿÿ8…Ü¸Ñ§1
+S
+java:S2696"6Make the enclosing method "static" or remove this set.(¿¥ìX8×—Íó§1
+T
+java:S2696‘"6Make the enclosing method "static" or remove this set.(ÚÈ††8×—Íó§1
+O
+java:S1602˜",Remove useless curly braces around statement(âøçÿÿÿÿÿ8Ø—Íó§1
+T
+java:S2696¶"6Make the enclosing method "static" or remove this set.(ÊÖèù8Ú—Íó§1
+Y
+java:S2696È"6Make the enclosing method "static" or remove this set.(„ïÖÀúÿÿÿÿ8İ—Íó§1
+^
+java:S1117Ü";Rename "builder" which hides the field declared at line 48.(ØÜ«¬üÿÿÿÿ8á—Íó§1
+^
+java:S1874„";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8í—Íó§1
+O
+java:S1602Ÿ",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8ğ—Íó§1

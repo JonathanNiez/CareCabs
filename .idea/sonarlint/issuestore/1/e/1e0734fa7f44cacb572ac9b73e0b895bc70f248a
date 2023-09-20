@@ -1,0 +1,33 @@
+
+j
+java:S1192,"MDefine a constant instead of duplicating this literal "registerType" 4 times.(³ô¥ÿ8ÛäÓ¨¦1
+n
+java:S1192K"QDefine a constant instead of duplicating this literal "registerUserType" 3 times.(ªû‘â8ÑĞúÌ§1
+F
+java:S1604÷"(Make this anonymous inner class a lambda(ôÛ¥¹8ÛäÓ¨¦1
+<
+java:S1700"Rename field "registerUserType"(¼ëûÓ8ÇñøÌ§1
+G
+java:S1659"*Declare "registerType" on a separate line.(¼ëûÓ8¦æÓ¨¦1
+{
+java:S1659"YDeclare "emailAlreadyRegisteredDialog" and all following declarations on a separate line.(İ×Õ¯şÿÿÿÿ8¦æÓ¨¦1
+s
+java:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(ãæäé8»½­ÿ¦1
+N
+java:S1602C",Remove useless curly braces around statement(ß±øûÿÿÿÿ8ÁæÓ¨¦1
+I
+java:S1602Q",Remove useless curly braces around statement(÷¹–²8ÆæÓ¨¦1
+W
+java:S1161`":Add the "@Override" annotation above this method signature(ÍÙ÷¢8ÂæÓ¨¦1
+l
+java:S1874l"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8ÃæÓ¨¦1
+O
+java:S1602„",Remove useless curly braces around statement(âøçÿÿÿÿÿ8ÊæÓ¨¦1
+J
+java:S1602¹",Remove useless curly braces around statement(ˆŠ¦è8ÍæÓ¨¦1
+O
+java:S1602â",Remove useless curly braces around statement(Ùâöüşÿÿÿÿ8Ü³¯ÿ¦1
+^
+java:S1874ş";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8ĞæÓ¨¦1
+b
+java:S1144Ã"ERemove this unused private "showEmailAlreadyRegisteredDialog" method.(ÄÏ¼8ÒæÓ¨¦1

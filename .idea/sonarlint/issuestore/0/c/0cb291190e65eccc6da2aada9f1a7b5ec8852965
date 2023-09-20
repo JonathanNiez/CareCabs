@@ -1,0 +1,10 @@
+
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8é¢ö”§1
+x
+java:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(ŠÑË¥úÿÿÿÿ8‰£ö”§1
+E
+java:S1185"(Remove this method to simply inherit it.(ßìê¯8£ö”§1
+N
+java:S1602!",Remove useless curly braces around statement(×ùÛŞşÿÿÿÿ8©ÿö”§1
+I
+java:S1602%",Remove useless curly braces around statement(ìïß§8«ÿö”§1

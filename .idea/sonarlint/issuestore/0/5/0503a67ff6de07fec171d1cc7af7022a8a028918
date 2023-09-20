@@ -1,0 +1,52 @@
+
+y
+java:S1192"VDefine a constant instead of duplicating this literal "Image is not Selected" 3 times.(ì¦Ğ’ùÿÿÿÿ8Üíşş¦1
+F
+java:S1604Ş"(Make this anonymous inner class a lambda(ôÛ¥¹8İíşş¦1
+o	java:S1167"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÙÅÓùÿÿÿÿ8òïşş¦1
+l
+java:S16590"ODeclare "cancelScanIDDialog" and all following declarations on a separate line.(Ê°Òù8ıïşş¦1
+x
+java:S1450="VRemove the "fileRef" field and declare it as a local variable in the relevant methods.(êÈıüÿÿÿÿ8şïşş¦1
+y
+java:S1450."WRemove the "imageUri" field and declare it as a local variable in the relevant methods.(Ø°´şÿÿÿÿ8şïşş¦1
+y
+java:S14501"]Remove the "textRecognizer" field and declare it as a local variable in the relevant methods.(ìüà28ÿïşş¦1
+I
+java:S1602L",Remove useless curly braces around statement(µÆºé8ğşş¦1
+l
+java:S1874R"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8“ğşş¦1
+O
+java:S1602€",Remove useless curly braces around statement(âøçÿÿÿÿÿ8ğşş¦1
+a
+java:S1874¨">Remove this use of "startActivityForResult"; it is deprecated.(Ğ¹ë½úÿÿÿÿ8¢ğşş¦1
+\
+java:S1874µ">Remove this use of "startActivityForResult"; it is deprecated.(¡¢ş8¤ğşş¦1
+O
+java:S1602È",Remove useless curly braces around statement(îòüŞıÿÿÿÿ8¦ğşş¦1
+O
+java:S1602Ì",Remove useless curly braces around statement(Ä»ÎÎüÿÿÿÿ8§ğşş¦1
+J
+java:S1602Ğ",Remove useless curly braces around statement(ˆŠ¦è8§ğşş¦1
+Q
+java:S1874é"3Remove this use of "insertImage"; it is deprecated.(ˆçïÂ8­ğşş¦1
+h
+java:S1874î"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(ŸŒ¹Ñ8®ğşş¦1
+H
+java:S1874ö"+Remove this use of "get"; it is deprecated.(¶õì>8°ğşş¦1
+m
+java:S1874°"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(Ó»×¶şÿÿÿÿ8¶ğşş¦1
+O
+java:S1602É",Remove useless curly braces around statement(Ùâöüşÿÿÿÿ8¹ğşş¦1
+^
+java:S1874å";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8¿ğşş¦1
+N
+java:S10681"2Remove this unused "textRecognizer" private field.(ìüà28Àğşş¦1
+[
+java:S10689"9Remove this unused "isIDScanningCancelled" private field.(ØúÑşøÿÿÿÿ8Àğşş¦1
+K
+java:S1068;".Remove this unused "storageRef" private field.(õÛ¼½8Àğşş¦1
+O
+java:S1068>"2Remove this unused "requestManager" private field.(ÍŠ¹8Àğşş¦1
+V
+java:S1144à"3Remove this unused private "matchesPattern" method.(Â‡‚¡üÿÿÿÿ8Áğşş¦1

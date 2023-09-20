@@ -455,7 +455,6 @@ class MapDriverActivity : AppCompatActivity() {
         binding.tripProgressLayout.visibility = View.INVISIBLE
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
-        binding.setLocationLayout.visibility = View.INVISIBLE
 
         checkIfUserIsVerified()
         checkLocationPermission()
@@ -587,23 +586,21 @@ class MapDriverActivity : AppCompatActivity() {
             }
         )
     }
+
     private fun bottomNavButtons() {
         binding.bottomNavigationView.selectedItemId = R.id.setLocation
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.setLocation -> {
-                    binding.setLocationLayout.visibility = View.VISIBLE
                 }
 
                 R.id.myBookings -> {
-                    binding.setLocationLayout.visibility = View.GONE
                     val intent = Intent(this, BookingsActivity::class.java)
                     startActivity(intent)
                 }
 
                 R.id.help -> {
-                    binding.setLocationLayout.visibility = View.GONE
 
                 }
             }
@@ -760,9 +757,12 @@ class MapDriverActivity : AppCompatActivity() {
     private fun zoomCamera() {
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .center(Point.fromLngLat(
-                    125.60288851565707,
-                    7.065679527724293))
+                .center(
+                    Point.fromLngLat(
+                        125.60288851565707,
+                        7.065679527724293
+                    )
+                )
                 .zoom(10.0)
                 .build()
 

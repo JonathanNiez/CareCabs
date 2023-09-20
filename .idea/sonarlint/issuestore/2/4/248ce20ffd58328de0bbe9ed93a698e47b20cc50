@@ -1,0 +1,22 @@
+
+j	java:S116"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¸·µù8Ó®¦š§1
+>
+java:S1170"!Make this final field static too.(¸·µù8İ®¦š§1
+s
+java:S1450""VRemove the "binding" field and declare it as a local variable in the relevant methods.(¶ÃÊ8à®¦š§1
+s
+java:S1450"VRemove the "builder" field and declare it as a local variable in the relevant methods.(ùšÜ¥8à®¦š§1
+l
+java:S1874F"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8‡¯¦š§1
+O
+java:S1602†",Remove useless curly braces around statement(±ÂùÌÿÿÿÿÿ8“¯¦š§1
+O
+java:S1602Š",Remove useless curly braces around statement(âøçÿÿÿÿÿ8”¯¦š§1
+h
+java:S1874¡"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(ŸŒ¹Ñ8—¯¦š§1
+X
+java:S1161¡":Add the "@Override" annotation above this method signature(ŸŒ¹Ñ8˜¯¦š§1
+m
+java:S1874­"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(Ó»×¶şÿÿÿÿ8š¯¦š§1
+D
+java:S1068"'Remove this unused "TAG" private field.(¸·µù8œ¯¦š§1

@@ -1,0 +1,11 @@
+
+^kotlin:S1172ö">Use "_" instead of this unused lambda parameter "whichButton".(˜ß‰ş8òÖÕ¢1
+Ckotlin:S125"Remove this commented out code.(´‘…ôûÿÿÿÿ8øÖÕ¢1
+bkotlin:S1144Ö"=Remove this unused private "showPassengerMarkerOnMap" method.(ÏËâÎûÿÿÿÿ8×ñ“Ğ§1
+Xkotlin:S1144"8Remove this unused private "flyToCameraPosition" method.(ë¢„š8ÿÖÕ¢1
+Xkotlin:S1144¬"8Remove this unused private "addCustomAnnotation" method.(¨„–¨8€ÖÕ¢1
+Mkotlin:S108’")Either remove or fill this block of code.(¤¥Î¡ÿÿÿÿÿ8ãñ“Ğ§1
+Ukotlin:S1481ñ"0Remove this unused "jsonElement" local variable.(¢›Åÿÿÿÿÿ8‰ÖÕ¢1
+>kotlin:S1128"Remove this unused import.(ÊÒÅ­ùÿÿÿÿ8ôñ“Ğ§1
+Hkotlin:S1874¯"#Deprecated code should not be used.(Ğ ÷¡øÿÿÿÿ8ÖÕ¢1
+pkotlin:S6516o"LReplace explicit functional interface implementation with lambda expression.(½ŸÌ úÿÿÿÿ8’ÖÕ¢1

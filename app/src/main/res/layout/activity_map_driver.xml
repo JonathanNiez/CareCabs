@@ -130,29 +130,6 @@
 		android:layout_marginEnd="15dp"
 		android:elevation="10dp" />
 
-	<FrameLayout
-		android:id="@+id/setLocationLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_above="@id/bottomNavigationView"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="30dp">
-
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/setLocationBtn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:background="@drawable/custom_button"
-			android:drawableStart="@drawable/location"
-			android:fontFamily="@font/opensans_semibold"
-			android:padding="10dp"
-			android:text="Set Location on Map"
-			android:textColor="@color/white"
-			android:textSize="16sp" />
-
-	</FrameLayout>
-
 	<androidx.cardview.widget.CardView
 		android:id="@+id/tripProgressLayout"
 		android:layout_width="match_parent"

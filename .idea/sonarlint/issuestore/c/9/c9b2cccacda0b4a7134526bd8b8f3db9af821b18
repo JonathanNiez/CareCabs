@@ -1,0 +1,11 @@
+
+x
+java:S1450"VRemove the "binding" field and declare it as a local variable in the relevant methods.(¬š†âøÿÿÿÿ8ê“©ÿ¦1
+s
+java:S1450"VRemove the "builder" field and declare it as a local variable in the relevant methods.(ùšÜ¥8¡€ÈŸŸ1
+l
+java:S1874<"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8×¢–Î§1
+N
+java:S1602I",Remove useless curly braces around statement(±ÂùÌÿÿÿÿÿ8Ü¢–Î§1
+N
+java:S1602M",Remove useless curly braces around statement(âøçÿÿÿÿÿ8Ü¢–Î§1

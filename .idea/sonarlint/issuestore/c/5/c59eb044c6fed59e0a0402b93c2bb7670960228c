@@ -1,0 +1,30 @@
+
+F
+java:S1604Ç"(Make this anonymous inner class a lambda(ôÛ¥¹8øâëÓ§1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8’¼á–¡1
+o	java:S116#"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(²ÆÒÀıÿÿÿÿ8¨½á–¡1
+u	java:S116%"ZRename this field "AUTOSLIDE_DELAY" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(„Ìg8¨½á–¡1
+=
+java:S1170%"!Make this final field static too.(„Ìg8®½á–¡1
+u
+java:S1450 "SRemove the "auth" field and declare it as a local variable in the relevant methods.(Ú‡›æøÿÿÿÿ8±½á–¡1
+s
+java:S1450*"VRemove the "builder" field and declare it as a local variable in the relevant methods.(ùšÜ¥8¦·Á•§1
+|
+java:S1450!"ZRemove the "currentUser" field and declare it as a local variable in the relevant methods.(”Ùµ«øÿÿÿÿ8±½á–¡1
+†
+java:S1450,"dRemove the "networkChangeReceiver" field and declare it as a local variable in the relevant methods.(½İŸÄûÿÿÿÿ8è¯Ä•§1
+E
+java:S11850"(Remove this method to simply inherit it.(ßìê¯8ÓŸÃ•§1
+L
+java:S1874{"/Remove this use of "Handler"; it is deprecated.(õÊëì8òŸÃ•§1
+O
+java:S1602³",Remove useless curly braces around statement(Ùâöüşÿÿÿÿ8úŸÃ•§1
+^
+java:S1874Î";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8‚ Ã•§1
+Q
+java:S1068!"/Remove this unused "currentUser" private field.(”Ùµ«øÿÿÿÿ8Ì½á–¡1
+L
+java:S1068""*Remove this unused "userID" private field.(³ ûÁÿÿÿÿÿ8Ì½á–¡1
+I
+java:S1068#"'Remove this unused "TAG" private field.(²ÆÒÀıÿÿÿÿ8Ì½á–¡1

@@ -1,0 +1,28 @@
+
+F
+java:S1604"(Make this anonymous inner class a lambda(τΫ¥Ή8€υθυ§1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(½ ±ÿÿÿÿÿ8ƒυθυ§1
+o	java:S116,"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(γ¶θ§ωÿÿÿÿ8ζφθυ§1
+C
+java:S1170,"!Make this final field static too.(γ¶θ§ωÿÿÿÿ8μφθυ§1
+o
+java:S1659/"MDeclare "pleaseWaitDialog" and all following declarations on a separate line.(άΎηÿÿÿÿÿ8ςφθυ§1
+}
+java:S1450+"`Remove the "documentReference" field and declare it as a local variable in the relevant methods.( Κέ8σφθυ§1
+w
+java:S1450-"URemove the "userID" field and declare it as a local variable in the relevant methods.(³ ϋΑÿÿÿÿÿ8υφθυ§1
+E
+java:S11859"(Remove this method to simply inherit it.(ίμκ―8ÿφθυ§1
+o
+java:S3776e"RRefactor this method to reduce its Cognitive Complexity from 25 to the 15 allowed.(Γ£³8χθυ§1
+C	java:S131~""Add a default case to this switch.(­ªΆ†ώÿÿÿÿ8χθυ§1
+O
+java:S1602™",Remove useless curly braces around statement(ΨψΈ΄όÿÿÿÿ8χθυ§1
+J
+java:S1602",Remove useless curly braces around statement(¦θ8χθυ§1
+O
+java:S1602ω",Remove useless curly braces around statement(Ωβφόώÿÿÿÿ8―χθυ§1
+^
+java:S1874”";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—Ώλ ώÿÿÿÿ8΄χθυ§1
+g
+java:S1144υ"DRemove this unused private "showIncompleteProfileInfoDialog" method.(ςΤψÿÿÿÿ8·χθυ§1

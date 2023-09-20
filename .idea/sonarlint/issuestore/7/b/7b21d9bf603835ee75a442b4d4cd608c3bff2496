@@ -1,0 +1,58 @@
+
+j
+java:S1192…"GDefine a constant instead of duplicating this literal "Driver" 4 times.(ü¦„±ûÿÿÿÿ8ôÁªÑ§1
+l
+java:S1192^"ODefine a constant instead of duplicating this literal "Senior Citizen" 6 times.(Œß•8ôÁªÑ§1
+i
+java:S1192œ"FDefine a constant instead of duplicating this literal "users" 6 times.(ïÏ‰ãüÿÿÿÿ8—Ÿ‰ò§1
+F
+java:S1604§"(Make this anonymous inner class a lambda(ôÛ¥¹8öÁªÑ§1
+o	java:S1160"NRename this field "TAG" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ğô€üÿÿÿÿ8íÃªÑ§1
+C
+java:S11700"!Make this final field static too.(ğô€üÿÿÿÿ8ôÃªÑ§1
+o
+java:S16594"MDeclare "noInternetDialog" and all following declarations on a separate line.(ûïşŸùÿÿÿÿ8öÃªÑ§1
+s
+java:S1450-"WRemove the "calendar" field and declare it as a local variable in the relevant methods.(½™ÿf8÷ÃªÑ§1
+~
+java:S1450*"aRemove the "googleSignInClient" field and declare it as a local variable in the relevant methods.(ÄŸığ8÷ÃªÑ§1
+„
+java:S1450,"bRemove the "googleSignInOptions" field and declare it as a local variable in the relevant methods.(ŠĞˆ•ùÿÿÿÿ8÷ÃªÑ§1
+t
+java:S3776;"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(¨Œşÿÿÿÿ8‚ÄªÑ§1
+S
+java:S2696P"6Make the enclosing method "static" or remove this set.(²Å„”8ŠÄªÑ§1
+R
+java:S2696Q"6Make the enclosing method "static" or remove this set.(àáñl8ŠÄªÑ§1
+N
+java:S1602S",Remove useless curly braces around statement(ƒº…¸ıÿÿÿÿ8ŠÄªÑ§1
+[
+java:S1874Z">Remove this use of "startActivityForResult"; it is deprecated.(éÒäÜ8ÄªÑ§1
+N
+java:S1602h",Remove useless curly braces around statement(×ùÛŞşÿÿÿÿ8ÄªÑ§1
+X
+java:S2696v"6Make the enclosing method "static" or remove this set.(—¢úÿÿÿÿ8ÄªÑ§1
+D	java:S131„""Add a default case to this switch.(š¤Ö¹ùÿÿÿÿ8ÄªÑ§1
+?	java:S131â""Add a default case to this switch.(¯Î¿ü8¦®¯Ñ§1
+Y
+java:S2696ò"6Make the enclosing method "static" or remove this set.(šë•Îüÿÿÿÿ8§®¯Ñ§1
+m
+java:S1874ƒ"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(œƒƒ©ùÿÿÿÿ8 ÄªÑ§1
+O
+java:S1602¯",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8§ÄªÑ§1
+O
+java:S1602É",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8ªÄªÑ§1
+O
+java:S1602é",Remove useless curly braces around statement(âøçÿÿÿÿÿ8¬ÄªÑ§1
+O
+java:S1602“",Remove useless curly braces around statement(Ùâöüşÿÿÿÿ8¯ÄªÑ§1
+^
+java:S1874®";Remove this use of "CONNECTIVITY_ACTION"; it is deprecated.(—¿ë şÿÿÿÿ8´ÄªÑ§1
+O
+java:S1602È",Remove useless curly braces around statement(‡¥—Ôùÿÿÿÿ8·ÄªÑ§1
+g
+java:S1874Ú"JDon't override a deprecated method or explicitly mark it as "@Deprecated".(¹Î¾8â–ûğ§1
+?	java:S131ª""Add a default case to this switch.(Óó’ë8øìÿğ§1
+Y
+java:S2696¹"6Make the enclosing method "static" or remove this set.(šë•Îüÿÿÿÿ8ùìÿğ§1
+?	java:S131Ò""Add a default case to this switch.(Óó’ë8»‡€ñ§1
