@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".Fragments.AboutFragment">
 
 	<androidx.cardview.widget.CardView
@@ -12,7 +12,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/light_gray"
+		app:cardBackgroundColor="@color/vermillion"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -29,7 +29,7 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:background="@color/light_gray"
+				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
 			<TextView
@@ -38,8 +38,8 @@
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
 				android:fontFamily="@font/opensans_bold"
-				android:text="About"
-				android:textColor="@color/black"
+				android:text="ABOUT"
+				android:textColor="@color/white"
 				android:textSize="20sp" />
 
 
@@ -63,13 +63,14 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@drawable/rectangle_one"
+				android:backgroundTint="@color/cinnabar"
 				android:elevation="5dp">
 
 				<ImageView
-					android:layout_width="200dp"
-					android:layout_height="200dp"
+					android:layout_width="match_parent"
+					android:layout_height="150dp"
 					android:layout_centerHorizontal="true"
-					android:src="@drawable/logo" />
+					android:src="@drawable/logo_2_v2" />
 
 			</RelativeLayout>
 
@@ -77,7 +78,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:layout_marginBottom="20dp"
+				android:backgroundTint="@color/platinum"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 

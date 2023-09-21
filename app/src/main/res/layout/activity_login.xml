@@ -163,7 +163,7 @@
 					android:layout_height="wrap_content"
 					android:fontFamily="@font/opensans_bold"
 					android:text="Please Wait..."
-					android:textColor="@color/white"
+					android:textColor="@color/black"
 					android:textSize="20sp" />
 
 				<pl.droidsonroids.gif.GifImageView
@@ -186,20 +186,41 @@
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
-			<androidx.appcompat.widget.AppCompatButton
+			<LinearLayout
 				android:id="@+id/googleLoginBtn"
-				android:layout_width="270dp"
+				android:layout_width="320dp"
 				android:layout_height="60dp"
 				android:layout_marginTop="10dp"
 				android:background="@drawable/button_shape_1"
 				android:backgroundTint="@color/white"
-				android:drawableEnd="@drawable/google_24"
-				android:drawablePadding="5dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="Login using Google"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:elevation="5dp"
+				android:gravity="center"
+				android:orientation="horizontal">
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="start|center_vertical"
+					android:layout_marginStart="5dp"
+					android:layout_marginTop="5dp"
+					android:layout_marginEnd="5dp"
+					android:layout_marginBottom="5dp"
+					android:fontFamily="@font/opensans_bold"
+					android:text="LOGIN WITH GOOGLE"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end|center_vertical"
+					android:layout_marginStart="5dp"
+					android:layout_marginTop="5dp"
+					android:layout_marginEnd="5dp"
+					android:layout_marginBottom="5dp"
+					android:src="@drawable/google_64" />
+
+			</LinearLayout>
 
 			<LinearLayout
 				android:layout_width="match_parent"

@@ -23,9 +23,12 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_margin="20dp"
+				android:layout_marginStart="20dp"
+				android:layout_marginTop="20dp"
+				android:layout_marginEnd="20dp"
+				android:layout_marginBottom="20dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Home"
+				android:text="HOME"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
@@ -45,6 +48,44 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
+			<androidx.cardview.widget.CardView
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_margin="10dp"
+				app:cardBackgroundColor="@color/tomato"
+				app:cardCornerRadius="10dp"
+				app:cardElevation="5dp">
+
+				<LinearLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/opensans_semicondensed_semibold"
+						android:text="Hi and Welcome to CareCabs"
+						android:textAlignment="center"
+						android:textColor="@color/white"
+						android:textSize="20sp" />
+
+					<TextView
+						android:id="@+id/firstnameTextView"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/opensans_bold"
+						android:text="Name"
+						android:textAlignment="center"
+						android:textColor="@color/white"
+						android:textSize="20sp" />
+
+				</LinearLayout>
+
+			</androidx.cardview.widget.CardView>
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
@@ -64,7 +105,7 @@
 						android:id="@+id/currentTimeTextView"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						android:fontFamily="@font/opensans_semicondensed_semibold"
 						android:text="Current Time"
 						android:textAlignment="center"
@@ -75,7 +116,7 @@
 						android:id="@+id/greetTextView"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						android:fontFamily="@font/opensans_semicondensed_semibold"
 						android:text="Good Morning"
 						android:textAlignment="center"

@@ -65,7 +65,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private String userID, profilePictureUrl = "default";
 	private final String TAG = "RegisterDriver";
-	private String verificationStatus = "Not Verified";
+	private boolean verificationStatus = false;
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
@@ -167,7 +167,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				if (!isIDScanned) {
 					showIDNotScannedDialog(stringFirstname, stringLastname);
 				} else {
-					verificationStatus = "Verified";
+					verificationStatus = true;
 					updateUserRegisterToFireStore(stringFirstname, stringFirstname, verificationStatus);
 				}
 
@@ -214,7 +214,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
-	                                           String verificationStatus) {
+	                                           boolean verificationStatus) {
 
 		if (FirebaseMain.getUser() != null) {
 			userID = FirebaseMain.getUser().getUid();
@@ -319,7 +319,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			verificationStatus = "Not Verified";
+			verificationStatus = true;
 			updateUserRegisterToFireStore(firstname, lastname, verificationStatus);
 		});
 

@@ -34,9 +34,7 @@ public class PersonalInfoFragment extends Fragment {
 	private DocumentReference documentReference;
 	private final String TAG = "FragmentPersonalInfo";
 	private String userID;
-	private Intent intent;
-	private AlertDialog signOutDialog, pleaseWaitDialog,
-			noInternetDialog, registerNotCompleteDialog;
+	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
@@ -76,7 +74,6 @@ public class PersonalInfoFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
 		binding = FragmentPersonalInfoBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
@@ -111,8 +108,11 @@ public class PersonalInfoFragment extends Fragment {
 				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
 				break;
 
@@ -129,6 +129,8 @@ public class PersonalInfoFragment extends Fragment {
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
 				break;
 
@@ -145,6 +147,8 @@ public class PersonalInfoFragment extends Fragment {
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
 				break;
 
@@ -161,6 +165,8 @@ public class PersonalInfoFragment extends Fragment {
 				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
 				break;
 		}

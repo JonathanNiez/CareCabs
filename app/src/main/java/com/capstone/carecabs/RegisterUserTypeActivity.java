@@ -26,6 +26,26 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 	private ActivityRegisterUserTypeBinding binding;
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeCancelRegisterDialog();
+		closeUserTypeDialog();
+		closeNoInternetDialog();
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeCancelRegisterDialog();
+		closeUserTypeDialog();
+		closeNoInternetDialog();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityRegisterUserTypeBinding.inflate(getLayoutInflater());
@@ -70,26 +90,6 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			showUserTypeDialog();
 		});
 
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeCancelRegisterDialog();
-		closeUserTypeDialog();
-		closeNoInternetDialog();
-	}
-
-	protected void onDestroy() {
-		super.onDestroy();
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeCancelRegisterDialog();
-		closeUserTypeDialog();
-		closeNoInternetDialog();
 	}
 
 	@Override

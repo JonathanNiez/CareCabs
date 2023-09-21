@@ -227,7 +227,7 @@
 					android:layout_height="wrap_content"
 					android:fontFamily="@font/opensans_bold"
 					android:text="Please Wait..."
-					android:textColor="@color/white"
+					android:textColor="@color/black"
 					android:textSize="20sp" />
 
 				<pl.droidsonroids.gif.GifImageView

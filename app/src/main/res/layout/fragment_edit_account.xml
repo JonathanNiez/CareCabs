@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".Fragments.EditAccountFragment">
 
 	<androidx.cardview.widget.CardView
@@ -12,7 +12,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/light_gray"
+		app:cardBackgroundColor="@color/vermillion"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -29,7 +29,7 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:background="@color/light_gray"
+				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
 			<TextView
@@ -37,8 +37,8 @@
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Edit Profile"
-				android:textColor="@color/black"
+				android:text="EDIT PROFILE"
+				android:textColor="@color/white"
 				android:textSize="20sp" />
 
 		</RelativeLayout>
@@ -60,6 +60,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:background="@drawable/rectangle_one"
+				android:backgroundTint="@color/cinnabar"
 				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
@@ -67,6 +68,7 @@
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
+					android:backgroundTint="@color/platinum"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -281,28 +283,29 @@
 
 				<TextView
 					android:id="@+id/idScannedTextView"
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
 					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:elevation="5dp"
 					android:fontFamily="@font/opensans_semibold"
 					android:padding="5dp"
 					android:text="You have not scanned your ID"
 					android:textAlignment="center"
-					android:textColor="@color/red"
+					android:textColor="@color/light_red"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/scanIDBtn"
-					android:layout_width="150dp"
+					android:layout_width="160dp"
 					android:layout_height="60dp"
 					android:layout_marginTop="10dp"
 					android:background="@drawable/custom_button"
-					android:backgroundTint="@color/gray"
+					android:backgroundTint="@color/wisteria"
 					android:drawableStart="@drawable/scan_id_64"
 					android:elevation="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_bold"
 					android:text="Scan ID"
 					android:textColor="@color/black"
 					android:textSize="20sp" />
@@ -313,9 +316,10 @@
 					android:layout_height="60dp"
 					android:layout_marginTop="10dp"
 					android:layout_marginBottom="20dp"
-					android:background="@drawable/custom_button"
+					android:background="@drawable/button_shape_1"
+					android:backgroundTint="@color/yinmn_blue"
 					android:elevation="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_bold"
 					android:text="Done"
 					android:textColor="@color/white"
 					android:textSize="20sp" />

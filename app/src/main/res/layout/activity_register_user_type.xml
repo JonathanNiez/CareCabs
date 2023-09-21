@@ -5,7 +5,7 @@
 	android:id="@+id/userTypeParentLayout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	tools:context=".RegisterUserTypeActivity">
 
 	<androidx.cardview.widget.CardView
@@ -15,6 +15,7 @@
 		android:layout_above="@id/textView"
 		android:layout_centerHorizontal="true"
 		android:layout_margin="20dp"
+		app:cardBackgroundColor="@color/platinum"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -53,6 +54,8 @@
 		android:layout_above="@id/userTypeLayout"
 		android:layout_centerHorizontal="true"
 		android:background="@drawable/custom_card_view_1"
+		android:backgroundTint="@color/platinum"
+		android:elevation="5dp"
 		android:fontFamily="@font/opensans_semibold"
 		android:padding="5dp"
 		android:text="Are you a..."
@@ -74,6 +77,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginEnd="5dp"
 			android:layout_weight="1"
+			app:cardBackgroundColor="@color/platinum"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
 
@@ -90,6 +94,7 @@
 					android:layout_marginBottom="10dp"
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/background"
+					android:elevation="5dp"
 					android:fontFamily="@font/opensans_bold"
 					android:padding="5dp"
 					android:text="PASSENGER"
@@ -116,6 +121,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginStart="5dp"
 			android:layout_weight="1"
+			app:cardBackgroundColor="@color/platinum"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
 
@@ -132,6 +138,7 @@
 					android:layout_marginBottom="10dp"
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/background"
+					android:elevation="5dp"
 					android:fontFamily="@font/opensans_bold"
 					android:gravity="center"
 					android:padding="5dp"
@@ -164,9 +171,9 @@
 		android:layout_centerHorizontal="true"
 		android:layout_marginBottom="100dp"
 		android:background="@drawable/button_shape_1"
-		android:backgroundTint="@color/red"
+		android:backgroundTint="@color/light_red"
 		android:elevation="5dp"
-		android:fontFamily="@font/opensans_semibold"
+		android:fontFamily="@font/opensans_bold"
 		android:text="Cancel"
 		android:textColor="@color/white"
 		android:textSize="20sp" />

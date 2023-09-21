@@ -165,7 +165,6 @@ public class AccountFragment extends Fragment {
 						showRegisterNotCompleteDialog();
 					} else {
 						loadUserProfileInfo();
-						getCurrentFontSizeFromUserSetting();
 					}
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
@@ -279,19 +278,22 @@ public class AccountFragment extends Fragment {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
+			getCurrentFontSizeFromUserSetting();
+
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {
+
 					closePleaseWaitDialog();
 
 					String getProfilePicture = documentSnapshot.getString("profilePicture");
 					String getUserType = documentSnapshot.getString("userType");
 					String getFirstName = documentSnapshot.getString("firstname");
 					String getLastName = documentSnapshot.getString("lastname");
-					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
 					switch (getUserType) {
 						case "Driver":
@@ -346,37 +348,27 @@ public class AccountFragment extends Fragment {
 								.into(binding.profilePic);
 					}
 
-					Drawable drawable;
-
-					if (getVerificationStatus.equals("Not Verified")) {
-						drawable = getResources().getDrawable(R.drawable.x_24);
+					if (!getVerificationStatus) {
+						binding.imageViewVerificationMark.setImageResource(R.drawable.x_24);
 
 						binding.verificationStatusTextView.setTextColor(
 								getResources().getColor(R.color.white)
 						);
-						binding.verificationStatusTextView.setBackgroundColor(getResources()
+						binding.verificationStatusLayout.setBackgroundColor(getResources()
 								.getColor(R.color.red));
-						binding.verificationStatusTextView.setText(getVerificationStatus);
-						binding.verificationStatusTextView
-								.setCompoundDrawablesWithIntrinsicBounds(null,
-										null,
-										drawable,
-										null);
+						binding.verificationStatusTextView.setText("Not Verified");
+
 						binding.idScannedTextView.setVisibility(View.VISIBLE);
 
 					} else {
-						drawable = getResources().getDrawable(R.drawable.check_24);
+						binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
 
 						binding.verificationStatusTextView.setTextColor(
 								getResources().getColor(R.color.white)
 						);
-						binding.verificationStatusTextView.setText(getVerificationStatus);
-						binding.verificationStatusTextView
-								.setCompoundDrawablesWithIntrinsicBounds(null,
-										null,
-										drawable,
-										null);
-						binding.verificationStatusTextView.setBackgroundColor(getResources()
+						binding.verificationStatusTextView.setText("Verified");
+
+						binding.verificationStatusLayout.setBackgroundColor(getResources()
 								.getColor(R.color.green));
 					}
 
@@ -397,7 +389,6 @@ public class AccountFragment extends Fragment {
 			closePleaseWaitDialog();
 
 		}
-
 	}
 
 

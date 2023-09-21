@@ -63,7 +63,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private String userID;
 	private final String TAG = "RegisterSeniorActivity";
-	private String verificationStatus = "Not Verified";
+	private boolean verificationStatus = false;
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
@@ -204,7 +204,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 				if (!isIDScanned) {
 					showIDNotScannedDialog(stringFirstname, stringLastname);
 				} else {
-					verificationStatus = "Verified";
+					verificationStatus = true;
 					updateUserRegisterToFireStore(stringFirstname, stringLastname, verificationStatus);
 				}
 			}
@@ -248,7 +248,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
-	                                           String verificationStatus) {
+	                                           boolean verificationStatus) {
 		userID = FirebaseMain.getUser().getUid();
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(StaticDataPasser.userCollection).document(userID);
@@ -582,7 +582,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			verificationStatus = "Not Verified";
+			verificationStatus = false;
 			updateUserRegisterToFireStore(firstname, lastname, verificationStatus);
 		});
 

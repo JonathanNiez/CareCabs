@@ -89,6 +89,7 @@ public class HomeFragment extends Fragment {
 
 		startAutoSlide();
 	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -348,9 +349,12 @@ public class HomeFragment extends Fragment {
 					binding.progressBarLayout.setVisibility(View.GONE);
 
 					String getUserType = documentSnapshot.getString("userType");
-					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+					String getFirstName = documentSnapshot.getString("firstname");
 
-					if (getVerificationStatus.equals("Not Verified")) {
+					binding.firstnameTextView.setText(getFirstName);
+
+					if (!getVerificationStatus) {
 						showUserNotVerifiedNotification();
 					}
 

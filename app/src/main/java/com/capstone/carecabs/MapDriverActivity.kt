@@ -621,9 +621,9 @@ class MapDriverActivity : AppCompatActivity() {
 
             documentReference.get().addOnSuccessListener {
                 if (it != null && it.exists()) {
-                    val getVerificationStatus = it.getString("verificationStatus")
+                    val getVerificationStatus = it.getBoolean("isVerified")
 
-                    if (getVerificationStatus.equals("Not Verified")) {
+                    if (!getVerificationStatus!!) {
                         showUserNotVerifiedDialog()
 
                     } else {
