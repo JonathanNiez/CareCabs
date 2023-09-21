@@ -77,7 +77,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="150dp"
 				android:layout_margin="10dp"
-				android:background="@drawable/custom_card_view">
+				android:background="@drawable/custom_card_view_1">
 
 				<TextView
 					android:id="@+id/fontSizePreview"
@@ -101,7 +101,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
-				android:background="@drawable/custom_card_view"
+				android:background="@drawable/custom_card_view_1"
 				android:fontFamily="@font/opensans_semibold"
 				android:padding="5dp"
 				android:text="Current Font Size: "
@@ -137,7 +137,7 @@
 						android:layout_width="match_parent"
 						android:layout_height="60dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Small"
@@ -150,7 +150,7 @@
 						android:layout_width="match_parent"
 						android:layout_height="60dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Normal"
@@ -163,7 +163,7 @@
 						android:layout_width="match_parent"
 						android:layout_height="60dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Large"
@@ -176,7 +176,7 @@
 						android:layout_width="match_parent"
 						android:layout_height="60dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Very Large"

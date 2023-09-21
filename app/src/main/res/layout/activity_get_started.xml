@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".GetStartedActivity">
 
 	<ImageView
@@ -12,19 +12,19 @@
 		android:layout_width="300dp"
 		android:layout_height="300dp"
 		android:layout_centerInParent="true"
-		android:src="@drawable/logo" />
+		android:src="@drawable/logo_2_v2" />
 
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/getStartedBtn"
-		android:layout_width="250dp"
+		android:layout_width="200dp"
 		android:layout_height="60dp"
 		android:layout_below="@id/logo"
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="50dp"
 		android:background="@drawable/button_shape_1"
-		android:fontFamily="@font/opensans_semibold"
-		android:backgroundTint="@color/dark_blue"
+		android:fontFamily="@font/opensans_bold"
+		android:backgroundTint="@color/yinmn_blue"
 		android:text="Get Started"
 		android:textColor="@color/white"
 		android:textSize="20sp" />

@@ -49,4 +49,5 @@
 	<string name="string_driver_license_scan">Driver\'s License is Required to be scanned for Verification</string>
 
 	<string name="driver_availability_info">Your availability will automatically updated once you\'re transporting a passenger</string>
+	<string name="never_share_your_password_to_anyone">Never share your Password to anyone</string>
 </resources>

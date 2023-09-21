@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/orange"
     tools:context=".Fragments.CarouselFragment1">
 
    <ImageView
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:src="@drawable/senior1"/>
+       android:src="@drawable/logo_2_transparent"/>
 
 </RelativeLayout>

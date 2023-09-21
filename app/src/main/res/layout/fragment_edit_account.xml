@@ -284,7 +284,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
 					android:elevation="5dp"
 					android:fontFamily="@font/opensans_semibold"
 					android:padding="5dp"

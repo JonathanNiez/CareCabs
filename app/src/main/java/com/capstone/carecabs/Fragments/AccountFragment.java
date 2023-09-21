@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -40,8 +42,11 @@ public class AccountFragment extends Fragment {
 	private final String TAG = "AccountFragment";
 	private String userID;
 	private Intent intent;
+	private boolean shouldExit = false;
+
 	private AlertDialog signOutDialog, pleaseWaitDialog,
-			noInternetDialog, registerNotCompleteDialog;
+			noInternetDialog, registerNotCompleteDialog,
+			exitAppDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
@@ -50,8 +55,51 @@ public class AccountFragment extends Fragment {
 	private FragmentManager fragmentManager;
 
 	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			getContext().unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeRegisterNotCompleteDialog();
+		closeNoInternetDialog();
+		closeExitConfirmationDialog();
+
+	}
+
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeRegisterNotCompleteDialog();
+		closeNoInternetDialog();
+		closeExitConfirmationDialog();
+
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+
+		closeSignOutDialog();
+		closePleaseWaitDialog();
+		closeRegisterNotCompleteDialog();
+		closeNoInternetDialog();
+		closeExitConfirmationDialog();
+
+	}
+
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+
 	}
 
 	@Override
@@ -71,8 +119,6 @@ public class AccountFragment extends Fragment {
 		initializeNetworkChecker();
 		FirebaseApp.initializeApp(context);
 
-		checkUserIfRegisterComplete();
-
 		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
 
 		binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
@@ -90,6 +136,14 @@ public class AccountFragment extends Fragment {
 		binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		checkUserIfRegisterComplete();
+
 	}
 
 	private void logoutUser() {
@@ -347,47 +401,33 @@ public class AccountFragment extends Fragment {
 	}
 
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	private void showExitConfirmationDialog() {
+		builder = new AlertDialog.Builder(context);
 
-		if (networkChangeReceiver != null) {
-			getContext().unregisterReceiver(networkChangeReceiver);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
+
+		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
+		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+		exitBtn.setOnClickListener(v -> {
+		});
+
+		cancelBtn.setOnClickListener(v -> {
+			closeExitConfirmationDialog();
+		});
+
+		builder.setView(dialogView);
+
+		exitAppDialog = builder.create();
+		exitAppDialog.show();
+	}
+
+	private void closeExitConfirmationDialog() {
+		if (exitAppDialog != null && exitAppDialog.isShowing()) {
+			exitAppDialog.dismiss();
 		}
-
-		closeSignOutDialog();
-		closePleaseWaitDialog();
-		closeRegisterNotCompleteDialog();
-		closeNoInternetDialog();
-
 	}
 
-
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		closeSignOutDialog();
-		closePleaseWaitDialog();
-		closeRegisterNotCompleteDialog();
-		closeNoInternetDialog();
-
-	}
-
-	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-
-		closeSignOutDialog();
-		closePleaseWaitDialog();
-		closeRegisterNotCompleteDialog();
-		closeNoInternetDialog();
-
-	}
-
-	public void onBackPressed() {
-		backToHomeFragment();
-	}
 
 	private void showRegisterNotCompleteDialog() {
 		builder = new AlertDialog.Builder(context);

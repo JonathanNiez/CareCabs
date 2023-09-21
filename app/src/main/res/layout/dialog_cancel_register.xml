@@ -16,7 +16,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
-		android:background="@drawable/custom_card_view"
+		android:background="@drawable/custom_card_view_1"
 		android:fontFamily="@font/opensans_semibold"
 		android:padding="5dp"
 		android:text="Do you want to cancel the Registration?"

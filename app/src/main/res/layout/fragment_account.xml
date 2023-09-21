@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".Fragments.AccountFragment">
 
 	<androidx.cardview.widget.CardView
@@ -12,7 +12,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/light_gray"
+		app:cardBackgroundColor="@color/vermillion"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -29,7 +29,7 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:background="@color/light_gray"
+				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
 			<TextView
@@ -39,7 +39,7 @@
 				android:layout_centerInParent="true"
 				android:fontFamily="@font/opensans_bold"
 				android:text="My Profile"
-				android:textColor="@color/black"
+				android:textColor="@color/white"
 				android:textSize="20sp" />
 
 
@@ -59,11 +59,11 @@
 			android:orientation="vertical">
 
 			<RelativeLayout
-				android:id="@+id/upperLayout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
 				android:background="@drawable/rectangle_one"
+				android:backgroundTint="@color/tomato"
 				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
@@ -71,6 +71,7 @@
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
+					app:cardBackgroundColor="@color/platinum"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -139,7 +140,7 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
-							android:background="@drawable/custom_card_view"
+							android:background="@drawable/custom_card_view_1"
 							android:drawablePadding="5dp"
 							android:elevation="5dp"
 							android:fontFamily="@font/opensans_semibold"
@@ -156,7 +157,7 @@
 							android:layout_marginStart="10dp"
 							android:layout_marginEnd="10dp"
 							android:layout_marginBottom="10dp"
-							android:background="@drawable/custom_card_view"
+							android:background="@drawable/custom_card_view_1"
 							android:backgroundTint="@color/yellow"
 							android:elevation="5dp"
 							android:fontFamily="@font/opensans_semibold"
@@ -183,10 +184,10 @@
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
-									android:background="@drawable/custom_card_view"
+									android:background="@drawable/custom_card_view_1"
 									android:backgroundTint="@color/background"
 									android:elevation="5dp"
-									android:fontFamily="@font/opensans_semibold"
+									android:fontFamily="@font/opensans_bold"
 									android:padding="5dp"
 									android:text="User Type"
 									android:textAlignment="center"
@@ -302,7 +303,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/personal_data_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -318,7 +320,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/edit_32png"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -335,7 +338,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/reset_password_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -351,7 +355,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/settings_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -367,7 +372,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/information_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -383,7 +389,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/contact_us_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
@@ -399,9 +406,10 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
 					android:drawableEnd="@drawable/logout32"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_bold"
 					android:padding="10dp"
 					android:text="Sign Out"
 					android:textAlignment="center"

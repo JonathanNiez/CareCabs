@@ -4,14 +4,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".Fragments.PersonalInfoFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardBackgroundColor="@color/light_gray"
+		app:cardBackgroundColor="@color/vermillion"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -28,7 +28,7 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:background="@color/light_gray"
+				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
 			<TextView
@@ -38,7 +38,7 @@
 				android:layout_centerInParent="true"
 				android:fontFamily="@font/opensans_bold"
 				android:text="Personal Info"
-				android:textColor="@color/black"
+				android:textColor="@color/white"
 				android:textSize="20sp" />
 
 
@@ -60,6 +60,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
+				app:cardBackgroundColor="@color/platinum"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -67,7 +68,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="8dp">
 
 					<LinearLayout
 						android:layout_width="match_parent"
@@ -76,7 +78,7 @@
 						android:layout_marginTop="10dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:gravity="center"
 						android:orientation="horizontal">
 
@@ -114,7 +116,7 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
+						android:background="@drawable/custom_card_view_1"
 						android:backgroundTint="@color/yellow"
 						android:elevation="5dp"
 						android:fontFamily="@font/opensans_semibold"
@@ -131,8 +133,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Birthdate"
@@ -147,8 +149,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Age"
@@ -163,8 +165,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Sex"
@@ -180,8 +182,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Disability"
@@ -196,8 +198,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Medical Condition"
@@ -218,8 +220,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Email"
@@ -235,8 +237,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Phone No"
@@ -251,8 +253,8 @@
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Register Type"
@@ -266,15 +268,48 @@
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
-						android:layout_marginBottom="10dp"
-						android:background="@drawable/custom_card_view"
-						android:backgroundTint="@color/light_gray"
+						android:layout_marginBottom="5dp"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
 						android:fontFamily="@font/opensans_semibold"
 						android:padding="10dp"
 						android:text="Account Creation Date"
 						android:textAlignment="textStart"
 						android:textColor="@color/black"
 						android:textSize="17sp" />
+
+					<TextView
+						android:id="@+id/idTypeTextView"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginStart="5dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginBottom="5dp"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
+						android:fontFamily="@font/opensans_semibold"
+						android:padding="10dp"
+						android:text="ID Type"
+						android:textAlignment="textStart"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
+
+					<TextView
+						android:id="@+id/idNumberTextView"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginStart="5dp"
+						android:layout_marginEnd="5dp"
+						android:layout_marginBottom="5dp"
+						android:background="@drawable/custom_card_view_1"
+						android:backgroundTint="@color/white"
+						android:fontFamily="@font/opensans_semibold"
+						android:padding="10dp"
+						android:text="ID Number"
+						android:textAlignment="textStart"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
+
 
 				</LinearLayout>
 

@@ -18,7 +18,7 @@
 		android:orientation="vertical"
 		android:gravity="center"
 		android:layout_margin="20dp"
-		android:background="@drawable/custom_card_view">
+		android:background="@drawable/custom_card_view_1">
 
 		<TextView
 			android:layout_width="match_parent"

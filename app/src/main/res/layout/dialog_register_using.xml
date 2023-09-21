@@ -14,7 +14,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/opensans_semibold"
         android:text="Register Using:"
-        android:background="@drawable/custom_card_view"
+        android:background="@drawable/custom_card_view_1"
         android:padding="5dp"
         android:textColor="@color/black"
         android:textSize="20sp" />

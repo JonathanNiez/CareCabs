@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:elevation="5dp">
 
 	<LinearLayout
@@ -25,7 +25,7 @@
 			android:fontFamily="@font/opensans_bold"
 			android:text="Please Wait..."
 			android:textColor="@color/black"
-			android:textSize="20sp" />
+			android:textSize="25sp" />
 
 	</LinearLayout>
 

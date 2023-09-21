@@ -70,7 +70,7 @@
 					android:id="@+id/changeFontSizeBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
-					android:background="@drawable/custom_card_view"
+					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/font_adjustment_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"

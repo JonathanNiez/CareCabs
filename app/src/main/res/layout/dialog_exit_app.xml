@@ -3,7 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -17,6 +17,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
+		app:cardBackgroundColor="@color/platinum"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -65,8 +66,9 @@
 			android:layout_height="50dp"
 			android:layout_marginEnd="5dp"
 			android:background="@drawable/button_shape_1"
-			android:backgroundTint="@color/dark_blue"
+			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
+			android:fontFamily="@font/opensans_bold"
 			android:text="Cancel"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
@@ -78,8 +80,9 @@
 			android:layout_height="50dp"
 			android:layout_marginStart="5dp"
 			android:background="@drawable/button_shape_1"
-			android:backgroundTint="@color/red"
+			android:backgroundTint="@color/light_red"
 			android:elevation="5dp"
+			android:fontFamily="@font/opensans_bold"
 			android:text="Exit"
 			android:textColor="@color/white"
 			android:textSize="17sp" />

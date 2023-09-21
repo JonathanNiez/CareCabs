@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".LoginActivity">
 
 	<ScrollView
@@ -17,103 +17,129 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<ImageView
-				android:id="@+id/logo"
-				android:layout_width="200dp"
-				android:layout_height="200dp"
-				android:layout_marginTop="20dp"
-				android:src="@drawable/logo" />
-
-			<TextView
-				android:id="@+id/textView"
+			<RelativeLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
-				android:layout_marginEnd="10dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="Login"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:layout_gravity="top|center_horizontal"
+				android:background="@drawable/rectangle_one"
+				android:backgroundTint="@color/vermillion"
+				android:elevation="5dp">
 
-			<LinearLayout
-				android:id="@+id/linearLayout"
+				<ImageView
+					android:id="@+id/logo"
+					android:layout_width="300dp"
+					android:layout_height="100dp"
+					android:layout_centerInParent="true"
+					android:layout_marginStart="30dp"
+					android:layout_marginTop="30dp"
+					android:layout_marginEnd="30dp"
+					android:layout_marginBottom="30dp"
+					android:elevation="5dp"
+					android:src="@drawable/logo_2_transparent" />
+
+
+			</RelativeLayout>
+
+			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:gravity="center"
-				android:orientation="vertical">
+				app:cardBackgroundColor="@color/tomato"
+				app:cardCornerRadius="20dp"
+				app:cardElevation="5dp">
 
-				<com.google.android.material.textfield.TextInputLayout
+				<LinearLayout
+					android:id="@+id/linearLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
-					android:background="@drawable/smooth_edit_text_2"
-					android:elevation="5dp"
-					android:padding="5dp"
-					app:endIconMode="clear_text"
-					app:helperText="Your Email"
-					app:hintTextColor="@color/black"
-					app:startIconDrawable="@drawable/email_24">
+					android:gravity="center"
+					android:orientation="vertical">
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/emailEditText"
+					<TextView
+						android:id="@+id/textView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="20dp"
+						android:layout_marginStart="10dp"
+						android:layout_marginEnd="10dp"
+						android:fontFamily="@font/opensans_bold"
+						android:text="LOGIN"
+						android:textColor="@color/white"
+						android:textSize="25sp" />
+
+					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:autofillHints="emailAddress"
-						android:background="@drawable/smooth_edit_text"
-						android:fontFamily="@font/opensans_bold"
-						android:hint="EMAIL"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						android:layout_marginBottom="10dp"
+						android:background="@drawable/smooth_edit_text_2"
+						android:elevation="5dp"
+						android:padding="5dp"
+						app:endIconMode="clear_text"
+						app:helperText="Your Email"
+						app:hintTextColor="@color/black"
+						app:startIconDrawable="@drawable/email_24">
 
-				</com.google.android.material.textfield.TextInputLayout>
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/emailEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="emailAddress"
+							android:background="@drawable/smooth_edit_text"
+							android:fontFamily="@font/opensans_bold"
+							android:hint="EMAIL"
+							android:textColor="@color/black"
+							android:textColorHint="@color/black"
+							android:textSize="17sp" />
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:background="@drawable/smooth_edit_text_2"
-					android:elevation="5dp"
-					android:padding="5dp"
-					app:endIconMode="password_toggle"
-					app:helperText="Your Password"
-					app:helperTextTextColor="@color/black"
-					app:startIconDrawable="@drawable/password_24">
+					</com.google.android.material.textfield.TextInputLayout>
 
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/passwordEditText"
+					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:autofillHints="password"
-						android:background="@drawable/smooth_edit_text"
-						android:fontFamily="@font/opensans_bold"
-						android:hint="PASSWORD"
-						android:inputType="textPassword"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
+						android:background="@drawable/smooth_edit_text_2"
+						android:elevation="5dp"
+						android:padding="5dp"
+						app:endIconMode="password_toggle"
+						app:helperText="Your Password"
+						app:helperTextTextColor="@color/black"
+						app:startIconDrawable="@drawable/password_24">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/passwordEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="password"
+							android:background="@drawable/smooth_edit_text"
+							android:fontFamily="@font/opensans_bold"
+							android:hint="PASSWORD"
+							android:inputType="textPassword"
+							android:textColor="@color/black"
+							android:textColorHint="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<TextView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/opensans_semibold"
+						android:text="@string/never_share_your_password_to_anyone"
+						android:textAlignment="center"
+						android:textColor="@color/white"
 						android:textSize="17sp" />
 
-				</com.google.android.material.textfield.TextInputLayout>
+				</LinearLayout>
 
-				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_margin="10dp"
-					android:fontFamily="@font/opensans_medium"
-					android:text="Never share your Password to anyone"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
 
-			</LinearLayout>
+			</androidx.cardview.widget.CardView>
+
 
 			<TextView
 				android:id="@+id/resetPasswordTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="20dp"
-				android:layout_marginEnd="20dp"
+				android:layout_margin="10dp"
 				android:background="@drawable/button_shape_1"
 				android:backgroundTint="@color/blue"
 				android:elevation="5dp"
@@ -128,17 +154,17 @@
 				android:id="@+id/progressBarLayout"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="50dp"
+				android:layout_margin="20dp"
 				android:gravity="center"
-				android:orientation="vertical"
-				android:visibility="gone">
+				android:orientation="vertical">
 
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
+					android:fontFamily="@font/opensans_bold"
 					android:text="Please Wait..."
-					android:textColor="@color/black"
-					android:textSize="10pt" />
+					android:textColor="@color/white"
+					android:textSize="20sp" />
 
 				<pl.droidsonroids.gif.GifImageView
 					android:id="@+id/progressBar"
@@ -152,51 +178,28 @@
 				android:id="@+id/loginBtn"
 				android:layout_width="150dp"
 				android:layout_height="60dp"
-				android:layout_marginTop="20dp"
 				android:background="@drawable/button_shape_1"
-				android:backgroundTint="@color/dark_blue"
+				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/opensans_bold"
 				android:text="Login"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
-			<androidx.cardview.widget.CardView
-				android:id="@+id/loginUsingGoogleBtn"
-				android:layout_width="wrap_content"
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/googleLoginBtn"
+				android:layout_width="270dp"
 				android:layout_height="60dp"
 				android:layout_marginTop="10dp"
-				app:cardBackgroundColor="@color/white"
-				app:cardCornerRadius="5dp"
-				app:cardElevation="5dp">
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center"
-					android:orientation="horizontal"
-					android:padding="10dp">
-
-					<TextView
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_marginEnd="5dp"
-						android:layout_weight="1"
-						android:background="@drawable/button_shape_1"
-						android:fontFamily="@font/opensans_semibold"
-						android:text="Login using Google"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="20sp" />
-
-					<ImageView
-						android:layout_width="30dp"
-						android:layout_height="30dp"
-						android:src="@drawable/google" />
-
-				</LinearLayout>
-
-			</androidx.cardview.widget.CardView>
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/white"
+				android:drawableEnd="@drawable/google_24"
+				android:drawablePadding="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Login using Google"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
 
 			<LinearLayout
 				android:layout_width="match_parent"
@@ -215,7 +218,7 @@
 					android:fontFamily="@font/opensans_semibold"
 					android:text="Don't have an Account?"
 					android:textAlignment="center"
-					android:textColor="@color/black"
+					android:textColor="@color/white"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
@@ -225,7 +228,7 @@
 					android:background="@drawable/button_shape_1"
 					android:backgroundTint="@color/blue"
 					android:elevation="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_bold"
 					android:padding="10dp"
 					android:text="Tap here to Register"
 					android:textColor="@color/white"

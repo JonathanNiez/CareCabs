@@ -4,34 +4,23 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".MainActivity">
 
 	<FrameLayout
 		android:id="@+id/fragmentContainer"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@id/bottomNavigationCardView" />
+		android:layout_above="@id/bottomNavigationView" />
 
-	<androidx.cardview.widget.CardView
-		android:id="@+id/bottomNavigationCardView"
+	<com.google.android.material.bottomnavigation.BottomNavigationView
+		android:id="@+id/bottomNavigationView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:elevation="10dp"
 		android:layout_alignParentBottom="true"
-		>
-
-		<com.google.android.material.bottomnavigation.BottomNavigationView
-			android:id="@+id/bottomNavigationView"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:background="@color/yellow"
-			app:itemTextColor="@color/black"
-			app:labelVisibilityMode="labeled"
-			app:menu="@menu/bottom_nav_menu" />
-
-
-	</androidx.cardview.widget.CardView>
-
+		android:background="@color/cinnabar"
+		app:itemTextColor="@color/white"
+		app:menu="@menu/bottom_nav_menu"
+		app:labelVisibilityMode="labeled" />
 
 </RelativeLayout>

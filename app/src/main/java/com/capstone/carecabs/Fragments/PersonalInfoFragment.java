@@ -45,33 +45,6 @@ public class PersonalInfoFragment extends Fragment {
 	private FragmentPersonalInfoBinding binding;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		binding = FragmentPersonalInfoBinding.inflate(inflater, container, false);
-		View view = binding.getRoot();
-
-		binding.medConTextView.setVisibility(View.GONE);
-		binding.disabilityTextView.setVisibility(View.GONE);
-
-		context = getContext();
-		initializeNetworkChecker();
-		loadUserProfileInfo();
-		getCurrentFontSizeFromUserSetting();
-		FirebaseApp.initializeApp(context);
-
-		binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
-
-		return view;
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
@@ -93,6 +66,33 @@ public class PersonalInfoFragment extends Fragment {
 		closeNoInternetDialog();
 
 	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		binding = FragmentPersonalInfoBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
+
+		binding.medConTextView.setVisibility(View.GONE);
+		binding.disabilityTextView.setVisibility(View.GONE);
+
+		context = getContext();
+		initializeNetworkChecker();
+		loadUserProfileInfo();
+		FirebaseApp.initializeApp(context);
+
+		binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
+
+		return view;
+	}
+
 
 	public void onBackPressed() {
 		backToAccountFragment();
@@ -170,6 +170,8 @@ public class PersonalInfoFragment extends Fragment {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
+			getCurrentFontSizeFromUserSetting();
+
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection).document(userID);

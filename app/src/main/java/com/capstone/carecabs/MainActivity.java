@@ -41,6 +41,28 @@ public class MainActivity extends AppCompatActivity {
 	private DocumentReference documentReference;
 	private ActivityMainBinding binding;
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		updateDriverStatus(true);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		closeExitConfirmationDialog();
+		updateDriverStatus(false);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeExitConfirmationDialog();
+		updateDriverStatus(false);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +96,6 @@ public class MainActivity extends AppCompatActivity {
 		});
 	}
 
-
-	private void exitApp() {
-		shouldExit = true;
-		onBackPressed();
-
-		finish();
-	}
-
 	@Override
 	public void onBackPressed() {
 		Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
@@ -110,10 +124,6 @@ public class MainActivity extends AppCompatActivity {
 			((ChangeFontSizeFragment) currentFragment).onBackPressed();
 
 			return;
-		} else if (currentFragment instanceof AccountFragment) {
-			((AccountFragment) currentFragment).onBackPressed();
-
-			return;
 		} else if (currentFragment instanceof PersonalInfoFragment) {
 			((PersonalInfoFragment) currentFragment).onBackPressed();
 
@@ -130,28 +140,13 @@ public class MainActivity extends AppCompatActivity {
 
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
+	private void exitApp() {
+		shouldExit = true;
+		onBackPressed();
 
-		updateDriverStatus(true);
+		finish();
 	}
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		closeExitConfirmationDialog();
-		updateDriverStatus(false);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeExitConfirmationDialog();
-		updateDriverStatus(false);
-	}
 
 	private void getUserType() {
 		if (FirebaseMain.getUser() != null) {

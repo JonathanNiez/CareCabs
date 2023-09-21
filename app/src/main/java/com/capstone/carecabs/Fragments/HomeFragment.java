@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -65,6 +66,30 @@ public class HomeFragment extends Fragment {
 	private FragmentTransaction fragmentTransaction;
 
 	@Override
+	public void onPause() {
+		super.onPause();
+
+		stopAutoSlide();
+		closeNoInternetDialog();
+		closeRegisterNotCompleteDialog();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		stopAutoSlide();
+		closeNoInternetDialog();
+		closeRegisterNotCompleteDialog();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		startAutoSlide();
+	}
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	}
@@ -80,8 +105,6 @@ public class HomeFragment extends Fragment {
 
 		context = getContext();
 		initializeNetworkChecker();
-		getCurrentFontSizeFromUserSetting();
-		checkUserIfRegisterComplete();
 
 		FirebaseApp.initializeApp(context);
 
@@ -99,6 +122,14 @@ public class HomeFragment extends Fragment {
 		getCurrentTime();
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		checkUserIfRegisterComplete();
+
 	}
 
 	private void getCurrentTime() {
@@ -180,30 +211,6 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
-	@Override
-	public void onPause() {
-		super.onPause();
-
-		stopAutoSlide();
-		closeNoInternetDialog();
-		closeRegisterNotCompleteDialog();
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		stopAutoSlide();
-		closeNoInternetDialog();
-		closeRegisterNotCompleteDialog();
-	}
-
-	@Override
-	public void onStart() {
-		super.onStart();
-
-		startAutoSlide();
-	}
 
 	public class NotificationReceiver extends BroadcastReceiver {
 
@@ -307,10 +314,14 @@ public class HomeFragment extends Fragment {
 					String getRegisterUserType = documentSnapshot.getString("userType");
 
 					if (getUserRegisterStatus) {
+
 						getUserTypeAndLoadProfileInfo();
+
 					} else {
+
 						StaticDataPasser.storeUserType = getRegisterUserType;
 						showRegisterNotCompleteDialog();
+
 					}
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
@@ -327,6 +338,8 @@ public class HomeFragment extends Fragment {
 
 	private void getUserTypeAndLoadProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
+			getCurrentFontSizeFromUserSetting();
+
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection).document(getUserID);

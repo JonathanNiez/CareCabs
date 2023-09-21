@@ -47,12 +47,21 @@ public class LoginActivity extends AppCompatActivity {
 	private ActivityLoginBinding binding;
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityLoginBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		initializeNetworkChecker();
+		binding.progressBarLayout.setVisibility(View.GONE);
+
 
 		FirebaseApp.initializeApp(this);
 
@@ -72,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
 			finish();
 		});
 
-		binding.loginUsingGoogleBtn.setOnClickListener(v -> {
+		binding.googleLoginBtn.setOnClickListener(v -> {
 			showPleaseWaitDialog();
 
 			intent = googleSignInClient.getSignInIntent();
@@ -100,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 
 			} else {
 				showPleaseWaitDialog();
-				binding.loginUsingGoogleBtn.setVisibility(View.GONE);
+				binding.googleLoginBtn.setVisibility(View.GONE);
 
 				loginUser(stringEmail, stringPassword);
 			}

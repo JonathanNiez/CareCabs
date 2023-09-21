@@ -60,6 +60,8 @@ public class RegisterActivity extends AppCompatActivity {
 		binding = ActivityRegisterBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		binding.progressBarLayout.setVisibility(View.GONE);
+
 		initializeNetworkChecker();
 
 		FirebaseApp.initializeApp(this);

@@ -18,7 +18,7 @@
         android:fontFamily="@font/opensans_semibold"
         android:text="What kind of Passenger are you?"
         android:textColor="@color/black"
-        android:background="@drawable/custom_card_view"
+        android:background="@drawable/custom_card_view_1"
         android:padding="5dp"
         android:textSize="20sp" />
 
@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/opensans_bold"
-                    android:background="@drawable/custom_card_view"
+                    android:background="@drawable/custom_card_view_1"
                     android:backgroundTint="@color/background"
                     android:padding="5dp"
                     android:layout_margin="5dp"
@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:background="@drawable/custom_card_view"
+                    android:background="@drawable/custom_card_view_1"
                     android:backgroundTint="@color/background"
                     android:padding="5dp"
                     android:layout_margin="5dp"
