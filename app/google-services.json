@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "205073319244",
+    "project_id": "carecabs-26bfa",
+    "storage_bucket": "carecabs-26bfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205073319244:android:e42f7a150319b3f89bfbe9",
+        "android_client_info": {
+          "package_name": "com.capstone.carecabs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "205073319244-lrk1l36m7kcnojhb8u4vpqq4sm5j04lm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnt1yBE3UNhSdvOVrf_QNmNGqx_GaAaEU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205073319244-lrk1l36m7kcnojhb8u4vpqq4sm5j04lm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
