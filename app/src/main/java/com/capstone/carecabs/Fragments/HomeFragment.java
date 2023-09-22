@@ -107,7 +107,7 @@ public class HomeFragment extends Fragment {
 		context = getContext();
 		initializeNetworkChecker();
 
-		FirebaseMain.signOutUser();
+//		FirebaseMain.signOutUser();
 
 		FirebaseApp.initializeApp(context);
 

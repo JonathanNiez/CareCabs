@@ -17,6 +17,7 @@ public class StaticDataPasser {
 	public static int storeFontSize = 17;
 
 	public static String userCollection = "users";
+	public static String locationCollection = "location";
 	public static Uri storeUri = null;
 	public static String storeProfilePicUrl = null;
 	public static String storeSelectedMonth = null;
