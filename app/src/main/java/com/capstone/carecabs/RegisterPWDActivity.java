@@ -179,7 +179,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 					|| StaticDataPasser.storeBirthdate == null
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")) {
+					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")
+					|| imageUri == null) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
@@ -227,6 +228,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		if (networkChangeReceiver != null) {
 			unregisterReceiver(networkChangeReceiver);
 		}
+
+		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
@@ -333,6 +336,26 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			finish();
 		});
 	}
+
+	private void updateInterruptedCancelledRegister(String userID) {
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection)
+				.document(userID);
+
+		Map<String, Object> updateRegister = new HashMap<>();
+		updateRegister.put("isRegisterComplete", false);
+		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+
+			FirebaseMain.signOutUser();
+
+		}).addOnFailureListener(e -> {
+
+			FirebaseMain.signOutUser();
+
+			Log.e(TAG, e.getMessage());
+		});
+	}
+
 
 	private void checkPermission() {
 		// Check for camera permission
@@ -548,8 +571,10 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		doneBtn.setOnClickListener(view -> {
 			String year = yearEditText.getText().toString();
 			String day = dayEditText.getText().toString();
-			if (StaticDataPasser.storeSelectedMonth.equals("Month")
-					|| year.isEmpty() || day.isEmpty()) {
+
+			if (StaticDataPasser.storeSelectedMonth == null
+					|| year.isEmpty()
+					|| day.isEmpty()) {
 
 				Toast.makeText(RegisterPWDActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
 			} else {

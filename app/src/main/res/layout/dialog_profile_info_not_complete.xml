@@ -3,7 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -24,22 +24,23 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			android:padding="5dp">
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Account"
+				android:text="PROFILE"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Your Profile Info is incomplete"
 				android:textAlignment="center"
@@ -47,9 +48,9 @@
 				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Please complete your Profile Info"
 				android:textAlignment="center"
@@ -62,14 +63,16 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/custom_button"
-		android:fontFamily="@font/opensans_semibold"
+		android:background="@drawable/button_shape_1"
+		android:backgroundTint="@color/yinmn_blue"
+		android:elevation="5dp"
+		android:fontFamily="@font/opensans_bold"
 		android:text="Ok"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 
 </LinearLayout>

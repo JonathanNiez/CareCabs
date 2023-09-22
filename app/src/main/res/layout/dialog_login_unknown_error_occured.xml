@@ -1,56 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
-	android:gravity="center">
+	android:background="@color/orange"
+	android:gravity="center"
+	android:orientation="vertical">
 
 	<ImageView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:src="@drawable/failed_128"
-		android:layout_marginTop="20dp"/>
+		android:layout_marginTop="20dp"
+		android:src="@drawable/failed_128" />
 
-	<LinearLayout
+	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:gravity="center"
 		android:layout_margin="20dp"
-		android:background="@drawable/custom_card_view_1">
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
-		<TextView
+		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:textSize="25sp"
-			android:text="Login Failed"
-			android:textColor="@color/red"
-			android:fontFamily="@font/opensans_bold"
-			android:layout_margin="10dp"
-			android:textAlignment="center"/>
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:textSize="20sp"
-			android:text="An Unknown error occurred\nPlease try again later"
-			android:textColor="@color/red"
-			android:fontFamily="@font/opensans_bold"
-			android:layout_margin="10dp"
-			android:textAlignment="center"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="LOGIN FAILED"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="20sp" />
 
-	</LinearLayout>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="An Unknown error occurred\nPlease try again later"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="17sp" />
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/custom_button"
+		android:background="@drawable/button_shape_1"
+		android:backgroundTint="@color/yinmn_blue"
 		android:fontFamily="@font/opensans_bold"
 		android:text="Ok"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </LinearLayout>

@@ -157,7 +157,9 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
 					|| StaticDataPasser.storeBirthdate == null
 					|| StaticDataPasser.storeCurrentAge == 0
-					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")) {
+					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
+					|| imageUri == null) {
+
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.doneBtn.setVisibility(View.VISIBLE);
@@ -215,7 +217,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
 	                                           boolean verificationStatus) {
-
 		if (FirebaseMain.getUser() != null) {
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -291,7 +292,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void updateInterruptedCancelledRegister(String userID) {
-
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(StaticDataPasser.userCollection)
 				.document(userID);
@@ -625,10 +625,13 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		doneBtn.setOnClickListener(view -> {
 			String year = yearEditText.getText().toString();
 			String day = dayEditText.getText().toString();
-			if (StaticDataPasser.storeSelectedMonth.equals("Month")
-					|| year.isEmpty() || day.isEmpty()) {
+
+			if (StaticDataPasser.storeSelectedMonth == null
+					|| year.isEmpty()
+					|| day.isEmpty()) {
 
 				Toast.makeText(RegisterDriverActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+
 			} else {
 				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
 

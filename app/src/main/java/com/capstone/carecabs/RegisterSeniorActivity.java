@@ -176,7 +176,8 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 					|| StaticDataPasser.storeBirthdate == null
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")) {
+					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")
+					|| imageUri == null) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
@@ -530,10 +531,13 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		doneBtn.setOnClickListener(view -> {
 			String year = yearEditText.getText().toString();
 			String day = dayEditText.getText().toString();
-			if (StaticDataPasser.storeSelectedMonth.equals("Month")
-					|| year.isEmpty() || day.isEmpty()) {
+
+			if (StaticDataPasser.storeSelectedMonth == null
+					|| year.isEmpty()
+					|| day.isEmpty()) {
 
 				Toast.makeText(RegisterSeniorActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+
 			} else {
 				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
 
@@ -753,7 +757,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 		if (resultCode == Activity.RESULT_OK) {
 
-			if (data != null){
+			if (data != null) {
 
 				imageUri = data.getData();
 				StaticDataPasser.storeUri = imageUri;

@@ -1,57 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:background="@color/yellow">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/orange"
+	android:gravity="center"
+	android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:src="@drawable/no_internet_128" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:background="@drawable/custom_card_view_1"
-        android:layout_margin="20dp">
+	<ImageView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:src="@drawable/no_internet_128" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:fontFamily="@font/opensans_bold"
-            android:text="Internet Connection Problem"
-            android:textAlignment="center"
-            android:textColor="@color/red"
-            android:textSize="25sp" />
+	<androidx.cardview.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/opensans_semibold"
-            android:text="Slow or no internet connection Please check your Internet settings."
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:layout_margin="10dp"
-            />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
 
-    </LinearLayout>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="INTERNET CONNECTION PROBLEM"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="20sp" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/tryAgainBtn"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/custom_button"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="Try Again"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Slow or no internet connection\nPlease check your Internet settings."
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+		</LinearLayout>
+
+
+	</androidx.cardview.widget.CardView>
+
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/tryAgainBtn"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
+		android:layout_marginBottom="20dp"
+		android:background="@drawable/button_shape_1"
+		android:backgroundTint="@color/yinmn_blue"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Try Again"
+		android:textColor="@color/white"
+		android:textSize="17sp" />
 
 </LinearLayout>

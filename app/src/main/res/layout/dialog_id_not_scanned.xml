@@ -3,7 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -20,90 +20,99 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:orientation="vertical">
-
+			android:orientation="vertical"
+			android:padding="5dp">
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="10dp"
-				android:layout_marginBottom="10dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="ID SCANNING"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_bold"
 				android:text="You have not scanned your ID"
 				android:textAlignment="center"
 				android:textColor="@color/red"
-				android:textSize="25sp" />
+				android:textSize="20sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="You can scan it later"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="ID Scanning is required for Verification"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Are you sure you want to proceed?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
 
 	<LinearLayout
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="10dp"
-		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="20dp"
 		android:gravity="center"
 		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/yesBtn"
-			android:layout_width="150dp"
-			android:layout_height="60dp"
-			android:layout_marginEnd="5dp"
-			android:background="@drawable/custom_button"
-			android:backgroundTint="@color/red"
-			android:fontFamily="@font/opensans_semibold"
-			android:text="Yes"
-			android:textColor="@color/white"
-			android:textSize="20sp" />
-
-		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/noBtn"
-			android:layout_width="150dp"
-			android:layout_height="60dp"
-			android:layout_marginStart="5dp"
-			android:background="@drawable/custom_button"
-			android:fontFamily="@font/opensans_semibold"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/button_shape_1"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:fontFamily="@font/opensans_bold"
 			android:text="No"
 			android:textColor="@color/white"
-			android:textSize="20sp" />
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/yesBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/button_shape_1"
+			android:backgroundTint="@color/red"
+			android:elevation="5dp"
+			android:fontFamily="@font/opensans_bold"
+			android:text="Yes"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
 
 	</LinearLayout>
 

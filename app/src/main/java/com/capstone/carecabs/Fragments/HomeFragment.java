@@ -107,6 +107,8 @@ public class HomeFragment extends Fragment {
 		context = getContext();
 		initializeNetworkChecker();
 
+		FirebaseMain.signOutUser();
+
 		FirebaseApp.initializeApp(context);
 
 		slideFragments.add(new CarouselFragment1());

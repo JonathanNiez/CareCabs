@@ -17,11 +17,14 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
@@ -97,9 +100,11 @@ public class LoginActivity extends AppCompatActivity {
 
 		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(getString(R.string.default_web_client_id))
-				.requestEmail().build();
+				.requestEmail()
+				.build();
+
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+//		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
 		binding.registerTextView.setOnClickListener(v -> {
 			showRegisterUsingDialog();
@@ -510,18 +515,22 @@ public class LoginActivity extends AppCompatActivity {
 			loginFailedDialog.dismiss();
 		}
 	}
+
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
+		//TODO:google sign in
 		if (requestCode == RC_SIGN_IN) {
-			Toast.makeText(this, "Nigga", Toast.LENGTH_LONG).show();
 
 			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+
 			try {
-				 googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
+				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
 				firebaseAuthWithGoogle(googleSignInAccount);
+
 			} catch (Exception e) {
+				Log.e(TAG, e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -529,7 +538,7 @@ public class LoginActivity extends AppCompatActivity {
 
 	private void firebaseAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
 
-		if(googleSignInAccount != null){
+		if (googleSignInAccount != null) {
 
 			String getGoogleEmail = googleSignInAccount.getEmail();
 
@@ -540,8 +549,8 @@ public class LoginActivity extends AppCompatActivity {
 			FirebaseAuth.getInstance()
 					.fetchSignInMethodsForEmail(getGoogleEmail)
 					.addOnCompleteListener(task -> {
-						SignInMethodQueryResult result = task.getResult();
-						if (!result.getSignInMethods().isEmpty()) {
+						SignInMethodQueryResult signInMethodQueryResult = task.getResult();
+						if (!signInMethodQueryResult.getSignInMethods().isEmpty()) {
 
 							FirebaseMain.getAuth().signInWithCredential(authCredential).addOnCompleteListener(task1 -> {
 								if (task1.isSuccessful()) {

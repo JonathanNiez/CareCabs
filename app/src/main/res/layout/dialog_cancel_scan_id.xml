@@ -53,7 +53,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/opensans_bold"
 				android:text="ID Scanning is required for Verification"
 				android:textAlignment="center"
 				android:textColor="@color/red"
@@ -91,7 +91,7 @@
 			android:fontFamily="@font/opensans_bold"
 			android:text="No"
 			android:textColor="@color/white"
-			android:textSize="20sp" />
+			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/yesBtn"
@@ -103,7 +103,7 @@
 			android:fontFamily="@font/opensans_bold"
 			android:text="Yes"
 			android:textColor="@color/white"
-			android:textSize="20sp" />
+			android:textSize="17sp" />
 
 	</LinearLayout>
 

@@ -25,14 +25,15 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			android:padding="5dp">
 
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Exit App"
+				android:text="EXIT APP"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
@@ -40,7 +41,7 @@
 			<TextView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Are you sure you want to Exit the App?"
 				android:textAlignment="center"

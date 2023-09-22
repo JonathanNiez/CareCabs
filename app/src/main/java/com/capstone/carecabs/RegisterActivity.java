@@ -247,6 +247,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);
 		registerUser.put("registerType", "Email");
+		registerUser.put("isVerified", false);
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
@@ -261,7 +262,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 					break;
 
-				case "PWD":
+				case "Persons with Disability (PWD)":
 					intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
 					break;
@@ -368,7 +369,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 				break;
 
-			case "PWD":
+			case "Persons with Disability (PWD)":
 				userTypeImageView.setImageResource(R.drawable.pwd_64);
 
 				break;
@@ -602,6 +603,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);
 		registerUser.put("registerType", "Google");
+		registerUser.put("isVerified", false);
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 			switch (StaticDataPasser.storeRegisterUserType) {

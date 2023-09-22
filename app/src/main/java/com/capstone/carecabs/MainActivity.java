@@ -157,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
 		finish();
 	}
 
+
 	private void checkUserIfVerified() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -178,12 +179,7 @@ public class MainActivity extends AppCompatActivity {
 					}
 
 				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-					Log.e(TAG, e.getMessage());
-				}
-			});
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 		}
 	}
 
