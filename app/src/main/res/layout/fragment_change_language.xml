@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/orange"
+	tools:context=".Fragments.ChangeLanguageFragment">
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:cardBackgroundColor="@color/vermillion"
+		app:cardElevation="10dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/vermillion"
+				android:src="@drawable/back_50_2" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="CHANGE LANGUAGE"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout"
+		android:layout_margin="10dp"
+		android:orientation="vertical">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/englishBtn"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginBottom="5dp"
+			android:background="@drawable/custom_card_view_1"
+			android:backgroundTint="@color/platinum"
+			android:drawableStart="@drawable/language_32"
+			android:drawableEnd="@drawable/right_arrow"
+			android:drawablePadding="5dp"
+			android:fontFamily="@font/opensans_semibold"
+			android:padding="10dp"
+			android:text="English (default)"
+			android:textAlignment="textStart"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/bisayaBtn"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:layout_marginBottom="5dp"
+			android:background="@drawable/custom_card_view_1"
+			android:backgroundTint="@color/platinum"
+			android:drawableStart="@drawable/language_32"
+			android:drawableEnd="@drawable/right_arrow"
+			android:drawablePadding="5dp"
+			android:fontFamily="@font/opensans_semibold"
+			android:padding="10dp"
+			android:text="Cebuano (bisaya)"
+			android:textAlignment="textStart"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/languageSizeBtn"
+			android:layout_width="match_parent"
+			android:layout_height="60dp"
+			android:background="@drawable/custom_card_view_1"
+			android:backgroundTint="@color/platinum"
+			android:drawableStart="@drawable/language_32"
+			android:drawableEnd="@drawable/right_arrow"
+			android:drawablePadding="5dp"
+			android:fontFamily="@font/opensans_semibold"
+			android:padding="10dp"
+			android:text="Filipino (Tagalog)"
+			android:textAlignment="textStart"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+	</LinearLayout>
+
+
+</RelativeLayout>

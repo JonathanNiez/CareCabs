@@ -53,16 +53,19 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="8dp">
 
 					<TextView
 						android:id="@+id/textView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="20dp"
-						android:layout_marginStart="10dp"
-						android:layout_marginEnd="10dp"
 						android:fontFamily="@font/opensans_bold"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="LOGIN"
 						android:textColor="@color/white"
 						android:textSize="25sp" />
@@ -120,10 +123,14 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<TextView
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/opensans_semibold"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="@string/never_share_your_password_to_anyone"
 						android:textAlignment="center"
 						android:textColor="@color/white"
@@ -134,18 +141,25 @@
 
 			</androidx.cardview.widget.CardView>
 
-
 			<TextView
-				android:id="@+id/resetPasswordTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Forgot Password?"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/resetPasswordBtn"
+				android:layout_width="230dp"
+				android:layout_height="60dp"
 				android:layout_margin="10dp"
 				android:background="@drawable/button_shape_1"
 				android:backgroundTint="@color/blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/opensans_bold"
 				android:padding="10dp"
-				android:text="Forgot Password? Click here to reset"
+				android:text="Click here to reset"
 				android:textAlignment="center"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
@@ -178,6 +192,7 @@
 				android:id="@+id/loginBtn"
 				android:layout_width="150dp"
 				android:layout_height="60dp"
+				android:layout_marginTop="10dp"
 				android:background="@drawable/button_shape_1"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
@@ -223,7 +238,7 @@
 			</LinearLayout>
 
 			<LinearLayout
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginStart="10dp"
 				android:layout_marginTop="20dp"
@@ -233,19 +248,19 @@
 				android:orientation="vertical">
 
 				<TextView
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
 					android:fontFamily="@font/opensans_semibold"
 					android:text="Don't have an Account?"
 					android:textAlignment="center"
-					android:textColor="@color/white"
+					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-				<androidx.appcompat.widget.AppCompatTextView
+				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/registerTextView"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
+					android:layout_width="250dp"
+					android:layout_height="60dp"
 					android:background="@drawable/button_shape_1"
 					android:backgroundTint="@color/blue"
 					android:elevation="5dp"

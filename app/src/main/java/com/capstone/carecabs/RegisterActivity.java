@@ -246,7 +246,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);
-		registerUser.put("registerType", "email");
+		registerUser.put("registerType", "Email");
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 
@@ -601,7 +601,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("phoneNumber", StaticDataPasser.storePhoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", 17);
-		registerUser.put("registerType", "google");
+		registerUser.put("registerType", "Google");
 
 		documentReference.set(registerUser).addOnSuccessListener(unused -> {
 			switch (StaticDataPasser.storeRegisterUserType) {

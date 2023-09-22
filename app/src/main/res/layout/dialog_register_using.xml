@@ -1,121 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/yellow"
-    android:gravity="center"
-    android:orientation="vertical">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/orange"
+	android:gravity="center"
+	android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="Register Using:"
-        android:background="@drawable/custom_card_view_1"
-        android:padding="5dp"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp"
+		android:background="@drawable/custom_card_view_1"
+		android:fontFamily="@font/opensans_bold"
+		android:padding="5dp"
+		android:text="Register Using:"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_margin="20dp"
-        android:orientation="horizontal">
+	<LinearLayout
+		android:id="@+id/linearLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		android:gravity="center"
+		android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardElevation="5dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginEnd="5dp">
+		<androidx.cardview.widget.CardView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="5dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:orientation="vertical">
 
-                <ImageButton
-                    android:id="@+id/emailImgBtn"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@color/white"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/email" />
+				<ImageButton
+					android:id="@+id/emailImgBtn"
+					android:layout_width="75dp"
+					android:layout_height="75dp"
+					android:layout_marginStart="20dp"
+					android:layout_marginTop="20dp"
+					android:layout_marginEnd="20dp"
+					android:layout_marginBottom="10dp"
+					android:background="@color/white"
+					android:scaleType="centerCrop"
+					android:src="@drawable/email" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Email"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:layout_marginBottom="10dp"
-                    />
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:fontFamily="@font/opensans_bold"
+					android:text="EMAIL"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
 
-            </LinearLayout>
+			</LinearLayout>
 
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:cardElevation="5dp"
-            app:cardCornerRadius="10dp"
-            android:layout_marginStart="5dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageButton
-                    android:id="@+id/googleImgBtn"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@color/white"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/google" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/opensans_semibold"
-                    android:text="Google"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:layout_marginBottom="10dp"
-                    />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+		</androidx.cardview.widget.CardView>
 
 
-    </LinearLayout>
+		<androidx.cardview.widget.CardView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="5dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/cancelBtn"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/custom_button"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="Cancel"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:orientation="vertical">
+
+				<ImageButton
+					android:id="@+id/googleImgBtn"
+					android:layout_width="75dp"
+					android:layout_height="75dp"
+					android:layout_marginStart="20dp"
+					android:layout_marginTop="20dp"
+					android:layout_marginEnd="20dp"
+					android:layout_marginBottom="10dp"
+					android:background="@color/white"
+					android:scaleType="centerCrop"
+					android:src="@drawable/google" />
+
+				<TextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="10dp"
+					android:fontFamily="@font/opensans_bold"
+					android:text="GOOGLE"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+			</LinearLayout>
+
+		</androidx.cardview.widget.CardView>
+
+
+	</LinearLayout>
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/cancelBtn"
+		android:layout_width="150dp"
+		android:layout_height="60dp"
+		android:layout_marginBottom="20dp"
+		android:background="@drawable/button_shape_1"
+		android:backgroundTint="@color/red"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Cancel"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
 
 </LinearLayout>

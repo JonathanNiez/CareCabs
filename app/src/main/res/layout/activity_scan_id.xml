@@ -4,66 +4,61 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/orange"
 	tools:context=".ScanIDActivity">
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardBackgroundColor="@color/vermillion"
+		app:cardElevation="10dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/vermillion"
+				android:src="@drawable/back_50_2" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:fontFamily="@font/opensans_bold"
+				android:text="SCAN ID"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+
+		</RelativeLayout>
+
+
+	</androidx.cardview.widget.CardView>
 
 	<ScrollView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@id/bottomLayout">
+		android:layout_above="@id/bottomLayout"
+		android:layout_below="@id/customActionBarLayout">
 
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
-
-			<RelativeLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content">
-
-				<androidx.cardview.widget.CardView
-					android:id="@+id/customActionBarLayout"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_alignParentTop="true"
-					app:cardBackgroundColor="@color/light_gray"
-					app:cardElevation="10dp">
-
-					<RelativeLayout
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content">
-
-						<ImageButton
-							android:id="@+id/imgBackBtn"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_alignParentStart="true"
-							android:layout_alignParentTop="true"
-							android:layout_marginStart="10dp"
-							android:layout_marginTop="10dp"
-							android:layout_marginEnd="10dp"
-							android:layout_marginBottom="10dp"
-							android:background="@color/light_gray"
-							android:src="@drawable/back_50_2" />
-
-						<TextView
-							android:id="@+id/textView"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_centerInParent="true"
-							android:fontFamily="@font/opensans_bold"
-							android:text="Scan ID"
-							android:textColor="@color/black"
-							android:textSize="20sp" />
-
-
-					</RelativeLayout>
-
-
-				</androidx.cardview.widget.CardView>
-
-			</RelativeLayout>
 
 			<androidx.cardview.widget.CardView
 				android:id="@+id/imageLayout"
@@ -73,9 +68,7 @@
 				android:layout_marginTop="20dp"
 				android:layout_marginEnd="20dp"
 				android:layout_marginBottom="20dp"
-				android:backgroundTint="@color/white"
-				android:gravity="center"
-				android:orientation="vertical"
+				app:cardBackgroundColor="@color/platinum"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -98,8 +91,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		app:cardBackgroundColor="@color/dirty_yellow"
-		app:cardElevation="10dp">
+		app:cardBackgroundColor="@color/cinnabar"
+		app:cardElevation="5dp">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -108,15 +101,13 @@
 			android:orientation="vertical">
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginStart="20dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="20dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Tap/Click the camera icon to capture your ID"
 				android:textAlignment="center"
-				android:textColor="@color/black"
+				android:textColor="#000000"
 				android:textSize="17sp" />
 
 

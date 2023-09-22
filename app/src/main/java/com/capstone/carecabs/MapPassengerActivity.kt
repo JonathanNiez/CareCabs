@@ -1,54 +1,51 @@
 package com.capstone.carecabs
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
-import android.content.res.Resources
-import android.location.Location
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.appcompat.content.res.AppCompatResources
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.google.firebase.firestore.DocumentReference
+import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
-import com.mapbox.maps.EdgeInsets
-import com.mapbox.maps.MapView
+import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
+import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
-import com.mapbox.maps.plugin.animation.camera
-import com.mapbox.maps.plugin.annotation.AnnotationConfig
-import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
+import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.OnMoveListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
+import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import com.mapbox.navigation.base.options.NavigationOptions
-import com.mapbox.navigation.core.MapboxNavigation
-import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
-import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
-import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
-import com.mapbox.navigation.core.trip.session.LocationMatcherResult
-import com.mapbox.navigation.core.trip.session.LocationObserver
-import com.mapbox.navigation.dropin.map.MapViewObserver
-import com.mapbox.navigation.ui.maps.camera.NavigationCamera
-import com.mapbox.navigation.ui.maps.camera.data.MapboxNavigationViewportDataSource
-import com.mapbox.navigation.ui.maps.camera.lifecycle.NavigationBasicGesturesHandler
-import com.mapbox.navigation.ui.maps.camera.state.NavigationCameraState
-import com.mapbox.navigation.ui.maps.camera.transition.NavigationCameraTransitionOptions
-import com.mapbox.navigation.ui.maps.location.NavigationLocationProvider
+import com.mapbox.maps.viewannotation.ViewAnnotationManager
+import com.mapbox.maps.viewannotation.ViewAnnotationUpdateMode
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import java.util.UUID
 
 class MapPassengerActivity : AppCompatActivity() {
+
     private val TAG: String = "MapPassengerActivity"
     private lateinit var documentReference: DocumentReference
     private lateinit var binding: ActivityMapPassengerBinding
@@ -56,121 +53,30 @@ class MapPassengerActivity : AppCompatActivity() {
     private lateinit var builder: AlertDialog.Builder
     private lateinit var intent: Intent
 
-    private companion object {
-        private const val BUTTON_ANIMATION_DURATION = 1500L
+    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
+        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
     }
 
-    private val navigationLocationProvider = NavigationLocationProvider()
-    private lateinit var navigationCamera: NavigationCamera
-    private lateinit var viewportDataSource: MapboxNavigationViewportDataSource
-    private val pixelDensity = Resources.getSystem().displayMetrics.density
-    private val overviewPadding: EdgeInsets by lazy {
-        EdgeInsets(
-            140.0 * pixelDensity,
-            40.0 * pixelDensity,
-            120.0 * pixelDensity,
-            40.0 * pixelDensity
-        )
-    }
-    private val landscapeOverviewPadding: EdgeInsets by lazy {
-        EdgeInsets(
-            30.0 * pixelDensity,
-            380.0 * pixelDensity,
-            110.0 * pixelDensity,
-            20.0 * pixelDensity
-        )
-    }
-    private val followingPadding: EdgeInsets by lazy {
-        EdgeInsets(
-            180.0 * pixelDensity,
-            40.0 * pixelDensity,
-            150.0 * pixelDensity,
-            40.0 * pixelDensity
-        )
-    }
-    private val landscapeFollowingPadding: EdgeInsets by lazy {
-        EdgeInsets(
-            30.0 * pixelDensity,
-            380.0 * pixelDensity,
-            110.0 * pixelDensity,
-            40.0 * pixelDensity
-        )
+    private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
+        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
+        binding.mapView.gestures.focalPoint = binding.mapView.getMapboxMap().pixelForCoordinate(it)
     }
 
-
-    private var annotationApi: AnnotationPlugin? = null
-    private lateinit var annotationConfig: AnnotationConfig
-    private var pointAnnotationManager: PointAnnotationManager? = null
-    private var layerID = "map_annotation"
-
-    private val onMapLongClick = object : MapViewObserver(), OnMapLongClickListener {
-
-        override fun onAttached(mapView: MapView) {
-            mapView.gestures.addOnMapLongClickListener(this)
+    private val onMoveListener = object : OnMoveListener {
+        override fun onMoveBegin(detector: MoveGestureDetector) {
+            onCameraTrackingDismissed()
         }
 
-        override fun onDetached(mapView: MapView) {
-            mapView.gestures.removeOnMapLongClickListener(this)
-        }
-
-        override fun onMapLongClick(point: Point): Boolean {
-            Toast.makeText(
-                this@MapPassengerActivity,
-                "Map was long clicked",
-                Toast.LENGTH_LONG
-            ).show()
+        override fun onMove(detector: MoveGestureDetector): Boolean {
             return false
         }
+
+        override fun onMoveEnd(detector: MoveGestureDetector) {}
     }
 
-    private val locationObserver = object : LocationObserver {
-        var firstLocationUpdateReceived = false
-
-        override fun onNewRawLocation(rawLocation: Location) {
-            // not handled
-        }
-
-        override fun onNewLocationMatcherResult(locationMatcherResult: LocationMatcherResult) {
-            val enhancedLocation = locationMatcherResult.enhancedLocation
-            // update location puck's position on the map
-            navigationLocationProvider.changePosition(
-                location = enhancedLocation,
-                keyPoints = locationMatcherResult.keyPoints,
-            )
-
-            // update camera position to account for new location
-            viewportDataSource.onLocationChanged(enhancedLocation)
-            viewportDataSource.evaluate()
-
-            // if this is the first location update the activity has received,
-            // it's best to immediately move the camera to the current user location
-            if (!firstLocationUpdateReceived) {
-                firstLocationUpdateReceived = true
-                navigationCamera.requestNavigationCameraToOverview(
-                    stateTransitionOptions = NavigationCameraTransitionOptions.Builder()
-                        .maxDuration(0) // instant transition
-                        .build()
-                )
-            }
-        }
-    }
-
-    private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
-        onResumedObserver = object : MapboxNavigationObserver {
-            @SuppressLint("MissingPermission")
-            override fun onAttached(mapboxNavigation: MapboxNavigation) {
-                mapboxNavigation.registerLocationObserver(locationObserver)
-                // start the trip session to being receiving location updates in free drive
-                // and later when a route is set also receiving route progress updates
-                mapboxNavigation.startTripSession()
-            }
-
-            override fun onDetached(mapboxNavigation: MapboxNavigation) {
-                mapboxNavigation.unregisterLocationObserver(locationObserver)
-            }
-        },
-        onInitialize = this::initializeNavigation
-    )
+    private lateinit var mapboxMap: MapboxMap
+    private lateinit var viewAnnotationManager: ViewAnnotationManager
+    private val viewAnnotationViews = mutableListOf<View>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,85 +84,91 @@ class MapPassengerActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         checkIfUserIsVerified()
-        bottomNavButtons()
-        loadMapStyle()
+        initializeBottomNavButtons()
 
-        binding.setLocationLayout.visibility = View.GONE
+        viewAnnotationManager = binding.mapView.viewAnnotationManager
 
-        binding.setLocationBtn.setOnClickListener {
-            mapboxNavigation.setNavigationRoutes(listOf())
-        }
+        onMapReady()
 
-        binding.recenterBtn.setOnClickListener {
-            navigationCamera.requestNavigationCameraToFollowing()
-            binding.routeOverviewBtn.showTextAndExtend(BUTTON_ANIMATION_DURATION)
-        }
-        binding.routeOverviewBtn.setOnClickListener {
-            navigationCamera.requestNavigationCameraToOverview()
-            binding.recenterBtn.showTextAndExtend(BUTTON_ANIMATION_DURATION)
-        }
+//        binding.setLocationLayout.visibility = View.GONE
 
-        viewportDataSource = MapboxNavigationViewportDataSource(binding.mapView.getMapboxMap())
-        navigationCamera = NavigationCamera(
-            binding.mapView.getMapboxMap(),
-            binding.mapView.camera,
-            viewportDataSource
-        )
-        binding.mapView.camera.addCameraAnimationsLifecycleListener(
-            NavigationBasicGesturesHandler(navigationCamera)
-        )
-        navigationCamera.registerNavigationCameraStateChangeObserver { navigationCameraState ->
-            // shows/hide the recenter button depending on the camera state
-            when (navigationCameraState) {
-                NavigationCameraState.TRANSITION_TO_FOLLOWING,
-                NavigationCameraState.FOLLOWING -> binding.recenterBtn.visibility = View.INVISIBLE
-
-                NavigationCameraState.TRANSITION_TO_OVERVIEW,
-                NavigationCameraState.OVERVIEW,
-                NavigationCameraState.IDLE -> binding.recenterBtn.visibility = View.VISIBLE
-            }
-        }
-        // set the padding values depending on screen orientation and visible view layout
-        if (this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            viewportDataSource.overviewPadding = landscapeOverviewPadding
-        } else {
-            viewportDataSource.overviewPadding = overviewPadding
-        }
-        if (this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            viewportDataSource.followingPadding = landscapeFollowingPadding
-        } else {
-            viewportDataSource.followingPadding = followingPadding
-        }
 
     }
 
-    private fun loadMapStyle(){
+    private fun loadMapStyle() {
         binding.mapView.getMapboxMap()
             .loadStyleUri(getString(R.string.custom_map_style_url))
-        // After the style is loaded, initialize the Location component.
-        {
-            binding.mapView.gestures.addOnMapClickListener{
+            // After the style is loaded, initialize the Location component.
+            {
+                binding.mapView.gestures.addOnMapClickListener {
 
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "Map was clicked",
-                    Toast.LENGTH_LONG
-                ).show()
 
-                true
+                    Toast.makeText(
+                        this@MapPassengerActivity,
+                        "Map was clicked",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    true
+                }
+
+//                addAnnotationToMap()
+
+//                annotationApi = binding.mapView.annotations
+//                annotationConfig = AnnotationConfig(
+//                    layerId = layerID
+//                )
+//
+//                pointAnnotationManager =
+//                    annotationApi?.createPointAnnotationManager(annotationConfig)
             }
+    }
 
-
-            annotationApi = binding.mapView.annotations
-            annotationConfig = AnnotationConfig(
-                layerId = layerID
-            )
-
-            pointAnnotationManager =
-                annotationApi?.createPointAnnotationManager(annotationConfig)
+    private fun addAnnotationToMap() {
+// Create an instance of the Annotation API and get the PointAnnotationManager.
+        bitmapFromDrawableRes(
+            this@MapPassengerActivity,
+            R.drawable.location_2
+        )?.let {
+            val annotationApi = binding.mapView.annotations
+            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+// Set options for the resulting symbol layer.
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+// Define a geographic coordinate.
+                .withPoint(Point.fromLngLat(18.06, 59.31))
+// Specify the bitmap you assigned to the point annotation
+// The bitmap will be added to map style automatically.
+                .withIconImage(it)
+// Add the resulting pointAnnotation to the map.
+            pointAnnotationManager.create(pointAnnotationOptions)
         }
     }
-    private fun bottomNavButtons() {
+
+    private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
+        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
+
+    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
+        if (sourceDrawable == null) {
+            return null
+        }
+        return if (sourceDrawable is BitmapDrawable) {
+            sourceDrawable.bitmap
+        } else {
+// copying drawable object to not manipulate on the same reference
+            val constantState = sourceDrawable.constantState ?: return null
+            val drawable = constantState.newDrawable().mutate()
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                drawable.intrinsicWidth, drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
+        }
+    }
+
+    private fun initializeBottomNavButtons() {
         binding.bottomNavigationView.selectedItemId = R.id.setLocation
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
@@ -285,25 +197,139 @@ class MapPassengerActivity : AppCompatActivity() {
         return uuid.toString()
     }
 
-    private fun initializeNavigation() {
-        MapboxNavigationApp.setup(
-            NavigationOptions.Builder(this)
-                .accessToken(getString(R.string.mapbox_access_token))
-                // comment out the location engine setting block to disable simulation
-//                .locationEngine(replayLocationEngine)
+    private fun onMapReady() {
+        mapboxMap = binding.mapView.getMapboxMap().apply {
+            loadStyleUri(getString(R.string.custom_map_style_url)) {
+
+                initLocationComponent()
+                setupGesturesListener()
+
+
+            }
+        }
+
+        binding.mapView.getMapboxMap().setCamera(
+            CameraOptions.Builder()
+                .zoom(14.0)
                 .build()
         )
 
-        binding.mapView.location.apply {
-            setLocationProvider(navigationLocationProvider)
-            this.locationPuck = LocationPuck2D(
-                bearingImage = ContextCompat.getDrawable(
-                    this@MapPassengerActivity,
-                    R.drawable.mapbox_navigation_puck_icon
-                )
-            )
-            enabled = true
+//        binding.mapView.getMapboxMap()
+//            .loadStyleUri(getString(R.string.custom_map_style_url)) {
+//            }
+    }
+
+
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        menuInflater.inflate(R.menu.menu_view_annotation, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return when (item.itemId) {
+//            R.id.action_view_annotation_fixed_delay -> {
+//                viewAnnotationManager.setViewAnnotationUpdateMode(ViewAnnotationUpdateMode.MAP_FIXED_DELAY)
+//                true
+//            }
+//
+//            R.id.action_view_annotation_map_synchronized -> {
+//                viewAnnotationManager.setViewAnnotationUpdateMode(ViewAnnotationUpdateMode.MAP_SYNCHRONIZED)
+//                true
+//            }
+//
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
+
+//    override fun onMapClick(point: Point): Boolean {
+//        addViewAnnotation(point)
+//        return true
+//    }
+
+    @SuppressLint("SetTextI18n")
+    private fun addViewAnnotation(point: Point) {
+        val viewAnnotation = viewAnnotationManager.addViewAnnotation(
+            resId = R.layout.activity_map_passenger,
+            options = viewAnnotationOptions {
+                geometry(point)
+                allowOverlap(true)
+            }
+        )
+        val pointLat: String = point.latitude().toString()
+        val pointLong: String = point.longitude().toString()
+
+        binding.desiredDestinationTextView.text = pointLat + "\n" + pointLong
+
+
+//        Toast.makeText(this@MapPassengerActivity, point.toString(), Toast.LENGTH_LONG).show()
+
+    }
+
+    private companion object {
+        const val SELECTED_ADD_COEF_PX = 25
+        const val STARTUP_TEXT = "Click on a map to add a view annotation."
+        const val ADD_VIEW_ANNOTATION_TEXT = "Add view annotations to re-frame map camera"
+    }
+
+    private fun setupGesturesListener() {
+        binding.mapView.gestures.addOnMoveListener(onMoveListener)
+
+        binding.mapView.gestures.addOnMapClickListener {
+
+            addViewAnnotation(it)
+
+            true
         }
+
+    }
+
+    private fun initLocationComponent() {
+        val locationComponentPlugin = binding.mapView.location
+        locationComponentPlugin.updateSettings {
+            this.enabled = true
+            this.locationPuck = LocationPuck2D(
+                bearingImage = AppCompatResources.getDrawable(
+                    this@MapPassengerActivity,
+                    R.drawable.mapbox_navigation_puck_icon,
+                ),
+                scaleExpression = interpolate {
+                    linear()
+                    zoom()
+                    stop {
+                        literal(0.0)
+                        literal(0.6)
+                    }
+                    stop {
+                        literal(20.0)
+                        literal(1.0)
+                    }
+                }.toJson()
+            )
+        }
+        locationComponentPlugin.addOnIndicatorPositionChangedListener(
+            onIndicatorPositionChangedListener
+        )
+        locationComponentPlugin.addOnIndicatorBearingChangedListener(
+            onIndicatorBearingChangedListener
+        )
+    }
+
+    private fun onCameraTrackingDismissed() {
+        Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
+        binding.mapView.location
+            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+        binding.mapView.location
+            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.mapView.location
+            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+        binding.mapView.location
+            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
     private fun checkIfUserIsVerified() {
@@ -362,6 +388,7 @@ class MapPassengerActivity : AppCompatActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
 
         intent = Intent(this, MainActivity::class.java)
@@ -369,4 +396,5 @@ class MapPassengerActivity : AppCompatActivity() {
         finish()
 
     }
+
 }

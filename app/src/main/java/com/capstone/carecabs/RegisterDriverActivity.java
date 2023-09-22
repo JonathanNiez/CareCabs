@@ -232,7 +232,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 			registerUser.put("driverRating", 0.0);
 			registerUser.put("passengersTransported", 0);
-			registerUser.put("verificationStatus", verificationStatus);
+			registerUser.put("isVerified", verificationStatus);
 			registerUser.put("isRegisterComplete", true);
 
 			documentReference.update(registerUser).addOnSuccessListener(unused -> {

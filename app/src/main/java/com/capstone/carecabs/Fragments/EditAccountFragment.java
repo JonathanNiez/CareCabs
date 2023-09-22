@@ -47,6 +47,7 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -153,13 +154,6 @@ public class EditAccountFragment extends Fragment {
 			backToAccountFragment();
 		});
 
-
-		binding.scanIDBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), ScanIDActivity.class);
-			intent.putExtra("userType", "From Main");
-			startActivity(intent);
-			getActivity().finish();
-		});
 
 		binding.editBirthdateBtn.setOnClickListener(v -> {
 			showEnterBirthdateDialog();
@@ -325,7 +319,7 @@ public class EditAccountFragment extends Fragment {
 					String getEmail = documentSnapshot.getString("email");
 					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 					String getSex = documentSnapshot.getString("sex");
-					String getVerificationStatus = documentSnapshot.getString("verificationStatus");
+					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 					String getBirthdate = documentSnapshot.getString("birthdate");
 
 					switch (getUserType) {
@@ -357,8 +351,9 @@ public class EditAccountFragment extends Fragment {
 								.into(binding.imgBtnProfilePic);
 					}
 
-					if (getVerificationStatus.equals("Not Verified")) {
+					if (!getVerificationStatus) {
 						binding.idScannedTextView.setVisibility(View.VISIBLE);
+
 					}
 
 					StaticDataPasser.storeFirstName = getFirstName;
@@ -369,7 +364,6 @@ public class EditAccountFragment extends Fragment {
 
 					binding.firstnameTextView.setText(getFirstName);
 					binding.lastnameTextView.setText(getLastName);
-
 					binding.editFirstnameBtn.setText(getFirstName);
 					binding.editLastnameBtn.setText(getLastName);
 					binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);

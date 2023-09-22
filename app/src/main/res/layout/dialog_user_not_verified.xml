@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
-
 
 	<ImageView
 		android:layout_width="wrap_content"
@@ -13,45 +13,55 @@
 		android:layout_marginTop="20dp"
 		android:src="@drawable/id_not_verified_96" />
 
-	<LinearLayout
+	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
-		android:background="@drawable/custom_card_view_1"
-		android:gravity="center"
-		android:orientation="vertical">
+		app:cardBackgroundColor="@color/platinum"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
-		<TextView
+		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_bold"
-			android:text="Account not Verified"
-			android:textAlignment="center"
-			android:textColor="@color/red"
-			android:textSize="20sp" />
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_semibold"
-			android:text="@string/about_id_scan"
-			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="17sp" />
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="ACCOUNT NOT VERIFIED"
+				android:textAlignment="center"
+				android:textColor="@color/red"
+				android:textSize="20sp" />
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_semibold"
-			android:text="Please scan your ID to use this Services"
-			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="17sp" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="@string/about_id_scan"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
 
-	</LinearLayout>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Please scan your ID to use this Services"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+		</LinearLayout>
+
+
+	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
@@ -59,7 +69,7 @@
 		android:layout_height="60dp"
 		android:layout_marginBottom="20dp"
 		android:background="@drawable/custom_button"
-		android:fontFamily="@font/opensans_semibold"
+		android:fontFamily="@font/opensans_bold"
 		android:text="Ok"
 		android:textColor="@color/white"
 		android:textSize="20sp" />

@@ -103,7 +103,6 @@ import com.mapbox.navigation.ui.voice.model.SpeechVolume
 import org.json.JSONObject
 import java.util.Date
 import java.util.Locale
-import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity() {
 
@@ -459,7 +458,7 @@ class MapDriverActivity : AppCompatActivity() {
         checkIfUserIsVerified()
         checkLocationPermission()
         createDummyMarkers()
-        bottomNavButtons()
+        initializeBottomNavButtons()
 
         binding.navigationView.api.routeReplayEnabled(true)
 
@@ -587,7 +586,7 @@ class MapDriverActivity : AppCompatActivity() {
         )
     }
 
-    private fun bottomNavButtons() {
+    private fun initializeBottomNavButtons() {
         binding.bottomNavigationView.selectedItemId = R.id.setLocation
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
@@ -606,11 +605,6 @@ class MapDriverActivity : AppCompatActivity() {
             }
             true
         }
-    }
-
-    private fun generateRandomTripId(): String {
-        val uuid = UUID.randomUUID()
-        return uuid.toString()
     }
 
     private fun checkIfUserIsVerified() {

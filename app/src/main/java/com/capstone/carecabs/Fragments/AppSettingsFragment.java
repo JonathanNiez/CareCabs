@@ -17,45 +17,54 @@ import com.capstone.carecabs.databinding.FragmentAppSettingsBinding;
 
 public class AppSettingsFragment extends Fragment {
 
-    private FragmentAppSettingsBinding binding;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	private FragmentAppSettingsBinding binding;
 
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentAppSettingsBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+	}
 
-        binding.imgBackBtn.setOnClickListener(v -> {
-            backToAccountFragment();
-        });
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		binding = FragmentAppSettingsBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
 
-        binding.changeFontSizeBtn.setOnClickListener(v -> {
-            goToChangeFontSizeFragment();
-        });
+		binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
 
-        return view;
-    }
+		binding.changeFontSizeBtn.setOnClickListener(v -> goToChangeFontSizeFragment());
 
-    public void onBackPressed(){
-        backToAccountFragment();
-    }
-    private void goToChangeFontSizeFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new ChangeFontSizeFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-    private void backToAccountFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+		binding.languageBtn.setOnClickListener(v -> goToChangeLanguageFragment());
+
+		return view;
+	}
+
+	public void onBackPressed() {
+		backToAccountFragment();
+	}
+
+	private void goToChangeFontSizeFragment() {
+		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new ChangeFontSizeFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
+
+	private void goToChangeLanguageFragment() {
+		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new ChangeLanguageFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
+
+	private void backToAccountFragment() {
+		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
 }

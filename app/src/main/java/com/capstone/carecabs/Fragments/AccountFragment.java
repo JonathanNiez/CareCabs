@@ -3,7 +3,9 @@ package com.capstone.carecabs.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -30,6 +32,7 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
 import com.capstone.carecabs.RegisterSeniorActivity;
+import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -135,6 +138,13 @@ public class AccountFragment extends Fragment {
 
 		binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
+		binding.scanIDBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), ScanIDActivity.class);
+			intent.putExtra("userType", "From Main");
+			startActivity(intent);
+			getActivity().finish();
+		});
+
 		return view;
 	}
 
@@ -197,6 +207,7 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
 				break;
 
@@ -216,6 +227,7 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
 				break;
 
@@ -235,6 +247,7 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
 				binding.personalInfoBtn.setHeight(62);
 				binding.editProfileBtn.setHeight(62);
@@ -243,6 +256,8 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setHeight(62);
 				binding.contactUsBtn.setHeight(62);
 				binding.signOutBtn.setHeight(62);
+				binding.scanIDBtn.setHeight(62);
+
 				break;
 
 			case 21:
@@ -261,6 +276,7 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
 				binding.personalInfoBtn.setHeight(64);
 				binding.editProfileBtn.setHeight(64);
@@ -269,6 +285,7 @@ public class AccountFragment extends Fragment {
 				binding.aboutBtn.setHeight(64);
 				binding.contactUsBtn.setHeight(64);
 				binding.signOutBtn.setHeight(64);
+				binding.scanIDBtn.setHeight(64);
 
 				break;
 		}
@@ -354,12 +371,22 @@ public class AccountFragment extends Fragment {
 						binding.verificationStatusTextView.setTextColor(
 								getResources().getColor(R.color.white)
 						);
-						binding.verificationStatusLayout.setBackgroundColor(getResources()
-								.getColor(R.color.red));
+//						binding.verificationStatusLayout.setBackgroundColor(getResources()
+//								.getColor(R.color.red));
 						binding.verificationStatusTextView.setText("Not Verified");
+
+						binding.verificationStatusLayout.setBackgroundTintList(
+								ColorStateList.valueOf(getResources()
+										.getColor(R.color.light_red))
+						);
 
 						binding.idScannedTextView.setVisibility(View.VISIBLE);
 
+						Typeface typeface = ResourcesCompat.getFont(context, R.font.opensans_bold);
+
+						binding.scanIDBtn.setText("Scan ID (Scan your ID here)");
+						binding.scanIDBtn.setTypeface(typeface);
+						binding.scanIDBtn.setTextColor(getResources().getColor(R.color.red));
 					} else {
 						binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
 
@@ -368,8 +395,13 @@ public class AccountFragment extends Fragment {
 						);
 						binding.verificationStatusTextView.setText("Verified");
 
-						binding.verificationStatusLayout.setBackgroundColor(getResources()
-								.getColor(R.color.green));
+//						binding.verificationStatusLayout.setBackgroundColor(getResources()
+//								.getColor(R.color.green));
+
+						binding.verificationStatusLayout.setBackgroundTintList(
+								ColorStateList.valueOf(getResources()
+										.getColor(R.color.green))
+						);
 					}
 
 					binding.firstnameTextView.setText(getFirstName);

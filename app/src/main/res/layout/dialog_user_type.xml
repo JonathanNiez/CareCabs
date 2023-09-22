@@ -1,134 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/yellow"
-    android:gravity="center"
-    android:orientation="vertical">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/orange"
+	android:gravity="center"
+	android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:textAlignment="center"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="What kind of Passenger are you?"
-        android:textColor="@color/black"
-        android:background="@drawable/custom_card_view_1"
-        android:padding="5dp"
-        android:textSize="20sp" />
+	<TextView
+		android:id="@+id/textView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="20dp"
+		android:layout_marginTop="20dp"
+		android:layout_marginEnd="20dp"
+		android:background="@drawable/custom_card_view_1"
+		android:fontFamily="@font/opensans_semibold"
+		android:padding="5dp"
+		android:text="What kind of Passenger are you?"
+		android:textAlignment="center"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
+	<LinearLayout
+		android:id="@+id/linearLayout"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:gravity="center"
+		android:orientation="horizontal">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/white"
-            app:cardElevation="5dp"
-            app:cardCornerRadius="10dp">
+		<androidx.cardview.widget.CardView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginEnd="5dp"
+			android:layout_weight="1"
+			android:backgroundTint="@color/white"
+			app:cardBackgroundColor="@color/platinum"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center"
+				android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/opensans_bold"
-                    android:background="@drawable/custom_card_view_1"
-                    android:backgroundTint="@color/background"
-                    android:padding="5dp"
-                    android:layout_margin="5dp"
-                    android:text="SENIOR CITIZEN"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+				<TextView
+					android:id="@+id/textView1"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/background"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_bold"
+					android:padding="5dp"
+					android:text="SENIOR CITIZEN"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
 
-                <ImageButton
-                    android:id="@+id/seniorImgBtn"
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
-                    android:layout_marginBottom="20dp"
-                    android:backgroundTint="@color/white"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/senior_128_2" />
+				<ImageButton
+					android:id="@+id/seniorImgBtn"
+					android:layout_width="110dp"
+					android:layout_height="110dp"
+					android:layout_marginBottom="20dp"
+					android:backgroundTint="@color/white"
+					android:scaleType="centerCrop"
+					android:src="@drawable/senior_128_2" />
 
-            </LinearLayout>
-
-
-        </androidx.cardview.widget.CardView>
-
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/white"
-            android:layout_marginStart="5dp"
-            app:cardElevation="5dp"
-            app:cardCornerRadius="10dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="center"
-                    android:background="@drawable/custom_card_view_1"
-                    android:backgroundTint="@color/background"
-                    android:padding="5dp"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/opensans_bold"
-                    android:text="PWD"
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
-
-                <ImageButton
-                    android:id="@+id/pwdImgBtn"
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
-                    android:layout_marginBottom="20dp"
-                    android:backgroundTint="@color/white"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/pwd_128_2" />
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
+			</LinearLayout>
 
 
-    </LinearLayout>
+		</androidx.cardview.widget.CardView>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/cancelBtn"
-        android:layout_width="150dp"
-        android:layout_height="60dp"
-        android:layout_marginBottom="20dp"
-        android:background="@drawable/custom_button"
-        android:backgroundTint="@color/red"
-        android:fontFamily="@font/opensans_semibold"
-        android:text="Cancel"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+
+		<androidx.cardview.widget.CardView
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="5dp"
+			android:layout_weight="1"
+			android:backgroundTint="@color/white"
+			app:cardBackgroundColor="@color/platinum"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center"
+				android:orientation="vertical">
+
+				<TextView
+					android:id="@+id/textView2"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/background"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_bold"
+					android:padding="5dp"
+					android:text="PWD"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+				<ImageButton
+					android:id="@+id/pwdImgBtn"
+					android:layout_width="110dp"
+					android:layout_height="110dp"
+					android:layout_marginBottom="20dp"
+					android:backgroundTint="@color/white"
+					android:scaleType="centerCrop"
+					android:src="@drawable/pwd_128_2" />
+
+			</LinearLayout>
+
+		</androidx.cardview.widget.CardView>
+
+
+	</LinearLayout>
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/cancelBtn"
+		android:layout_width="150dp"
+		android:layout_height="60dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="20dp"
+		android:background="@drawable/button_shape_1"
+		android:backgroundTint="@color/red"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Cancel"
+		android:textColor="@color/white"
+		android:textSize="20sp" />
 
 </LinearLayout>

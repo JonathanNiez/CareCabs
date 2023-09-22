@@ -70,6 +70,7 @@
 					android:id="@+id/changeFontSizeBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/font_adjustment_32"
@@ -78,6 +79,22 @@
 					android:fontFamily="@font/opensans_semibold"
 					android:padding="10dp"
 					android:text="Change Font Size"
+					android:textAlignment="textStart"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/languageBtn"
+					android:layout_width="match_parent"
+					android:layout_height="60dp"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
+					android:drawableStart="@drawable/language_32"
+					android:drawableEnd="@drawable/right_arrow"
+					android:drawablePadding="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Language"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
 					android:textSize="17sp" />

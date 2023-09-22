@@ -37,6 +37,32 @@ public class ResetPasswordActivity extends AppCompatActivity {
 	private ActivityResetPasswordBinding binding;
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeNoInternetDialog();
+		closeCancelPasswordResetDialog();
+		closePasswordUpdateFailedDialog();
+		closePasswordUpdateSuccessDialog();
+		closePasswordResetConfirmationDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeNoInternetDialog();
+		closeCancelPasswordResetDialog();
+		closePasswordUpdateFailedDialog();
+		closePasswordUpdateSuccessDialog();
+		closePasswordResetConfirmationDialog();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityResetPasswordBinding.inflate(getLayoutInflater());
@@ -94,36 +120,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeNoInternetDialog();
-		closeCancelPasswordResetDialog();
-		closePasswordUpdateFailedDialog();
-		closePasswordUpdateSuccessDialog();
-		closePasswordResetConfirmationDialog();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeNoInternetDialog();
-		closeCancelPasswordResetDialog();
-		closePasswordUpdateFailedDialog();
-		closePasswordUpdateSuccessDialog();
-		closePasswordResetConfirmationDialog();
-	}
 
 	@Override
 	public void onBackPressed() {
-		super.onBackPressed();
-
 		showCancelPasswordResetDialog();
 	}
 

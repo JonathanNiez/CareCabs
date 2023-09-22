@@ -56,12 +56,19 @@
 
 				<TextView
 					android:id="@+id/textView"
-					android:layout_width="match_parent"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_below="@id/logo"
 					android:layout_centerHorizontal="true"
-					android:layout_margin="10dp"
+					android:layout_marginStart="10dp"
+					android:layout_marginTop="10dp"
+					android:layout_marginEnd="10dp"
+					android:layout_marginBottom="10dp"
 					android:fontFamily="@font/opensans_bold"
+					android:shadowColor="@color/black"
+					android:shadowDx="2"
+					android:shadowDy="2"
+					android:shadowRadius="4"
 					android:text="Additional Registration for PWD"
 					android:textAlignment="center"
 					android:textColor="@color/white"
@@ -287,7 +294,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="5dp">
 
 					<TextView
 						android:layout_width="match_parent"

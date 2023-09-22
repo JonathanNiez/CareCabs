@@ -3,7 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -11,6 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
+		app:cardBackgroundColor="@color/platinum"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -18,29 +19,30 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			android:padding="5dp">
 
 			<ImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
+				android:layout_marginBottom="10dp"
 				android:src="@drawable/help_64" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="ID Scanning"
+				android:text="ID SCANNING"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Do you want to cancel the ID Scanning?"
 				android:textAlignment="center"
@@ -48,9 +50,9 @@
 				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="ID Scanning is required for Verification"
 				android:textAlignment="center"
@@ -58,9 +60,9 @@
 				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_semibold"
 				android:text="Are you sure you want to cancel?"
 				android:textAlignment="center"
@@ -73,10 +75,8 @@
 
 
 	<LinearLayout
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_marginStart="10dp"
-		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="20dp"
 		android:gravity="center"
 		android:orientation="horizontal">
@@ -86,8 +86,9 @@
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_marginEnd="5dp"
-			android:background="@drawable/custom_button"
-			android:fontFamily="@font/opensans_semibold"
+			android:background="@drawable/button_shape_1"
+			android:backgroundTint="@color/yinmn_blue"
+			android:fontFamily="@font/opensans_bold"
 			android:text="No"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
@@ -97,9 +98,9 @@
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_marginStart="5dp"
-			android:background="@drawable/custom_button"
+			android:background="@drawable/button_shape_1"
 			android:backgroundTint="@color/red"
-			android:fontFamily="@font/opensans_semibold"
+			android:fontFamily="@font/opensans_bold"
 			android:text="Yes"
 			android:textColor="@color/white"
 			android:textSize="20sp" />

@@ -19,8 +19,11 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@color/cinnabar"
+		android:backgroundTint="@color/yinmn_blue"
+		app:itemIconSize="30dp"
+		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"
-		app:menu="@menu/bottom_nav_menu"
-		app:labelVisibilityMode="labeled" />
+		app:labelVisibilityMode="auto"
+		app:menu="@menu/bottom_nav_menu" />
 
 </RelativeLayout>

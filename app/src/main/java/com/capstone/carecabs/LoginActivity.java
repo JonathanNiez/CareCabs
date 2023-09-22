@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,13 +56,42 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeExitConfirmationDialog();
+		closeLoginFailedDialog();
+		closePleaseWaitDialog();
+		closeRegisterUsingDialog();
+		closeNoInternetDialog();
+		closeUnknownOccurredDialog();
+		closeInvalidCredentialsDialog();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeExitConfirmationDialog();
+		closeLoginFailedDialog();
+		closePleaseWaitDialog();
+		closeRegisterUsingDialog();
+		closeNoInternetDialog();
+		closeUnknownOccurredDialog();
+		closeInvalidCredentialsDialog();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityLoginBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.progressBarLayout.setVisibility(View.GONE);
-
 
 		FirebaseApp.initializeApp(this);
 
@@ -75,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
 			showRegisterUsingDialog();
 		});
 
-		binding.resetPasswordTextView.setOnClickListener(view -> {
+		binding.resetPasswordBtn.setOnClickListener(view -> {
 			intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
 			startActivity(intent);
 			finish();
@@ -154,35 +184,6 @@ public class LoginActivity extends AppCompatActivity {
 				});
 	}
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeExitConfirmationDialog();
-		closeLoginFailedDialog();
-		closePleaseWaitDialog();
-		closeRegisterUsingDialog();
-		closeNoInternetDialog();
-		closeUnknownOccurredDialog();
-		closeInvalidCredentialsDialog();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeExitConfirmationDialog();
-		closeLoginFailedDialog();
-		closePleaseWaitDialog();
-		closeRegisterUsingDialog();
-		closeNoInternetDialog();
-		closeUnknownOccurredDialog();
-		closeInvalidCredentialsDialog();
-	}
 
 	@Override
 	public void onBackPressed() {
@@ -413,55 +414,6 @@ public class LoginActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (requestCode == RC_SIGN_IN) {
-			Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-			try {
-				GoogleSignInAccount account = task.getResult(ApiException.class);
-				firebaseAuthWithGoogle(account);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-		String getGoogleEmail = acct.getEmail();
-		AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-		FirebaseAuth.getInstance().fetchSignInMethodsForEmail(getGoogleEmail)
-				.addOnCompleteListener(task -> {
-					SignInMethodQueryResult result = task.getResult();
-					if (!result.getSignInMethods().isEmpty()) {
-						FirebaseMain.getAuth().signInWithCredential(credential).addOnCompleteListener(task1 -> {
-							if (task1.isSuccessful()) {
-
-								intent = new Intent(LoginActivity.this, LoggingInActivity.class);
-								startActivity(intent);
-								finish();
-
-								closePleaseWaitDialog();
-							} else {
-								closePleaseWaitDialog();
-								showLoginFailedDialog();
-							}
-
-						});
-					} else {
-						closePleaseWaitDialog();
-
-						showEmailAlreadyRegisteredDialog();
-
-						intent = new Intent(this, RegisterUserTypeActivity.class);
-						intent.putExtra("registerType", "googleRegister");
-						startActivity(intent);
-						finish();
-					}
-				});
-	}
-
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
@@ -558,5 +510,66 @@ public class LoginActivity extends AppCompatActivity {
 			loginFailedDialog.dismiss();
 		}
 	}
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 
+		if (requestCode == RC_SIGN_IN) {
+			Toast.makeText(this, "Nigga", Toast.LENGTH_LONG).show();
+
+			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+			try {
+				 googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
+				firebaseAuthWithGoogle(googleSignInAccount);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void firebaseAuthWithGoogle(GoogleSignInAccount googleSignInAccount) {
+
+		if(googleSignInAccount != null){
+
+			String getGoogleEmail = googleSignInAccount.getEmail();
+
+			AuthCredential authCredential = GoogleAuthProvider
+					.getCredential(googleSignInAccount
+							.getIdToken(), null);
+
+			FirebaseAuth.getInstance()
+					.fetchSignInMethodsForEmail(getGoogleEmail)
+					.addOnCompleteListener(task -> {
+						SignInMethodQueryResult result = task.getResult();
+						if (!result.getSignInMethods().isEmpty()) {
+
+							FirebaseMain.getAuth().signInWithCredential(authCredential).addOnCompleteListener(task1 -> {
+								if (task1.isSuccessful()) {
+
+									closePleaseWaitDialog();
+
+									intent = new Intent(LoginActivity.this, LoggingInActivity.class);
+									startActivity(intent);
+									finish();
+
+								} else {
+									closePleaseWaitDialog();
+									showLoginFailedDialog();
+								}
+
+							});
+						} else {
+							closePleaseWaitDialog();
+
+							showEmailAlreadyRegisteredDialog();
+
+							intent = new Intent(this, RegisterUserTypeActivity.class);
+							intent.putExtra("registerType", "googleRegister");
+							startActivity(intent);
+							finish();
+						}
+					});
+		}
+
+	}
 }

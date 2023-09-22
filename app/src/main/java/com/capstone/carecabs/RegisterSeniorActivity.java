@@ -261,7 +261,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
 		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
-		registerUser.put("verificationStatus", verificationStatus);
+		registerUser.put("isVerified", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
 		registerUser.put("totalTrips", 0);
 

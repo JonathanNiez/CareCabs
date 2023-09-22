@@ -34,4 +34,7 @@
     <color name="blue">#3265FF</color>
     <color name="light_blue">#5A61FF</color>
 
+    <color name="selected_item_color">#374A67</color>
+    <color name="unselected_item_color">#E15634</color>
+
 </resources>

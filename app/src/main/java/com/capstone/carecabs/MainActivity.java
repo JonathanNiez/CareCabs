@@ -21,15 +21,15 @@ import com.capstone.carecabs.Fragments.ChangeFontSizeFragment;
 import com.capstone.carecabs.Fragments.ChangePasswordFragment;
 import com.capstone.carecabs.Fragments.ContactUsFragment;
 import com.capstone.carecabs.Fragments.EditAccountFragment;
+import com.capstone.carecabs.Fragments.ChangeLanguageFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 public class MainActivity extends AppCompatActivity {
 	private Intent intent;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 	private AlertDialog.Builder builder;
 	private final String TAG = "MainActivity";
 	private boolean shouldExit = false;
+	private BadgeDrawable badgeDrawable;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
 	private ActivityMainBinding binding;
@@ -70,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.myProfile);
+
+		checkUserIfVerified();
+
 		showFragment(new HomeFragment());
 
 		binding.bottomNavigationView.setSelectedItemId(R.id.home);
@@ -95,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		});
 	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -128,6 +134,10 @@ public class MainActivity extends AppCompatActivity {
 			((PersonalInfoFragment) currentFragment).onBackPressed();
 
 			return;
+		} else if (currentFragment instanceof ChangeLanguageFragment) {
+			((ChangeLanguageFragment) currentFragment).onBackPressed();
+
+			return;
 		}
 
 
@@ -145,6 +155,36 @@ public class MainActivity extends AppCompatActivity {
 		onBackPressed();
 
 		finish();
+	}
+
+	private void checkUserIfVerified() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+
+					badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
+					if (!getVerificationStatus) {
+						if (badgeDrawable != null) {
+							badgeDrawable.setVisible(true);
+							badgeDrawable.setNumber(1);
+						}
+					} else {
+						binding.bottomNavigationView.removeBadge(R.id.myProfile);
+					}
+
+				}
+			}).addOnFailureListener(new OnFailureListener() {
+				@Override
+				public void onFailure(@NonNull Exception e) {
+					Log.e(TAG, e.getMessage());
+				}
+			});
+		}
 	}
 
 
