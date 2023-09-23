@@ -782,13 +782,13 @@ class MapDriverActivity : AppCompatActivity() {
             true
         })
 
-        var bitmap = convertDrawableToBitmap(
+        val bitmap = convertDrawableToBitmap(
             AppCompatResources
                 .getDrawable(this, R.drawable.location_3)
         )
 
         for (i in 0 until 3) {
-            var jsonObject = JSONObject()
+            val jsonObject = JSONObject()
             jsonObject.put("someValue", 1)
 
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
@@ -823,7 +823,7 @@ class MapDriverActivity : AppCompatActivity() {
             val constantState = sourceDrawable?.constantState
             val drawable = constantState?.newDrawable()?.mutate()
             val bitmap: Bitmap = Bitmap.createBitmap(
-                drawable!!.intrinsicWidth, drawable!!.intrinsicHeight,
+                drawable!!.intrinsicWidth, drawable.intrinsicHeight,
                 Bitmap.Config.ARGB_8888
             )
             val canvas = Canvas(bitmap)
@@ -851,16 +851,16 @@ class MapDriverActivity : AppCompatActivity() {
     private fun addCustomAnnotation() {
         val annotationApi = binding.mapView.annotations
         val pointAnnotationManager =
-            binding.mapView.let { annotationApi?.createPointAnnotationManager(it) }
+            binding.mapView.let { annotationApi.createPointAnnotationManager(it) }
         // Set options for the resulting symbol layer.
         val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
             // Define a geographic coordinate.
             .withPoint(Point.fromLngLat(18.06, 59.31))
             // Specify the bitmap you assigned to the point annotation
             // The bitmap will be added to map style automatically.
-            .withIconImage(getDrawable(R.drawable.location_3)!!.toBitmap())
+            .withIconImage(getDrawable(R.drawable.location_pin_128)!!.toBitmap())
 // Add the resulting pointAnnotation to the map.
-        pointAnnotationManager?.create(pointAnnotationOptions)
+        pointAnnotationManager.create(pointAnnotationOptions)
     }
 
     override fun onRequestPermissionsResult(

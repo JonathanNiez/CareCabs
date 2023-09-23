@@ -8,21 +8,29 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.drawable.toBitmap
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.FutureTarget
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.Query
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -32,8 +40,10 @@ import com.mapbox.maps.extension.style.expressions.generated.Expression.Companio
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.CameraAnimatorOptions.Companion.cameraAnimatorOptions
 import com.mapbox.maps.plugin.animation.camera
-import com.mapbox.maps.plugin.animation.flyTo
+import com.mapbox.maps.plugin.annotation.AnnotationConfig
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -45,8 +55,7 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import com.mapbox.maps.viewannotation.ViewAnnotationManager
-import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import org.json.JSONObject
 import java.util.Calendar
 import java.util.UUID
 
@@ -83,13 +92,21 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private lateinit var mapboxMap: MapboxMap
-    private lateinit var viewAnnotationManager: ViewAnnotationManager
-    private val viewAnnotationViews = mutableListOf<View>()
-    private lateinit var pointAnnotationManager: PointAnnotationManager
-    private lateinit var pointAnnotationOptions: PointAnnotationOptions
+    private var annotationPlugin: AnnotationPlugin? = null
+    private lateinit var annotationConfig: AnnotationConfig
+    private var layerID = "map_annotation"
+    private var pointAnnotationManager: PointAnnotationManager? = null
+    private var markerList: ArrayList<PointAnnotationOptions> = ArrayList()
 
-    private lateinit var pointAnnotation: PointAnnotation
-    private lateinit var viewAnnotation: View
+    override fun onDestroy() {
+        super.onDestroy()
+
+        binding.mapView.location
+            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+        binding.mapView.location
+            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,38 +119,142 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.recenterBtn.setOnClickListener {
 
         }
-
-        viewAnnotationManager = binding.mapView.viewAnnotationManager
-
         onMapReady()
+    }
 
-
-//        binding.setLocationLayout.visibility = View.GONE
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
 
     }
 
-    private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
-        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
+    private fun onMapReady() {
+        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
 
-    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap? {
-        if (sourceDrawable == null) {
-            return null
+        mapboxMap = binding.mapView.getMapboxMap().apply {
+            loadStyleUri(getString(R.string.custom_map_style_url)) {
+
+                setupGesturesListener()
+                loadCoordinatesToMapFromFireStore()
+                initializeLocationComponent()
+
+                annotationPlugin = binding.mapView.annotations
+                annotationConfig = AnnotationConfig(
+                    layerId = layerID
+                )
+
+
+                binding.mapView.camera.apply {
+                    val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
+                        duration = 4000
+                        interpolator = AccelerateDecelerateInterpolator()
+                    }
+                    val zoom = createZoomAnimator(
+                        cameraAnimatorOptions(14.0) {
+                            startValue(3.0)
+                        }
+                    ) {
+                        duration = 4000
+                        interpolator = AccelerateDecelerateInterpolator()
+                    }
+                    val pitch = createPitchAnimator(
+                        cameraAnimatorOptions(55.0) {
+                            startValue(0.0)
+                        }
+                    ) {
+                        duration = 4000
+                        interpolator = AccelerateDecelerateInterpolator()
+                    }
+                    playAnimatorsSequentially(zoom)
+                }
+
+            }
         }
-        return if (sourceDrawable is BitmapDrawable) {
-            sourceDrawable.bitmap
-        } else {
-// copying drawable object to not manipulate on the same reference
-            val constantState = sourceDrawable.constantState ?: return null
-            val drawable = constantState.newDrawable().mutate()
-            val bitmap: Bitmap = Bitmap.createBitmap(
-                drawable.intrinsicWidth, drawable.intrinsicHeight,
-                Bitmap.Config.ARGB_8888
+        binding.mapView.getMapboxMap().setCamera(
+            CameraOptions.Builder()
+                .zoom(14.0)
+                .build()
+        )
+    }
+
+    private fun getUserProfilePictureFromFireStore() {
+
+        documentReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.userCollection)
+            .document(FirebaseMain.getUser().uid)
+
+        documentReference.get().addOnSuccessListener {
+            if (it != null && it.exists()) {
+                val getProfilePicture = it.getString("profilePicture")
+
+                if (!getProfilePicture.isNullOrEmpty()) {
+                    // Load the profile picture using Glide
+                    Glide.with(this)
+                        .load(getProfilePicture)
+                        .into(object : CustomTarget<Drawable>() {
+                            override fun onResourceReady(
+                                resource: Drawable,
+                                transition: Transition<in Drawable>?
+                            ) {
+                                val imageResource = drawableToIntResource(resource)
+                                initializeLocationComponent()
+                            }
+
+                            override fun onLoadCleared(placeholder: Drawable?) {
+                                // Handle case when the image load is cleared
+                            }
+                        })
+                }
+            }
+
+        }.addOnFailureListener {
+
+        }
+    }
+    private fun drawableToIntResource(drawable: Drawable): Int {
+        val resources = resources
+
+        // Use the unique identifier of the Drawable to get its resource ID
+        val resourceId = resources.getIdentifier(
+            resources.getResourceEntryName(drawable.hashCode()), // Unique identifier
+            "drawable", // Assuming the Drawable is stored in the "drawable" folder
+            packageName // Your app's package name
+        )
+
+        return resourceId
+    }
+    private fun initializeLocationComponent() {
+
+        val locationComponentPlugin = binding.mapView.location
+        locationComponentPlugin.updateSettings {
+            this.enabled = true
+            this.locationPuck = LocationPuck2D(
+                bearingImage = AppCompatResources.getDrawable(
+                    this@MapPassengerActivity,
+                    R.drawable.mapbox_navigation_puck_icon,
+                ),
+                scaleExpression = interpolate {
+                    linear()
+                    zoom()
+                    stop {
+                        literal(0.0)
+                        literal(0.6)
+                    }
+                    stop {
+                        literal(20.0)
+                        literal(1.0)
+                    }
+                }.toJson()
             )
-            val canvas = Canvas(bitmap)
-            drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
-            bitmap
         }
+        locationComponentPlugin.addOnIndicatorPositionChangedListener(
+            onIndicatorPositionChangedListener
+        )
+        locationComponentPlugin.addOnIndicatorBearingChangedListener(
+            onIndicatorBearingChangedListener
+        )
     }
 
     private fun initializeBottomNavButtons() {
@@ -172,138 +293,188 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //        )
     }
 
-    private fun onMapReady() {
-        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
 
-        mapboxMap = binding.mapView.getMapboxMap().apply {
-            loadStyleUri(getString(R.string.custom_map_style_url)) {
+    private fun createMarkersOnMap(longitude: Double, latitude: Double) {
+        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener { annotation: PointAnnotation ->
 
-                initLocationComponent()
-                setupGesturesListener()
-                loadCoordinatesToMapFromFireStore()
+            onMarkerItemClick(annotation)
+            true
+        })
 
-                binding.mapView.camera.apply {
-                    val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
-                        duration = 4000
-                        interpolator = AccelerateDecelerateInterpolator()
-                    }
-                    val zoom = createZoomAnimator(
-                        cameraAnimatorOptions(14.0) {
-                            startValue(3.0)
-                        }
-                    ) {
-                        duration = 4000
-                        interpolator = AccelerateDecelerateInterpolator()
-                    }
-                    val pitch = createPitchAnimator(
-                        cameraAnimatorOptions(55.0) {
-                            startValue(0.0)
-                        }
-                    ) {
-                        duration = 4000
-                        interpolator = AccelerateDecelerateInterpolator()
-                    }
-                    playAnimatorsSequentially(zoom)
-                }
-
-            }
-        }
-        binding.mapView.getMapboxMap().setCamera(
-            CameraOptions.Builder()
-                .zoom(14.0)
-                .build()
+        val bitmap = convertDrawableToBitmap(
+            AppCompatResources
+                .getDrawable(this, R.drawable.location_64)
         )
+
+        for (i in 0 until 3) {
+            val jsonObject = JSONObject()
+            jsonObject.put("someValue", 1)
+
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(Point.fromLngLat(longitude, latitude))
+                .withData(Gson().fromJson(jsonObject.toString(), JsonElement::class.java))
+                .withIconImage(bitmap)
+
+            markerList.add(pointAnnotationOptions)
+
+            Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
+        }
+        pointAnnotationManager?.create(markerList)
     }
 
-    private fun addViewAnnotation(point: Point) {
-        Toast.makeText(this@MapPassengerActivity, "addViewAnnotation", Toast.LENGTH_SHORT).show()
+//    private fun addViewAnnotation(point: Point) {
+//        Toast.makeText(this@MapPassengerActivity, "addViewAnnotation", Toast.LENGTH_SHORT).show()
+//
+//        val viewAnnotation = viewAnnotationManager.addViewAnnotation(
+//            resId = R.layout.activity_map_passenger,
+//            options = viewAnnotationOptions {
+//                geometry(point)
+//                allowOverlap(true)
+//            }
+//        )
+//        viewAnnotationViews.add(viewAnnotation)
+//
+//        binding.setLocationBtn.setOnClickListener {
+//            if (viewAnnotationViews.isNotEmpty()) {
+//                val cameraOptions = viewAnnotationManager.cameraForAnnotations(viewAnnotationViews)
+//                cameraOptions?.let {
+//                    mapboxMap.flyTo(it)
+//                }
+//            } else {
+//                Toast.makeText(
+//                    this@MapPassengerActivity,
+//                    "ADD_VIEW_ANNOTATION_TEXT",
+//                    Toast.LENGTH_LONG
+//                ).show()
+//            }
+//        }
+//
+//        val pointLat: String = point.latitude().toString()
+//        val pointLong: String = point.longitude().toString()
+//
+//        val pointLongDouble: Double = point.longitude()
+//        val pointLatDouble: Double = point.latitude()
+//
+////        addAnnotationToMap(pointLongDouble, pointLatDouble)
+//
+//        addCustomAnnotationToMap(pointLongDouble, pointLatDouble)
+//
+//        binding.desiredDestinationTextView.text = pointLat + "\n" + pointLong
+//
+//    }
 
-        val viewAnnotation = viewAnnotationManager.addViewAnnotation(
-            resId = R.layout.activity_map_passenger,
-            options = viewAnnotationOptions {
-                geometry(point)
-                allowOverlap(true)
-            }
-        )
-        viewAnnotationViews.add(viewAnnotation)
-
-        binding.setLocationBtn.setOnClickListener {
-            if (viewAnnotationViews.isNotEmpty()) {
-                val cameraOptions = viewAnnotationManager.cameraForAnnotations(viewAnnotationViews)
-                cameraOptions?.let {
-                    mapboxMap.flyTo(it)
-                }
-            } else {
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "ADD_VIEW_ANNOTATION_TEXT",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-
-        val pointLat: String = point.latitude().toString()
-        val pointLong: String = point.longitude().toString()
-
-        val pointLongDouble: Double = point.longitude()
-        val pointLatDouble: Double = point.latitude()
-
-        addAnnotationToMap(pointLongDouble, pointLatDouble)
-
-        binding.desiredDestinationTextView.text = pointLat + "\n" + pointLong
-
-    }
-
-    private fun addAnnotationToMap(pointLongitudeDouble: Double, pointLatitudeDouble: Double) {
-        Toast.makeText(this@MapPassengerActivity, "addAnnotationToMap", Toast.LENGTH_SHORT).show()
-
-// Create an instance of the Annotation API and get the PointAnnotationManager.
+    private fun addAnnotationToMap(longitude: Double, latitude: Double) {
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
-            R.drawable.location_pin_128
-        )?.let {
-
+            R.drawable.location_64
+        ).let {
             val annotationApi = binding.mapView.annotations
-            pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
-// Set options for the resulting symbol layer.
-            pointAnnotationOptions = PointAnnotationOptions()
-// Define a geographic coordinate.
-                .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
-// Specify the bitmap you assigned to the point annotation
-// The bitmap will be added to map style automatically.
+            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(Point.fromLngLat(longitude, latitude))
                 .withIconImage(it)
-// Add the resulting pointAnnotation to the map.
             pointAnnotationManager.create(pointAnnotationOptions)
-
-            pointAnnotationManager.addClickListener {
-                Toast.makeText(this@MapPassengerActivity, "Annotation Clicked", Toast.LENGTH_SHORT)
-                    .show()
-
-                true
-            }
         }
     }
 
-    private fun removeMarkerFromMap(point: Point) {
-        Toast.makeText(this@MapPassengerActivity, "removeMarkerFromMap", Toast.LENGTH_SHORT).show()
+    private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
+        convertDrawableToBitmap(AppCompatResources.getDrawable(context, resourceId))
 
-        val pointAnnotationOptions: PointAnnotationOptions =
-            PointAnnotationOptions().withPoint(point)
+    private fun convertDrawableToBitmap(sourceDrawable: Drawable?): Bitmap {
 
-        var annotationID: Long? = null
-        pointAnnotationManager.annotations.forEach {
-            if (it.point == point) annotationID = it.id
-        }
-//Remember this point annotation manager should be global & initialised only' once
-        pointAnnotationManager
-            .delete(
-                pointAnnotationOptions
-                    .build(
-                        annotationID!!,
-                        pointAnnotationManager
-                    )
+        return if (sourceDrawable is BitmapDrawable) {
+            sourceDrawable.bitmap
+        } else {
+            val constantState = sourceDrawable?.constantState
+            val drawable = constantState?.newDrawable()?.mutate()
+            val bitmap: Bitmap = Bitmap.createBitmap(
+                drawable!!.intrinsicWidth, drawable.intrinsicHeight,
+                Bitmap.Config.ARGB_8888
             )
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            bitmap
+        }
     }
+
+    private fun addCustomAnnotationToMap(
+        pointLongitudeDouble: Double,
+        pointLatitudeDouble: Double
+    ) {
+        val annotationApi = binding.mapView.annotations
+        val pointAnnotationManager =
+            binding.mapView.let { annotationApi.createPointAnnotationManager(it) }
+
+        // Set options for the resulting symbol layer.
+        val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+
+            // Define a geographic coordinate.
+            .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
+
+            // Specify the bitmap you assigned to the point annotation
+            // The bitmap will be added to map style automatically.
+            .withIconImage(getDrawable(R.drawable.location_pin_64)!!.toBitmap())
+
+        // Add the resulting pointAnnotation to the map.
+        pointAnnotationManager.create(pointAnnotationOptions)
+    }
+
+    private fun onMarkerItemClick(marker: PointAnnotation): Boolean {
+        Toast.makeText(this@MapPassengerActivity, "Marker Clicked", Toast.LENGTH_SHORT).show()
+
+        return true
+    }
+//    private fun addAnnotationToMap(pointLongitudeDouble: Double, pointLatitudeDouble: Double) {
+//        Toast.makeText(this@MapPassengerActivity, "addAnnotationToMap", Toast.LENGTH_SHORT).show()
+//
+//// Create an instance of the Annotation API and get the PointAnnotationManager.
+//        bitmapFromDrawableRes(
+//            this@MapPassengerActivity,
+//            R.drawable.location_pin_128
+//        )?.let {
+//
+//            val annotationApi = binding.mapView.annotations
+//            pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+//// Set options for the resulting symbol layer.
+//            pointAnnotationOptions = PointAnnotationOptions()
+//// Define a geographic coordinate.
+//                .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
+//// Specify the bitmap you assigned to the point annotation
+//// The bitmap will be added to map style automatically.
+//                .withIconImage(it)
+//// Add the resulting pointAnnotation to the map.
+//            pointAnnotationManager.create(pointAnnotationOptions)
+//
+//            pointAnnotationManager.addClickListener {
+//                Toast.makeText(this@MapPassengerActivity, "Annotation Clicked", Toast.LENGTH_SHORT)
+//                    .show()
+//
+//                true
+//            }
+//        }
+//    }
+//
+//    private fun removeMarkerFromMap(point: Point) {
+//        Toast.makeText(this@MapPassengerActivity, "removeMarkerFromMap", Toast.LENGTH_SHORT).show()
+//
+//        val pointAnnotationOptions: PointAnnotationOptions =
+//            PointAnnotationOptions().withPoint(point)
+//
+//        var annotationID: Long? = null
+//        pointAnnotationManager.annotations.forEach {
+//            if (it.point == point) annotationID = it.id
+//        }
+////Remember this point annotation manager should be global & initialised only' once
+//        pointAnnotationManager
+//            .delete(
+//                pointAnnotationOptions
+//                    .build(
+//                        annotationID!!,
+//                        pointAnnotationManager
+//                    )
+//            )
+//    }
 
     private companion object {
         private val CAMERA_TARGET = cameraOptions {
@@ -320,36 +491,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun initLocationComponent() {
-        val locationComponentPlugin = binding.mapView.location
-        locationComponentPlugin.updateSettings {
-            this.enabled = true
-            this.locationPuck = LocationPuck2D(
-                bearingImage = AppCompatResources.getDrawable(
-                    this@MapPassengerActivity,
-                    R.drawable.mapbox_navigation_puck_icon,
-                ),
-                scaleExpression = interpolate {
-                    linear()
-                    zoom()
-                    stop {
-                        literal(0.0)
-                        literal(0.6)
-                    }
-                    stop {
-                        literal(20.0)
-                        literal(1.0)
-                    }
-                }.toJson()
-            )
-        }
-        locationComponentPlugin.addOnIndicatorPositionChangedListener(
-            onIndicatorPositionChangedListener
-        )
-        locationComponentPlugin.addOnIndicatorBearingChangedListener(
-            onIndicatorBearingChangedListener
-        )
+    override fun onMapClick(point: Point): Boolean {
+
+        Toast.makeText(this@MapPassengerActivity, "onMapClick", Toast.LENGTH_SHORT).show()
+//        createMarkersOnMap(point)
+
+        storeCoordinatesToFireStore(point)
+
+        return true
     }
+
 
 //    private fun prepareAnnotationMarker(mapView: MapView, iconBitmap: Bitmap) {
 //        val annotationPlugin = mapView.annotations
@@ -372,14 +523,47 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun loadCoordinatesToMapFromFireStore() {
 
-        binding.mapView.location
-            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        binding.mapView.location
-            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
-        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
+        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
+            onMarkerItemClick(it)
+        })
+
+        collectionReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.locationCollection)
+
+        collectionReference.get().addOnSuccessListener {
+
+            if (it != null) {
+                for (document in it.documents) {
+                    val getLatitude = document.getDouble("latitude")!!.toDouble()
+                    val getLongitude = document.getDouble("longitude")!!.toDouble()
+
+                    addAnnotationToMap(getLongitude, getLatitude)
+
+                }
+            }
+
+        }.addOnFailureListener {
+            Log.e(TAG, it.message.toString())
+        }
+    }
+
+    private fun getCurrentTimeAndDate(): String {
+        val calendar = Calendar.getInstance() // Get a Calendar instance
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+
+        return "$month-$day-$year $hour:$minute:$second"
+    }
+
+    private fun generateRandomLocationID(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
     }
 
     private fun checkIfUserIsVerified() {
@@ -412,45 +596,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun loadCoordinatesToMapFromFireStore() {
-
-        collectionReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
-
-        collectionReference.get().addOnSuccessListener {
-
-            if (it != null) {
-                for (document in it.documents){
-                    val getLatitude = document.getDouble("latitude")!!.toDouble()
-                    val getLongitude = document.getDouble("longitude")!!.toDouble()
-
-                    addAnnotationToMap(getLongitude, getLatitude)
-
-                }
-            }
-
-        }.addOnFailureListener {
-            Log.e(TAG, it.message.toString())
-        }
-    }
-
-    private fun getCurrentTimeAndDate(): String {
-        val calendar = Calendar.getInstance() // Get a Calendar instance
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        val second = calendar.get(Calendar.SECOND)
-
-        return "$month-$day-$year $hour:$minute:$second"
-    }
-
-    private fun generateRandomLocationID(): String {
-        val uuid = UUID.randomUUID()
-        return uuid.toString()
-    }
-
     private fun storeCoordinatesToFireStore(point: Point) {
         if (FirebaseMain.getUser() != null) {
 
@@ -466,7 +611,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
             documentReference.set(coordinates).addOnSuccessListener {
                 Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-
+                loadCoordinatesToMapFromFireStore()
             }.addOnFailureListener {
                 Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
@@ -499,22 +644,5 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
             userNotVerifiedDialog.dismiss()
         }
-    }
-
-    override fun onMapClick(point: Point): Boolean {
-        addViewAnnotation(point)
-
-        storeCoordinatesToFireStore(point)
-
-        return true
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-
-        intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-
     }
 }
