@@ -4,37 +4,63 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
-	tools:context=".LoggingOutActivity">
+	android:background="@color/cinnabar"
+	tools:context=".LoggingOutActivity"
+	>
 
-	<pl.droidsonroids.gif.GifImageView
-		android:id="@+id/loadingGif"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+	<ImageView
+		android:layout_width="300dp"
+		android:layout_height="200dp"
+		android:layout_above="@id/cardView"
+		android:layout_centerHorizontal="true"
+		android:src="@drawable/logo_2_v2" />
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/cardView"
 		android:layout_centerInParent="true"
-		android:src="@drawable/loading_gif" />
-
-	<TextView
-		android:id="@+id/textView1"
-		android:layout_width="wrap_content"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@+id/loadingGif"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="10dp"
-		android:fontFamily="@font/opensans_bold"
-		android:text="Signing Out"
-		android:textColor="@color/black"
-		android:textSize="25sp" />
+		app:cardCornerRadius="10dp"
+		android:layout_margin="20dp"
+		app:cardElevation="5dp">
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/textView1"
-		android:layout_centerHorizontal="true"
-		android:layout_marginTop="10dp"
-		android:fontFamily="@font/opensans_bold"
-		android:text="Please wait..."
-		android:textColor="@color/black"
-		android:textSize="20sp" />
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:padding="5dp"
+			android:orientation="vertical">
+
+			<pl.droidsonroids.gif.GifImageView
+				android:id="@+id/loadingGif"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/loading_gif"
+				android:layout_margin="10dp"/>
+
+			<TextView
+				android:id="@+id/textView1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="SIGNING OUT"
+				android:textColor="@color/black"
+				android:textSize="25sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Please wait..."
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
 
 </RelativeLayout>

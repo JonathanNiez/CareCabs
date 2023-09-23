@@ -69,7 +69,6 @@ public class LoginActivity extends AppCompatActivity {
 		closeExitConfirmationDialog();
 		closeLoginFailedDialog();
 		closePleaseWaitDialog();
-		closeRegisterUsingDialog();
 		closeNoInternetDialog();
 		closeUnknownOccurredDialog();
 		closeInvalidCredentialsDialog();
@@ -82,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
 		closeExitConfirmationDialog();
 		closeLoginFailedDialog();
 		closePleaseWaitDialog();
-		closeRegisterUsingDialog();
 		closeNoInternetDialog();
 		closeUnknownOccurredDialog();
 		closeInvalidCredentialsDialog();
@@ -106,10 +104,6 @@ public class LoginActivity extends AppCompatActivity {
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 //		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-		binding.registerTextView.setOnClickListener(v -> {
-			showRegisterUsingDialog();
-		});
-
 		binding.resetPasswordBtn.setOnClickListener(view -> {
 			intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
 			startActivity(intent);
@@ -121,6 +115,12 @@ public class LoginActivity extends AppCompatActivity {
 
 			intent = googleSignInClient.getSignInIntent();
 			startActivityForResult(intent, RC_SIGN_IN);
+		});
+
+		binding.backBtn.setOnClickListener(v -> {
+			intent = new Intent(LoginActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
 		});
 
 		binding.loginBtn.setOnClickListener(v -> {
@@ -192,14 +192,10 @@ public class LoginActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showExitConfirmationDialog();
-		}
-
+		intent = new Intent(LoginActivity.this, LoginOrRegisterActivity.class);
+		startActivity(intent);
+		overridePendingTransition(R.anim.slide_in_left, R.anim.popup_exit);
+		finish();
 	}
 
 	private void showInvalidCredentialsDialog() {
@@ -372,52 +368,6 @@ public class LoginActivity extends AppCompatActivity {
 		emailDialog.show();
 	}
 
-	private void showRegisterUsingDialog() {
-
-		builder = new AlertDialog.Builder(this);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_register_using, null);
-
-		ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
-		ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		googleImgBtn.setOnClickListener(v -> {
-			intent = new Intent(LoginActivity.this, RegisterUserTypeActivity.class);
-			intent.putExtra("registerType", "googleRegister");
-			startActivity(intent);
-			finish();
-			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-
-			closeRegisterUsingDialog();
-		});
-
-		emailImgBtn.setOnClickListener(v -> {
-			intent = new Intent(LoginActivity.this, RegisterUserTypeActivity.class);
-			intent.putExtra("registerType", "emailRegister");
-			startActivity(intent);
-			finish();
-			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-
-			closeRegisterUsingDialog();
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeRegisterUsingDialog();
-		});
-
-		builder.setView(dialogView);
-
-		registerUsingDialog = builder.create();
-		registerUsingDialog.show();
-
-	}
-
-	private void closeRegisterUsingDialog() {
-		if (registerUsingDialog != null && registerUsingDialog.isShowing()) {
-			registerUsingDialog.dismiss();
-		}
-	}
 
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(this);

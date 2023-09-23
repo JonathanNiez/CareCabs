@@ -32,6 +32,9 @@
 		android:theme="@style/Theme.CareCabs"
 		tools:targetApi="31">
 		<activity
+			android:name=".LoginOrRegisterActivity"
+			android:exported="false" />
+		<activity
 			android:name=".MapPassengerActivity"
 			android:exported="false" />
 		<activity

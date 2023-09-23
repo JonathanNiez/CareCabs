@@ -9,22 +9,23 @@ import android.os.Handler;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 
 public class LoggingOutActivity extends AppCompatActivity {
-    private static final long SPLASH_SCREEN_DELAY = 2000; // 2 seconds
+	private static final long SPLASH_SCREEN_DELAY = 2000; // 2 seconds
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logging_out);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_logging_out);
 
+		new Handler().postDelayed(() -> {
 
-        new Handler().postDelayed(() -> {
+			FirebaseMain.signOutUser();
 
-            FirebaseMain.signOutUser();
+			if (FirebaseMain.getUser() == null) {
+				Intent intent = new Intent(LoggingOutActivity.this, LoginOrRegisterActivity.class);
+				startActivity(intent);
+				finish();
+			}
 
-            Intent intent = new Intent(LoggingOutActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
-
-        }, SPLASH_SCREEN_DELAY);
-    }
+		}, SPLASH_SCREEN_DELAY);
+	}
 }

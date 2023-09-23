@@ -77,6 +77,29 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private ActivityRegisterSeniorBinding binding;
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeRegisterFailedDialog();
+		closeEnterBirthdateDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeRegisterFailedDialog();
+		closeEnterBirthdateDialog();
+	}
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityRegisterSeniorBinding.inflate(getLayoutInflater());
@@ -224,30 +247,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
-		closeEnterBirthdateDialog();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
-		closeEnterBirthdateDialog();
-	}
-
 	private void updateUserRegisterToFireStore(String firstname, String lastname,
 	                                           boolean verificationStatus) {
 		userID = FirebaseMain.getUser().getUid();
@@ -301,7 +300,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterSeniorActivity.this, LoginActivity.class);
+			intent = new Intent(RegisterSeniorActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 
@@ -617,6 +616,8 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 		yesBtn.setOnClickListener(v -> {
 			updateCancelledRegister(FirebaseMain.getUser().getUid());
+
+			closeCancelRegisterDialog();
 		});
 
 		noBtn.setOnClickListener(v -> {

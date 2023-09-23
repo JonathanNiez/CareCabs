@@ -141,28 +141,39 @@
 
 			</androidx.cardview.widget.CardView>
 
-			<TextView
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:fontFamily="@font/opensans_semibold"
-				android:text="Forgot Password?"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:orientation="horizontal"
+				android:gravity="center"
+				android:layout_margin="5dp">
 
-			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/resetPasswordBtn"
-				android:layout_width="230dp"
-				android:layout_height="60dp"
-				android:layout_margin="10dp"
-				android:background="@drawable/button_shape_1"
-				android:backgroundTint="@color/blue"
-				android:elevation="5dp"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="10dp"
-				android:text="Click here to reset"
-				android:textAlignment="center"
-				android:textColor="@color/white"
-				android:textSize="17sp" />
+				<TextView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="2"
+					android:fontFamily="@font/opensans_bold"
+					android:text="Forgot Password?"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/resetPasswordBtn"
+					android:layout_width="0dp"
+					android:layout_height="50dp"
+					android:layout_margin="5dp"
+					android:layout_weight="2"
+					android:background="@drawable/button_shape_1"
+					android:backgroundTint="@color/blue"
+					android:elevation="5dp"
+					android:fontFamily="@font/opensans_bold"
+					android:text="Click here to reset"
+					android:textAlignment="center"
+					android:textColor="@color/white"
+					android:textSize="17sp" />
+
+			</LinearLayout>
 
 			<LinearLayout
 				android:id="@+id/progressBarLayout"
@@ -237,40 +248,20 @@
 
 			</LinearLayout>
 
-			<LinearLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="20dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="40dp"
-				android:gravity="center"
-				android:orientation="vertical">
-
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
-					android:fontFamily="@font/opensans_semibold"
-					android:text="Don't have an Account?"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-				<androidx.appcompat.widget.AppCompatButton
-					android:id="@+id/registerTextView"
-					android:layout_width="250dp"
-					android:layout_height="60dp"
-					android:background="@drawable/button_shape_1"
-					android:backgroundTint="@color/blue"
-					android:elevation="5dp"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="10dp"
-					android:text="Tap here to Register"
-					android:textColor="@color/white"
-					android:textSize="17sp" />
-
-			</LinearLayout>
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/backBtn"
+				android:layout_width="150dp"
+				android:layout_height="60dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="50dp"
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/platinum"
+				android:drawableStart="@drawable/back_50_2"
+				android:elevation="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Back"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
 
 		</LinearLayout>
 

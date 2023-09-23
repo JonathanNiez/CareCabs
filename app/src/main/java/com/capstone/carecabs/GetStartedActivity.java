@@ -29,12 +29,14 @@ public class GetStartedActivity extends AppCompatActivity {
 
         if (FirebaseMain.getUser() != null) {
             intent = new Intent(this, MainActivity.class);
+//            overridePendingTransition(R.anim.popup_enter, R.anim.popup_exit);
             startActivity(intent);
             finish();
         }
 
         binding.getStartedBtn.setOnClickListener(v -> {
-            intent = new Intent(this, LoginActivity.class);
+            intent = new Intent(this, LoginOrRegisterActivity.class);
+//            overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
             startActivity(intent);
             finish();
         });

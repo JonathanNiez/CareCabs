@@ -113,10 +113,11 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			intent = new Intent(RegisterUserTypeActivity.this, LoginActivity.class);
+			intent = new Intent(RegisterUserTypeActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 
+			closeCancelRegisterDialog();
 		});
 
 		noBtn.setOnClickListener(v -> {

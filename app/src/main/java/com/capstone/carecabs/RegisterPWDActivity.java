@@ -321,7 +321,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterPWDActivity.this, LoginActivity.class);
+			intent = new Intent(RegisterPWDActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 

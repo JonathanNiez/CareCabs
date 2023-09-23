@@ -20,7 +20,9 @@ import androidx.appcompat.content.res.AppCompatResources
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.Query
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -45,6 +47,7 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListen
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.viewannotation.ViewAnnotationManager
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import java.util.Calendar
 import java.util.UUID
 
 
@@ -52,6 +55,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
     private val TAG: String = "MapPassengerActivity"
     private lateinit var documentReference: DocumentReference
+    private lateinit var collectionReference: CollectionReference
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
@@ -176,6 +180,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
                 initLocationComponent()
                 setupGesturesListener()
+                loadCoordinatesToMapFromFireStore()
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -198,7 +203,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                         duration = 4000
                         interpolator = AccelerateDecelerateInterpolator()
                     }
-                    playAnimatorsSequentially(zoom, bearing)
+                    playAnimatorsSequentially(zoom)
                 }
 
             }
@@ -243,13 +248,13 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         val pointLongDouble: Double = point.longitude()
         val pointLatDouble: Double = point.latitude()
 
-        addAnnotationToMap(point)
+        addAnnotationToMap(pointLongDouble, pointLatDouble)
 
         binding.desiredDestinationTextView.text = pointLat + "\n" + pointLong
 
     }
 
-    private fun addAnnotationToMap(point: Point) {
+    private fun addAnnotationToMap(pointLongitudeDouble: Double, pointLatitudeDouble: Double) {
         Toast.makeText(this@MapPassengerActivity, "addAnnotationToMap", Toast.LENGTH_SHORT).show()
 
 // Create an instance of the Annotation API and get the PointAnnotationManager.
@@ -263,7 +268,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 // Set options for the resulting symbol layer.
             pointAnnotationOptions = PointAnnotationOptions()
 // Define a geographic coordinate.
-                .withPoint(Point.fromLngLat(point.longitude(), point.latitude()))
+                .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
 // Specify the bitmap you assigned to the point annotation
 // The bitmap will be added to map style automatically.
                 .withIconImage(it)
@@ -406,10 +411,46 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             finish()
         }
     }
+
+    private fun loadCoordinatesToMapFromFireStore() {
+
+        collectionReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.locationCollection)
+
+        collectionReference.get().addOnSuccessListener {
+
+            if (it != null) {
+                for (document in it.documents){
+                    val getLatitude = document.getDouble("latitude")!!.toDouble()
+                    val getLongitude = document.getDouble("longitude")!!.toDouble()
+
+                    addAnnotationToMap(getLongitude, getLatitude)
+
+                }
+            }
+
+        }.addOnFailureListener {
+            Log.e(TAG, it.message.toString())
+        }
+    }
+
+    private fun getCurrentTimeAndDate(): String {
+        val calendar = Calendar.getInstance() // Get a Calendar instance
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+
+        return "$month-$day-$year $hour:$minute:$second"
+    }
+
     private fun generateRandomLocationID(): String {
         val uuid = UUID.randomUUID()
         return uuid.toString()
     }
+
     private fun storeCoordinatesToFireStore(point: Point) {
         if (FirebaseMain.getUser() != null) {
 
@@ -418,8 +459,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 .document(generateRandomLocationID())
 
             val coordinates = HashMap<String, Any>()
-            coordinates.put("longitude", point.longitude())
-            coordinates.put("latitude", point.latitude())
+            coordinates["locationID"] = generateRandomLocationID()
+            coordinates["longitude"] = point.longitude()
+            coordinates["latitude"] = point.latitude()
+            coordinates["locationTime"] = getCurrentTimeAndDate()
 
             documentReference.set(coordinates).addOnSuccessListener {
                 Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()

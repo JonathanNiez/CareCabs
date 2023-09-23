@@ -1,41 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/orange"
-    tools:context=".LoggingInActivity">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/cinnabar"
+	tools:context=".LoggingInActivity">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/loadingGif"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:src="@drawable/loading_gif" />
+	<ImageView
+		android:layout_width="300dp"
+		android:layout_height="200dp"
+		android:layout_above="@id/cardView"
+		android:layout_centerHorizontal="true"
+		android:src="@drawable/logo_2_v2" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logging In"
-        android:textColor="@color/black"
-        android:layout_below="@+id/loadingGif"
-        android:textSize="30sp"
-        android:fontFamily="@font/opensans_bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+	<androidx.cardview.widget.CardView
+		android:id="@+id/cardView"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:layout_margin="20dp"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Please wait..."
-        android:textColor="@color/black"
-        android:layout_below="@+id/textView1"
-        android:textSize="25sp"
-        android:fontFamily="@font/opensans_bold"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
+
+			<pl.droidsonroids.gif.GifImageView
+				android:id="@+id/loadingGif"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:src="@drawable/loading_gif" />
+
+			<TextView
+				android:id="@+id/textView1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="LOGGING IN"
+				android:textColor="@color/black"
+				android:textSize="25sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Please wait..."
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
 
 </RelativeLayout>

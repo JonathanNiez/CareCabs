@@ -251,13 +251,27 @@
 				android:id="@+id/nextBtn"
 				android:layout_width="150dp"
 				android:layout_height="60dp"
-				android:layout_marginBottom="50dp"
 				android:background="@drawable/button_shape_1"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="Next"
 				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/backBtn"
+				android:layout_width="150dp"
+				android:layout_height="60dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="50dp"
+				android:background="@drawable/button_shape_1"
+				android:backgroundTint="@color/platinum"
+				android:drawableStart="@drawable/back_50_2"
+				android:elevation="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Back"
+				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 		</LinearLayout>
