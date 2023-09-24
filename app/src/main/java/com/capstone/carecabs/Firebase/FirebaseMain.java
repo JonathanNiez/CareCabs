@@ -2,43 +2,53 @@ package com.capstone.carecabs.Firebase;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
 public class FirebaseMain {
 
-    private static FirebaseFirestore firebaseFirestore;
-    private static FirebaseAuth auth;
-    private static FirebaseStorage firebaseStorage;
+	private static FirebaseFirestore firebaseFirestore;
+	public static DatabaseReference databaseReference;
+	private static FirebaseAuth auth;
+	private static FirebaseStorage firebaseStorage;
 
-    public static FirebaseStorage getFirebaseStorageInstance(){
-        if (firebaseStorage == null){
-            firebaseStorage = FirebaseStorage.getInstance();
-        }
-        return firebaseStorage;
-    }
+	public static FirebaseStorage getFirebaseStorageInstance() {
+		if (firebaseStorage == null) {
+			firebaseStorage = FirebaseStorage.getInstance();
+		}
+		return firebaseStorage;
+	}
 
-    public static FirebaseFirestore getFireStoreInstance() {
-        if (firebaseFirestore == null) {
-            firebaseFirestore = FirebaseFirestore.getInstance();
-        }
+	public static DatabaseReference getDatabaseReferenceInstance() {
+		if (databaseReference == null) {
+			databaseReference = FirebaseDatabase.getInstance().getReference();
+		}
+		return databaseReference;
+	}
 
-        return firebaseFirestore;
-    }
+	public static FirebaseFirestore getFireStoreInstance() {
+		if (firebaseFirestore == null) {
+			firebaseFirestore = FirebaseFirestore.getInstance();
+		}
 
-    public static FirebaseAuth getAuth(){
-        if(auth == null){
-            auth = FirebaseAuth.getInstance();
-        }
+		return firebaseFirestore;
+	}
 
-        return auth;
-    }
+	public static FirebaseAuth getAuth() {
+		if (auth == null) {
+			auth = FirebaseAuth.getInstance();
+		}
 
-    public static FirebaseUser getUser(){
-        return getAuth().getCurrentUser();
-    }
+		return auth;
+	}
 
-    public static void signOutUser(){
-        auth.signOut();
-    }
+	public static FirebaseUser getUser() {
+		return getAuth().getCurrentUser();
+	}
+
+	public static void signOutUser() {
+		auth.signOut();
+	}
 }

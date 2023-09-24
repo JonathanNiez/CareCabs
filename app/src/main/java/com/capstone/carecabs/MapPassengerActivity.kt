@@ -25,8 +25,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.Firebase.FirebaseMain
+import com.capstone.carecabs.Model.PWDLocationModel
+import com.capstone.carecabs.Model.SeniorLocationModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.mapbox.android.gestures.MoveGestureDetector
@@ -139,6 +145,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
                 setupGesturesListener()
                 initializeLocationComponent()
+                getUserTypeAndLoadCoordintesToMap()
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -455,7 +462,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
     override fun onMapClick(point: Point): Boolean {
 
-        getUserTypeToStoreInFireStore(point)
+        getUserTypeToStoreCoordinatesInDatabase(point)
 
         binding.desiredDestinationTextView.text =
             point.latitude().toString() + "\n" + point.longitude().toString()
@@ -485,31 +492,143 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
-    private fun reloadCurrentCoordinatesToMapFromFireStore() {
+    private fun loadCurrentPWDCoordinatesToMapFromDatabase() {
 
         pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
             onMarkerItemClick(it)
         })
 
-        //TODO:only shows the users own location uploaded
-        collectionReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
+        val locationReference = FirebaseDatabase.getInstance()
+            .getReference(StaticDataPasser.locationCollection)
+//            .child(FirebaseMain.getUser().uid)
 
-        collectionReference.get().addOnSuccessListener {
+        locationReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot != null && snapshot.exists()) {
 
-            if (it != null) {
-                for (document in it.documents) {
-                    val getLatitude = document.getDouble("destinationLatitude")!!.toDouble()
-                    val getLongitude = document.getDouble("destinationLongitude")!!.toDouble()
+                    for (locationSnapshot in snapshot.children) {
+                        val pwdLocationModel =
+                            locationSnapshot.getValue(PWDLocationModel::class.java)
 
-                    addAnnotationToMap(getLongitude, getLatitude)
-//                    createMarkersOnMap(getLongitude, getLatitude)
+                        Toast.makeText(
+                            this@MapPassengerActivity,
+                            "loadCurrentCoordinatesToMapFromFireStore",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
+                        if (pwdLocationModel != null) {
+                            val getCurrentLatitude = pwdLocationModel.currentLatitude!!
+                            val getCurrentLongitude = pwdLocationModel.currentLongitude!!
+
+                            if (pwdLocationModel.passengerUserID == FirebaseMain.getUser().uid) {
+                                addAnnotationToMap(getCurrentLongitude, getCurrentLatitude)
+                            }
+                        }
+
+                    }
+
+                    val getUserType =
+                        snapshot.child("passengerUserType").getValue(String::class.java)
+                    val getProfilePicture =
+                        snapshot.child("passengerProfilePicture").getValue(String::class.java)
+                    val getFirstName =
+                        snapshot.child("passengerFirstname").getValue(String::class.java)
+                    val getLastName =
+                        snapshot.child("passengerLastname").getValue(String::class.java)
+
+                    StaticDataPasser.storeFirstName = getFirstName
+                    StaticDataPasser.storeLastName = getLastName
+                    StaticDataPasser.storeProfilePicUrl = getProfilePicture
+                    StaticDataPasser.storeUserType = getUserType
                 }
             }
 
-        }.addOnFailureListener {
-            Log.e(TAG, it.message.toString())
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, error.message)
+            }
+        })
+    }
+
+    private fun loadCurrentSeniorCoordinatesToMapFromDatabase() {
+
+        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
+            onMarkerItemClick(it)
+        })
+
+        val locationReference = FirebaseDatabase.getInstance()
+            .getReference(StaticDataPasser.locationCollection)
+//            .child(FirebaseMain.getUser().uid)
+
+        locationReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot != null && snapshot.exists()) {
+
+                    for (locationSnapshot in snapshot.children) {
+                        val seniorLocationModel =
+                            locationSnapshot.getValue(SeniorLocationModel::class.java)
+
+                        Toast.makeText(
+                            this@MapPassengerActivity,
+                            "loadCurrentCoordinatesToMapFromFireStore",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        if (seniorLocationModel != null) {
+                            val getCurrentLatitude = seniorLocationModel.currentLatitude!!
+                            val getCurrentLongitude = seniorLocationModel.currentLongitude!!
+
+                            if (seniorLocationModel.passengerUserID == FirebaseMain.getUser().uid) {
+                                addAnnotationToMap(getCurrentLongitude, getCurrentLatitude)
+                            }
+
+                            StaticDataPasser.storeFirstName = seniorLocationModel.passengerFirstname
+                            StaticDataPasser.storeLastName = seniorLocationModel.passengerLastname
+                            StaticDataPasser.storeProfilePicUrl = seniorLocationModel.passengerProfilePicture
+                            StaticDataPasser.storeUserType = seniorLocationModel.passengerUserType
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, error.message)
+            }
+
+        })
+    }
+
+
+    private fun getUserTypeAndLoadCoordintesToMap() {
+        if (FirebaseMain.getUser() != null) {
+            documentReference = FirebaseMain.getFireStoreInstance()
+                .collection(StaticDataPasser.userCollection)
+                .document(FirebaseMain.getUser().uid)
+
+            documentReference.get().addOnSuccessListener {
+                if (it != null && it.exists()) {
+                    val getUserType = it.getString("userType")
+
+                    when (getUserType) {
+                        "Senior Citizen" -> {
+                            loadCurrentSeniorCoordinatesToMapFromDatabase()
+                        }
+
+                        "Persons with Disability (PWD)" -> {
+                            loadCurrentPWDCoordinatesToMapFromDatabase()
+
+                        }
+                    }
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+        } else {
+            FirebaseMain.signOutUser()
+
+            intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+
         }
     }
 
@@ -560,120 +679,132 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun getUserTypeToStoreInFireStore(point: Point) {
+    private fun getUserTypeToStoreCoordinatesInDatabase(point: Point) {
         if (FirebaseMain.getUser() != null) {
+
             documentReference = FirebaseMain.getFireStoreInstance()
                 .collection(StaticDataPasser.userCollection)
                 .document(FirebaseMain.getUser().uid)
 
-            documentReference.get().addOnSuccessListener {
-                if (it != null && it.exists()) {
-                    val getUserType = it.getString("userType")!!
-                    val getProfilePicture = it.getString("profilePicture")!!
-                    val getFirstName = it.getString("firstname")!!
-                    val getLastName = it.getString("lastname")!!
+            documentReference.get()
+                .addOnSuccessListener {
+                    if (it != null && it.exists()) {
+                        val getUserType = it.getString("userType")!!
+                        val getProfilePicture = it.getString("profilePicture")!!
+                        val getFirstName = it.getString("firstname")!!
+                        val getLastName = it.getString("lastname")!!
 
-                    StaticDataPasser.storeFirstName = getFirstName
-                    StaticDataPasser.storeLastName = getLastName
-                    StaticDataPasser.storeProfilePicUrl = getProfilePicture
-                    StaticDataPasser.storeUserType = getUserType
+                        StaticDataPasser.storeFirstName = getFirstName
+                        StaticDataPasser.storeLastName = getLastName
+                        StaticDataPasser.storeProfilePicUrl = getProfilePicture
+                        StaticDataPasser.storeUserType = getUserType
 
-                    when (getUserType) {
-                        "Senior Citizen" -> {
-                            val getMedicalCondition = it.getString("medicalCondition")!!
+                        when (getUserType) {
+                            "Senior Citizen" -> {
+                                val getMedicalCondition =
+                                    it.getString("medicalCondition")!!
 
-                            StaticDataPasser.storeSelectedMedicalCondition = getMedicalCondition
+                                StaticDataPasser.storeSelectedMedicalCondition =
+                                    getMedicalCondition
 
-                            storeSeniorLocationInfoToFireStore(
-                                point, getFirstName, getLastName, getUserType,
-                                getProfilePicture, getMedicalCondition, generateRandomLocationID()
-                            )
+                                storeSeniorLocationInfoToDatabase(
+                                    point,
+                                    getFirstName,
+                                    getLastName,
+                                    getUserType,
+                                    getProfilePicture,
+                                    getMedicalCondition,
+                                    generateRandomLocationID()
+                                )
+                            }
+
+                            "Persons with Disability (PWD)" -> {
+                                val getDisability = it.getString("disability")!!
+
+                                StaticDataPasser.storeSelectedDisability = getDisability
+
+                                storePWDLocationInfoToDatabase(
+                                    point, getFirstName, getLastName, getUserType,
+                                    getProfilePicture, getDisability, generateRandomLocationID()
+                                )
+                            }
                         }
 
-                        "Persons with Disability (PWD)" -> {
-                            val getDisability = it.getString("disability")!!
-
-                            StaticDataPasser.storeSelectedDisability = getDisability
-
-                            storePWDLocationInfoToFireStore(
-                                point, getFirstName, getLastName, getUserType,
-                                getProfilePicture, getDisability, generateRandomLocationID()
-                            )
-                        }
                     }
-                }
-            }.addOnFailureListener {
 
-            }
+                }.addOnFailureListener {
+
+                }
+
+        } else {
+            intent = Intent(this@MapPassengerActivity, LoginOrRegisterActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
-    private fun storePWDLocationInfoToFireStore(
+    private fun storePWDLocationInfoToDatabase(
         point: Point, firstname: String, lastname: String, userType: String,
         profilePicture: String, disability: String, generateLocationID: String
     ) {
+        val database = FirebaseDatabase.getInstance()
+        val locationReference = database.getReference(StaticDataPasser.locationCollection)
+            .child(generateLocationID)
 
-        documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
-            .document(generateLocationID)
-
-        val passengerLocation = HashMap<String, Any>()
-        passengerLocation["locationID"] = generateLocationID
-        if (StaticDataPasser.storeLongitude != null
-            && StaticDataPasser.storeLatitude != null
-        ) {
-            passengerLocation["currentLongitude"] = StaticDataPasser.storeLongitude
-            passengerLocation["currentLatitude"] = StaticDataPasser.storeLatitude
-        }
-        passengerLocation["destinationLongitude"] = point.longitude()
-        passengerLocation["destinationLatitude"] = point.latitude()
-        passengerLocation["locationTime"] = getCurrentTimeAndDate()
-        passengerLocation["passengerFirstname"] = firstname
-        passengerLocation["passengerLastname"] = lastname
-        passengerLocation["passengerProfilePicture"] = profilePicture
-        passengerLocation["passengerUserType"] = userType
-        passengerLocation["passengerDisability"] = disability
-
-        documentReference.set(passengerLocation).addOnSuccessListener {
+        val locationModel = PWDLocationModel(
+            passengerUserID = FirebaseMain.getUser().uid,
+            locationID = generateLocationID,
+            currentLongitude = StaticDataPasser.storeLongitude,
+            currentLatitude = StaticDataPasser.storeLatitude,
+            destinationLongitude = point.longitude(),
+            destinationLatitude = point.latitude(),
+            locationTime = getCurrentTimeAndDate(),
+            passengerFirstname = firstname,
+            passengerLastname = lastname,
+            passengerProfilePicture = profilePicture,
+            passengerUserType = userType,
+            passengerDisability = disability
+        )
+        locationReference.setValue(locationModel).addOnSuccessListener {
             Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-            reloadCurrentCoordinatesToMapFromFireStore()
+            loadCurrentPWDCoordinatesToMapFromDatabase()
+
         }.addOnFailureListener {
             Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
             Log.e(TAG, it.message.toString())
         }
+
     }
 
-    private fun storeSeniorLocationInfoToFireStore(
+    private fun storeSeniorLocationInfoToDatabase(
         point: Point, firstname: String, lastname: String, userType: String,
         profilePicture: String, medicalCondition: String, generateLocationID: String
     ) {
 
-        documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
-            .document(generateLocationID)
+        val database = FirebaseDatabase.getInstance()
+        val locationReference = database.getReference(StaticDataPasser.locationCollection)
+            .child(generateLocationID)
 
-        val passengerLocation = HashMap<String, Any>()
-        passengerLocation["locationID"] = generateLocationID
-        if (StaticDataPasser.storeLongitude != null
-            && StaticDataPasser.storeLatitude != null
-        ) {
-            passengerLocation["currentLongitude"] = StaticDataPasser.storeLongitude
-            passengerLocation["currentLatitude"] = StaticDataPasser.storeLatitude
-        }
-        passengerLocation["destinationLongitude"] = point.longitude()
-        passengerLocation["destinationLatitude"] = point.latitude()
-        passengerLocation["locationTime"] = getCurrentTimeAndDate()
-        passengerLocation["passengerFirstname"] = firstname
-        passengerLocation["passengerLastname"] = lastname
-        passengerLocation["passengerProfilePicture"] = profilePicture
-        passengerLocation["passengerUserType"] = userType
-        passengerLocation["passengerMedicalCondition"] = medicalCondition
+        val locationModel = SeniorLocationModel(
+            passengerUserID = FirebaseMain.getUser().uid,
+            locationID = generateLocationID,
+            currentLongitude = StaticDataPasser.storeLongitude,
+            currentLatitude = StaticDataPasser.storeLatitude,
+            destinationLongitude = point.longitude(),
+            destinationLatitude = point.latitude(),
+            locationTime = getCurrentTimeAndDate(),
+            passengerFirstname = firstname,
+            passengerLastname = lastname,
+            passengerProfilePicture = profilePicture,
+            passengerUserType = userType,
+            passengerMedicalCondition = medicalCondition
+        )
 
-        documentReference.set(passengerLocation)
+        locationReference.setValue(locationModel)
             .addOnSuccessListener {
                 Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-                reloadCurrentCoordinatesToMapFromFireStore()
+                loadCurrentPWDCoordinatesToMapFromDatabase()
             }.addOnFailureListener {
                 Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
