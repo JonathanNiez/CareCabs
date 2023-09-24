@@ -22,5 +22,7 @@ public class StaticDataPasser {
 	public static String storeProfilePicUrl = null;
 	public static String storeSelectedMonth = null;
 	public static String storeBirthdate = null;
+	public static Double storeLongitude = null;
+	public  static Double storeLatitude = null;
 
 }

@@ -8,12 +8,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.FutureTarget
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.Firebase.FirebaseMain
@@ -52,6 +51,7 @@ import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -67,6 +67,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private lateinit var collectionReference: CollectionReference
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var userNotVerifiedDialog: AlertDialog
+    private lateinit var passengerLocationInfoDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
     private lateinit var intent: Intent
 
@@ -115,11 +116,38 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         checkIfUserIsVerified()
         initializeBottomNavButtons()
+        onMapReady()
 
         binding.recenterBtn.setOnClickListener {
 
         }
-        onMapReady()
+
+        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                Toast.makeText(
+                    this@MapPassengerActivity,
+                    "Switch is Checked",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                mapboxMap = binding.mapView.getMapboxMap().apply {
+                    addOnMapClickListener(this@MapPassengerActivity)
+                }
+
+            } else {
+                Toast.makeText(
+                    this@MapPassengerActivity,
+                    "Switch is Unchecked",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                mapboxMap = binding.mapView.getMapboxMap().apply {
+                    removeOnMapClickListener(this@MapPassengerActivity)
+                }
+
+            }
+        }
+
     }
 
     @Deprecated("Deprecated in Java")
@@ -131,7 +159,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun onMapReady() {
-        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
@@ -213,6 +241,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         }
     }
+
     private fun drawableToIntResource(drawable: Drawable): Int {
         val resources = resources
 
@@ -225,6 +254,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         return resourceId
     }
+
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
@@ -293,35 +323,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //        )
     }
 
-
-    private fun createMarkersOnMap(longitude: Double, latitude: Double) {
-        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener { annotation: PointAnnotation ->
-
-            onMarkerItemClick(annotation)
-            true
-        })
-
-        val bitmap = convertDrawableToBitmap(
-            AppCompatResources
-                .getDrawable(this, R.drawable.location_64)
-        )
-
-        for (i in 0 until 3) {
-            val jsonObject = JSONObject()
-            jsonObject.put("someValue", 1)
-
-            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-                .withPoint(Point.fromLngLat(longitude, latitude))
-                .withData(Gson().fromJson(jsonObject.toString(), JsonElement::class.java))
-                .withIconImage(bitmap)
-
-            markerList.add(pointAnnotationOptions)
-
-            Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
-        }
-        pointAnnotationManager?.create(markerList)
-    }
-
 //    private fun addViewAnnotation(point: Point) {
 //        Toast.makeText(this@MapPassengerActivity, "addViewAnnotation", Toast.LENGTH_SHORT).show()
 //
@@ -364,9 +365,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //    }
 
     private fun addAnnotationToMap(longitude: Double, latitude: Double) {
+
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
-            R.drawable.location_64
+            R.drawable.location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
             val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
@@ -421,60 +423,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun onMarkerItemClick(marker: PointAnnotation): Boolean {
-        Toast.makeText(this@MapPassengerActivity, "Marker Clicked", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this@MapPassengerActivity, marker.toString(), Toast.LENGTH_SHORT).show()
 
         return true
     }
-//    private fun addAnnotationToMap(pointLongitudeDouble: Double, pointLatitudeDouble: Double) {
-//        Toast.makeText(this@MapPassengerActivity, "addAnnotationToMap", Toast.LENGTH_SHORT).show()
-//
-//// Create an instance of the Annotation API and get the PointAnnotationManager.
-//        bitmapFromDrawableRes(
-//            this@MapPassengerActivity,
-//            R.drawable.location_pin_128
-//        )?.let {
-//
-//            val annotationApi = binding.mapView.annotations
-//            pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
-//// Set options for the resulting symbol layer.
-//            pointAnnotationOptions = PointAnnotationOptions()
-//// Define a geographic coordinate.
-//                .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
-//// Specify the bitmap you assigned to the point annotation
-//// The bitmap will be added to map style automatically.
-//                .withIconImage(it)
-//// Add the resulting pointAnnotation to the map.
-//            pointAnnotationManager.create(pointAnnotationOptions)
-//
-//            pointAnnotationManager.addClickListener {
-//                Toast.makeText(this@MapPassengerActivity, "Annotation Clicked", Toast.LENGTH_SHORT)
-//                    .show()
-//
-//                true
-//            }
-//        }
-//    }
-//
-//    private fun removeMarkerFromMap(point: Point) {
-//        Toast.makeText(this@MapPassengerActivity, "removeMarkerFromMap", Toast.LENGTH_SHORT).show()
-//
-//        val pointAnnotationOptions: PointAnnotationOptions =
-//            PointAnnotationOptions().withPoint(point)
-//
-//        var annotationID: Long? = null
-//        pointAnnotationManager.annotations.forEach {
-//            if (it.point == point) annotationID = it.id
-//        }
-////Remember this point annotation manager should be global & initialised only' once
-//        pointAnnotationManager
-//            .delete(
-//                pointAnnotationOptions
-//                    .build(
-//                        annotationID!!,
-//                        pointAnnotationManager
-//                    )
-//            )
-//    }
 
     private companion object {
         private val CAMERA_TARGET = cameraOptions {
@@ -486,9 +438,15 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
-        mapboxMap = binding.mapView.getMapboxMap().apply {
-            addOnMapClickListener(this@MapPassengerActivity)
-        }
+
+//        pointAnnotationManager?.apply {
+//            addClickListener(
+//                OnPointAnnotationClickListener {
+//                    Toast.makeText(this@MapPassengerActivity, "id: ${it.id}", Toast.LENGTH_LONG).show()
+//                    false
+//                }
+//            )
+//        }
     }
 
     override fun onMapClick(point: Point): Boolean {
@@ -496,7 +454,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         Toast.makeText(this@MapPassengerActivity, "onMapClick", Toast.LENGTH_SHORT).show()
 //        createMarkersOnMap(point)
 
-        storeCoordinatesToFireStore(point)
+        getUserType(point)
 
         return true
     }
@@ -540,6 +498,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                     val getLongitude = document.getDouble("longitude")!!.toDouble()
 
                     addAnnotationToMap(getLongitude, getLatitude)
+//                    createMarkersOnMap(getLongitude, getLatitude)
 
                 }
             }
@@ -596,27 +555,172 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun storeCoordinatesToFireStore(point: Point) {
+    private fun getUserType(point: Point) {
         if (FirebaseMain.getUser() != null) {
-
             documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.locationCollection)
-                .document(generateRandomLocationID())
+                .collection(StaticDataPasser.userCollection)
+                .document(FirebaseMain.getUser().uid)
 
-            val coordinates = HashMap<String, Any>()
-            coordinates["locationID"] = generateRandomLocationID()
-            coordinates["longitude"] = point.longitude()
-            coordinates["latitude"] = point.latitude()
-            coordinates["locationTime"] = getCurrentTimeAndDate()
+            documentReference.get().addOnSuccessListener {
+                if (it != null && it.exists()) {
+                    val getUserType = it.getString("userType")!!
+                    val getProfilePicture = it.getString("profilePicture")!!
+                    val getFirstName = it.getString("firstname")!!
+                    val getLastName = it.getString("lastname")!!
 
-            documentReference.set(coordinates).addOnSuccessListener {
-                Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-                loadCoordinatesToMapFromFireStore()
+                    StaticDataPasser.storeFirstName = getFirstName
+                    StaticDataPasser.storeLastName = getLastName
+                    StaticDataPasser.storeProfilePicUrl = getProfilePicture
+                    StaticDataPasser.storeUserType = getUserType
+
+                    when (getUserType) {
+                        "Senior Citizen" -> {
+                            val getMedicalCondition = it.getString("medicalCondition")!!
+
+                            StaticDataPasser.storeSelectedMedicalCondition = getMedicalCondition
+
+                            storeSeniorLocationInfoToFireStore(
+                                point, getFirstName, getLastName, getUserType,
+                                getProfilePicture, getMedicalCondition, generateRandomLocationID()
+                            )
+                        }
+
+                        "Persons with Disability (PWD)" -> {
+                            val getDisability = it.getString("disability")!!
+
+                            StaticDataPasser.storeSelectedDisability = getDisability
+
+                            storePWDLocationInfoToFireStore(
+                                point, getFirstName, getLastName, getUserType,
+                                getProfilePicture, getDisability, generateRandomLocationID()
+                            )
+                        }
+                    }
+                }
             }.addOnFailureListener {
-                Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
-                Log.e(TAG, it.message.toString())
             }
+        }
+    }
+
+    private fun storePWDLocationInfoToFireStore(
+        point: Point, firstname: String, lastname: String, userType: String,
+        profilePicture: String, disability: String, generateLocationID: String
+    ) {
+
+        documentReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.locationCollection)
+            .document(generateLocationID)
+
+        val passengerLocation = HashMap<String, Any>()
+        passengerLocation["locationID"] = generateLocationID
+        passengerLocation["longitude"] = point.longitude()
+        passengerLocation["latitude"] = point.latitude()
+        passengerLocation["locationTime"] = getCurrentTimeAndDate()
+        passengerLocation["passengerFirstname"] = firstname
+        passengerLocation["passengerLastname"] = lastname
+        passengerLocation["passengerProfilePicture"] = profilePicture
+        passengerLocation["passengerUserType"] = userType
+        passengerLocation["passengerDisability"] = disability
+
+        documentReference.set(passengerLocation).addOnSuccessListener {
+            Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
+            loadCoordinatesToMapFromFireStore()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
+
+            Log.e(TAG, it.message.toString())
+        }
+    }
+
+    private fun storeSeniorLocationInfoToFireStore(
+        point: Point, firstname: String, lastname: String, userType: String,
+        profilePicture: String, medicalCondition: String, generateLocationID: String
+    ) {
+
+        documentReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.locationCollection)
+            .document(generateLocationID)
+
+        val passengerLocation = HashMap<String, Any>()
+        passengerLocation["locationID"] = generateLocationID
+        passengerLocation["longitude"] = point.longitude()
+        passengerLocation["latitude"] = point.latitude()
+        passengerLocation["locationTime"] = getCurrentTimeAndDate()
+        passengerLocation["passengerFirstname"] = firstname
+        passengerLocation["passengerLastname"] = lastname
+        passengerLocation["passengerProfilePicture"] = profilePicture
+        passengerLocation["passengerUserType"] = userType
+        passengerLocation["passengerMedicalCondition"] = medicalCondition
+
+        documentReference.set(passengerLocation).addOnSuccessListener {
+            Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
+            loadCoordinatesToMapFromFireStore()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
+
+            Log.e(TAG, it.message.toString())
+        }
+    }
+
+    private fun showPassengerLocationInfoDialog() {
+
+        builder = AlertDialog.Builder(this)
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_passenger_location_info, null)
+
+        val pickupBtn = dialogView.findViewById<Button>(R.id.pickupBtn)
+        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
+        val firstnameTextView = dialogView.findViewById<TextView>(R.id.firstnameTextView)
+        val lastnameTextView = dialogView.findViewById<TextView>(R.id.lastnameTextView)
+        val userTypeTextView = dialogView.findViewById<TextView>(R.id.userTypeTextView)
+        val medicalConditionTextView =
+            dialogView.findViewById<TextView>(R.id.medicalConditionTextView)
+        val disabilityTextView = dialogView.findViewById<TextView>(R.id.disabilityTextView)
+        val passengerProfilePic = dialogView.findViewById<ImageView>(R.id.passengerProfilePic)
+
+        firstnameTextView.text = StaticDataPasser.storeFirstName
+        lastnameTextView.text = StaticDataPasser.storeLastName
+        userTypeTextView.text = StaticDataPasser.storeUserType
+
+        disabilityTextView.visibility = View.GONE
+        medicalConditionTextView.visibility = View.GONE
+
+        if (!StaticDataPasser.storeProfilePicUrl.equals("default")) {
+            Glide.with(this@MapPassengerActivity)
+                .load(StaticDataPasser.storeProfilePicUrl)
+                .placeholder(R.drawable.loading_gif)
+                .into(passengerProfilePic)
+        }
+
+        when (StaticDataPasser.storeUserType) {
+            "Senior Citizen" -> {
+                medicalConditionTextView.visibility = View.VISIBLE
+                medicalConditionTextView.text = StaticDataPasser.storeSelectedMedicalCondition
+            }
+
+            "Persons with Disability (PWD)" -> {
+                disabilityTextView.visibility = View.VISIBLE
+                disabilityTextView.text = StaticDataPasser.storeSelectedDisability
+            }
+        }
+
+        pickupBtn.setOnClickListener {
+
+        }
+
+        closeBtn.setOnClickListener {
+            closePassengerLocationInfoDialog()
+        }
+
+        builder.setView(dialogView)
+        passengerLocationInfoDialog = builder.create()
+        passengerLocationInfoDialog.show()
+    }
+
+    private fun closePassengerLocationInfoDialog() {
+        if (passengerLocationInfoDialog != null && passengerLocationInfoDialog.isShowing) {
+            passengerLocationInfoDialog.dismiss()
         }
     }
 
