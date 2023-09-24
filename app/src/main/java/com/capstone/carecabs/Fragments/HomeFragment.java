@@ -116,7 +116,9 @@ public class HomeFragment extends Fragment {
 		slideFragments.add(new CarouselFragment3());
 		slideFragments.add(new CarouselFragment4());
 
-		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) -> updateDriverStatus(b));
+		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) ->
+				updateDriverStatus(b)
+		);
 
 		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
 		binding.viewPager.setAdapter(adapter);

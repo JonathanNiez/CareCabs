@@ -1,6 +1,12 @@
 package com.capstone.carecabs;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,6 +15,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,9 +34,12 @@ import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.QuerySnapshot;
 
 public class MainActivity extends AppCompatActivity {
 	private Intent intent;
@@ -40,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 	private BadgeDrawable badgeDrawable;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
+	private ListenerRegistration listenerRegistration;
+
 	private ActivityMainBinding binding;
 
 	@Override
@@ -55,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
 		closeExitConfirmationDialog();
 		updateDriverStatus(false);
+		stopCheckWaitingPassengers();
 	}
 
 	@Override
@@ -176,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 						}
 					} else {
 						binding.bottomNavigationView.removeBadge(R.id.myProfile);
+						checkWaitingPassengers();
 					}
 
 				}
@@ -183,6 +197,25 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void checkWaitingPassengers() {
+		listenerRegistration = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.locationCollection)
+				.addSnapshotListener((QuerySnapshot querySnapshot, FirebaseFirestoreException e) -> {
+					if (e != null) {
+						return;
+					}
+
+					for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+						showPassengersWaitingNotification();
+					}
+				});
+	}
+
+	private void stopCheckWaitingPassengers() {
+		if (listenerRegistration != null) {
+			listenerRegistration.remove();
+		}
+	}
 
 	private void getUserType() {
 		if (FirebaseMain.getUser() != null) {
@@ -210,12 +243,7 @@ public class MainActivity extends AppCompatActivity {
 					startActivity(intent);
 					finish();
 				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-					Log.e(TAG, e.getMessage());
-				}
-			});
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 		}
 	}
 
@@ -225,6 +253,34 @@ public class MainActivity extends AppCompatActivity {
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 		}
+	}
+
+	private void showPassengersWaitingNotification() {
+		String channelId = "verification_channel_id"; // Change this to your desired channel ID
+		String channelName = "CareCabs"; // Change this to your desired channel name
+		int notificationId = 4; // Change this to a unique ID for each notification
+
+		intent = new Intent(MainActivity.this, HomeFragment.NotificationReceiver.class);
+		intent.setAction("user_not_verified_action"); // Define a custom action
+		PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+		NotificationManager notificationManager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+			notificationManager.createNotificationChannel(channel);
+		}
+
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, channelId)
+				.setSmallIcon(R.drawable.logo)
+				.setContentTitle("CareCabs")
+				.setContentText("There are waiting Passengers right now. Go to Map to pickup the Passengers")
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setAutoCancel(true)
+				.setContentIntent(pendingIntent);
+
+		Notification notification = builder.build();
+		notificationManager.notify(notificationId, notification);
 	}
 
 	private void showExitConfirmationDialog() {

@@ -439,7 +439,7 @@
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/platinum"
-					android:drawableEnd="@drawable/logout32"
+					android:drawableEnd="@drawable/shutdown_32"
 					android:fontFamily="@font/opensans_bold"
 					android:padding="10dp"
 					android:text="Sign Out"

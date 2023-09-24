@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -28,16 +29,16 @@ import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
-import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.CameraAnimatorOptions.Companion.cameraAnimatorOptions
+import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.camera
 import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin
@@ -55,7 +56,6 @@ import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
-import org.json.JSONObject
 import java.util.Calendar
 import java.util.UUID
 
@@ -122,32 +122,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         }
 
-        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "Switch is Checked",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                mapboxMap = binding.mapView.getMapboxMap().apply {
-                    addOnMapClickListener(this@MapPassengerActivity)
-                }
-
-            } else {
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "Switch is Unchecked",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                mapboxMap = binding.mapView.getMapboxMap().apply {
-                    removeOnMapClickListener(this@MapPassengerActivity)
-                }
-
-            }
-        }
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -159,20 +133,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun onMapReady() {
-//        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
 
                 setupGesturesListener()
-                loadCoordinatesToMapFromFireStore()
                 initializeLocationComponent()
-
-                annotationPlugin = binding.mapView.annotations
-                annotationConfig = AnnotationConfig(
-                    layerId = layerID
-                )
-
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -197,6 +163,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                     }
                     playAnimatorsSequentially(zoom)
                 }
+
 
             }
         }
@@ -255,9 +222,19 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         return resourceId
     }
 
+    //get current location
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
+
+        locationComponentPlugin.addOnIndicatorPositionChangedListener {
+            binding.currentLocationTextView.text =
+                it.latitude().toString() + "\n" + it.longitude().toString()
+
+            StaticDataPasser.storeLatitude = it.latitude()
+            StaticDataPasser.storeLongitude = it.longitude()
+        }
+
         locationComponentPlugin.updateSettings {
             this.enabled = true
             this.locationPuck = LocationPuck2D(
@@ -284,6 +261,18 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         )
         locationComponentPlugin.addOnIndicatorBearingChangedListener(
             onIndicatorBearingChangedListener
+        )
+    }
+
+    private fun recenterCamera(location: Location) {
+        val mapAnimationOptions = MapAnimationOptions.Builder().duration(1500L).build()
+        binding.mapView.camera.easeTo(
+            CameraOptions.Builder()
+                .center(Point.fromLngLat(location.longitude, location.latitude))
+                .zoom(12.0)
+                .padding(EdgeInsets(500.0, 0.0, 0.0, 0.0))
+                .build(),
+            mapAnimationOptions
         )
     }
 
@@ -365,7 +354,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //    }
 
     private fun addAnnotationToMap(longitude: Double, latitude: Double) {
-
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
             R.drawable.location_pin_128
@@ -438,23 +426,39 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
+        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
+            if (b) {
+                Toast.makeText(
+                    this@MapPassengerActivity,
+                    "onMapClick is Enabled",
+                    Toast.LENGTH_SHORT
+                ).show()
 
-//        pointAnnotationManager?.apply {
-//            addClickListener(
-//                OnPointAnnotationClickListener {
-//                    Toast.makeText(this@MapPassengerActivity, "id: ${it.id}", Toast.LENGTH_LONG).show()
-//                    false
-//                }
-//            )
-//        }
+                mapboxMap = binding.mapView.getMapboxMap().apply {
+                    addOnMapClickListener(this@MapPassengerActivity)
+                }
+
+            } else {
+                Toast.makeText(
+                    this@MapPassengerActivity,
+                    "onMapClick is Disabled",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                mapboxMap = binding.mapView.getMapboxMap().apply {
+                    removeOnMapClickListener(this@MapPassengerActivity)
+                }
+
+            }
+        }
     }
 
     override fun onMapClick(point: Point): Boolean {
 
-        Toast.makeText(this@MapPassengerActivity, "onMapClick", Toast.LENGTH_SHORT).show()
-//        createMarkersOnMap(point)
+        getUserTypeToStoreInFireStore(point)
 
-        getUserType(point)
+        binding.desiredDestinationTextView.text =
+            point.latitude().toString() + "\n" + point.longitude().toString()
 
         return true
     }
@@ -481,12 +485,13 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
-    private fun loadCoordinatesToMapFromFireStore() {
+    private fun reloadCurrentCoordinatesToMapFromFireStore() {
 
         pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
             onMarkerItemClick(it)
         })
 
+        //TODO:only shows the users own location uploaded
         collectionReference = FirebaseMain.getFireStoreInstance()
             .collection(StaticDataPasser.locationCollection)
 
@@ -494,8 +499,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
             if (it != null) {
                 for (document in it.documents) {
-                    val getLatitude = document.getDouble("latitude")!!.toDouble()
-                    val getLongitude = document.getDouble("longitude")!!.toDouble()
+                    val getLatitude = document.getDouble("destinationLatitude")!!.toDouble()
+                    val getLongitude = document.getDouble("destinationLongitude")!!.toDouble()
 
                     addAnnotationToMap(getLongitude, getLatitude)
 //                    createMarkersOnMap(getLongitude, getLatitude)
@@ -555,7 +560,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun getUserType(point: Point) {
+    private fun getUserTypeToStoreInFireStore(point: Point) {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
                 .collection(StaticDataPasser.userCollection)
@@ -614,8 +619,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         val passengerLocation = HashMap<String, Any>()
         passengerLocation["locationID"] = generateLocationID
-        passengerLocation["longitude"] = point.longitude()
-        passengerLocation["latitude"] = point.latitude()
+        if (StaticDataPasser.storeLongitude != null
+            && StaticDataPasser.storeLatitude != null
+        ) {
+            passengerLocation["currentLongitude"] = StaticDataPasser.storeLongitude
+            passengerLocation["currentLatitude"] = StaticDataPasser.storeLatitude
+        }
+        passengerLocation["destinationLongitude"] = point.longitude()
+        passengerLocation["destinationLatitude"] = point.latitude()
         passengerLocation["locationTime"] = getCurrentTimeAndDate()
         passengerLocation["passengerFirstname"] = firstname
         passengerLocation["passengerLastname"] = lastname
@@ -625,7 +636,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         documentReference.set(passengerLocation).addOnSuccessListener {
             Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-            loadCoordinatesToMapFromFireStore()
+            reloadCurrentCoordinatesToMapFromFireStore()
         }.addOnFailureListener {
             Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
@@ -644,8 +655,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         val passengerLocation = HashMap<String, Any>()
         passengerLocation["locationID"] = generateLocationID
-        passengerLocation["longitude"] = point.longitude()
-        passengerLocation["latitude"] = point.latitude()
+        if (StaticDataPasser.storeLongitude != null
+            && StaticDataPasser.storeLatitude != null
+        ) {
+            passengerLocation["currentLongitude"] = StaticDataPasser.storeLongitude
+            passengerLocation["currentLatitude"] = StaticDataPasser.storeLatitude
+        }
+        passengerLocation["destinationLongitude"] = point.longitude()
+        passengerLocation["destinationLatitude"] = point.latitude()
         passengerLocation["locationTime"] = getCurrentTimeAndDate()
         passengerLocation["passengerFirstname"] = firstname
         passengerLocation["passengerLastname"] = lastname
@@ -653,17 +670,18 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         passengerLocation["passengerUserType"] = userType
         passengerLocation["passengerMedicalCondition"] = medicalCondition
 
-        documentReference.set(passengerLocation).addOnSuccessListener {
-            Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-            loadCoordinatesToMapFromFireStore()
-        }.addOnFailureListener {
-            Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
+        documentReference.set(passengerLocation)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
+                reloadCurrentCoordinatesToMapFromFireStore()
+            }.addOnFailureListener {
+                Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
-            Log.e(TAG, it.message.toString())
-        }
+                Log.e(TAG, it.message.toString())
+            }
     }
 
-    private fun showPassengerLocationInfoDialog() {
+    private fun showLocationInfoDialog() {
 
         builder = AlertDialog.Builder(this)
 

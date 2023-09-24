@@ -116,7 +116,6 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun onMapReady() {
-//        Toast.makeText(this@MapPassengerActivity, "onMapReady", Toast.LENGTH_SHORT).show()
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
@@ -125,10 +124,10 @@ class MapDriverActivity : AppCompatActivity() {
                 loadCoordinatesToMapFromFireStore()
                 initializeLocationComponent()
 
-                annotationPlugin = binding.mapView.annotations
-                annotationConfig = AnnotationConfig(
-                    layerId = layerID
-                )
+//                annotationPlugin = binding.mapView.annotations
+//                annotationConfig = AnnotationConfig(
+//                    layerId = layerID
+//                )
 
 
                 binding.mapView.camera.apply {
@@ -171,7 +170,9 @@ class MapDriverActivity : AppCompatActivity() {
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
+
         locationComponentPlugin.updateSettings {
+
             this.enabled = true
             this.locationPuck = LocationPuck2D(
                 bearingImage = AppCompatResources.getDrawable(
@@ -242,13 +243,42 @@ class MapDriverActivity : AppCompatActivity() {
         return true
     }
 
-    private fun addAnnotationToMap(
+    private fun addSeniorAnnotationToMap(
         longitude: Double, latitude: Double, locationID: String
     ) {
 
         bitmapFromDrawableRes(
             this@MapDriverActivity,
-            R.drawable.location_pin_128
+            R.drawable.senior_location_pin_128
+        ).let {
+            val annotationApi = binding.mapView.annotations
+            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(Point.fromLngLat(longitude, latitude))
+                .withIconImage(it)
+            pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotationManager.apply {
+                addClickListener(
+                    OnPointAnnotationClickListener {
+
+                        showPassengerLocationInfoDialog(locationID)
+
+                        false
+                    }
+                )
+            }
+
+        }
+    }
+
+    private fun addPWDAnnotationToMap(
+        longitude: Double, latitude: Double, locationID: String
+    ) {
+
+        bitmapFromDrawableRes(
+            this@MapDriverActivity,
+            R.drawable.pwd_location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
             val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
@@ -333,12 +363,30 @@ class MapDriverActivity : AppCompatActivity() {
 
             if (it != null) {
                 for (document in it.documents) {
-                    val getLatitude = document.getDouble("latitude")!!.toDouble()
-                    val getLongitude = document.getDouble("longitude")!!.toDouble()
+                    val getDestinationLatitude =
+                        document.getDouble("destinationLatitude")!!.toDouble()
+                    val getDestinationLongitude =
+                        document.getDouble("destinationLongitude")!!.toDouble()
                     val getLocationID = document.getString("locationID")!!
+                    val getUserType = document.getString("passengerUserType")!!
 
-                    addAnnotationToMap(getLongitude, getLatitude, getLocationID)
-//                    createMarkersOnMap(getLongitude, getLatitude)
+                    when (getUserType) {
+                        "Senior Citizen" -> {
+                            addSeniorAnnotationToMap(
+                                getDestinationLongitude,
+                                getDestinationLatitude,
+                                getLocationID
+                            )
+                        }
+
+                        "Persons with Disability (PWD)" -> {
+                            addPWDAnnotationToMap(
+                                getDestinationLongitude,
+                                getDestinationLatitude,
+                                getLocationID
+                            )
+                        }
+                    }
 
                 }
             }
