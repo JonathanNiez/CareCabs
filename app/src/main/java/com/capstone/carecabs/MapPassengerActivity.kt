@@ -1,5 +1,6 @@
 package com.capstone.carecabs
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,22 +14,19 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.graphics.drawable.toBitmap
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.Firebase.FirebaseMain
-import com.capstone.carecabs.Model.PWDLocationModel
-import com.capstone.carecabs.Model.SeniorLocationModel
+import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -40,6 +38,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapboxMap
+import com.mapbox.maps.Style
 import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
@@ -73,7 +72,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private lateinit var collectionReference: CollectionReference
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var userNotVerifiedDialog: AlertDialog
-    private lateinit var passengerLocationInfoDialog: AlertDialog
+    private lateinit var passengerOwnBookingInfoDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
     private lateinit var intent: Intent
 
@@ -122,7 +121,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         checkIfUserIsVerified()
         initializeBottomNavButtons()
-        onMapReady()
 
         binding.recenterBtn.setOnClickListener {
 
@@ -141,11 +139,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun onMapReady() {
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
-            loadStyleUri(getString(R.string.custom_map_style_url)) {
+            loadStyleUri(Style.MAPBOX_STREETS) {
 
                 setupGesturesListener()
                 initializeLocationComponent()
-                getUserTypeAndLoadCoordintesToMap()
+                loadCurrentCoordinatesToMapFromDatabase()
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -230,9 +228,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     //get current location
+    @SuppressLint("SetTextI18n")
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
+
 
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
             binding.currentLocationTextView.text =
@@ -241,6 +241,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             StaticDataPasser.storeLatitude = it.latitude()
             StaticDataPasser.storeLongitude = it.longitude()
         }
+
+        binding.currentLocationTextView.text =
+            "${StaticDataPasser.storeLatitude}\n${StaticDataPasser.storeLongitude}"
 
         locationComponentPlugin.updateSettings {
             this.enabled = true
@@ -360,7 +363,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //
 //    }
 
-    private fun addAnnotationToMap(longitude: Double, latitude: Double) {
+    private fun addAnnotationToMap(
+        longitude: Double,
+        latitude: Double,
+        bookingID: String
+    ) {
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
             R.drawable.location_pin_128
@@ -371,6 +378,17 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 .withPoint(Point.fromLngLat(longitude, latitude))
                 .withIconImage(it)
             pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotationManager.apply {
+                addClickListener(
+                    OnPointAnnotationClickListener {
+
+                        showPassengerOwnBookingInfoDialog(bookingID)
+
+                        false
+                    }
+                )
+            }
         }
     }
 
@@ -393,34 +411,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             drawable.draw(canvas)
             bitmap
         }
-    }
-
-    private fun addCustomAnnotationToMap(
-        pointLongitudeDouble: Double,
-        pointLatitudeDouble: Double
-    ) {
-        val annotationApi = binding.mapView.annotations
-        val pointAnnotationManager =
-            binding.mapView.let { annotationApi.createPointAnnotationManager(it) }
-
-        // Set options for the resulting symbol layer.
-        val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-
-            // Define a geographic coordinate.
-            .withPoint(Point.fromLngLat(pointLongitudeDouble, pointLatitudeDouble))
-
-            // Specify the bitmap you assigned to the point annotation
-            // The bitmap will be added to map style automatically.
-            .withIconImage(getDrawable(R.drawable.location_pin_64)!!.toBitmap())
-
-        // Add the resulting pointAnnotation to the map.
-        pointAnnotationManager.create(pointAnnotationOptions)
-    }
-
-    private fun onMarkerItemClick(marker: PointAnnotation): Boolean {
-        Toast.makeText(this@MapPassengerActivity, marker.toString(), Toast.LENGTH_SHORT).show()
-
-        return true
     }
 
     private companion object {
@@ -460,27 +450,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onMapClick(point: Point): Boolean {
 
-        getUserTypeToStoreCoordinatesInDatabase(point)
+        storeCoordinatesInDatabase(point)
 
         binding.desiredDestinationTextView.text =
             point.latitude().toString() + "\n" + point.longitude().toString()
 
         return true
     }
-
-
-//    private fun prepareAnnotationMarker(mapView: MapView, iconBitmap: Bitmap) {
-//        val annotationPlugin = mapView.annotations
-//        val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-//            .withPoint(POINT)
-//            .withIconImage(iconBitmap)
-//            .withIconAnchor(IconAnchor.BOTTOM)
-//            .withDraggable(true)
-//        pointAnnotationManager = annotationPlugin.createPointAnnotationManager()
-//        pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
-//    }
 
     private fun onCameraTrackingDismissed() {
         Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
@@ -492,144 +471,64 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
-    private fun loadCurrentPWDCoordinatesToMapFromDatabase() {
-
-        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
-            onMarkerItemClick(it)
-        })
-
-        val locationReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.locationCollection)
-//            .child(FirebaseMain.getUser().uid)
-
-        locationReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot != null && snapshot.exists()) {
-
-                    for (locationSnapshot in snapshot.children) {
-                        val pwdLocationModel =
-                            locationSnapshot.getValue(PWDLocationModel::class.java)
-
-                        Toast.makeText(
-                            this@MapPassengerActivity,
-                            "loadCurrentCoordinatesToMapFromFireStore",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        if (pwdLocationModel != null) {
-                            val getCurrentLatitude = pwdLocationModel.currentLatitude!!
-                            val getCurrentLongitude = pwdLocationModel.currentLongitude!!
-
-                            if (pwdLocationModel.passengerUserID == FirebaseMain.getUser().uid) {
-                                addAnnotationToMap(getCurrentLongitude, getCurrentLatitude)
-                            }
-                        }
-
-                    }
-
-                    val getUserType =
-                        snapshot.child("passengerUserType").getValue(String::class.java)
-                    val getProfilePicture =
-                        snapshot.child("passengerProfilePicture").getValue(String::class.java)
-                    val getFirstName =
-                        snapshot.child("passengerFirstname").getValue(String::class.java)
-                    val getLastName =
-                        snapshot.child("passengerLastname").getValue(String::class.java)
-
-                    StaticDataPasser.storeFirstName = getFirstName
-                    StaticDataPasser.storeLastName = getLastName
-                    StaticDataPasser.storeProfilePicUrl = getProfilePicture
-                    StaticDataPasser.storeUserType = getUserType
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
-            }
-        })
-    }
-
-    private fun loadCurrentSeniorCoordinatesToMapFromDatabase() {
-
-        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
-            onMarkerItemClick(it)
-        })
-
-        val locationReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.locationCollection)
-//            .child(FirebaseMain.getUser().uid)
-
-        locationReference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot != null && snapshot.exists()) {
-
-                    for (locationSnapshot in snapshot.children) {
-                        val seniorLocationModel =
-                            locationSnapshot.getValue(SeniorLocationModel::class.java)
-
-                        Toast.makeText(
-                            this@MapPassengerActivity,
-                            "loadCurrentCoordinatesToMapFromFireStore",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        if (seniorLocationModel != null) {
-                            val getCurrentLatitude = seniorLocationModel.currentLatitude!!
-                            val getCurrentLongitude = seniorLocationModel.currentLongitude!!
-
-                            if (seniorLocationModel.passengerUserID == FirebaseMain.getUser().uid) {
-                                addAnnotationToMap(getCurrentLongitude, getCurrentLatitude)
-                            }
-
-                            StaticDataPasser.storeFirstName = seniorLocationModel.passengerFirstname
-                            StaticDataPasser.storeLastName = seniorLocationModel.passengerLastname
-                            StaticDataPasser.storeProfilePicUrl = seniorLocationModel.passengerProfilePicture
-                            StaticDataPasser.storeUserType = seniorLocationModel.passengerUserType
-                        }
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
-            }
-
-        })
-    }
-
-
-    private fun getUserTypeAndLoadCoordintesToMap() {
+    private fun loadCurrentCoordinatesToMapFromDatabase() {
         if (FirebaseMain.getUser() != null) {
-            documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.userCollection)
-                .document(FirebaseMain.getUser().uid)
 
-            documentReference.get().addOnSuccessListener {
-                if (it != null && it.exists()) {
-                    val getUserType = it.getString("userType")
+            val locationReference = FirebaseDatabase.getInstance()
+                .getReference(StaticDataPasser.bookingCollection)
 
-                    when (getUserType) {
-                        "Senior Citizen" -> {
-                            loadCurrentSeniorCoordinatesToMapFromDatabase()
-                        }
+            locationReference.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
 
-                        "Persons with Disability (PWD)" -> {
-                            loadCurrentPWDCoordinatesToMapFromDatabase()
+                        for (locationSnapshot in snapshot.children) {
+                            val passengerBookingData =
+                                locationSnapshot.getValue(PassengerBookingModel::class.java)
 
+                            if (passengerBookingData != null) {
+                                val getDestinationLatitude =
+                                    passengerBookingData.destinationLatitude
+                                val getDestinationLongitude =
+                                    passengerBookingData.destinationLongitude
+                                val getBookingID = passengerBookingData.bookingID
+
+                                if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid) {
+                                    addAnnotationToMap(
+                                        getDestinationLongitude,
+                                        getDestinationLatitude,
+                                        getBookingID
+                                    )
+                                } else {
+                                    Toast.makeText(
+                                        this@MapPassengerActivity,
+                                        "passengerBookingModel.passengerUserID",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    this@MapPassengerActivity,
+                                    "passengerBookingModel.passengerUserID",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
                 }
-            }.addOnFailureListener {
-                Log.e(TAG, it.message.toString())
-            }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e(TAG, error.message)
+                }
+            })
+
         } else {
             FirebaseMain.signOutUser()
 
-            intent = Intent(this, LoginActivity::class.java)
+            intent = Intent(this@MapPassengerActivity, LoginOrRegisterActivity::class.java)
             startActivity(intent)
             finish()
-
         }
+
     }
 
     private fun getCurrentTimeAndDate(): String {
@@ -662,7 +561,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
                     if (!getVerificationStatus!!) {
                         showUserNotVerifiedDialog()
-
+                    } else {
+                        onMapReady()
                     }
                 }
 
@@ -679,7 +579,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private fun getUserTypeToStoreCoordinatesInDatabase(point: Point) {
+
+    private fun storeCoordinatesInDatabase(point: Point) {
         if (FirebaseMain.getUser() != null) {
 
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -694,18 +595,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                         val getFirstName = it.getString("firstname")!!
                         val getLastName = it.getString("lastname")!!
 
-                        StaticDataPasser.storeFirstName = getFirstName
-                        StaticDataPasser.storeLastName = getLastName
-                        StaticDataPasser.storeProfilePicUrl = getProfilePicture
-                        StaticDataPasser.storeUserType = getUserType
-
                         when (getUserType) {
                             "Senior Citizen" -> {
                                 val getMedicalCondition =
                                     it.getString("medicalCondition")!!
-
-                                StaticDataPasser.storeSelectedMedicalCondition =
-                                    getMedicalCondition
 
                                 storeSeniorLocationInfoToDatabase(
                                     point,
@@ -721,8 +614,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                             "Persons with Disability (PWD)" -> {
                                 val getDisability = it.getString("disability")!!
 
-                                StaticDataPasser.storeSelectedDisability = getDisability
-
                                 storePWDLocationInfoToDatabase(
                                     point, getFirstName, getLastName, getUserType,
                                     getProfilePicture, getDisability, generateRandomLocationID()
@@ -733,10 +624,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                     }
 
                 }.addOnFailureListener {
-
+                    Log.e(TAG, it.message.toString())
                 }
 
         } else {
+            FirebaseMain.signOutUser()
+
             intent = Intent(this@MapPassengerActivity, LoginOrRegisterActivity::class.java)
             startActivity(intent)
             finish()
@@ -748,26 +641,28 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         profilePicture: String, disability: String, generateLocationID: String
     ) {
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.locationCollection)
+        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
             .child(generateLocationID)
 
-        val locationModel = PWDLocationModel(
+        val passengerBookingModel = PassengerBookingModel(
             passengerUserID = FirebaseMain.getUser().uid,
-            locationID = generateLocationID,
+            bookingID = generateLocationID,
+            bookingStatus = "Waiting",
             currentLongitude = StaticDataPasser.storeLongitude,
             currentLatitude = StaticDataPasser.storeLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
-            locationTime = getCurrentTimeAndDate(),
+            bookingTime = getCurrentTimeAndDate(),
             passengerFirstname = firstname,
             passengerLastname = lastname,
             passengerProfilePicture = profilePicture,
             passengerUserType = userType,
             passengerDisability = disability
         )
-        locationReference.setValue(locationModel).addOnSuccessListener {
+        locationReference.setValue(passengerBookingModel).addOnSuccessListener {
             Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-            loadCurrentPWDCoordinatesToMapFromDatabase()
+
+            loadCurrentCoordinatesToMapFromDatabase()
 
         }.addOnFailureListener {
             Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
@@ -783,17 +678,17 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     ) {
 
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.locationCollection)
+        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
             .child(generateLocationID)
 
-        val locationModel = SeniorLocationModel(
+        val passengerBookingModel = PassengerBookingModel(
             passengerUserID = FirebaseMain.getUser().uid,
-            locationID = generateLocationID,
+            bookingID = generateLocationID,
             currentLongitude = StaticDataPasser.storeLongitude,
             currentLatitude = StaticDataPasser.storeLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
-            locationTime = getCurrentTimeAndDate(),
+            bookingTime = getCurrentTimeAndDate(),
             passengerFirstname = firstname,
             passengerLastname = lastname,
             passengerProfilePicture = profilePicture,
@@ -801,10 +696,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerMedicalCondition = medicalCondition
         )
 
-        locationReference.setValue(locationModel)
+        locationReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
+
                 Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-                loadCurrentPWDCoordinatesToMapFromDatabase()
+                loadCurrentCoordinatesToMapFromDatabase()
+
             }.addOnFailureListener {
                 Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
@@ -812,64 +709,65 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             }
     }
 
-    private fun showLocationInfoDialog() {
+    private fun showPassengerOwnBookingInfoDialog(bookingID: String) {
 
+        val binding: DialogPassengerOwnBookingInfoBinding =
+            DialogPassengerOwnBookingInfoBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
+        val dialogView = binding.root
 
-        val dialogView = layoutInflater.inflate(R.layout.dialog_passenger_location_info, null)
+        val database = FirebaseDatabase.getInstance()
+        var locationReference = database.getReference(StaticDataPasser.bookingCollection)
 
-        val pickupBtn = dialogView.findViewById<Button>(R.id.pickupBtn)
-        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
-        val firstnameTextView = dialogView.findViewById<TextView>(R.id.firstnameTextView)
-        val lastnameTextView = dialogView.findViewById<TextView>(R.id.lastnameTextView)
-        val userTypeTextView = dialogView.findViewById<TextView>(R.id.userTypeTextView)
-        val medicalConditionTextView =
-            dialogView.findViewById<TextView>(R.id.medicalConditionTextView)
-        val disabilityTextView = dialogView.findViewById<TextView>(R.id.disabilityTextView)
-        val passengerProfilePic = dialogView.findViewById<ImageView>(R.id.passengerProfilePic)
+        locationReference.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("SetTextI18n")
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (bookingData in snapshot.children) {
+                        val passengerBookingModel =
+                            bookingData.getValue(PassengerBookingModel::class.java)
 
-        firstnameTextView.text = StaticDataPasser.storeFirstName
-        lastnameTextView.text = StaticDataPasser.storeLastName
-        userTypeTextView.text = StaticDataPasser.storeUserType
+                        if (passengerBookingModel != null) {
+                            if (passengerBookingModel.bookingID == bookingID) {
+                                binding.currentLocationTextView.text =
+                                    "${passengerBookingModel.currentLatitude}\n${passengerBookingModel.currentLongitude}"
 
-        disabilityTextView.visibility = View.GONE
-        medicalConditionTextView.visibility = View.GONE
-
-        if (!StaticDataPasser.storeProfilePicUrl.equals("default")) {
-            Glide.with(this@MapPassengerActivity)
-                .load(StaticDataPasser.storeProfilePicUrl)
-                .placeholder(R.drawable.loading_gif)
-                .into(passengerProfilePic)
-        }
-
-        when (StaticDataPasser.storeUserType) {
-            "Senior Citizen" -> {
-                medicalConditionTextView.visibility = View.VISIBLE
-                medicalConditionTextView.text = StaticDataPasser.storeSelectedMedicalCondition
+                                binding.destinationLocationTextView.text =
+                                    "${passengerBookingModel.destinationLatitude}\n${passengerBookingModel.destinationLongitude}"
+                            }
+                        }
+                    }
+                }
             }
 
-            "Persons with Disability (PWD)" -> {
-                disabilityTextView.visibility = View.VISIBLE
-                disabilityTextView.text = StaticDataPasser.storeSelectedDisability
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, error.message)
             }
+
+        })
+
+        binding.cancelBookingBtn.setOnClickListener {
+            val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
+            locationReference.child(bookingID).updateChildren(updateBookingStatus)
+                .addOnSuccessListener {
+                    closePassengerOwnBookingInfoDialog()
+                }.addOnFailureListener {
+                    Log.e(TAG, it.message.toString())
+                }
         }
 
-        pickupBtn.setOnClickListener {
-
-        }
-
-        closeBtn.setOnClickListener {
-            closePassengerLocationInfoDialog()
+        binding.closeBtn.setOnClickListener {
+            closePassengerOwnBookingInfoDialog()
         }
 
         builder.setView(dialogView)
-        passengerLocationInfoDialog = builder.create()
-        passengerLocationInfoDialog.show()
+        passengerOwnBookingInfoDialog = builder.create()
+        passengerOwnBookingInfoDialog.show()
     }
 
-    private fun closePassengerLocationInfoDialog() {
-        if (passengerLocationInfoDialog != null && passengerLocationInfoDialog.isShowing) {
-            passengerLocationInfoDialog.dismiss()
+    private fun closePassengerOwnBookingInfoDialog() {
+        if (passengerOwnBookingInfoDialog != null && passengerOwnBookingInfoDialog.isShowing) {
+            passengerOwnBookingInfoDialog.dismiss()
         }
     }
 

@@ -51,8 +51,8 @@
 				android:layout_marginTop="10dp"
 				android:layout_marginEnd="10dp"
 				android:layout_marginBottom="10dp"
-				android:checked="false"
-				android:backgroundTint="@color/white" />
+				android:backgroundTint="@color/white"
+				android:checked="false" />
 
 		</RelativeLayout>
 
@@ -136,6 +136,7 @@
 				android:layout_margin="5dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="Current Location"
+				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 

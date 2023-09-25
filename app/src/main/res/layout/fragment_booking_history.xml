@@ -41,6 +41,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout"
-		tools:listitem="@layout/item_passengers" />
+		tools:listitem="@layout/item_booking_history" />
 
 </RelativeLayout>

@@ -3,10 +3,10 @@ package com.capstone.carecabs.Adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.capstone.carecabs.Model.PassengerModel
+import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.R
 
-class LocationItemAdapter(private val locationData: List<PassengerModel>) :
+class LocationItemAdapter(private val locationData: List<PassengerBookingModel>) :
     RecyclerView.Adapter<LocationItemViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocationItemViewHolder {
         val inflater = LayoutInflater.from(parent.context)

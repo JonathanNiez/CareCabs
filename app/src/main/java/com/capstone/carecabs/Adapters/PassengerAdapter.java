@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.Model.PassengerModel;
+import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemPassengersBinding;
 
@@ -17,21 +17,21 @@ import java.util.List;
 
 public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.PassengerViewHolder> {
 
-	public interface ItemClickLister{
-		void onItemClick(PassengerModel passengerModel);
+	public interface ItemPassengerClickLister {
+		void onItemClick(PassengerBookingModel passengerBookingModel);
 	}
 
-	private ItemClickLister itemClickLister;
-	private final List<PassengerModel> passengerModelList;
+	private ItemPassengerClickLister itemPassengerClickLister;
+	private final List<PassengerBookingModel> passengerBookingModelList;
 
 	private Context context;
 
 	public PassengerAdapter(Context context,
-	                        List<PassengerModel> passengerModelList,
-	                        ItemClickLister itemClickLister) {
+	                        List<PassengerBookingModel> passengerBookingModelList,
+	                        ItemPassengerClickLister itemPassengerClickLister) {
 		this.context = context;
-		this.passengerModelList = passengerModelList;
-		this.itemClickLister = itemClickLister;
+		this.passengerBookingModelList = passengerBookingModelList;
+		this.itemPassengerClickLister = itemPassengerClickLister;
 	}
 
 	@NonNull
@@ -44,13 +44,13 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.Pass
 
 	@Override
 	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
-		PassengerModel passengerModel = passengerModelList.get(position);
+		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
 
-		String getPassengerFirstname = passengerModel.getPassengerFirstname();
-		String getPassengerLastname = passengerModel.getPassengerLastname();
-		String getPassengerImage = passengerModel.getPassengerProfilePicture();
-		String getPassengerType = passengerModel.getPassengerUserType();
-		String getBookingDate = passengerModel.getLocationTime();
+		String getPassengerFirstname = passengerBookingModel.getPassengerFirstname();
+		String getPassengerLastname = passengerBookingModel.getPassengerLastname();
+		String getPassengerImage = passengerBookingModel.getPassengerProfilePicture();
+		String getPassengerType = passengerBookingModel.getPassengerUserType();
+		String getBookingDate = passengerBookingModel.getBookingTime();
 
 		String fullName = getPassengerFirstname + " " + getPassengerLastname;
 
@@ -65,13 +65,13 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.Pass
 		holder.binding.bookingDate.setText("Booking Date: " + getBookingDate);
 
 		holder.itemView.setOnClickListener(view -> {
-			itemClickLister.onItemClick(passengerModelList.get(position));
+			itemPassengerClickLister.onItemClick(passengerBookingModelList.get(position));
 		});
 	}
 
 	@Override
 	public int getItemCount() {
-		return passengerModelList.size();
+		return passengerBookingModelList.size();
 	}
 
 	public static class PassengerViewHolder extends RecyclerView.ViewHolder {

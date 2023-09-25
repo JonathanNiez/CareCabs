@@ -1,13 +1,14 @@
 package com.capstone.carecabs.Model
 
-data class PassengerModel(
+data class PassengerBookingModel(
     val passengerUserID: String = "",
-    val locationID: String = "",
+    val bookingID: String = "",
+    val bookingStatus: String = "",
     val currentLongitude: Double? = null,
     val currentLatitude: Double? = null,
     val destinationLongitude: Double = 0.0, // Provide a default value
     val destinationLatitude: Double = 0.0,  // Provide a default value
-    val locationTime: String = "",
+    val bookingTime: String = "",
     val passengerFirstname: String = "",
     val passengerLastname: String = "",
     val passengerProfilePicture: String = "",

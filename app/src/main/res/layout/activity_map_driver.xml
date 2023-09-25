@@ -179,6 +179,6 @@
 		app:itemTextColor="@color/white"
 		app:itemIconSize="30dp"
 		app:labelVisibilityMode="labeled"
-		app:menu="@menu/map_bottom_nav_menu" />
+		app:menu="@menu/menu_driver_map_bottom_nav" />
 
 </RelativeLayout>

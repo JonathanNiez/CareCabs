@@ -1,6 +1,7 @@
 package com.capstone.carecabs
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,9 +15,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
@@ -26,10 +24,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.capstone.carecabs.Firebase.FirebaseMain
-import com.capstone.carecabs.Model.PassengerModel
-import com.capstone.carecabs.Model.SeniorLocationModel
+import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
+import com.capstone.carecabs.databinding.DialogBookingInfoBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -57,6 +55,7 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity() {
 
@@ -128,7 +127,7 @@ class MapDriverActivity : AppCompatActivity() {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
 
                 setupGesturesListener()
-                loadCoordinatesToMapFromFireStore()
+                loadPassengerCoordinatesToMapFromDatabase()
                 initializeLocationComponent()
 
 //                annotationPlugin = binding.mapView.annotations
@@ -214,7 +213,7 @@ class MapDriverActivity : AppCompatActivity() {
 
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.setLocation -> {
+                R.id.trips -> {
                 }
 
                 R.id.bookings -> {
@@ -228,6 +227,11 @@ class MapDriverActivity : AppCompatActivity() {
             }
             true
         }
+    }
+
+    private fun generateRandomTripID(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
     }
 
     private fun setupGesturesListener() {
@@ -244,14 +248,8 @@ class MapDriverActivity : AppCompatActivity() {
 //        }
     }
 
-    private fun onMarkerItemClick(marker: PointAnnotation): Boolean {
-        Toast.makeText(this@MapDriverActivity, marker.toString(), Toast.LENGTH_SHORT).show()
-
-        return true
-    }
-
     private fun addSeniorAnnotationToMap(
-        longitude: Double, latitude: Double, locationID: String
+        longitude: Double, latitude: Double, bookingID: String
     ) {
 
         bitmapFromDrawableRes(
@@ -269,7 +267,7 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerLocationInfoDialog(locationID)
+                        showPassengerLocationInfoDialog(bookingID)
 
                         false
                     }
@@ -280,7 +278,7 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun addPWDAnnotationToMap(
-        longitude: Double, latitude: Double, locationID: String
+        longitude: Double, latitude: Double, bookingID: String
     ) {
 
         bitmapFromDrawableRes(
@@ -298,7 +296,7 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerLocationInfoDialog(locationID)
+                        showPassengerLocationInfoDialog(bookingID)
 
                         false
                     }
@@ -357,21 +355,18 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadCoordinatesToMapFromFireStore() {
-
-        pointAnnotationManager?.addClickListener(OnPointAnnotationClickListener {
-            onMarkerItemClick(it)
-        })
+    private fun loadPassengerCoordinatesToMapFromDatabase() {
 
         val locationReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.locationCollection)
+            .getReference(StaticDataPasser.bookingCollection)
 
         locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot != null && snapshot.exists()) {
 
                     for (locationSnapshot in snapshot.children) {
-                        val locationData = locationSnapshot.getValue(PassengerModel::class.java)
+                        val locationData =
+                            locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                         if (locationData != null) {
                             when (locationData.passengerUserType) {
@@ -379,7 +374,7 @@ class MapDriverActivity : AppCompatActivity() {
                                     addSeniorAnnotationToMap(
                                         locationData.destinationLongitude,
                                         locationData.destinationLatitude,
-                                        locationData.locationID
+                                        locationData.bookingID
                                     )
                                 }
 
@@ -387,7 +382,7 @@ class MapDriverActivity : AppCompatActivity() {
                                     addPWDAnnotationToMap(
                                         locationData.destinationLongitude,
                                         locationData.destinationLatitude,
-                                        locationData.locationID
+                                        locationData.bookingID
                                     )
                                 }
                             }
@@ -402,116 +397,80 @@ class MapDriverActivity : AppCompatActivity() {
 
         })
 
-        collectionReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
-
-        collectionReference.get().addOnSuccessListener {
-
-            if (it != null) {
-                for (document in it.documents) {
-                    val getDestinationLatitude =
-                        document.getDouble("destinationLatitude")!!.toDouble()
-                    val getDestinationLongitude =
-                        document.getDouble("destinationLongitude")!!.toDouble()
-                    val getLocationID = document.getString("locationID")!!
-                    val getUserType = document.getString("passengerUserType")!!
-
-                    when (getUserType) {
-                        "Senior Citizen" -> {
-                            addSeniorAnnotationToMap(
-                                getDestinationLongitude,
-                                getDestinationLatitude,
-                                getLocationID
-                            )
-                        }
-
-                        "Persons with Disability (PWD)" -> {
-                            addPWDAnnotationToMap(
-                                getDestinationLongitude,
-                                getDestinationLatitude,
-                                getLocationID
-                            )
-                        }
-                    }
-                }
-            }
-
-        }.addOnFailureListener {
-            Log.e(TAG, it.message.toString())
-        }
     }
 
-    private fun showPassengerLocationInfoDialog(locationID: String) {
+    @SuppressLint("SetTextI18n")
+    private fun showPassengerLocationInfoDialog(bookingID: String) {
 
+        val binding = DialogBookingInfoBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
+        val dialogView = binding.root
 
-        val dialogView = layoutInflater.inflate(R.layout.dialog_passenger_location_info, null)
+        binding.disabilityTextView.visibility = View.GONE
+        binding.medicalConditionTextView.visibility = View.GONE
 
-        val pickupBtn = dialogView.findViewById<Button>(R.id.pickupBtn)
-        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
-        val firstnameTextView = dialogView.findViewById<TextView>(R.id.firstnameTextView)
-        val lastnameTextView = dialogView.findViewById<TextView>(R.id.lastnameTextView)
-        val userTypeTextView = dialogView.findViewById<TextView>(R.id.userTypeTextView)
-        val medicalConditionTextView =
-            dialogView.findViewById<TextView>(R.id.medicalConditionTextView)
-        val disabilityTextView = dialogView.findViewById<TextView>(R.id.disabilityTextView)
-        val passengerProfilePic = dialogView.findViewById<ImageView>(R.id.passengerProfilePic)
-        val progressBarLayout = dialogView.findViewById<LinearLayout>(R.id.progressBarLayout)
+        val locationReference = FirebaseDatabase.getInstance()
+            .getReference(StaticDataPasser.bookingCollection)
 
-        disabilityTextView.visibility = View.GONE
-        medicalConditionTextView.visibility = View.GONE
+        locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot != null && snapshot.exists()) {
 
-        documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.locationCollection)
-            .document(locationID)
+                    for (locationSnapshot in snapshot.children) {
+                        val passengerBookingData =
+                            locationSnapshot.getValue(PassengerBookingModel::class.java)
 
-        documentReference.get().addOnSuccessListener {
-            if (it != null && it.exists()) {
-                progressBarLayout.visibility = View.GONE
+                        if (passengerBookingData != null) {
+                            if (passengerBookingData.bookingID == bookingID) {
+                                binding.progressBarLayout.visibility = View.GONE
 
-                val getFirstname = it.getString("passengerFirstname")
-                val getLastname = it.getString("passengerLastname")
-                val getUserType = it.getString("passengerUserType")
-                val getProfilePicture = it.getString("passengerProfilePicture")
+                                binding.fullNameTextView.text =
+                                    "${passengerBookingData.passengerFirstname} ${passengerBookingData.passengerLastname}"
 
-                firstnameTextView.text = getFirstname
-                lastnameTextView.text = getLastname
-                userTypeTextView.text = getUserType
+                                binding.userTypeTextView.text =
+                                    passengerBookingData.passengerUserType
 
-                if (!getProfilePicture.equals("default")) {
-                    Glide.with(this@MapDriverActivity)
-                        .load(getProfilePicture)
-                        .placeholder(R.drawable.loading_gif)
-                        .into(passengerProfilePic)
-                }
+                                if (passengerBookingData.passengerProfilePicture != "default") {
+                                    Glide.with(this@MapDriverActivity)
+                                        .load(passengerBookingData.passengerProfilePicture)
+                                        .placeholder(R.drawable.loading_gif)
+                                        .into(binding.passengerProfilePic)
 
-                when (getUserType) {
-                    "Senior Citizen" -> {
-                        val getMedicalCondition = it.getString("passengerMedicalCondition")
+                                }
+                                when (passengerBookingData.passengerUserType) {
+                                    "Senior Citizen" -> {
+                                        binding.medicalConditionTextView.visibility =
+                                            View.VISIBLE
+                                        binding.medicalConditionTextView.text =
+                                            "Medical Condition(s):\n${passengerBookingData.passengerMedicalCondition}"
 
-                        medicalConditionTextView.text =
-                            getMedicalCondition
+                                    }
+
+                                    "Persons with Disability (PWD)" -> {
+                                        binding.disabilityTextView.visibility = View.VISIBLE
+                                        binding.disabilityTextView.text =
+                                            "Disability:\n${passengerBookingData.passengerDisability}"
+
+                                    }
+                                }
+
+                            }
+                        }
                     }
-
-                    "Persons with Disability (PWD)" -> {
-                        val getDisability = it.getString("passengerDisability")
-
-                        disabilityTextView.text = getDisability
-                    }
                 }
-
             }
-        }.addOnFailureListener {
-            Log.e(TAG, it.message.toString())
 
-            progressBarLayout.visibility = View.GONE
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, error.message)
+            }
+
+        })
+
+        binding.pickupBtn.setOnClickListener {
+
         }
 
-        pickupBtn.setOnClickListener {
-
-        }
-
-        closeBtn.setOnClickListener {
+        binding.closeBtn.setOnClickListener {
             closePassengerLocationInfoDialog()
         }
 
@@ -538,7 +497,8 @@ class MapDriverActivity : AppCompatActivity() {
 
                     if (!getVerificationStatus!!) {
                         showUserNotVerifiedDialog()
-
+                    } else {
+                        checkLocationPermission()
                     }
                 }
             }.addOnFailureListener {
@@ -595,7 +555,6 @@ class MapDriverActivity : AppCompatActivity() {
             }
         }
     }
-
 
 }
 

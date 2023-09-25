@@ -14,7 +14,7 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Adapters.PassengerAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Model.PassengerModel;
+import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
@@ -60,28 +60,28 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		if (FirebaseMain.getUser() != null) {
 
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-					.getReference(StaticDataPasser.locationCollection);
+					.getReference(StaticDataPasser.bookingCollection);
 
 			databaseReference.addValueEventListener(new ValueEventListener() {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
-					List<PassengerModel> passengerModelList = new ArrayList<>();
+					List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
 
 					for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
-						PassengerModel passengerModel = locationSnapshot.getValue(PassengerModel.class);
-						passengerModelList.add(passengerModel);
+						PassengerBookingModel passengerBookingModel = locationSnapshot.getValue(PassengerBookingModel.class);
+						passengerBookingModelList.add(passengerBookingModel);
 					}
 
 					PassengerAdapter passengerAdapter = new PassengerAdapter(
 							getApplicationContext(),
-							passengerModelList,
-							passengerModel -> showBookingInfoDialogDialog(
-									passengerModel.getPassengerFirstname(),
-									passengerModel.getPassengerLastname(),
-									passengerModel.getPassengerUserType(),
-									passengerModel.getPassengerProfilePicture(),
-									passengerModel.getPassengerDisability(),
-									passengerModel.getPassengerMedicalCondition()
+							passengerBookingModelList,
+							passengerBookingModel -> showBookingInfoDialog(
+									passengerBookingModel.getPassengerFirstname(),
+									passengerBookingModel.getPassengerLastname(),
+									passengerBookingModel.getPassengerUserType(),
+									passengerBookingModel.getPassengerProfilePicture(),
+									passengerBookingModel.getPassengerDisability(),
+									passengerBookingModel.getPassengerMedicalCondition()
 							));
 					binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 					binding.bookingHistoryRecyclerView.setAdapter(passengerAdapter);
@@ -102,12 +102,12 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		}
 	}
 
-	private void showBookingInfoDialogDialog(String firstname,
-	                                         String lastname,
-	                                         String userType,
-	                                         String profilePicture,
-	                                         String disability,
-	                                         String medicalCondition) {
+	private void showBookingInfoDialog(String firstname,
+	                                   String lastname,
+	                                   String userType,
+	                                   String profilePicture,
+	                                   String disability,
+	                                   String medicalCondition) {
 
 		DialogBookingInfoBinding binding = DialogBookingInfoBinding
 				.inflate(getLayoutInflater());
@@ -117,7 +117,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 		builder.setView(dialogView);
 
-		binding.medConTextView.setVisibility(View.GONE);
+		binding.medicalConditionTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 
 		String fullname = firstname + " " + lastname;
@@ -126,8 +126,8 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 		switch (userType) {
 			case "Senior Citizen":
-				binding.medConTextView.setVisibility(View.VISIBLE);
-				binding.medConTextView.setText("Medical Condition(s): " + medicalCondition);
+				binding.medicalConditionTextView.setVisibility(View.VISIBLE);
+				binding.medicalConditionTextView.setText("Medical Condition(s): " + medicalCondition);
 				break;
 
 			case "Persons with Disability (PWD)":
@@ -146,7 +146,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		}
 
 		binding.closeBtn.setOnClickListener(view -> {
-			closeBookingInfoDialogDialog();
+			closeBookingInfoDialog();
 		});
 
 		binding.pickupBtn.setOnClickListener(view -> {
@@ -158,7 +158,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		bookingInfoDialog.show();
 	}
 
-	private void closeBookingInfoDialogDialog() {
+	private void closeBookingInfoDialog() {
 		if (bookingInfoDialog != null & bookingInfoDialog.isShowing()) {
 			bookingInfoDialog.dismiss();
 		}

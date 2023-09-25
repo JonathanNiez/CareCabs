@@ -26,68 +26,79 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="PASSENGER"
+				android:text="YOUR CURRENT BOOKING"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
-			<de.hdodenhof.circleimageview.CircleImageView
-				android:id="@+id/passengerProfilePic"
-				android:layout_width="150dp"
-				android:layout_height="150dp"
-				android:layout_margin="10dp"
-				android:elevation="5dp"
-				android:scaleType="centerCrop"
-				android:src="@drawable/account"
-				app:civ_border_color="@color/black"
-				app:civ_border_width="2dp" />
-
-
-			<TextView
-				android:id="@+id/fullNameTextView"
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
-				android:text="Firstname"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="22sp" />
+				android:gravity="center"
+				android:orientation="horizontal">
 
-			<TextView
-				android:id="@+id/userTypeTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="3dp"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
-				android:text="User Type"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+				<LinearLayout
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:orientation="vertical">
 
-			<TextView
-				android:id="@+id/medicalConditionTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="3dp"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
-				android:text="Medical Condition"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="3dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="5dp"
+						android:text="From"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
 
-			<TextView
-				android:id="@+id/disabilityTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="3dp"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
-				android:text="Disability"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+					<TextView
+						android:id="@+id/currentLocationTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="3dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="5dp"
+						android:text="Current Location"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:orientation="vertical">
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="3dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="5dp"
+						android:text="To"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+					<TextView
+						android:id="@+id/destinationLocationTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="3dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="5dp"
+						android:text="Destination Location"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+				</LinearLayout>
+
+			</LinearLayout>
 
 		</LinearLayout>
 
@@ -118,18 +129,17 @@
 		android:gravity="center">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/pickupBtn"
+			android:id="@+id/cancelBookingBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_marginEnd="5dp"
 			android:background="@drawable/button_shape_1"
-			android:backgroundTint="@color/yinmn_blue"
+			android:backgroundTint="@color/light_red"
 			android:elevation="5dp"
 			android:fontFamily="@font/opensans_bold"
-			android:text="Pickup"
+			android:text="Cancel Booking"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
-
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/closeBtn"
@@ -137,7 +147,7 @@
 			android:layout_height="50dp"
 			android:layout_marginStart="5dp"
 			android:background="@drawable/button_shape_1"
-			android:backgroundTint="@color/light_red"
+			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/opensans_bold"
 			android:text="Close"

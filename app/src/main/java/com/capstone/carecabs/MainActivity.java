@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void checkWaitingPassengers() {
 		listenerRegistration = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.locationCollection)
+				.collection(StaticDataPasser.bookingCollection)
 				.addSnapshotListener((QuerySnapshot querySnapshot, FirebaseFirestoreException e) -> {
 					if (e != null) {
 						return;
