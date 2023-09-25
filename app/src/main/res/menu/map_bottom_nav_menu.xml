@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:title="My Bookings"
-        android:icon="@drawable/appointment"
-        android:id="@+id/myBookings"/>
+	<item
+		android:id="@+id/bookings"
+		android:icon="@drawable/appointment"
+		android:title="Bookings" />
 
-    <item
-        android:title="Set Location"
-        android:icon="@drawable/location_2"
-        android:id="@+id/setLocation"/>
+	<item
+		android:id="@+id/setLocation"
+		android:icon="@drawable/location_2"
+		android:title="Set Location" />
 
 
-    <item
-        android:title="Help"
-        android:icon="@drawable/help"
-        android:id="@+id/help"/>
+	<item
+		android:id="@+id/help"
+		android:icon="@drawable/help"
+		android:title="Help" />
 
 </menu>

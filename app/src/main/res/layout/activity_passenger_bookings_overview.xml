@@ -4,8 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
-	tools:context=".Fragments.BookingHistoryFragment">
+	tools:context=".PassengerBookingsOverview">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
@@ -19,20 +18,30 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
+			<ImageButton
+				android:id="@+id/imgBackBtn"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentStart="true"
+				android:layout_alignParentTop="true"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
+				android:background="@color/vermillion"
+				android:src="@drawable/back_50_2" />
+
 			<TextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_margin="20dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="BOOKING HISTORY"
+				android:text="BOOKING OVERVIEW"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
-
 		</RelativeLayout>
-
 
 	</androidx.cardview.widget.CardView>
 

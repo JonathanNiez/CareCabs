@@ -217,8 +217,8 @@ class MapDriverActivity : AppCompatActivity() {
                 R.id.setLocation -> {
                 }
 
-                R.id.myBookings -> {
-                    val intent = Intent(this, BookingsActivity::class.java)
+                R.id.bookings -> {
+                    val intent = Intent(this, PassengerBookingsOverview::class.java)
                     startActivity(intent)
                 }
 

@@ -292,7 +292,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                     binding.setLocationLayout.visibility = View.VISIBLE
                 }
 
-                R.id.myBookings -> {
+                R.id.bookings -> {
                     binding.setLocationLayout.visibility = View.GONE
                     val intent = Intent(this, BookingsActivity::class.java)
                     startActivity(intent)

@@ -27,7 +27,6 @@ public class BookingsActivity extends AppCompatActivity {
             finish();
         });
 
-        //Add the Fragments
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPagerAdapter.addFragment(new PendingBookingFragment(), "Pending");
         viewPagerAdapter.addFragment(new BookingHistoryFragment(), "History");
@@ -36,9 +35,9 @@ public class BookingsActivity extends AppCompatActivity {
         binding.tabLayout.setupWithViewPager(binding.viewPager);
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private ArrayList<Fragment> fragmentArrayList;
-        private ArrayList<String> stringArrayList;
+    static class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final ArrayList<Fragment> fragmentArrayList;
+        private final ArrayList<String> stringArrayList;
 
         ViewPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);

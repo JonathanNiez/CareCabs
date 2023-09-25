@@ -175,7 +175,9 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@color/cinnabar"
-		app:itemTextColor="@color/black"
+		app:itemIconTint="@color/white"
+		app:itemTextColor="@color/white"
+		app:itemIconSize="30dp"
 		app:labelVisibilityMode="labeled"
 		app:menu="@menu/map_bottom_nav_menu" />
 

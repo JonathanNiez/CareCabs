@@ -11,8 +11,9 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="@color/vermillion"
+		app:tabSelectedTextColor="@color/white"
 		app:tabTextAppearance="@font/opensans_bold"
-		app:tabTextColor="@color/white" />
+		app:tabTextColor="@color/black" />
 
 	<androidx.viewpager.widget.ViewPager
 		android:id="@+id/viewPager"
@@ -32,7 +33,7 @@
 			android:layout_height="wrap_content"
 			android:layout_margin="20dp"
 			android:background="@color/transparent"
-			android:src="@drawable/back64" />
+			android:src="@drawable/back_50_2" />
 	</FrameLayout>
 
 </RelativeLayout>
