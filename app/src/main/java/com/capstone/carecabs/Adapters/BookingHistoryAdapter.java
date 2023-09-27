@@ -27,15 +27,15 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
 	                             List<PassengerBookingModel> passengerBookingModelList,
 	                             ItemBookingHistoryClickListener itemBookingHistoryClickListener
 	) {
-		this.itemBookingHistoryClickListener = itemBookingHistoryClickListener;
 		this.passengerBookingModelList = passengerBookingModelList;
 		this.context = context;
+		this.itemBookingHistoryClickListener = itemBookingHistoryClickListener;
 	}
 
 
 	@NonNull
 	@Override
-	public BookingHistoryAdapter.BookingHistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public BookingHistoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		ItemBookingHistoryBinding binding = ItemBookingHistoryBinding
 				.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 		return new BookingHistoryViewHolder(binding);
@@ -48,15 +48,15 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
 
 		holder.binding.currentLocationTextView
 				.setText(
-				passengerBookingModel.getCurrentLatitude() + "\n" +
-						passengerBookingModel.getCurrentLongitude()
-		);
+						passengerBookingModel.getCurrentLatitude() + "\n" +
+								passengerBookingModel.getCurrentLongitude()
+				);
 
 		holder.binding.destinationLocationTextView
 				.setText(
-				passengerBookingModel.getDestinationLatitude() + "\n" +
-						passengerBookingModel.getDestinationLongitude()
-		);
+						passengerBookingModel.getDestinationLatitude() + "\n" +
+								passengerBookingModel.getDestinationLongitude()
+				);
 
 		holder.binding.bookingStatusTextView
 				.setText("Booking Status: " + passengerBookingModel.getBookingStatus());
@@ -72,7 +72,7 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
 	}
 
 
-	public static class BookingHistoryViewHolder extends RecyclerView.ViewHolder {
+	public class BookingHistoryViewHolder extends RecyclerView.ViewHolder {
 
 		private final ItemBookingHistoryBinding binding;
 

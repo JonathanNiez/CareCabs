@@ -10,22 +10,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Adapters.PassengerAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.PassengerBookingModel;
+import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class PassengerBookingsOverview extends AppCompatActivity {
 	private AlertDialog bookingInfoDialog;
@@ -51,8 +60,6 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		intent = new Intent(PassengerBookingsOverview.this, MapDriverActivity.class);
-		startActivity(intent);
 		finish();
 	}
 
@@ -82,7 +89,13 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 									passengerBookingModel.getPassengerProfilePicture(),
 									passengerBookingModel.getPassengerDisability(),
 									passengerBookingModel.getPassengerMedicalCondition(),
-									passengerBookingModel.getBookingStatus()
+									passengerBookingModel.getBookingStatus(),
+									passengerBookingModel.getBookingID(),
+									passengerBookingModel.getPassengerUserID(),
+									passengerBookingModel.getCurrentLatitude(),
+									passengerBookingModel.getCurrentLongitude(),
+									passengerBookingModel.getDestinationLatitude(),
+									passengerBookingModel.getDestinationLongitude()
 							));
 					binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 					binding.bookingHistoryRecyclerView.setAdapter(passengerAdapter);
@@ -103,6 +116,83 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		}
 	}
 
+	private String generateRandomTripID() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
+	}
+
+	@SuppressLint("DefaultLocale")
+	private String getCurrentTimeAndDate() {
+		Calendar calendar = Calendar.getInstance(); // Get a Calendar instance
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based, so add 1
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+
+		return String.format("%02d-%02d-%04d %02d:%02d:%02d", month, day, year, hour, minute, second);
+	}
+
+	@SuppressLint("LongLogTag")
+	private void storeTripToDatabase(
+			String generateTripID,
+			String bookingID,
+			String passengerID,
+			Double currentLatitude,
+			Double currentLongitude,
+			Double destinationLatitude,
+			Double destinationLongitude
+	) {
+
+		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.tripCollection)
+				.document(generateTripID);
+
+		TripModel tripModel = new TripModel(
+				generateTripID,
+				bookingID,
+				"Ongoing",
+				FirebaseMain.getUser().getUid(),
+				passengerID,
+				getCurrentTimeAndDate(),
+				currentLatitude,
+				currentLongitude,
+				destinationLatitude,
+				destinationLongitude
+		);
+
+		documentReference.set(tripModel)
+				.addOnSuccessListener(unused -> {
+
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+
+		//update booking from passenger
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+				.getReference(StaticDataPasser.bookingCollection);
+
+
+		Map<String, Object> updateBookingStatus = new HashMap<>();
+		updateBookingStatus.put("bookingStatus", "Standby");
+
+		bookingReference.child(bookingID)
+				.updateChildren(updateBookingStatus)
+				.addOnSuccessListener(unused -> Toast.makeText(PassengerBookingsOverview.this, "Booking Accepted", Toast.LENGTH_LONG).show())
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+
+		updateDriverAvailabilityStatus(false);
+	}
+
+	private void updateDriverAvailabilityStatus(Boolean isAvailable) {
+		if (FirebaseMain.getUser() != null) {
+			FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid())
+					.update("isAvailable", isAvailable);
+		}
+	}
+
 	@SuppressLint("SetTextI18n")
 	private void showBookingInfoDialog(
 			String firstname,
@@ -111,7 +201,13 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 			String profilePicture,
 			String disability,
 			String medicalCondition,
-			String bookingStatus
+			String bookingStatus,
+			String bookingID,
+			String passengerID,
+			Double currentLatitude,
+			Double currentLongitude,
+			Double destinationLatitude,
+			Double destinationLongitude
 	) {
 
 		DialogBookingInfoBinding binding = DialogBookingInfoBinding
@@ -157,7 +253,17 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		});
 
 		binding.pickupBtn.setOnClickListener(view -> {
+			storeTripToDatabase(
+					generateRandomTripID(),
+					bookingID,
+					passengerID,
+					currentLatitude,
+					currentLongitude,
+					destinationLatitude,
+					destinationLongitude
+			);
 
+			closeBookingInfoDialog();
 		});
 
 

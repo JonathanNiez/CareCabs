@@ -131,7 +131,6 @@
 									android:textSize="22sp" />
 
 								<RelativeLayout
-									android:id="@+id/verificationStatusLayout"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
@@ -343,6 +342,23 @@
 					android:fontFamily="@font/opensans_semibold"
 					android:padding="10dp"
 					android:text="Edit Profile"
+					android:textAlignment="textStart"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/tripsBtn"
+					android:layout_width="match_parent"
+					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
+					android:drawableStart="@drawable/trip_32"
+					android:drawableEnd="@drawable/right_arrow"
+					android:drawablePadding="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Trips"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
 					android:textSize="17sp" />

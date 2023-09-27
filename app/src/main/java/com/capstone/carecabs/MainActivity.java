@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 
-		updateDriverStatus(true);
+//		updateDriverStatus(true);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onDestroy();
 
 		closeExitConfirmationDialog();
-		updateDriverStatus(false);
+//		updateDriverStatus(false);
 	}
 
 	@Override

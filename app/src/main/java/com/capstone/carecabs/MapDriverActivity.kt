@@ -47,7 +47,6 @@ import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
@@ -210,22 +209,22 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun initializeBottomNavButtons() {
-        binding.bottomNavigationView.selectedItemId = R.id.setLocation
-
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.trips -> {
+                    intent = Intent(this, TripsOverviewActivity::class.java)
                 }
 
                 R.id.bookings -> {
-                    val intent = Intent(this, PassengerBookingsOverview::class.java)
-                    startActivity(intent)
+                    intent = Intent(this, PassengerBookingsOverview::class.java)
                 }
 
                 R.id.help -> {
-
+                    intent = Intent(this, HelpActivity::class.java)
                 }
             }
+            startActivity(intent)
+
             true
         }
     }
@@ -429,9 +428,10 @@ class MapDriverActivity : AppCompatActivity() {
         val tripModel = TripModel(
             tripID = generateTripID,
             bookingID = bookingID,
+            tripStatus = "Ongoing" ,
             userDriverID = FirebaseMain.getUser().uid,
             userPassengerID = passengerID,
-            tripTime = getCurrentTimeAndDate(),
+            tripDate = getCurrentTimeAndDate(),
             currentLatitude = currentLatitude,
             currentLongitude = currentLongitude,
             destinationLatitude = destinationLatitude,
@@ -448,8 +448,9 @@ class MapDriverActivity : AppCompatActivity() {
         val bookingReference = FirebaseDatabase.getInstance()
             .getReference(StaticDataPasser.bookingCollection)
 
+
         val updateBookingStatus = HashMap<String, Any>()
-        updateBookingStatus["bookingStatus"] = "StandBy"
+        updateBookingStatus["bookingStatus"] = "Standby"
 
         bookingReference.child(bookingID)
             .updateChildren(updateBookingStatus)
@@ -459,6 +460,16 @@ class MapDriverActivity : AppCompatActivity() {
             .addOnFailureListener {
                 Log.e(TAG, it.message.toString())
             }
+
+        updateDriverAvailabilityStatus(false)
+    }
+
+    private fun updateDriverAvailabilityStatus(isAvailable: Boolean) {
+        if (FirebaseMain.getUser() != null) {
+            FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
+                .document(FirebaseMain.getUser().uid)
+                .update("isAvailable", isAvailable)
+        }
     }
 
     @SuppressLint("SetTextI18n", "RestrictedApi")

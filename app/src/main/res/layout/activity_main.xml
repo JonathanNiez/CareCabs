@@ -24,6 +24,7 @@
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"
 		app:labelVisibilityMode="auto"
-		app:menu="@menu/bottom_nav_menu" />
+		app:menu="@menu/bottom_nav_menu"
+		/>
 
 </RelativeLayout>

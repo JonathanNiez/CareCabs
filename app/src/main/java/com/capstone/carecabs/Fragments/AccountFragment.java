@@ -33,6 +33,7 @@ import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
 import com.capstone.carecabs.RegisterSeniorActivity;
 import com.capstone.carecabs.ScanIDActivity;
+import com.capstone.carecabs.TripsOverviewActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -130,6 +131,11 @@ public class AccountFragment extends Fragment {
 		binding.contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
 
 		binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
+
+		binding.tripsBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), TripsOverviewActivity.class);
+			startActivity(intent);
+		});
 
 		binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
@@ -368,16 +374,9 @@ public class AccountFragment extends Fragment {
 						binding.imageViewVerificationMark.setImageResource(R.drawable.x_24);
 
 						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.white)
+								getResources().getColor(R.color.light_red)
 						);
-//						binding.verificationStatusLayout.setBackgroundColor(getResources()
-//								.getColor(R.color.red));
 						binding.verificationStatusTextView.setText("Not Verified");
-
-						binding.verificationStatusLayout.setBackgroundTintList(
-								ColorStateList.valueOf(getResources()
-										.getColor(R.color.light_red))
-						);
 
 						binding.idScannedTextView.setVisibility(View.VISIBLE);
 
@@ -390,17 +389,9 @@ public class AccountFragment extends Fragment {
 						binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
 
 						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.white)
+								getResources().getColor(R.color.green)
 						);
 						binding.verificationStatusTextView.setText("Verified");
-
-//						binding.verificationStatusLayout.setBackgroundColor(getResources()
-//								.getColor(R.color.green));
-
-						binding.verificationStatusLayout.setBackgroundTintList(
-								ColorStateList.valueOf(getResources()
-										.getColor(R.color.green))
-						);
 					}
 
 					binding.firstnameTextView.setText(getFirstName);

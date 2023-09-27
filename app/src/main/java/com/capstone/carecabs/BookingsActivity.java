@@ -35,7 +35,7 @@ public class BookingsActivity extends AppCompatActivity {
         binding.tabLayout.setupWithViewPager(binding.viewPager);
     }
 
-    static class ViewPagerAdapter extends FragmentPagerAdapter {
+	public class ViewPagerAdapter extends FragmentPagerAdapter {
         private final ArrayList<Fragment> fragmentArrayList;
         private final ArrayList<String> stringArrayList;
 
@@ -67,5 +67,4 @@ public class BookingsActivity extends AppCompatActivity {
             return stringArrayList.get(position);
         }
     }
-
 }

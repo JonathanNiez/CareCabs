@@ -298,15 +298,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
                 R.id.bookings -> {
                     binding.setLocationLayout.visibility = View.GONE
-                    val intent = Intent(this, BookingsActivity::class.java)
-                    startActivity(intent)
+                    intent = Intent(this, BookingsActivity::class.java)
                 }
 
                 R.id.help -> {
                     binding.setLocationLayout.visibility = View.GONE
+                    intent = Intent(this, HelpActivity::class.java)
 
                 }
             }
+            startActivity(intent)
             true
         }
     }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_margin="5dp"
+	android:layout_marginBottom="10dp"
+	app:cardBackgroundColor="@color/cinnabar"
+	app:cardCornerRadius="10dp"
+	app:cardElevation="5dp">
+
+	<androidx.cardview.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="5dp"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			android:orientation="vertical"
+			android:padding="5dp">
+
+			<TextView
+				android:id="@+id/tripDateTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginBottom="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Trip Date"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+			<TextView
+				android:id="@+id/locationName"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Location Name"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
+</androidx.cardview.widget.CardView>

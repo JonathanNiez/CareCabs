@@ -72,18 +72,20 @@ public class BookingHistoryFragment extends Fragment {
 						for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
 							PassengerBookingModel passengerBookingModel =
 									locationSnapshot.getValue(PassengerBookingModel.class);
-							passengerBookingModelList.add(passengerBookingModel);
+							if (passengerBookingModel != null) {
+								if (passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
+									passengerBookingModelList.add(passengerBookingModel);
+								}
+							}
 						}
 
-						BookingHistoryAdapter bookingHistoryAdapter =
-								new BookingHistoryAdapter(context,
-										passengerBookingModelList,
-										passengerBookingModel ->
-												showBookingInfoDialog(passengerBookingModel.getBookingID()));
-						binding.bookingHistoryRecyclerView
-								.setLayoutManager(new LinearLayoutManager(context));
-						binding.bookingHistoryRecyclerView
-								.setAdapter(bookingHistoryAdapter);
+						BookingHistoryAdapter bookingHistoryAdapter = new BookingHistoryAdapter(
+								context,
+								passengerBookingModelList,
+								passengerBookingModel ->
+										showBookingInfoDialog(passengerBookingModel.getBookingID()));
+						binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+						binding.bookingHistoryRecyclerView.setAdapter(bookingHistoryAdapter);
 
 					}
 				}
