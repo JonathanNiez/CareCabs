@@ -20,8 +20,6 @@ import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,7 +52,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 			finish();
 		});
 
-		loadBookingsFromDatabase();
+		loadPassengerBookingsFromDatabase();
 
 	}
 
@@ -63,7 +61,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		finish();
 	}
 
-	private void loadBookingsFromDatabase() {
+	private void loadPassengerBookingsFromDatabase() {
 		if (FirebaseMain.getUser() != null) {
 
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
@@ -171,7 +169,6 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		//update booking from passenger
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 				.getReference(StaticDataPasser.bookingCollection);
-
 
 		Map<String, Object> updateBookingStatus = new HashMap<>();
 		updateBookingStatus.put("bookingStatus", "Standby");

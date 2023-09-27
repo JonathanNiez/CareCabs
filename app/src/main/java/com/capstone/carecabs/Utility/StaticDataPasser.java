@@ -3,6 +3,10 @@ package com.capstone.carecabs.Utility;
 import android.net.Uri;
 
 public class StaticDataPasser {
+	public static String userCollection = "users";
+	public static String bookingCollection = "bookings";
+	public static String tripCollection = "trips";
+	public static String chatCollection = "chats";
 	public static String storeFirstName = "";
 	public static String storeLastName = "";
 	public static String storeSelectedSex = "";
@@ -15,10 +19,6 @@ public class StaticDataPasser {
 	public static String storeUserType = "";
 	public static String storePhoneNumber = "";
 	public static int storeFontSize = 17;
-
-	public static String userCollection = "users";
-	public static String bookingCollection = "bookings";
-	public static String tripCollection = "trips";
 	public static Uri storeUri = null;
 	public static String storeProfilePicUrl = "";
 	public static String storeSelectedMonth = "";
