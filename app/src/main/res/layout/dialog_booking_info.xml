@@ -32,6 +32,17 @@
 				android:textColor="@color/black"
 				android:textSize="22sp" />
 
+			<TextView
+				android:id="@+id/bookingStatusTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:fontFamily="@font/opensans_bold"
+				android:padding="5dp"
+				android:text="Booking Status"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
 			<de.hdodenhof.circleimageview.CircleImageView
 				android:id="@+id/passengerProfilePic"
 				android:layout_width="150dp"
@@ -95,6 +106,7 @@
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
+
 
 
 		</LinearLayout>

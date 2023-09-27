@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -42,28 +43,23 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.Pass
 		return new PassengerViewHolder(binding);
 	}
 
+	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
 		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
 
-		String getPassengerFirstname = passengerBookingModel.getPassengerFirstname();
-		String getPassengerLastname = passengerBookingModel.getPassengerLastname();
-		String getPassengerImage = passengerBookingModel.getPassengerProfilePicture();
-		String getPassengerType = passengerBookingModel.getPassengerUserType();
-		String getBookingDate = passengerBookingModel.getBookingTime();
-
-		String fullName = getPassengerFirstname + " " + getPassengerLastname;
+		String fullName = passengerBookingModel.getPassengerFirstname() + " " + passengerBookingModel.getPassengerLastname();
 
 		holder.binding.passengerName.setText(fullName);
-		if (!getPassengerImage.equals("default")) {
+		if (!passengerBookingModel.getPassengerProfilePicture().equals("default")) {
 			Glide.with(context)
-					.load(getPassengerImage)
+					.load(passengerBookingModel.getPassengerProfilePicture())
 					.placeholder(R.drawable.loading_gif)
 					.into(holder.binding.passengerImage);
 		}
-		holder.binding.passengerType.setText(getPassengerType);
-		holder.binding.bookingDate.setText("Booking Date: " + getBookingDate);
-
+		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
+		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingTime());
+		holder.binding.bookingStatus.setText("Booking Status: " + passengerBookingModel.getBookingStatus());
 		holder.itemView.setOnClickListener(view -> {
 			itemPassengerClickLister.onItemClick(passengerBookingModelList.get(position));
 		});

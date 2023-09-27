@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -229,74 +230,68 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void getCurrentFontSizeFromUserSetting() {
-		if (FirebaseMain.getUser() != null) {
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
-					.document(FirebaseMain.getUser().getUid());
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					Long getFontSizeLong = documentSnapshot.getLong("fontSize");
-					int getFontSize = getFontSizeLong.intValue();
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(StaticDataPasser.userCollection)
+				.document(FirebaseMain.getUser().getUid());
 
-					StaticDataPasser.storeFontSize = getFontSize;
+		documentReference.get()
+				.addOnSuccessListener(documentSnapshot -> {
+					if (documentSnapshot != null && documentSnapshot.exists()) {
+						Long getFontSizeLong = documentSnapshot.getLong("fontSize");
+						int getFontSize = getFontSizeLong.intValue();
 
-					switch (StaticDataPasser.storeFontSize) {
-						case 15:
-							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+						StaticDataPasser.storeFontSize = getFontSize;
 
-							break;
+						switch (StaticDataPasser.storeFontSize) {
+							case 15:
+								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
-						case 17:
-							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-							break;
+								break;
 
-						case 19:
-							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-							break;
+							case 17:
+								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+								break;
 
-						case 21:
-							binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-							binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+							case 19:
+								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+								break;
 
-							break;
+							case 21:
+								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+
+								break;
+						}
+					} else {
+
+						Log.e(TAG, "Not Exist");
+
 					}
-				} else {
-
-					Log.e(TAG, "Not Exist");
-
-				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-
-					Log.e(TAG, e.getMessage());
-
-				}
-			});
-		}
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
 	private void goToEditAccountFragment(Context context) {
@@ -324,8 +319,7 @@ public class HomeFragment extends Fragment {
 
 					} else {
 
-						StaticDataPasser.storeUserType = getRegisterUserType;
-						showRegisterNotCompleteDialog();
+						showRegisterNotCompleteDialog(getRegisterUserType);
 
 					}
 				}
@@ -341,72 +335,68 @@ public class HomeFragment extends Fragment {
 	}
 
 
+	@SuppressLint("SetTextI18n")
 	private void getUserTypeAndLoadProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
+
 			getCurrentFontSizeFromUserSetting();
 
-			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					binding.progressBarLayout.setVisibility(View.GONE);
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
-					String getUserType = documentSnapshot.getString("userType");
-					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
-					String getFirstName = documentSnapshot.getString("firstname");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							binding.progressBarLayout1.setVisibility(View.GONE);
+							binding.progressBarLayout2.setVisibility(View.GONE);
 
-					binding.firstnameTextView.setText(getFirstName);
+							String getUserType = documentSnapshot.getString("userType");
+							String getFirstName = documentSnapshot.getString("firstname");
 
-					if (!getVerificationStatus) {
-						showUserNotVerifiedNotification();
-					}
+							binding.firstnameTextView.setText(getFirstName);
 
-					switch (getUserType) {
-						case "Driver":
-							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
-							int getDriverRatings = getDriverRatingsLong.intValue();
-							Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
-							boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+							switch (getUserType) {
+								case "Driver":
+									Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
+									int getDriverRatings = getDriverRatingsLong.intValue();
+									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
+									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
 
-							binding.driverStatsLayout.setVisibility(View.VISIBLE);
-							binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
-							binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
+									binding.driverStatsLayout.setVisibility(View.VISIBLE);
+									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
+									binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
 
-							binding.driverStatusTextView.setVisibility(View.VISIBLE);
+									binding.driverStatusTextView.setVisibility(View.VISIBLE);
 
-							if (getDriverStatus) {
-								binding.driverStatusTextView.setTextColor(Color.BLUE);
-								binding.driverStatusTextView.setText("Driver Availability: Available");
-								binding.driverStatusSwitch.setChecked(true);
+									if (getDriverStatus) {
+										binding.driverStatusTextView.setTextColor(Color.BLUE);
+										binding.driverStatusTextView.setText("Driver Availability: Available");
+										binding.driverStatusSwitch.setChecked(true);
 
-							} else {
-								binding.driverStatusTextView.setTextColor(Color.RED);
-								binding.driverStatusTextView.setText("Driver Availability: Busy");
+									} else {
+										binding.driverStatusTextView.setTextColor(Color.RED);
+										binding.driverStatusTextView.setText("Driver Availability: Busy");
+									}
 
+									break;
+
+								case "Persons with Disability (PWD)":
+								case "Senior Citizen":
+									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
+									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
+
+									break;
 							}
+						}
+					})
+					.addOnFailureListener(e -> {
+						binding.progressBarLayout1.setVisibility(View.GONE);
+						binding.progressBarLayout2.setVisibility(View.GONE);
 
-
-							break;
-
-						case "Persons with Disability (PWD)":
-
-						case "Senior Citizen":
-							Long getTotalTrips = documentSnapshot.getLong("totalTrips");
-							binding.passengerStatsLayout.setVisibility(View.VISIBLE);
-							binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
-
-
-							break;
-
-					}
-
-				}
-			}).addOnFailureListener(e -> {
-				binding.progressBarLayout.setVisibility(View.GONE);
-
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, e.getMessage());
+					});
 
 		} else {
 			FirebaseMain.signOutUser();
@@ -418,7 +408,7 @@ public class HomeFragment extends Fragment {
 
 	}
 
-	private void showRegisterNotCompleteDialog() {
+	private void showRegisterNotCompleteDialog(String userType) {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
@@ -427,7 +417,7 @@ public class HomeFragment extends Fragment {
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
 		okBtn.setOnClickListener(v -> {
-			switch (StaticDataPasser.storeUserType) {
+			switch (userType) {
 				case "Driver":
 					intent = new Intent(getActivity(), RegisterDriverActivity.class);
 
@@ -458,34 +448,6 @@ public class HomeFragment extends Fragment {
 		if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()) {
 			registerNotCompleteDialog.dismiss();
 		}
-	}
-
-	private void showUserNotVerifiedNotification() {
-		String channelId = "verification_channel_id"; // Change this to your desired channel ID
-		String channelName = "CareCabs"; // Change this to your desired channel name
-		int notificationId = 4; // Change this to a unique ID for each notification
-
-		intent = new Intent(context, NotificationReceiver.class);
-		intent.setAction("user_not_verified_action"); // Define a custom action
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		NotificationManager notificationManager = (NotificationManager) requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
-			notificationManager.createNotificationChannel(channel);
-		}
-
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-				.setSmallIcon(R.drawable.logo)
-				.setContentTitle("CareCabs")
-				.setContentText("Your Account is not Verified, Please Scan you ID to Verify")
-				.setPriority(NotificationCompat.PRIORITY_HIGH)
-				.setAutoCancel(true)
-				.setContentIntent(pendingIntent);
-
-		Notification notification = builder.build();
-		notificationManager.notify(notificationId, notification);
 	}
 
 	private void showNoInternetDialog() {

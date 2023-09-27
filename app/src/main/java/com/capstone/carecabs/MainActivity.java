@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -31,10 +32,17 @@ import com.capstone.carecabs.Fragments.EditAccountFragment;
 import com.capstone.carecabs.Fragments.ChangeLanguageFragment;
 import com.capstone.carecabs.Fragments.HomeFragment;
 import com.capstone.carecabs.Fragments.PersonalInfoFragment;
+import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
+import com.capstone.carecabs.Utility.NotificationHelper;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.google.android.material.badge.BadgeDrawable;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -50,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
 	private BadgeDrawable badgeDrawable;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
-	private ListenerRegistration listenerRegistration;
-
+	private DatabaseReference bookingReference;
 	private ActivityMainBinding binding;
 
 	@Override
@@ -67,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
 		closeExitConfirmationDialog();
 		updateDriverStatus(false);
-		stopCheckWaitingPassengers();
 	}
 
 	@Override
@@ -102,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
 			} else if (item.getItemId() == R.id.map) {
 
 				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
-					getUserType();
+					getUserTypeForMap();
 				} else {
 					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
 					startActivity(intent);
@@ -170,9 +176,44 @@ public class MainActivity extends AppCompatActivity {
 		finish();
 	}
 
+	private void checkIfBookingIsAccepted() {
+
+		bookingReference = FirebaseDatabase.getInstance()
+				.getReference(StaticDataPasser.bookingCollection);
+
+		bookingReference.addValueEventListener(new ValueEventListener() {
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot != null && snapshot.exists()) {
+					for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingData =
+								locationSnapshot.getValue(PassengerBookingModel.class);
+						if (passengerBookingData != null) {
+
+							if (passengerBookingData.getBookingStatus() == "") {
+								showBookingIsAcceptedNotification();
+							}
+						}
+					}
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, error.getMessage());
+
+			}
+		});
+	}
+
+	private void showBookingIsAcceptedNotification() {
+		NotificationHelper notificationHelper = new NotificationHelper(this);
+		notificationHelper.showBookingIsAcceptedNotificationNotification("CareCabs", "A Driver has accepted your Booking and is on the way to pick up you");
+	}
 
 	private void checkUserIfVerified() {
 		if (FirebaseMain.getUser() != null) {
+
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection)
 					.document(FirebaseMain.getUser().getUid());
@@ -182,42 +223,70 @@ public class MainActivity extends AppCompatActivity {
 					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
 					badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
+
 					if (!getVerificationStatus) {
 						if (badgeDrawable != null) {
 							badgeDrawable.setVisible(true);
 							badgeDrawable.setNumber(1);
 						}
+
+						showProfileNotVerifiedNotification();
+
 					} else {
 						binding.bottomNavigationView.removeBadge(R.id.myProfile);
-						checkWaitingPassengers();
+						getUserTypeToCheckIfBookingIsAccepted();
 					}
 
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+		} else {
+			FirebaseMain.signOutUser();
+
+			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
 		}
 	}
 
 	private void checkWaitingPassengers() {
-		listenerRegistration = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.bookingCollection)
-				.addSnapshotListener((QuerySnapshot querySnapshot, FirebaseFirestoreException e) -> {
-					if (e != null) {
-						return;
-					}
+		bookingReference = FirebaseDatabase.getInstance()
+				.getReference(StaticDataPasser.bookingCollection);
+		bookingReference.addValueEventListener(new ValueEventListener() {
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot != null && snapshot.exists()) {
+					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingData =
+								bookingSnapshot.getValue(PassengerBookingModel.class);
+						if (passengerBookingData != null) {
 
-					for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-						showPassengersWaitingNotification();
+							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.map);
+
+							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
+								showPassengersWaitingNotification();
+
+								if (badgeDrawable != null) {
+									badgeDrawable.setVisible(true);
+									badgeDrawable.setNumber(1);
+								}
+							}else{
+								if (badgeDrawable != null) {
+									binding.bottomNavigationView.removeBadge(R.id.map);
+								}
+							}
+						}
 					}
-				});
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, error.getMessage());
+			}
+		});
 	}
 
-	private void stopCheckWaitingPassengers() {
-		if (listenerRegistration != null) {
-			listenerRegistration.remove();
-		}
-	}
-
-	private void getUserType() {
+	private void getUserTypeForMap() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(StaticDataPasser.userCollection)
@@ -234,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
 
 						case "Senior Citizen":
 						case "Persons with Disability (PWD)":
+
 							intent = new Intent(MainActivity.this, MapPassengerActivity.class);
 
 							break;
@@ -247,6 +317,28 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void getUserTypeToCheckIfBookingIsAccepted() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(StaticDataPasser.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			documentReference.get().addOnSuccessListener(documentSnapshot -> {
+				if (documentSnapshot != null && documentSnapshot.exists()) {
+					String getUserType = documentSnapshot.getString("userType");
+
+					if (getUserType.equals("Senior Citizen") || getUserType.equals("Persons with Disability (PWD)")) {
+						checkIfBookingIsAccepted();
+					} else {
+						checkWaitingPassengers();
+					}
+
+				}
+			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+		}
+	}
+
+
 	private void updateDriverStatus(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
 			FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
@@ -255,32 +347,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void showProfileNotVerifiedNotification() {
+		NotificationHelper notificationHelper = new NotificationHelper(this);
+		notificationHelper.showProfileNotVerifiedNotification("CareCabs",
+				"Your Profile is not Verified. Please scan your ID to Verify");
+	}
+
 	private void showPassengersWaitingNotification() {
-		String channelId = "verification_channel_id"; // Change this to your desired channel ID
-		String channelName = "CareCabs"; // Change this to your desired channel name
-		int notificationId = 4; // Change this to a unique ID for each notification
-
-		intent = new Intent(MainActivity.this, HomeFragment.NotificationReceiver.class);
-		intent.setAction("user_not_verified_action"); // Define a custom action
-		PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		NotificationManager notificationManager = (NotificationManager) MainActivity.this.getSystemService(Context.NOTIFICATION_SERVICE);
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
-			notificationManager.createNotificationChannel(channel);
-		}
-
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, channelId)
-				.setSmallIcon(R.drawable.logo)
-				.setContentTitle("CareCabs")
-				.setContentText("There are waiting Passengers right now. Go to Map to pickup the Passengers")
-				.setPriority(NotificationCompat.PRIORITY_HIGH)
-				.setAutoCancel(true)
-				.setContentIntent(pendingIntent);
-
-		Notification notification = builder.build();
-		notificationManager.notify(notificationId, notification);
+		NotificationHelper notificationHelper = new NotificationHelper(this);
+		notificationHelper.showPassengersWaitingNotification("CareCabs",
+				"There are Passenger(s) waiting right now. Go to Map to check their location");
 	}
 
 	private void showExitConfirmationDialog() {

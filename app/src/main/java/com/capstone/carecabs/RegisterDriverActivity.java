@@ -683,7 +683,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		}
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-				.setSmallIcon(R.drawable.logo)
+				.setSmallIcon(R.drawable.logo_2_v2)
 				.setContentTitle("Registration Successful")
 				.setContentText("You have successfully registered as a Driver!");
 

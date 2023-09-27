@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Model.PassengerBookingModel
+import com.capstone.carecabs.Model.TripModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding
@@ -55,6 +56,7 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import java.util.Calendar
 import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity() {
@@ -207,7 +209,6 @@ class MapDriverActivity : AppCompatActivity() {
         )
     }
 
-
     private fun initializeBottomNavButtons() {
         binding.bottomNavigationView.selectedItemId = R.id.setLocation
 
@@ -229,10 +230,6 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateRandomTripID(): String {
-        val uuid = UUID.randomUUID()
-        return uuid.toString()
-    }
 
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
@@ -399,7 +396,72 @@ class MapDriverActivity : AppCompatActivity() {
 
     }
 
-    @SuppressLint("SetTextI18n")
+    private fun getCurrentTimeAndDate(): String {
+        val calendar = Calendar.getInstance() // Get a Calendar instance
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+
+        return "$month-$day-$year $hour:$minute:$second"
+    }
+
+    private fun generateRandomTripID(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
+    }
+
+    private fun storeTripToDatabase(
+        generateTripID: String,
+        bookingID: String,
+        passengerID: String,
+        currentLatitude: Double,
+        currentLongitude: Double,
+        destinationLatitude: Double,
+        destinationLongitude: Double
+    ) {
+
+        documentReference = FirebaseMain.getFireStoreInstance()
+            .collection(StaticDataPasser.tripCollection).document(generateTripID)
+
+        val tripModel = TripModel(
+            tripID = generateTripID,
+            bookingID = bookingID,
+            userDriverID = FirebaseMain.getUser().uid,
+            userPassengerID = passengerID,
+            tripTime = getCurrentTimeAndDate(),
+            currentLatitude = currentLatitude,
+            currentLongitude = currentLongitude,
+            destinationLatitude = destinationLatitude,
+            destinationLongitude = destinationLongitude
+        )
+
+        documentReference.set(tripModel)
+            .addOnSuccessListener {
+            }.addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+
+        //update booking from passenger
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(StaticDataPasser.bookingCollection)
+
+        val updateBookingStatus = HashMap<String, Any>()
+        updateBookingStatus["bookingStatus"] = "StandBy"
+
+        bookingReference.child(bookingID)
+            .updateChildren(updateBookingStatus)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Booking Accepted", Toast.LENGTH_LONG).show()
+            }
+            .addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+            }
+    }
+
+    @SuppressLint("SetTextI18n", "RestrictedApi")
     private fun showPassengerLocationInfoDialog(bookingID: String) {
 
         val binding = DialogBookingInfoBinding.inflate(layoutInflater)
@@ -423,6 +485,31 @@ class MapDriverActivity : AppCompatActivity() {
                         if (passengerBookingData != null) {
                             if (passengerBookingData.bookingID == bookingID) {
                                 binding.progressBarLayout.visibility = View.GONE
+
+                                StaticDataPasser.storePassengerID =
+                                    passengerBookingData.passengerUserID
+                                StaticDataPasser.storeCurrentLatitude =
+                                    passengerBookingData.currentLatitude
+                                StaticDataPasser.storeCurrentLongitude =
+                                    passengerBookingData.currentLongitude
+                                StaticDataPasser.storeDestinationLatitude =
+                                    passengerBookingData.destinationLatitude
+                                StaticDataPasser.storeDestinationLongitude =
+                                    passengerBookingData.destinationLongitude
+
+
+                                if (passengerBookingData.bookingStatus == "Waiting") {
+                                    val textColor = ContextCompat.getColor(
+                                        this@MapDriverActivity,
+                                        R.color.light_blue
+                                    )
+                                    binding.bookingStatusTextView.setTextColor(textColor)
+                                    binding.bookingStatusTextView.text =
+                                        "Status: ${passengerBookingData.bookingStatus}"
+                                } else if (passengerBookingData.bookingStatus == "StandBy") {
+                                    binding.bookingStatusTextView.text =
+                                        "Status: ${passengerBookingData.bookingStatus}"
+                                }
 
                                 binding.fullNameTextView.text =
                                     "${passengerBookingData.passengerFirstname} ${passengerBookingData.passengerLastname}"
@@ -453,7 +540,6 @@ class MapDriverActivity : AppCompatActivity() {
 
                                     }
                                 }
-
                             }
                         }
                     }
@@ -467,7 +553,17 @@ class MapDriverActivity : AppCompatActivity() {
         })
 
         binding.pickupBtn.setOnClickListener {
+            storeTripToDatabase(
+                generateRandomTripID(),
+                bookingID,
+                StaticDataPasser.storePassengerID,
+                StaticDataPasser.storeCurrentLatitude,
+                StaticDataPasser.storeCurrentLongitude,
+                StaticDataPasser.storeDestinationLatitude,
+                StaticDataPasser.storeDestinationLongitude
+            )
 
+            closePassengerLocationInfoDialog()
         }
 
         binding.closeBtn.setOnClickListener {

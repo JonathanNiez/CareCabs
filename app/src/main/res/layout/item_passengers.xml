@@ -89,13 +89,12 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/opensans_bold"
 					android:text="Booking Status"
 					android:textColor="@color/black"
-					android:textSize="17sp" />
+					android:textSize="20sp" />
 
 			</LinearLayout>
-
 
 		</androidx.cardview.widget.CardView>
 

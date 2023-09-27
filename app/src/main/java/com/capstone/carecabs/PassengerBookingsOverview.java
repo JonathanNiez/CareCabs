@@ -81,7 +81,8 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 									passengerBookingModel.getPassengerUserType(),
 									passengerBookingModel.getPassengerProfilePicture(),
 									passengerBookingModel.getPassengerDisability(),
-									passengerBookingModel.getPassengerMedicalCondition()
+									passengerBookingModel.getPassengerMedicalCondition(),
+									passengerBookingModel.getBookingStatus()
 							));
 					binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 					binding.bookingHistoryRecyclerView.setAdapter(passengerAdapter);
@@ -102,12 +103,16 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		}
 	}
 
-	private void showBookingInfoDialog(String firstname,
-	                                   String lastname,
-	                                   String userType,
-	                                   String profilePicture,
-	                                   String disability,
-	                                   String medicalCondition) {
+	@SuppressLint("SetTextI18n")
+	private void showBookingInfoDialog(
+			String firstname,
+			String lastname,
+			String userType,
+			String profilePicture,
+			String disability,
+			String medicalCondition,
+			String bookingStatus
+	) {
 
 		DialogBookingInfoBinding binding = DialogBookingInfoBinding
 				.inflate(getLayoutInflater());
@@ -120,9 +125,9 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		binding.medicalConditionTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 
-		String fullname = firstname + " " + lastname;
+		String fullName = firstname + " " + lastname;
 
-		binding.fullNameTextView.setText(fullname);
+		binding.fullNameTextView.setText(fullName);
 
 		switch (userType) {
 			case "Senior Citizen":
@@ -136,7 +141,9 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 				break;
 		}
+
 		binding.userTypeTextView.setText(userType);
+		binding.bookingStatusTextView.setText("Booking Status: " + bookingStatus);
 
 		if (!profilePicture.equals("default")) {
 			Glide.with(this)

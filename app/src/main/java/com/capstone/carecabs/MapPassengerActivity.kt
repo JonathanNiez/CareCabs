@@ -24,6 +24,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Model.PassengerBookingModel
+import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
@@ -49,7 +50,6 @@ import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
@@ -119,6 +119,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding = ActivityMapPassengerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        checkIfBookingIsAccepted()
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
@@ -453,7 +454,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     @SuppressLint("SetTextI18n")
     override fun onMapClick(point: Point): Boolean {
 
-        storeCoordinatesInDatabase(point)
+        storeCoordinatesInFireStore(point)
 
         binding.desiredDestinationTextView.text =
             point.latitude().toString() + "\n" + point.longitude().toString()
@@ -580,7 +581,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
 
-    private fun storeCoordinatesInDatabase(point: Point) {
+    private fun storeCoordinatesInFireStore(point: Point) {
         if (FirebaseMain.getUser() != null) {
 
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -641,7 +642,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         profilePicture: String, disability: String, generateLocationID: String
     ) {
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
+        val locationReference = database.getReference(StaticDataPasser.tripCollection)
             .child(generateLocationID)
 
         val passengerBookingModel = PassengerBookingModel(
@@ -659,16 +660,18 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerUserType = userType,
             passengerDisability = disability
         )
-        locationReference.setValue(passengerBookingModel).addOnSuccessListener {
-            Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
+        locationReference.setValue(passengerBookingModel)
+            .addOnSuccessListener {
 
-            loadCurrentCoordinatesToMapFromDatabase()
+                Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
 
-        }.addOnFailureListener {
-            Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
+                loadCurrentCoordinatesToMapFromDatabase()
 
-            Log.e(TAG, it.message.toString())
-        }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
+
+                Log.e(TAG, it.message.toString())
+            }
 
     }
 
@@ -709,6 +712,45 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             }
     }
 
+    private fun checkIfBookingIsAccepted() {
+
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(StaticDataPasser.bookingCollection)
+
+        bookingReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot != null && snapshot.exists()) {
+
+                    for (locationSnapshot in snapshot.children) {
+                        val passengerBookingData =
+                            locationSnapshot.getValue(PassengerBookingModel::class.java)
+                        if (passengerBookingData != null) {
+
+                            if (passengerBookingData.bookingStatus == "???") {
+                                showBookingIsAcceptedNotification()
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, error.message)
+            }
+        }
+        )
+    }
+
+    private fun showBookingIsAcceptedNotification() {
+        val notificationHelper = NotificationHelper(this)
+        notificationHelper.showBookingIsAcceptedNotificationNotification(
+            "CareCabs",
+            "A Driver has accepted your Booking and is on the way to your location"
+        )
+    }
+
+
     private fun showPassengerOwnBookingInfoDialog(bookingID: String) {
 
         val binding: DialogPassengerOwnBookingInfoBinding =
@@ -717,7 +759,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         val dialogView = binding.root
 
         val database = FirebaseDatabase.getInstance()
-        var locationReference = database.getReference(StaticDataPasser.bookingCollection)
+        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
 
         locationReference.addValueEventListener(object : ValueEventListener {
             @SuppressLint("SetTextI18n")

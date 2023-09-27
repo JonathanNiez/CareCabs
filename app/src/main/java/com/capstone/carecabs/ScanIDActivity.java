@@ -56,6 +56,27 @@ public class ScanIDActivity extends AppCompatActivity {
 	private ActivityScanIdBinding binding;
 
 	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeCancelScanIDDialog();
+		closeNoInternetDialog();
+		closeOptionsDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeCancelScanIDDialog();
+		closeNoInternetDialog();
+		closeOptionsDialog();
+	}
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityScanIdBinding.inflate(getLayoutInflater());
@@ -87,27 +108,7 @@ public class ScanIDActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
 
-		closeCancelScanIDDialog();
-		closeNoInternetDialog();
-		closeOptionsDialog();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeCancelScanIDDialog();
-		closeNoInternetDialog();
-		closeOptionsDialog();
-	}
 
 	private void showCancelScanIDDialog() {
 		builder = new AlertDialog.Builder(this);
