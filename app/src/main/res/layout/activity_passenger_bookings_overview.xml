@@ -38,7 +38,8 @@
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
 				android:fontFamily="@font/opensans_bold"
-				android:text="BOOKING OVERVIEW"
+				android:text="PASSENGER BOOKINGS\nOVERVIEW"
+				android:textAlignment="center"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 

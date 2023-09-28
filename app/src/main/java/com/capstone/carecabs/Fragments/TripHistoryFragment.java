@@ -40,17 +40,17 @@ public class TripHistoryFragment extends Fragment {
 		View view = binding.getRoot();
 
 		context = getContext();
-		loadTripHistoryFromFireStore(context);
+		loadTripHistoryFromFireStore();
 
 		return view;
 	}
 
 
-	private void loadTripHistoryFromFireStore(Context context) {
+	private void loadTripHistoryFromFireStore() {
 		if (FirebaseMain.getUser() != null) {
 
 			CollectionReference collectionReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.tripCollection);
+					.collection(FirebaseMain.tripCollection);
 
 			collectionReference.addSnapshotListener((value, error) -> {
 				if (value != null) {
@@ -59,7 +59,7 @@ public class TripHistoryFragment extends Fragment {
 					for (QueryDocumentSnapshot tripSnapshot : value) {
 						TripModel tripModel = tripSnapshot.toObject(TripModel.class);
 
-						if (tripModel.getUserPassengerID().equals(FirebaseMain.getUser().getUid())) {
+						if (tripModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
 							tripModelList.add(tripModel);
 						}
 					}

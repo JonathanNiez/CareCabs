@@ -5,22 +5,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 
 import com.capstone.carecabs.Adapters.ChatAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatModel;
-import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityChatBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.checkerframework.checker.units.qual.C;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class ChatActivity extends AppCompatActivity {
+	private final String TAG = "ChatActivity";
 	private DatabaseReference databaseReference;
 	private ActivityChatBinding binding;
 
@@ -37,6 +40,12 @@ public class ChatActivity extends AppCompatActivity {
 		binding = ActivityChatBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		Intent intent = getIntent();
+		String getDriverID = intent.getStringExtra("driverID");
+		String getTripID = intent.getStringExtra("tripID");
+
+		loadCurrentChatUser(getDriverID);
+
 		binding.sendMessageBtn.setOnClickListener(v -> {
 			String message = binding.messageEditText.getText().toString();
 			if (message.isEmpty()) {
@@ -45,10 +54,18 @@ public class ChatActivity extends AppCompatActivity {
 			} else {
 				binding.messageEditText.setText("");
 
-				sendMessage(generateRandomChatID(), getCurrentTimeAndDate(), FirebaseMain.getUser().getUid(), null, message);
+				sendMessage(
+						generateRandomChatID(),
+						getTripID,
+						getCurrentTimeAndDate(),
+						FirebaseMain.getUser().getUid(),
+						getDriverID,
+						message
+				);
 			}
 		});
 	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -58,6 +75,27 @@ public class ChatActivity extends AppCompatActivity {
 	private String generateRandomChatID() {
 		UUID uuid = UUID.randomUUID();
 		return uuid.toString();
+	}
+
+	@SuppressLint("SetTextI18n")
+	private void loadCurrentChatUser(String driverID) {
+
+		readMessage(FirebaseMain.getUser().getUid(), driverID);
+		//load the message receiver profile
+		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(driverID);
+
+		documentReference.get()
+				.addOnSuccessListener(documentSnapshot -> {
+					if (documentSnapshot != null && documentSnapshot.exists()) {
+						String getFirstname = documentSnapshot.getString("firstname");
+						String getLastname = documentSnapshot.getString("lastname");
+
+						binding.receiverFullNameTextView.setText(getFirstname + " " + getLastname);
+					}
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -73,27 +111,33 @@ public class ChatActivity extends AppCompatActivity {
 		return String.format("%02d-%02d-%04d %02d:%02d:%02d", month, day, year, hour, minute, second);
 	}
 
-	private void sendMessage(String chatID, String chatDate, String sender, String receiver, String message) {
+	private void sendMessage(
+			String chatID,
+			String tripID,
+			String chatDate,
+			String sender,
+			String receiver,
+			String message
+	) {
 
-		databaseReference = FirebaseDatabase.getInstance()
-				.getReference();
+		databaseReference = FirebaseDatabase.getInstance().getReference();
 
 		ChatModel chatModel = new ChatModel(
 				chatID,
-				null,
+				tripID,
 				chatDate,
 				sender,
 				receiver,
 				message
 		);
 
-		databaseReference.child(StaticDataPasser.chatCollection).push().setValue(chatModel);
+		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatModel);
 	}
 
-	private void readMessage(String senderID, String receiverID, String imageURL) {
+	private void readMessage(String senderID, String receiverID) {
 
 		databaseReference = FirebaseDatabase.getInstance()
-				.getReference(StaticDataPasser.chatCollection);
+				.getReference(FirebaseMain.chatCollection);
 		databaseReference.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -117,7 +161,7 @@ public class ChatActivity extends AppCompatActivity {
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-
+				Log.e(TAG, error.getMessage());
 			}
 		});
 	}

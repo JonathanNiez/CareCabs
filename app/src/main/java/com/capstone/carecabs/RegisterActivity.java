@@ -180,7 +180,7 @@ public class RegisterActivity extends AppCompatActivity {
 			getUserID = authResult.getUser().getUid();
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
@@ -201,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
 			getUserID = authResult.getUser().getUid();
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
@@ -222,7 +222,7 @@ public class RegisterActivity extends AppCompatActivity {
 			getUserID = authResult.getUser().getUid();
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
 		}).addOnFailureListener(e -> {
@@ -542,7 +542,8 @@ public class RegisterActivity extends AppCompatActivity {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -560,7 +561,8 @@ public class RegisterActivity extends AppCompatActivity {
 	private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -579,7 +581,8 @@ public class RegisterActivity extends AppCompatActivity {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection).document(getUserID);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {

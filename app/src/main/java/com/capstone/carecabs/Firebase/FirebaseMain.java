@@ -8,6 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
 public class FirebaseMain {
+	public static String userCollection = "users";
+	public static String bookingCollection = "bookings";
+	public static String tripCollection = "trips";
+	public static String chatCollection = "chats";
 
 	private static FirebaseFirestore firebaseFirestore;
 	public static DatabaseReference databaseReference;

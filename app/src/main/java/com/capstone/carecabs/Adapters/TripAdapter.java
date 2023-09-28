@@ -13,18 +13,14 @@ import com.capstone.carecabs.databinding.ItemTripsBinding;
 import java.util.List;
 
 public class TripAdapter extends RecyclerView.Adapter<TripAdapter.TripViewHolder> {
-	private final List<TripModel> tripModelList;
-
 	private final Context context;
 
-	public TripAdapter(
-			Context context,
-			List<TripModel> tripModelList
-	) {
+	private final List<TripModel> tripModelList;
+
+	public TripAdapter(Context context, List<TripModel> tripModelList) {
 		this.context = context;
 		this.tripModelList = tripModelList;
 	}
-
 
 	@NonNull
 	@Override

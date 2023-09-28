@@ -30,8 +30,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
+import com.capstone.carecabs.BookingsActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.MapPassengerActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
@@ -104,6 +106,7 @@ public class HomeFragment extends Fragment {
 
 		binding.driverStatsLayout.setVisibility(View.GONE);
 		binding.passengerStatsLayout.setVisibility(View.GONE);
+		binding.passengerQuickBtnLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
@@ -120,6 +123,18 @@ public class HomeFragment extends Fragment {
 		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) ->
 				updateDriverStatus(b)
 		);
+
+		binding.bookARideBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), MapPassengerActivity.class);
+			startActivity(intent);
+			getActivity().finish();
+		});
+
+		binding.bookingHistoryBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), BookingsActivity.class);
+			startActivity(intent);
+			getActivity().finish();
+		});
 
 		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
 		binding.viewPager.setAdapter(adapter);
@@ -209,7 +224,7 @@ public class HomeFragment extends Fragment {
 
 	private void updateDriverStatus(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
-			FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
+			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 
@@ -231,7 +246,7 @@ public class HomeFragment extends Fragment {
 
 	private void getCurrentFontSizeFromUserSetting() {
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection)
+				.collection(FirebaseMain.userCollection)
 				.document(FirebaseMain.getUser().getUid());
 
 		documentReference.get()
@@ -306,7 +321,7 @@ public class HomeFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(getUserID);
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {
@@ -342,7 +357,7 @@ public class HomeFragment extends Fragment {
 			getCurrentFontSizeFromUserSetting();
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get()
@@ -385,6 +400,7 @@ public class HomeFragment extends Fragment {
 								case "Senior Citizen":
 									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
 									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+									binding.passengerQuickBtnLayout.setVisibility(View.VISIBLE);
 									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
 
 									break;

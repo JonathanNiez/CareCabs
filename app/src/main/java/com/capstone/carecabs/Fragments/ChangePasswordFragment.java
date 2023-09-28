@@ -88,7 +88,7 @@ public class ChangePasswordFragment extends Fragment {
 	private void checkUserRegisterMethod() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {

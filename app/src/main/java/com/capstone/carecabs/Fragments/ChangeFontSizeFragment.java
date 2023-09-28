@@ -85,7 +85,7 @@ public class ChangeFontSizeFragment extends Fragment {
 	private void updateFontSizeToFireStore(int fontSize) {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 			Map<String, Object> updateFontSize = new HashMap<>();
 			updateFontSize.put("fontSize", fontSize);
@@ -96,13 +96,10 @@ public class ChangeFontSizeFragment extends Fragment {
 					closePleaseWaitDialog();
 
 				}
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-					closePleaseWaitDialog();
+			}).addOnFailureListener(e -> {
+				closePleaseWaitDialog();
 
-					Log.e(TAG, e.getMessage());
-				}
+				Log.e(TAG, e.getMessage());
 			});
 		}
 	}
@@ -112,7 +109,7 @@ public class ChangeFontSizeFragment extends Fragment {
 		showPleaseWaitDialog();
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 			documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 				@Override

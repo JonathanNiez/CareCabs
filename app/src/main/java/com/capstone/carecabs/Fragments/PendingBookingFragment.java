@@ -13,12 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.capstone.carecabs.Adapters.BookingHistoryAdapter;
+import com.capstone.carecabs.Adapters.CurrentPassengerPendingBookingsAdapter;
 import com.capstone.carecabs.ChatActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
+import com.capstone.carecabs.Model.CurrentPassengerPendingBookingsModel;
 import com.capstone.carecabs.Model.PassengerBookingModel;
-import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentPendingBookingBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -57,32 +57,35 @@ public class PendingBookingFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-					.getReference(StaticDataPasser.bookingCollection);
+					.getReference(FirebaseMain.bookingCollection);
 
 			databaseReference.addValueEventListener(new ValueEventListener() {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
-						List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
+						List<CurrentPassengerPendingBookingsModel> currentPassengerPendingBookingsModelList = new ArrayList<>();
 
-						for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
-							PassengerBookingModel passengerBookingModel =
-									locationSnapshot.getValue(PassengerBookingModel.class);
-							if (passengerBookingModel != null) {
-								if (passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
-									passengerBookingModelList.add(passengerBookingModel);
+						for (DataSnapshot pendingBookingSnapshot : snapshot.getChildren()) {
+							CurrentPassengerPendingBookingsModel currentPassengerPendingBookingsModel =
+									pendingBookingSnapshot.getValue(CurrentPassengerPendingBookingsModel.class);
+							if (currentPassengerPendingBookingsModel != null) {
+								if (currentPassengerPendingBookingsModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
+										&& currentPassengerPendingBookingsModel.getBookingStatus().equals("Standby")) {
+									currentPassengerPendingBookingsModelList.add(currentPassengerPendingBookingsModel);
 								}
 							}
 						}
 
-						BookingHistoryAdapter bookingHistoryAdapter = new BookingHistoryAdapter(
-								context,
-								passengerBookingModelList,
-								passengerBookingModel -> goToChatActivity(
-										passengerBookingModel.getBookingID()
-								));
+						CurrentPassengerPendingBookingsAdapter currentPassengerPendingBookingsAdapter =
+								new CurrentPassengerPendingBookingsAdapter(
+										context,
+										currentPassengerPendingBookingsModelList,
+										currentPassengerPendingBookingsModel -> goToChatActivity(
+												currentPassengerPendingBookingsModel.getDriverUserID(),
+												currentPassengerPendingBookingsModel.getTripID()
+										));
 						binding.pendingBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-						binding.pendingBookingsRecyclerView.setAdapter(bookingHistoryAdapter);
+						binding.pendingBookingsRecyclerView.setAdapter(currentPassengerPendingBookingsAdapter);
 
 					}
 				}
@@ -99,8 +102,11 @@ public class PendingBookingFragment extends Fragment {
 			getActivity().finish();
 		}
 	}
-	private void goToChatActivity(String bookingID){
+
+	private void goToChatActivity(String driverID, String tripID) {
 		Intent intent = new Intent(getActivity(), ChatActivity.class);
+		intent.putExtra("driverID", driverID);
+		intent.putExtra("tripID", tripID);
 		startActivity(intent);
 	}
 }

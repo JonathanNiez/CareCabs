@@ -304,7 +304,7 @@ public class EditAccountFragment extends Fragment {
 
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {
@@ -925,7 +925,7 @@ public class EditAccountFragment extends Fragment {
 	private void storeImageUrlInFireStore(String imageUrl) {
 		userID = FirebaseMain.getUser().getUid();
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> profilePicture = new HashMap<>();
 		profilePicture.put("profilePicture", imageUrl);

@@ -251,7 +251,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	                                           boolean verificationStatus) {
 		userID = FirebaseMain.getUser().getUid();
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("firstname", firstname);
@@ -292,7 +292,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private void updateCancelledRegister(String userID) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
@@ -403,7 +403,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private void storeImageUrlInFireStore(String imageUrl) {
 		userID = FirebaseMain.getUser().getUid();
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> profilePicture = new HashMap<>();
 		profilePicture.put("profilePicture", imageUrl);

@@ -171,7 +171,7 @@ public class AccountFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(getUserID);
+					.collection(FirebaseMain.userCollection).document(getUserID);
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot.exists()) {
 					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
@@ -304,7 +304,7 @@ public class AccountFragment extends Fragment {
 
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {

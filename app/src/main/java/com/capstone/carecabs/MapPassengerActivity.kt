@@ -183,7 +183,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun getUserProfilePictureFromFireStore() {
 
         documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.userCollection)
+            .collection(FirebaseMain.userCollection)
             .document(FirebaseMain.getUser().uid)
 
         documentReference.get().addOnSuccessListener {
@@ -477,7 +477,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         if (FirebaseMain.getUser() != null) {
 
             val locationReference = FirebaseDatabase.getInstance()
-                .getReference(StaticDataPasser.bookingCollection)
+                .getReference(FirebaseMain.bookingCollection)
 
             locationReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -553,7 +553,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.userCollection)
+                .collection(FirebaseMain.userCollection)
                 .document(FirebaseMain.getUser().uid)
 
             documentReference.get().addOnSuccessListener {
@@ -586,7 +586,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         if (FirebaseMain.getUser() != null) {
 
             documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.userCollection)
+                .collection(FirebaseMain.userCollection)
                 .document(FirebaseMain.getUser().uid)
 
             documentReference.get()
@@ -643,7 +643,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         profilePicture: String, disability: String, generateLocationID: String
     ) {
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.tripCollection)
+        val locationReference = database.getReference(FirebaseMain.tripCollection)
             .child(generateLocationID)
 
         val passengerBookingModel = PassengerBookingModel(
@@ -682,12 +682,13 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     ) {
 
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
+        val locationReference = database.getReference(FirebaseMain.bookingCollection)
             .child(generateLocationID)
 
         val passengerBookingModel = PassengerBookingModel(
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
+            bookingStatus = "Waiting",
             currentLongitude = StaticDataPasser.storeLongitude,
             currentLatitude = StaticDataPasser.storeLatitude,
             destinationLongitude = point.longitude(),
@@ -716,7 +717,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun checkIfBookingIsAccepted() {
 
         val bookingReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.bookingCollection)
+            .getReference(FirebaseMain.bookingCollection)
 
         bookingReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -760,7 +761,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         val dialogView = binding.root
 
         val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(StaticDataPasser.bookingCollection)
+        val locationReference = database.getReference(FirebaseMain.bookingCollection)
 
         locationReference.addValueEventListener(object : ValueEventListener {
             @SuppressLint("SetTextI18n")

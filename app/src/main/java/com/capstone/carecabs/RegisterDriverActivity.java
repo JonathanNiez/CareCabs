@@ -220,7 +220,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		if (FirebaseMain.getUser() != null) {
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(userID);
 
 			Map<String, Object> registerUser = new HashMap<>();
@@ -267,7 +267,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private void updateCancelledRegister(String userID) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
@@ -293,7 +293,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 	private void updateInterruptedCancelledRegister(String userID) {
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection)
+				.collection(FirebaseMain.userCollection)
 				.document(userID);
 
 		Map<String, Object> updateRegister = new HashMap<>();
@@ -426,7 +426,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private void storeImageUrlInFireStore(String imageUrl) {
 		userID = FirebaseMain.getUser().getUid();
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> profilePicture = new HashMap<>();
 		profilePicture.put("profilePicture", imageUrl);

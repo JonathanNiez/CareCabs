@@ -3,10 +3,6 @@ package com.capstone.carecabs.Utility;
 import android.net.Uri;
 
 public class StaticDataPasser {
-	public static String userCollection = "users";
-	public static String bookingCollection = "bookings";
-	public static String tripCollection = "trips";
-	public static String chatCollection = "chats";
 	public static String storeFirstName = "";
 	public static String storeLastName = "";
 	public static String storeSelectedSex = "";

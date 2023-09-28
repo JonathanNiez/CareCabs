@@ -16,23 +16,21 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
-public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.PassengerViewHolder> {
+public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
+	private Context context;
+	private final List<PassengerBookingModel> passengerBookingModelList;
+	private ItemPassengerClickListener itemPassengerClickListener;
 
-	public interface ItemPassengerClickLister {
+	public interface ItemPassengerClickListener {
 		void onItemClick(PassengerBookingModel passengerBookingModel);
 	}
 
-	private ItemPassengerClickLister itemPassengerClickLister;
-	private final List<PassengerBookingModel> passengerBookingModelList;
-
-	private Context context;
-
-	public PassengerAdapter(Context context,
-	                        List<PassengerBookingModel> passengerBookingModelList,
-	                        ItemPassengerClickLister itemPassengerClickLister) {
+	public PassengerBookingsAdapter(Context context,
+	                                List<PassengerBookingModel> passengerBookingModelList,
+	                                ItemPassengerClickListener itemPassengerClickListener) {
 		this.context = context;
 		this.passengerBookingModelList = passengerBookingModelList;
-		this.itemPassengerClickLister = itemPassengerClickLister;
+		this.itemPassengerClickListener = itemPassengerClickListener;
 	}
 
 	@NonNull
@@ -61,7 +59,7 @@ public class PassengerAdapter extends RecyclerView.Adapter<PassengerAdapter.Pass
 		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingTime());
 		holder.binding.bookingStatus.setText("Booking Status: " + passengerBookingModel.getBookingStatus());
 		holder.itemView.setOnClickListener(view -> {
-			itemPassengerClickLister.onItemClick(passengerBookingModelList.get(position));
+			itemPassengerClickListener.onItemClick(passengerBookingModelList.get(position));
 		});
 	}
 

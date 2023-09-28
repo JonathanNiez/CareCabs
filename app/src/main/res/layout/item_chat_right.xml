@@ -10,16 +10,16 @@
 		android:layout_alignParentEnd="true">
 
 		<de.hdodenhof.circleimageview.CircleImageView
-			android:id="@+id/chatUserProfilePic"
+			android:id="@+id/receiverProfilePicture"
 			android:layout_width="40dp"
 			android:layout_height="40dp"
-			android:visibility="gone"
-			/>
+			android:visibility="gone" />
 
 		<TextView
-			android:id="@+id/chatUserMessage"
+			android:id="@+id/messageTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
 			android:layout_centerVertical="true"
 			android:layout_marginStart="10dp"
 			android:layout_marginTop="30dp"
@@ -27,18 +27,17 @@
 			android:padding="10dp"
 			android:text="Message"
 			android:textColor="@color/black"
-			android:textSize="17sp"
-			android:layout_alignParentEnd="true"/>
+			android:textSize="17sp" />
 
 		<TextView
 			android:id="@+id/messageStatusTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/chatUserMessage"
-			android:text="Sent"
+			android:layout_below="@id/messageStatusTextView"
 			android:layout_alignParentEnd="true"
-			android:textSize="14sp"
-			android:textColor="@color/black"/>
+			android:text="Sent"
+			android:textColor="@color/black"
+			android:textSize="14sp" />
 
 	</RelativeLayout>
 

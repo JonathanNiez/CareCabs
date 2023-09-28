@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
 	private void checkIfBookingIsAccepted() {
 
 		bookingReference = FirebaseDatabase.getInstance()
-				.getReference(StaticDataPasser.bookingCollection);
+				.getReference(FirebaseMain.bookingCollection);
 
 		bookingReference.addValueEventListener(new ValueEventListener() {
 			@Override
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
 								locationSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingData != null) {
 
-							if (passengerBookingData.getBookingStatus() == "") {
+							if (passengerBookingData.getBookingStatus().equals("Standby")) {
 								showBookingIsAcceptedNotification();
 							}
 						}
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
 		if (FirebaseMain.getUser() != null) {
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void checkWaitingPassengers() {
 		bookingReference = FirebaseDatabase.getInstance()
-				.getReference(StaticDataPasser.bookingCollection);
+				.getReference(FirebaseMain.bookingCollection);
 		bookingReference.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
 	private void getUserTypeForMap() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity {
 	private void getUserTypeToCheckIfBookingIsAccepted() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
 
 	private void updateDriverStatus(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
-			FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
+			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 		}

@@ -354,7 +354,7 @@ class MapDriverActivity : AppCompatActivity() {
     private fun loadPassengerCoordinatesToMapFromDatabase() {
 
         val locationReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.bookingCollection)
+            .getReference(FirebaseMain.bookingCollection)
 
         locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -423,14 +423,14 @@ class MapDriverActivity : AppCompatActivity() {
     ) {
 
         documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(StaticDataPasser.tripCollection).document(generateTripID)
+            .collection(FirebaseMain.tripCollection).document(generateTripID)
 
         val tripModel = TripModel(
             tripID = generateTripID,
             bookingID = bookingID,
-            tripStatus = "Ongoing" ,
-            userDriverID = FirebaseMain.getUser().uid,
-            userPassengerID = passengerID,
+            tripStatus = "Ongoing",
+            driverUserID = FirebaseMain.getUser().uid,
+            passengerUserID = passengerID,
             tripDate = getCurrentTimeAndDate(),
             currentLatitude = currentLatitude,
             currentLongitude = currentLongitude,
@@ -446,14 +446,15 @@ class MapDriverActivity : AppCompatActivity() {
 
         //update booking from passenger
         val bookingReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.bookingCollection)
+            .getReference(FirebaseMain.bookingCollection)
 
-
-        val updateBookingStatus = HashMap<String, Any>()
-        updateBookingStatus["bookingStatus"] = "Standby"
+        val updateBooking = HashMap<String, Any>()
+        updateBooking["bookingStatus"] = "Standby"
+        updateBooking["driverUserID"] = FirebaseMain.getUser().uid
+        updateBooking["tripID"] = generateTripID
 
         bookingReference.child(bookingID)
-            .updateChildren(updateBookingStatus)
+            .updateChildren(updateBooking)
             .addOnSuccessListener {
                 Toast.makeText(this, "Booking Accepted", Toast.LENGTH_LONG).show()
             }
@@ -466,7 +467,8 @@ class MapDriverActivity : AppCompatActivity() {
 
     private fun updateDriverAvailabilityStatus(isAvailable: Boolean) {
         if (FirebaseMain.getUser() != null) {
-            FirebaseMain.getFireStoreInstance().collection(StaticDataPasser.userCollection)
+            FirebaseMain.getFireStoreInstance()
+                .collection(FirebaseMain.userCollection)
                 .document(FirebaseMain.getUser().uid)
                 .update("isAvailable", isAvailable)
         }
@@ -483,7 +485,7 @@ class MapDriverActivity : AppCompatActivity() {
         binding.medicalConditionTextView.visibility = View.GONE
 
         val locationReference = FirebaseDatabase.getInstance()
-            .getReference(StaticDataPasser.bookingCollection)
+            .getReference(FirebaseMain.bookingCollection)
 
         locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -595,7 +597,7 @@ class MapDriverActivity : AppCompatActivity() {
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(StaticDataPasser.userCollection)
+                .collection(FirebaseMain.userCollection)
                 .document(FirebaseMain.getUser().uid)
 
             documentReference.get().addOnSuccessListener {

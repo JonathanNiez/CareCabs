@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.Adapters.PassengerAdapter;
+import com.capstone.carecabs.Adapters.PassengerBookingsAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Model.TripModel;
@@ -65,19 +65,19 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		if (FirebaseMain.getUser() != null) {
 
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-					.getReference(StaticDataPasser.bookingCollection);
+					.getReference(FirebaseMain.bookingCollection);
 
 			databaseReference.addValueEventListener(new ValueEventListener() {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
 
-					for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
-						PassengerBookingModel passengerBookingModel = locationSnapshot.getValue(PassengerBookingModel.class);
+					for (DataSnapshot passengerBookingSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingModel = passengerBookingSnapshot.getValue(PassengerBookingModel.class);
 						passengerBookingModelList.add(passengerBookingModel);
 					}
 
-					PassengerAdapter passengerAdapter = new PassengerAdapter(
+					PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
 							getApplicationContext(),
 							passengerBookingModelList,
 							passengerBookingModel -> showBookingInfoDialog(
@@ -96,7 +96,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 									passengerBookingModel.getDestinationLongitude()
 							));
 					binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-					binding.bookingHistoryRecyclerView.setAdapter(passengerAdapter);
+					binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
 
 				}
 
@@ -144,7 +144,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 	) {
 
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(StaticDataPasser.tripCollection)
+				.collection(FirebaseMain.tripCollection)
 				.document(generateTripID);
 
 		TripModel tripModel = new TripModel(
@@ -168,13 +168,15 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 		//update booking from passenger
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
-				.getReference(StaticDataPasser.bookingCollection);
+				.getReference(FirebaseMain.bookingCollection);
 
-		Map<String, Object> updateBookingStatus = new HashMap<>();
-		updateBookingStatus.put("bookingStatus", "Standby");
+		Map<String, Object> updateBooking = new HashMap<>();
+		updateBooking.put("bookingStatus", "Standby");
+		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
+		updateBooking.put("tripID", generateTripID);
 
 		bookingReference.child(bookingID)
-				.updateChildren(updateBookingStatus)
+				.updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> Toast.makeText(PassengerBookingsOverview.this, "Booking Accepted", Toast.LENGTH_LONG).show())
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
@@ -184,7 +186,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 	private void updateDriverAvailabilityStatus(Boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
 			FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection)
+					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 		}

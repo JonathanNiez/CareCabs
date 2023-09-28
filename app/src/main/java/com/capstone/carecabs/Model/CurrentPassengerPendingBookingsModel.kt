@@ -1,6 +1,6 @@
 package com.capstone.carecabs.Model
 
-data class PassengerBookingModel(
+data class CurrentPassengerPendingBookingsModel(
     val passengerUserID: String = "",
     val driverUserID: String = "",
     val bookingID: String = "",

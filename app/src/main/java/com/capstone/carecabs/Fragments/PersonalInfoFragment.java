@@ -180,7 +180,7 @@ public class PersonalInfoFragment extends Fragment {
 
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(StaticDataPasser.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
 				if (documentSnapshot != null && documentSnapshot.exists()) {
