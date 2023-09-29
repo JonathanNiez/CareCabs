@@ -5,10 +5,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -26,9 +29,12 @@ import com.bumptech.glide.Glide
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.TripModel
+import com.capstone.carecabs.Utility.ParcelablePoint
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding
+import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -36,18 +42,19 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.mapbox.android.gestures.MoveGestureDetector
+import com.mapbox.api.directions.v5.models.Bearing
+import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.bindgen.Expected
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
-import com.mapbox.maps.MapboxMap
-import com.mapbox.maps.extension.style.expressions.generated.Expression
+import com.mapbox.maps.EdgeInsets
+import com.mapbox.maps.MapView
+import com.mapbox.maps.extension.style.expressions.dsl.generated.get
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.CameraAnimatorOptions
 import com.mapbox.maps.plugin.animation.camera
-import com.mapbox.maps.plugin.annotation.AnnotationConfig
-import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMoveListener
@@ -55,7 +62,57 @@ import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import com.mapbox.navigation.base.TimeFormat
+import com.mapbox.navigation.base.extensions.applyDefaultNavigationOptions
+import com.mapbox.navigation.base.extensions.applyLanguageAndVoiceUnitOptions
+import com.mapbox.navigation.base.formatter.DistanceFormatterOptions
+import com.mapbox.navigation.base.options.NavigationOptions
+import com.mapbox.navigation.base.route.NavigationRoute
+import com.mapbox.navigation.base.route.NavigationRouterCallback
+import com.mapbox.navigation.base.route.RouterFailure
+import com.mapbox.navigation.base.route.RouterOrigin
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.directions.session.RoutesObserver
+import com.mapbox.navigation.core.formatter.MapboxDistanceFormatter
+import com.mapbox.navigation.core.lifecycle.MapboxNavigationApp
+import com.mapbox.navigation.core.lifecycle.MapboxNavigationObserver
+import com.mapbox.navigation.core.lifecycle.requireMapboxNavigation
+import com.mapbox.navigation.core.replay.MapboxReplayer
+import com.mapbox.navigation.core.replay.ReplayLocationEngine
+import com.mapbox.navigation.core.replay.route.ReplayProgressObserver
+import com.mapbox.navigation.core.trip.session.LocationMatcherResult
+import com.mapbox.navigation.core.trip.session.LocationObserver
+import com.mapbox.navigation.core.trip.session.RouteProgressObserver
+import com.mapbox.navigation.core.trip.session.VoiceInstructionsObserver
+import com.mapbox.navigation.ui.base.util.MapboxNavigationConsumer
+import com.mapbox.navigation.ui.maneuver.api.MapboxManeuverApi
+import com.mapbox.navigation.ui.maps.camera.NavigationCamera
+import com.mapbox.navigation.ui.maps.camera.data.MapboxNavigationViewportDataSource
+import com.mapbox.navigation.ui.maps.camera.lifecycle.NavigationBasicGesturesHandler
+import com.mapbox.navigation.ui.maps.camera.state.NavigationCameraState
+import com.mapbox.navigation.ui.maps.camera.transition.NavigationCameraTransitionOptions
+import com.mapbox.navigation.ui.maps.location.NavigationLocationProvider
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowApi
+import com.mapbox.navigation.ui.maps.route.arrow.api.MapboxRouteArrowView
+import com.mapbox.navigation.ui.maps.route.arrow.model.RouteArrowOptions
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineApi
+import com.mapbox.navigation.ui.maps.route.line.api.MapboxRouteLineView
+import com.mapbox.navigation.ui.maps.route.line.model.MapboxRouteLineOptions
+import com.mapbox.navigation.ui.tripprogress.api.MapboxTripProgressApi
+import com.mapbox.navigation.ui.tripprogress.model.DistanceRemainingFormatter
+import com.mapbox.navigation.ui.tripprogress.model.EstimatedTimeToArrivalFormatter
+import com.mapbox.navigation.ui.tripprogress.model.PercentDistanceTraveledFormatter
+import com.mapbox.navigation.ui.tripprogress.model.TimeRemainingFormatter
+import com.mapbox.navigation.ui.tripprogress.model.TripProgressUpdateFormatter
+import com.mapbox.navigation.ui.voice.api.MapboxSpeechApi
+import com.mapbox.navigation.ui.voice.api.MapboxVoiceInstructionsPlayer
+import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement
+import com.mapbox.navigation.ui.voice.model.SpeechError
+import com.mapbox.navigation.ui.voice.model.SpeechValue
+import com.mapbox.navigation.ui.voice.model.SpeechVolume
 import java.util.Calendar
+import java.util.Locale
 import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity() {
@@ -81,18 +138,241 @@ class MapDriverActivity : AppCompatActivity() {
         override fun onMoveEnd(detector: MoveGestureDetector) {}
     }
 
+    //navigation
+    private val mapboxReplayer = MapboxReplayer()
+    private val replayLocationEngine = ReplayLocationEngine(mapboxReplayer)
+    private val replayProgressObserver = ReplayProgressObserver(mapboxReplayer)
+    private lateinit var navigationCamera: NavigationCamera
+    private lateinit var viewportDataSource: MapboxNavigationViewportDataSource
+    private val pixelDensity = Resources.getSystem().displayMetrics.density
+    private val overviewPadding: EdgeInsets by lazy {
+        EdgeInsets(
+            140.0 * pixelDensity,
+            40.0 * pixelDensity,
+            120.0 * pixelDensity,
+            40.0 * pixelDensity
+        )
+    }
+    private val landscapeOverviewPadding: EdgeInsets by lazy {
+        EdgeInsets(
+            30.0 * pixelDensity,
+            380.0 * pixelDensity,
+            110.0 * pixelDensity,
+            20.0 * pixelDensity
+        )
+    }
+    private val followingPadding: EdgeInsets by lazy {
+        EdgeInsets(
+            180.0 * pixelDensity,
+            40.0 * pixelDensity,
+            150.0 * pixelDensity,
+            40.0 * pixelDensity
+        )
+    }
+    private val landscapeFollowingPadding: EdgeInsets by lazy {
+        EdgeInsets(
+            30.0 * pixelDensity,
+            380.0 * pixelDensity,
+            110.0 * pixelDensity,
+            40.0 * pixelDensity
+        )
+    }
+    private lateinit var maneuverApi: MapboxManeuverApi
+    private lateinit var tripProgressApi: MapboxTripProgressApi
+    private lateinit var routeLineApi: MapboxRouteLineApi
+    private lateinit var routeLineView: MapboxRouteLineView
+    private val routeArrowApi: MapboxRouteArrowApi = MapboxRouteArrowApi()
+    private lateinit var routeArrowView: MapboxRouteArrowView
+    private var isVoiceInstructionsMuted = false
+        set(value) {
+            field = value
+            if (value) {
+                binding.soundBtn.muteAndExtend(BUTTON_ANIMATION_DURATION)
+                voiceInstructionsPlayer.volume(SpeechVolume(0f))
+            } else {
+                binding.soundBtn.unmuteAndExtend(BUTTON_ANIMATION_DURATION)
+                voiceInstructionsPlayer.volume(SpeechVolume(1f))
+            }
+        }
 
-    private lateinit var mapboxMap: MapboxMap
-    private lateinit var annotationConfig: AnnotationConfig
-    private var annotationPlugin: AnnotationPlugin? = null
-    private var pointAnnotationManager: PointAnnotationManager? = null
-    private var layerID = "map_annotation"
+    private lateinit var speechApi: MapboxSpeechApi
+
+    private lateinit var voiceInstructionsPlayer: MapboxVoiceInstructionsPlayer
+
+    private val voiceInstructionsObserver = VoiceInstructionsObserver { voiceInstructions ->
+        speechApi.generate(voiceInstructions, speechCallback)
+    }
+
+    private val speechCallback =
+        MapboxNavigationConsumer<Expected<SpeechError, SpeechValue>> { expected ->
+            expected.fold(
+                { error ->
+                    // play the instruction via fallback text-to-speech engine
+                    voiceInstructionsPlayer.play(
+                        error.fallback,
+                        voiceInstructionsPlayerCallback
+                    )
+                },
+                { value ->
+                    // play the sound file from the external generator
+                    voiceInstructionsPlayer.play(
+                        value.announcement,
+                        voiceInstructionsPlayerCallback
+                    )
+                }
+            )
+        }
+
+    private val voiceInstructionsPlayerCallback =
+        MapboxNavigationConsumer<SpeechAnnouncement> { value ->
+            // remove already consumed file to free-up space
+            speechApi.clean(value)
+        }
+
+    private val navigationLocationProvider = NavigationLocationProvider()
+    private val locationObserver = object : LocationObserver {
+        var firstLocationUpdateReceived = false
+
+        override fun onNewRawLocation(rawLocation: Location) {
+            // not handled
+        }
+
+        override fun onNewLocationMatcherResult(locationMatcherResult: LocationMatcherResult) {
+            val enhancedLocation = locationMatcherResult.enhancedLocation
+
+            createViewAnnotation(
+                binding.mapView,
+                Point.fromLngLat(enhancedLocation.longitude, enhancedLocation.latitude)
+            )
+
+            // update location puck's position on the map
+            navigationLocationProvider.changePosition(
+                location = enhancedLocation,
+                keyPoints = locationMatcherResult.keyPoints,
+            )
+
+            // update camera position to account for new location
+            viewportDataSource.onLocationChanged(enhancedLocation)
+            viewportDataSource.evaluate()
+
+            // if this is the first location update the activity has received,
+            // it's best to immediately move the camera to the current user location
+            if (!firstLocationUpdateReceived) {
+                firstLocationUpdateReceived = true
+                navigationCamera.requestNavigationCameraToOverview(
+                    stateTransitionOptions = NavigationCameraTransitionOptions.Builder()
+                        .maxDuration(0) // instant transition
+                        .build()
+                )
+            }
+        }
+    }
+
+    private val routeProgressObserver = RouteProgressObserver { routeProgress ->
+        // update the camera position to account for the progressed fragment of the route
+        viewportDataSource.onRouteProgressChanged(routeProgress)
+        viewportDataSource.evaluate()
+
+        // draw the upcoming maneuver arrow on the map
+        val style = binding.mapView.getMapboxMap().getStyle()
+        if (style != null) {
+            val maneuverArrowResult = routeArrowApi.addUpcomingManeuverArrow(routeProgress)
+            routeArrowView.renderManeuverUpdate(style, maneuverArrowResult)
+        }
+
+        // update top banner with maneuver instructions
+        val maneuvers = maneuverApi.getManeuvers(routeProgress)
+        maneuvers.fold(
+            { error ->
+                Toast.makeText(
+                    this@MapDriverActivity,
+                    error.errorMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            },
+            {
+                binding.maneuverView.visibility = View.VISIBLE
+                binding.maneuverView.renderManeuvers(maneuvers)
+            }
+        )
+
+        // update bottom trip progress summary
+        binding.tripProgressView.render(
+            tripProgressApi.getTripProgress(routeProgress)
+        )
+    }
+
+    private val routesObserver = RoutesObserver { routeUpdateResult ->
+        if (routeUpdateResult.navigationRoutes.isNotEmpty()) {
+            // generate route geometries asynchronously and render them
+            routeLineApi.setNavigationRoutes(
+                routeUpdateResult.navigationRoutes
+            ) { value ->
+                binding.mapView.getMapboxMap().getStyle()?.apply {
+                    routeLineView.renderRouteDrawData(this, value)
+                }
+            }
+
+            // update the camera position to account for the new route
+            viewportDataSource.onRouteChanged(routeUpdateResult.navigationRoutes.first())
+            viewportDataSource.evaluate()
+        } else {
+            // remove the route line and route arrow from the map
+            val style = binding.mapView.getMapboxMap().getStyle()
+            if (style != null) {
+                routeLineApi.clearRouteLine { value ->
+                    routeLineView.renderClearRouteLineValue(
+                        style,
+                        value
+                    )
+                }
+                routeArrowView.render(style, routeArrowApi.clearArrows())
+            }
+
+            // remove the route reference from camera position evaluations
+            viewportDataSource.clearRouteData()
+            viewportDataSource.evaluate()
+        }
+    }
+
+    private val mapboxNavigation: MapboxNavigation by requireMapboxNavigation(
+        onResumedObserver = object : MapboxNavigationObserver {
+            @SuppressLint("MissingPermission")
+            override fun onAttached(mapboxNavigation: MapboxNavigation) {
+                mapboxNavigation.registerRoutesObserver(routesObserver)
+                mapboxNavigation.registerLocationObserver(locationObserver)
+                mapboxNavigation.registerRouteProgressObserver(routeProgressObserver)
+                mapboxNavigation.registerRouteProgressObserver(replayProgressObserver)
+                mapboxNavigation.registerVoiceInstructionsObserver(voiceInstructionsObserver)
+                // start the trip session to being receiving location updates in free drive
+                // and later when a route is set also receiving route progress updates
+                mapboxNavigation.startTripSession()
+            }
+
+            override fun onDetached(mapboxNavigation: MapboxNavigation) {
+                mapboxNavigation.unregisterRoutesObserver(routesObserver)
+                mapboxNavigation.unregisterLocationObserver(locationObserver)
+                mapboxNavigation.unregisterRouteProgressObserver(routeProgressObserver)
+                mapboxNavigation.unregisterRouteProgressObserver(replayProgressObserver)
+                mapboxNavigation.unregisterVoiceInstructionsObserver(voiceInstructionsObserver)
+            }
+        },
+        onInitialize = this::initializeNavigationComponents
+    )
+
+    private val viewAnnotationMap = mutableMapOf<Point, View>()
+
     private val TAG: String = "MapActivity"
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
 
+    private companion object {
+        private const val BUTTON_ANIMATION_DURATION = 1500L
+    }
+
     private lateinit var documentReference: DocumentReference
     private lateinit var collectionReference: CollectionReference
-    private lateinit var intent: Intent
+
+    //    private lateinit var intent: Intent
     private lateinit var builder: AlertDialog.Builder
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerLocationInfoDialog: AlertDialog
@@ -112,8 +392,74 @@ class MapDriverActivity : AppCompatActivity() {
         checkLocationPermission()
         initializeBottomNavButtons()
 
+        val dataSent = intent.getBooleanExtra("dataSent", false)
+        if (dataSent) {
+            val receivedParcelable = intent.getParcelableExtra<ParcelablePoint>("point")
+            val receivedPoint = receivedParcelable?.point
+            if (receivedPoint != null) {
+
+                findRoute(receivedPoint)
+            }
+        }
+
+        binding.fullscreenImgBtn.setOnClickListener {
+            Toast.makeText(
+                this@MapDriverActivity,
+                "Entered Fullscreen", Toast.LENGTH_SHORT
+            ).show()
+
+            binding.fullscreenImgBtn.visibility = View.GONE
+            binding.minimizeScreenImgBtn.visibility = View.VISIBLE
+
+            binding.customActionBarLayout.visibility = View.GONE
+            binding.bottomNavigationView.visibility = View.GONE
+        }
+
+        binding.minimizeScreenImgBtn.setOnClickListener {
+            Toast.makeText(
+                this@MapDriverActivity,
+                "Exited Fullscreen", Toast.LENGTH_SHORT
+            ).show()
+
+            binding.minimizeScreenImgBtn.visibility = View.GONE
+            binding.fullscreenImgBtn.visibility = View.VISIBLE
+
+            binding.customActionBarLayout.visibility = View.VISIBLE
+            binding.bottomNavigationView.visibility = View.VISIBLE
+        }
+
+        binding.stopImgBtn.setOnClickListener {
+            clearRouteAndStopNavigation()
+        }
+        binding.recenterBtn.setOnClickListener {
+            navigationCamera.requestNavigationCameraToFollowing()
+            binding.routeOverviewBtn.showTextAndExtend(BUTTON_ANIMATION_DURATION)
+        }
+        binding.routeOverviewBtn.setOnClickListener {
+            navigationCamera.requestNavigationCameraToOverview()
+            binding.recenterBtn.showTextAndExtend(BUTTON_ANIMATION_DURATION)
+        }
+        binding.soundBtn.setOnClickListener {
+            // mute/unmute voice instructions
+            isVoiceInstructionsMuted = !isVoiceInstructionsMuted
+        }
+
+        // set initial sounds button state
+        binding.soundBtn.unmute()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        mapboxReplayer.finish()
+        maneuverApi.cancel()
+        routeLineApi.cancel()
+        routeLineView.cancel()
+        speechApi.cancel()
+        voiceInstructionsPlayer.shutdown()
+    }
+
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
 
         intent = Intent(this, MainActivity::class.java)
@@ -123,19 +469,13 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun onMapReady() {
-
-        mapboxMap = binding.mapView.getMapboxMap().apply {
+        binding.mapView.getMapboxMap().apply {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
 
                 setupGesturesListener()
                 loadPassengerCoordinatesToMapFromDatabase()
                 initializeLocationComponent()
-
-//                annotationPlugin = binding.mapView.annotations
-//                annotationConfig = AnnotationConfig(
-//                    layerId = layerID
-//                )
-
+                initializeNavigationComponents()
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(
@@ -174,38 +514,116 @@ class MapDriverActivity : AppCompatActivity() {
         )
     }
 
+    private fun initializeNavigationComponents() {
+        // initialize Navigation Camera
+        viewportDataSource = MapboxNavigationViewportDataSource(binding.mapView.getMapboxMap())
+        navigationCamera = NavigationCamera(
+            binding.mapView.getMapboxMap(),
+            binding.mapView.camera,
+            viewportDataSource
+        )
+        // set the animations lifecycle listener to ensure the NavigationCamera stops
+        // automatically following the user location when the map is interacted with
+        binding.mapView.camera.addCameraAnimationsLifecycleListener(
+            NavigationBasicGesturesHandler(navigationCamera)
+        )
+        navigationCamera.registerNavigationCameraStateChangeObserver { navigationCameraState ->
+            // shows/hide the recenter button depending on the camera state
+            when (navigationCameraState) {
+                NavigationCameraState.TRANSITION_TO_FOLLOWING,
+                NavigationCameraState.FOLLOWING -> binding.recenterBtn.visibility = View.INVISIBLE
+
+                NavigationCameraState.TRANSITION_TO_OVERVIEW,
+                NavigationCameraState.OVERVIEW,
+                NavigationCameraState.IDLE -> binding.recenterBtn.visibility = View.VISIBLE
+            }
+        }
+        // set the padding values depending on screen orientation and visible view layout
+        if (this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            viewportDataSource.overviewPadding = landscapeOverviewPadding
+        } else {
+            viewportDataSource.overviewPadding = overviewPadding
+        }
+        if (this.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            viewportDataSource.followingPadding = landscapeFollowingPadding
+        } else {
+            viewportDataSource.followingPadding = followingPadding
+        }
+
+        // make sure to use the same DistanceFormatterOptions across different features
+        val distanceFormatterOptions = DistanceFormatterOptions.Builder(this).build()
+
+        // initialize maneuver api that feeds the data to the top banner maneuver view
+        maneuverApi = MapboxManeuverApi(
+            MapboxDistanceFormatter(distanceFormatterOptions)
+        )
+
+        // initialize bottom progress view
+        tripProgressApi = MapboxTripProgressApi(
+            TripProgressUpdateFormatter.Builder(this)
+                .distanceRemainingFormatter(
+                    DistanceRemainingFormatter(distanceFormatterOptions)
+                )
+                .timeRemainingFormatter(
+                    TimeRemainingFormatter(this)
+                )
+                .percentRouteTraveledFormatter(
+                    PercentDistanceTraveledFormatter()
+                )
+                .estimatedTimeToArrivalFormatter(
+                    EstimatedTimeToArrivalFormatter(this, TimeFormat.NONE_SPECIFIED)
+                )
+                .build()
+        )
+
+        // initialize voice instructions api and the voice instruction player
+        speechApi = MapboxSpeechApi(
+            this,
+            getString(R.string.mapbox_access_token),
+            Locale.US.language
+        )
+        voiceInstructionsPlayer = MapboxVoiceInstructionsPlayer(
+            this,
+            getString(R.string.mapbox_access_token),
+            Locale.US.language
+        )
+
+        // initialize route line, the withRouteLineBelowLayerId is specified to place
+        // the route line below road labels layer on the map
+        // the value of this option will depend on the style that you are using
+        // and under which layer the route line should be placed on the map layers stack
+        val mapboxRouteLineOptions = MapboxRouteLineOptions.Builder(this)
+            .withRouteLineBelowLayerId("road-label-navigation")
+            .build()
+        routeLineApi = MapboxRouteLineApi(mapboxRouteLineOptions)
+        routeLineView = MapboxRouteLineView(mapboxRouteLineOptions)
+
+        // initialize maneuver arrow view to draw arrows on the map
+        val routeArrowOptions = RouteArrowOptions.Builder(this).build()
+        routeArrowView = MapboxRouteArrowView(routeArrowOptions)
+
+    }
+
     private fun initializeLocationComponent() {
 
-        val locationComponentPlugin = binding.mapView.location
-
-        locationComponentPlugin.updateSettings {
-
-            this.enabled = true
+        MapboxNavigationApp.setup(
+            NavigationOptions.Builder(this)
+                .accessToken(getString(R.string.mapbox_access_token))
+                // comment out the location engine setting block to disable simulation
+//                .locationEngine(replayLocationEngine)
+                .build()
+        )
+        // initialize location puck
+        binding.mapView.location.apply {
+            setLocationProvider(navigationLocationProvider)
             this.locationPuck = LocationPuck2D(
-                bearingImage = AppCompatResources.getDrawable(
+                bearingImage = ContextCompat.getDrawable(
                     this@MapDriverActivity,
-                    R.drawable.mapbox_navigation_puck_icon,
-                ),
-                scaleExpression = Expression.interpolate {
-                    linear()
-                    zoom()
-                    stop {
-                        literal(0.0)
-                        literal(0.6)
-                    }
-                    stop {
-                        literal(20.0)
-                        literal(1.0)
-                    }
-                }.toJson()
+                    R.drawable.mapbox_navigation_puck_icon
+                )
             )
+            enabled = true
         }
-        locationComponentPlugin.addOnIndicatorPositionChangedListener(
-            onIndicatorPositionChangedListener
-        )
-        locationComponentPlugin.addOnIndicatorBearingChangedListener(
-            onIndicatorBearingChangedListener
-        )
     }
 
     private fun initializeBottomNavButtons() {
@@ -213,27 +631,36 @@ class MapDriverActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.trips -> {
                     intent = Intent(this, TripsOverviewActivity::class.java)
+                    startActivity(intent)
                 }
 
                 R.id.bookings -> {
                     intent = Intent(this, PassengerBookingsOverview::class.java)
+                    startActivity(intent)
                 }
 
                 R.id.help -> {
                     intent = Intent(this, HelpActivity::class.java)
+                    startActivity(intent)
                 }
             }
-            startActivity(intent)
 
             true
         }
     }
 
-
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
+        binding.mapView.gestures.addOnMapLongClickListener {
+            findRoute(it)
+            true
+        }
 
+//        binding.mapView.gestures.addOnMapClickListener {
+//            findRoute(it)
+//            true
+//        }
 //        pointAnnotationManager?.apply {
 //            addClickListener(
 //                OnPointAnnotationClickListener {
@@ -263,7 +690,7 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerLocationInfoDialog(bookingID)
+                        showPassengerBookingLocationInfoDialog(bookingID)
 
                         false
                     }
@@ -292,7 +719,7 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerLocationInfoDialog(bookingID)
+                        showPassengerBookingLocationInfoDialog(bookingID)
 
                         false
                     }
@@ -324,7 +751,7 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun onCameraTrackingDismissed() {
-        Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
 
         binding.mapView.location
             .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
@@ -333,6 +760,114 @@ class MapDriverActivity : AppCompatActivity() {
         binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
+    private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
+        if (viewAnnotationMap[coordinate] == null) {
+            mapView.viewAnnotationManager.removeAllViewAnnotations()
+            val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
+                resId = R.layout.mapbox_item_view_annotation,
+                options = viewAnnotationOptions {
+                    geometry(coordinate)
+                    offsetY(170)
+                },
+            ).also { view ->
+                viewAnnotationMap[coordinate] = view
+            }
+//            val locationText = """
+//                My Location:
+//                Longitude = ${coordinate.longitude()}
+//                Latitude = ${coordinate.latitude()}
+//            """.trimIndent()
+//
+            MapboxItemViewAnnotationBinding.bind(viewAnnotation).apply {
+                annotationBackground.clipToOutline = true
+            }
+        }
+    }
+
+    private fun findRoute(destination: Point) {
+        val originLocation = navigationLocationProvider.lastLocation
+        val originPoint = originLocation?.let {
+            Point.fromLngLat(it.longitude, it.latitude)
+        } ?: return
+
+        // execute a route request
+        // it's recommended to use the
+        // applyDefaultNavigationOptions and applyLanguageAndVoiceUnitOptions
+        // that make sure the route request is optimized
+        // to allow for support of all of the Navigation SDK features
+        mapboxNavigation.requestRoutes(
+            RouteOptions.builder()
+                .applyDefaultNavigationOptions()
+                .applyLanguageAndVoiceUnitOptions(this)
+                .coordinatesList(listOf(originPoint, destination))
+                // provide the bearing for the origin of the request to ensure
+                // that the returned route faces in the direction of the current user movement
+                .bearingsList(
+                    listOf(
+                        Bearing.builder()
+                            .angle(originLocation.bearing.toDouble())
+                            .degrees(45.0)
+                            .build(),
+                        null
+                    )
+                )
+                .layersList(listOf(mapboxNavigation.getZLevel(), null))
+                .build(),
+            object : NavigationRouterCallback {
+                override fun onCanceled(routeOptions: RouteOptions, routerOrigin: RouterOrigin) {
+                    Log.i(TAG, routeOptions.toString())
+                }
+
+                override fun onFailure(reasons: List<RouterFailure>, routeOptions: RouteOptions) {
+                    Log.e(TAG, reasons.toString())
+                }
+
+                override fun onRoutesReady(
+                    routes: List<NavigationRoute>,
+                    routerOrigin: RouterOrigin
+                ) {
+                    setRouteAndStartNavigation(routes)
+                }
+            }
+        )
+    }
+
+    private fun setRouteAndStartNavigation(routes: List<NavigationRoute>) {
+        // set routes, where the first route in the list is the primary route that
+        // will be used for active guidance
+        mapboxNavigation.setNavigationRoutes(routes)
+
+        // show UI elements
+        binding.soundBtn.visibility = View.VISIBLE
+        binding.routeOverviewBtn.visibility = View.VISIBLE
+        binding.tripProgressLayout.visibility = View.VISIBLE
+
+        binding.customActionBarLayout.visibility = View.GONE
+        binding.bottomNavigationView.visibility = View.GONE
+        binding.fullscreenImgBtn.visibility = View.GONE
+        binding.minimizeScreenImgBtn.visibility = View.GONE
+
+        // move the camera to overview when new route is available
+        navigationCamera.requestNavigationCameraToOverview()
+    }
+
+    private fun clearRouteAndStopNavigation() {
+        // clear
+        mapboxNavigation.setNavigationRoutes(listOf())
+
+        // stop simulation
+        mapboxReplayer.stop()
+
+        // hide UI elements
+        binding.soundBtn.visibility = View.INVISIBLE
+        binding.maneuverView.visibility = View.INVISIBLE
+        binding.routeOverviewBtn.visibility = View.INVISIBLE
+        binding.tripProgressLayout.visibility = View.INVISIBLE
+
+        binding.customActionBarLayout.visibility = View.VISIBLE
+        binding.bottomNavigationView.visibility = View.VISIBLE
+        binding.fullscreenImgBtn.visibility = View.VISIBLE
+    }
 
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(
@@ -444,25 +979,7 @@ class MapDriverActivity : AppCompatActivity() {
                 Log.e(TAG, it.message.toString())
             }
 
-        //update booking from passenger
-        val bookingReference = FirebaseDatabase.getInstance()
-            .getReference(FirebaseMain.bookingCollection)
 
-        val updateBooking = HashMap<String, Any>()
-        updateBooking["bookingStatus"] = "Standby"
-        updateBooking["driverUserID"] = FirebaseMain.getUser().uid
-        updateBooking["tripID"] = generateTripID
-
-        bookingReference.child(bookingID)
-            .updateChildren(updateBooking)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Booking Accepted", Toast.LENGTH_LONG).show()
-            }
-            .addOnFailureListener {
-                Log.e(TAG, it.message.toString())
-            }
-
-        updateDriverAvailabilityStatus(false)
     }
 
     private fun updateDriverAvailabilityStatus(isAvailable: Boolean) {
@@ -474,8 +991,48 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
+    private fun updatePassengerBooking(
+        bookingID: String
+    ) {
+
+        //convert to point
+        val latLng = LatLng(
+            StaticDataPasser.storeDestinationLatitude,
+            StaticDataPasser.storeDestinationLongitude
+        )
+        val point = Point.fromLngLat(latLng.latitude, latLng.longitude)
+
+
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(FirebaseMain.bookingCollection)
+
+        val updateBooking = HashMap<String, Any>()
+        updateBooking["bookingStatus"] = "Driver on the way"
+        updateBooking["driverUserID"] = FirebaseMain.getUser().uid
+
+        bookingReference.child(bookingID)
+            .updateChildren(updateBooking)
+            .addOnSuccessListener {
+
+                Toast.makeText(
+                    this@MapDriverActivity,
+                    "Booking Accepted", Toast.LENGTH_LONG
+                ).show()
+
+                findRoute(point)
+            }
+            .addOnFailureListener {
+                Log.e(TAG, it.message.toString())
+
+                Toast.makeText(
+                    this@MapDriverActivity,
+                    "Booking Failed to Accept", Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
     @SuppressLint("SetTextI18n", "RestrictedApi")
-    private fun showPassengerLocationInfoDialog(bookingID: String) {
+    private fun showPassengerBookingLocationInfoDialog(bookingID: String) {
 
         val binding = DialogBookingInfoBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
@@ -499,17 +1056,16 @@ class MapDriverActivity : AppCompatActivity() {
                             if (passengerBookingData.bookingID == bookingID) {
                                 binding.progressBarLayout.visibility = View.GONE
 
-                                StaticDataPasser.storePassengerID =
-                                    passengerBookingData.passengerUserID
-                                StaticDataPasser.storeCurrentLatitude =
-                                    passengerBookingData.currentLatitude
-                                StaticDataPasser.storeCurrentLongitude =
-                                    passengerBookingData.currentLongitude
+//                                StaticDataPasser.storePassengerID =
+//                                    passengerBookingData.passengerUserID
+//                                StaticDataPasser.storeCurrentLatitude =
+//                                    passengerBookingData.currentLatitude
+//                                StaticDataPasser.storeCurrentLongitude =
+//                                    passengerBookingData.currentLongitude
                                 StaticDataPasser.storeDestinationLatitude =
                                     passengerBookingData.destinationLatitude
                                 StaticDataPasser.storeDestinationLongitude =
                                     passengerBookingData.destinationLongitude
-
 
                                 if (passengerBookingData.bookingStatus == "Waiting") {
                                     val textColor = ContextCompat.getColor(
@@ -566,21 +1122,24 @@ class MapDriverActivity : AppCompatActivity() {
         })
 
         binding.pickupBtn.setOnClickListener {
-            storeTripToDatabase(
-                generateRandomTripID(),
-                bookingID,
-                StaticDataPasser.storePassengerID,
-                StaticDataPasser.storeCurrentLatitude,
-                StaticDataPasser.storeCurrentLongitude,
-                StaticDataPasser.storeDestinationLatitude,
-                StaticDataPasser.storeDestinationLongitude
-            )
+            //TODO: navigation to passenger location
 
-            closePassengerLocationInfoDialog()
+            updatePassengerBooking(bookingID)
+//            storeTripToDatabase(
+//                generateRandomTripID(),
+//                bookingID,
+//                StaticDataPasser.storePassengerID,
+//                StaticDataPasser.storeCurrentLatitude,
+//                StaticDataPasser.storeCurrentLongitude,
+//                StaticDataPasser.storeDestinationLatitude,
+//                StaticDataPasser.storeDestinationLongitude
+//            )
+
+            closePassengerBookingLocationInfoDialog()
         }
 
         binding.closeBtn.setOnClickListener {
-            closePassengerLocationInfoDialog()
+            closePassengerBookingLocationInfoDialog()
         }
 
         builder.setView(dialogView)
@@ -588,7 +1147,7 @@ class MapDriverActivity : AppCompatActivity() {
         passengerLocationInfoDialog.show()
     }
 
-    private fun closePassengerLocationInfoDialog() {
+    private fun closePassengerBookingLocationInfoDialog() {
         if (passengerLocationInfoDialog != null && passengerLocationInfoDialog.isShowing) {
             passengerLocationInfoDialog.dismiss()
         }

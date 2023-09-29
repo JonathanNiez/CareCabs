@@ -17,15 +17,18 @@ import com.capstone.carecabs.Adapters.PassengerBookingsAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Model.TripModel;
+import com.capstone.carecabs.Utility.ParcelablePoint;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.mapbox.geojson.Point;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -37,7 +40,6 @@ import java.util.UUID;
 public class PassengerBookingsOverview extends AppCompatActivity {
 	private AlertDialog bookingInfoDialog;
 	private final String TAG = "PassengerBookingsOverview";
-	private Intent intent;
 	private ActivityPassengerBookingsOverviewBinding binding;
 
 	@Override
@@ -47,8 +49,6 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		binding.imgBackBtn.setOnClickListener(v -> {
-			intent = new Intent(PassengerBookingsOverview.this, MapDriverActivity.class);
-			startActivity(intent);
 			finish();
 		});
 
@@ -166,21 +166,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 				})
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
-		//update booking from passenger
-		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
-				.getReference(FirebaseMain.bookingCollection);
 
-		Map<String, Object> updateBooking = new HashMap<>();
-		updateBooking.put("bookingStatus", "Standby");
-		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
-		updateBooking.put("tripID", generateTripID);
-
-		bookingReference.child(bookingID)
-				.updateChildren(updateBooking)
-				.addOnSuccessListener(unused -> Toast.makeText(PassengerBookingsOverview.this, "Booking Accepted", Toast.LENGTH_LONG).show())
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-
-		updateDriverAvailabilityStatus(false);
 	}
 
 	private void updateDriverAvailabilityStatus(Boolean isAvailable) {
@@ -190,6 +176,53 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 		}
+	}
+
+	@SuppressLint("LongLogTag")
+	private void updatePassengerBooking(String bookingID,
+	                                    Double latitude,
+	                                    Double longitude) {
+
+		//convert to point
+		LatLng latLng = new LatLng(latitude, longitude);
+
+		Point point = Point.fromLngLat(latLng.longitude, latLng.latitude);
+
+		//update booking from passenger
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+				.getReference(FirebaseMain.bookingCollection);
+
+		Map<String, Object> updateBooking = new HashMap<>();
+		updateBooking.put("bookingStatus", "Driver on the way");
+		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
+
+		bookingReference.child(bookingID)
+				.updateChildren(updateBooking)
+				.addOnSuccessListener(unused -> {
+
+					Toast.makeText(PassengerBookingsOverview.this,
+							"Booking Accepted", Toast.LENGTH_LONG).show();
+
+					goToMapAndFindRoute(point);
+
+				})
+				.addOnFailureListener(e -> {
+
+					Log.e(TAG, e.getMessage());
+
+					Toast.makeText(PassengerBookingsOverview.this,
+							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
+
+				});
+	}
+
+	private void goToMapAndFindRoute(Point point) {
+		Intent intent = new Intent(
+				PassengerBookingsOverview.this, MapDriverActivity.class);
+		intent.putExtra("dataSend", true);
+		intent.putExtra("point", new ParcelablePoint(point));
+		startActivity(intent);
+		finish();
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -252,15 +285,21 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		});
 
 		binding.pickupBtn.setOnClickListener(view -> {
-			storeTripToDatabase(
-					generateRandomTripID(),
-					bookingID,
-					passengerID,
-					currentLatitude,
-					currentLongitude,
+			//TODO: navigation to passenger location
+
+			updatePassengerBooking(bookingID,
 					destinationLatitude,
-					destinationLongitude
-			);
+					destinationLongitude);
+
+//			storeTripToDatabase(
+//					generateRandomTripID(),
+//					bookingID,
+//					passengerID,
+//					currentLatitude,
+//					currentLongitude,
+//					destinationLatitude,
+//					destinationLongitude
+//			);
 
 			closeBookingInfoDialog();
 		});

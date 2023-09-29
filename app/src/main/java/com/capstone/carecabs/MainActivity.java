@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
 							break;
 
 					}
-					overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+					intent.putExtra("dataSent", false);
 					startActivity(intent);
 					finish();
 				}

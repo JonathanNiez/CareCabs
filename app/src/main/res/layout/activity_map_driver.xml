@@ -47,50 +47,12 @@
 
 	</androidx.cardview.widget.CardView>
 
-	<FrameLayout
-		android:id="@+id/whereToLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/customActionBarLayout"
-		android:layout_centerHorizontal="true">
-
-		<androidx.cardview.widget.CardView
-			android:layout_width="340dp"
-			android:layout_height="40dp"
-			android:layout_gravity="center"
-			android:layout_marginTop="10dp"
-			android:backgroundTint="@color/gray"
-			android:elevation="4dp"
-			app:cardCornerRadius="8dp">
-
-			<TextView
-				android:layout_width="340dp"
-				android:layout_height="40dp"
-				android:fontFamily="@font/opensans_semibold"
-				android:text="Where to?"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="24sp" />
-
-		</androidx.cardview.widget.CardView>
-
-	</FrameLayout>
-
 	<com.mapbox.maps.MapView
 		android:id="@+id/mapView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_above="@id/bottomNavigationView"
 		android:layout_below="@id/customActionBarLayout" />
-
-	<com.mapbox.navigation.dropin.NavigationView
-		android:id="@+id/navigationView"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_above="@id/bottomNavigationView"
-		android:layout_below="@id/customActionBarLayout"
-		android:visibility="gone"
-		app:accessToken="@string/mapbox_access_token" />
 
 	<com.mapbox.navigation.ui.maneuver.view.MapboxManeuverView
 		android:id="@+id/maneuverView"
@@ -101,44 +63,71 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:elevation="10dp" />
+		android:elevation="10dp"
+		android:textAlignment="center"
+		app:maneuverViewBackgroundColor="@color/vermillion" />
 
-	<com.mapbox.navigation.ui.voice.view.MapboxSoundButton
-		android:id="@+id/soundBtn"
+	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/maneuverView"
 		android:layout_alignParentEnd="true"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="15dp"
-		android:elevation="10dp" />
+		android:layout_centerVertical="true"
+		android:layout_marginEnd="10dp"
+		android:gravity="center"
+		android:orientation="vertical">
 
-	<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
-		android:id="@+id/routeOverviewBtn"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/soundBtn"
-		android:layout_alignParentEnd="true"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="15dp"
-		android:elevation="10dp" />
+		<com.mapbox.navigation.ui.voice.view.MapboxSoundButton
+			android:id="@+id/soundBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="10dp" />
 
-	<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
-		android:id="@+id/recenterBtn"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/routeOverviewBtn"
-		android:layout_alignParentEnd="true"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="15dp"
-		android:elevation="10dp" />
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
+			android:id="@+id/routeOverviewBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="10dp" />
+
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
+			android:id="@+id/recenterBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="10dp" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/minimizeScreenImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/minimize_32"
+			android:visibility="gone" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/fullscreenImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/fullscreen_32" />
+
+	</LinearLayout>
+
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/tripProgressLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_above="@id/bottomNavigationView"
+		android:layout_alignParentBottom="true"
 		android:layout_margin="10dp"
+		android:layout_marginBottom="15dp"
 		android:padding="5dp"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="10dp">
@@ -153,14 +142,15 @@
 				android:id="@+id/tripProgressView"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
 				android:layout_weight="5" />
 
 			<ImageButton
 				android:id="@+id/stopImgBtn"
 				android:layout_width="0dp"
-				android:layout_height="50dp"
+				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:layout_marginEnd="10dp"
+				android:layout_margin="10dp"
 				android:layout_weight="1"
 				android:background="@color/white"
 				app:srcCompat="@android:drawable/ic_delete" />
@@ -175,11 +165,10 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:background="@color/cinnabar"
+		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"
-		app:itemIconSize="30dp"
 		app:labelVisibilityMode="labeled"
-		app:menu="@menu/menu_map_bottom_nav_driver"
-		/>
+		app:menu="@menu/menu_map_bottom_nav_driver" />
 
 </RelativeLayout>
