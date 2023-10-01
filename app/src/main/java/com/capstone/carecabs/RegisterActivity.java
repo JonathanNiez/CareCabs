@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 
@@ -37,22 +38,56 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
-	private DocumentReference documentReference;
-	private GoogleSignInClient googleSignInClient;
-	private GoogleSignInAccount googleSignInAccount;
-	private GoogleSignInOptions googleSignInOptions;
-	private Calendar calendar;
-	private Date date;
-	private String getUserID, profilePictureUrl = "default";
 	private final String TAG = "Register";
-	private boolean shouldExit = false;
+	private DocumentReference documentReference;
+	private GoogleSignInAccount googleSignInAccount;
+	private Date date;
+	private String getUserID;
 	private Intent intent;
 	private static final int RC_SIGN_IN = 69;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
-			ageInfoDialog, registerFailedDialog, cancelRegisterDialog;
+			ageInfoDialog, registerFailedDialog, cancelRegisterDialog,
+			emailAlreadyUsedDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterBinding binding;
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeRegisterFailedDialog();
+		closePleaseWaitDialog();
+		closeAgeInfoDialog();
+		closeCancelRegisterDialog();
+		closeNoInternetDialog();
+		closeUserTypeImageDialog();
+		closeEmailIsAlreadyUsedDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeRegisterFailedDialog();
+		closePleaseWaitDialog();
+		closeAgeInfoDialog();
+		closeCancelRegisterDialog();
+		closeNoInternetDialog();
+		closeUserTypeImageDialog();
+		closeEmailIsAlreadyUsedDialog();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,22 +97,20 @@ public class RegisterActivity extends AppCompatActivity {
 
 		binding.progressBarLayout.setVisibility(View.GONE);
 
-		initializeNetworkChecker();
-
 		FirebaseApp.initializeApp(this);
 
-		calendar = Calendar.getInstance();
+		Calendar calendar = Calendar.getInstance();
 		date = calendar.getTime();
 
 		binding.backBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
 		});
 
-		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+		GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(getString(R.string.default_web_client_id))
 				.requestEmail()
 				.build();
-		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
+		GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
 		intent = getIntent();
@@ -175,66 +208,121 @@ public class RegisterActivity extends AppCompatActivity {
 		});
 	}
 
+	@Override
+	public void onBackPressed() {
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed(); // Exit the app
+		} else {
+			// Show an exit confirmation dialog
+			showCancelRegisterDialog();
+		}
+	}
+
 	private void registerDriver(String email, String password, String userType, String phoneNumber) {
-		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+					getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					documentReference = FirebaseMain.getFireStoreInstance()
+							.collection(FirebaseMain.userCollection).document(getUserID);
+					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
-		}).addOnFailureListener(e -> {
-			FirebaseMain.signOutUser();
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
 
-			showRegisterFailedDialog();
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
 
-			Log.e(TAG, e.getMessage());
+						Log.e(TAG, collisionException.getMessage());
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-		});
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
 
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+
+						Log.e(TAG, otherException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+					}
+				});
 	}
 
 	private void registerSenior(String email, String password, String userType, String phoneNumber) {
-		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+					getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					documentReference = FirebaseMain.getFireStoreInstance()
+							.collection(FirebaseMain.userCollection).document(getUserID);
+					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
-		}).addOnFailureListener(e -> {
-			FirebaseMain.signOutUser();
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
 
-			showRegisterFailedDialog();
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
 
-			Log.e(TAG, e.getMessage());
+						Log.e(TAG, collisionException.getMessage());
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-		});
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+
+						Log.e(TAG, otherException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+					}
+				});
 
 	}
 
 	private void registerPWD(String email, String password, String userType, String phoneNumber) {
-		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+					getUserID = authResult.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					documentReference = FirebaseMain.getFireStoreInstance()
+							.collection(FirebaseMain.userCollection).document(getUserID);
+					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
 
-		}).addOnFailureListener(e -> {
-			FirebaseMain.signOutUser();
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
 
-			showRegisterFailedDialog();
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
 
-			Log.e(TAG, e.getMessage());
+						Log.e(TAG, collisionException.getMessage());
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-		});
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+
+						Log.e(TAG, otherException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+					}
+				});
 
 	}
 
@@ -288,44 +376,6 @@ public class RegisterActivity extends AppCompatActivity {
 
 			showRegisterFailedDialog();
 		});
-	}
-
-	@Override
-	public void onBackPressed() {
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeRegisterFailedDialog();
-		closePleaseWaitDialog();
-		closeAgeInfoDialog();
-		closeCancelRegisterDialog();
-		closeNoInternetDialog();
-		closeUserTypeImageDialog();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		closeRegisterFailedDialog();
-		closePleaseWaitDialog();
-		closeAgeInfoDialog();
-		closeCancelRegisterDialog();
-		closeNoInternetDialog();
-		closeUserTypeImageDialog();
 	}
 
 	private void showAgeInfoDialog() {
@@ -520,6 +570,30 @@ public class RegisterActivity extends AppCompatActivity {
 	private void closeRegisterFailedDialog() {
 		if (registerFailedDialog != null && registerFailedDialog.isShowing()) {
 			registerFailedDialog.dismiss();
+		}
+	}
+
+	private void showEmailIsAlreadyUsedDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_email_is_already_registered, null);
+
+		Button okBtn = dialogView.findViewById(R.id.okBtn);
+
+		okBtn.setOnClickListener(v -> {
+			closeEmailIsAlreadyUsedDialog();
+		});
+
+		builder.setView(dialogView);
+
+		emailAlreadyUsedDialog = builder.create();
+		emailAlreadyUsedDialog.show();
+
+	}
+
+	private void closeEmailIsAlreadyUsedDialog() {
+		if (emailAlreadyUsedDialog != null && emailAlreadyUsedDialog.isShowing()) {
+			emailAlreadyUsedDialog.dismiss();
 		}
 	}
 

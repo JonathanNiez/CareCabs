@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
-
 	private final String TAG = "HomeFragment";
 	private int currentPage = 0;
 	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
@@ -120,9 +119,17 @@ public class HomeFragment extends Fragment {
 		slideFragments.add(new CarouselFragment3());
 		slideFragments.add(new CarouselFragment4());
 
+		binding.myProfileBtn.setOnClickListener(v -> {
+			goToAccountFragment();
+		});
+
 		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) ->
 				updateDriverStatus(b)
 		);
+
+		binding.tripHistoryBtn.setOnClickListener(view1 -> {
+
+		});
 
 		binding.bookARideBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), MapPassengerActivity.class);
@@ -317,6 +324,15 @@ public class HomeFragment extends Fragment {
 		fragmentTransaction.commit();
 	}
 
+	private void goToAccountFragment() {
+		fragmentManager = requireActivity().getSupportFragmentManager();
+		fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
+
+
 	private void checkUserIfRegisterComplete() {
 		if (FirebaseMain.getUser() != null) {
 			String getUserID = FirebaseMain.getUser().getUid();
@@ -341,8 +357,6 @@ public class HomeFragment extends Fragment {
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
 		} else {
-			FirebaseMain.signOutUser();
-
 			Intent intent = new Intent(context, LoginActivity.class);
 			startActivity(intent);
 			getActivity().finish();

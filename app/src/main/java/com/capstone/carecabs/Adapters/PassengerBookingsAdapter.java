@@ -2,6 +2,7 @@ package com.capstone.carecabs.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -57,7 +58,12 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 		}
 		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
 		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingTime());
-		holder.binding.bookingStatus.setText("Booking Status: " + passengerBookingModel.getBookingStatus());
+
+		if (passengerBookingModel.getBookingStatus().equals("Waiting")){
+			holder.binding.bookingStatus.setTextColor(Color.BLUE);
+		}
+		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
+
 		holder.itemView.setOnClickListener(view -> {
 			itemPassengerClickListener.onItemClick(passengerBookingModelList.get(position));
 		});

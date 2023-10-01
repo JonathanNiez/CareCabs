@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -17,6 +20,8 @@ import com.capstone.carecabs.Adapters.PassengerBookingsAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Model.TripModel;
+import com.capstone.carecabs.Utility.NetworkChangeReceiver;
+import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.ParcelablePoint;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
@@ -38,9 +43,38 @@ import java.util.Map;
 import java.util.UUID;
 
 public class PassengerBookingsOverview extends AppCompatActivity {
-	private AlertDialog bookingInfoDialog;
 	private final String TAG = "PassengerBookingsOverview";
+	private AlertDialog bookingInfoDialog, noInternetDialog;
+	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityPassengerBookingsOverviewBinding binding;
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeNoInternetDialog();
+		closeBookingInfoDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		closeNoInternetDialog();
+		closeBookingInfoDialog();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -312,6 +346,60 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 	private void closeBookingInfoDialog() {
 		if (bookingInfoDialog != null & bookingInfoDialog.isShowing()) {
 			bookingInfoDialog.dismiss();
+		}
+	}
+
+	private void showNoInternetDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);
+
+		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
+
+		tryAgainBtn.setOnClickListener(v -> {
+			closeNoInternetDialog();
+		});
+
+		builder.setView(dialogView);
+
+		noInternetDialog = builder.create();
+		noInternetDialog.show();
+	}
+
+	private void closeNoInternetDialog() {
+		if (noInternetDialog != null && noInternetDialog.isShowing()) {
+			noInternetDialog.dismiss();
+
+			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+			updateConnectionStatus(isConnected);
+		}
+	}
+
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
+
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		registerReceiver(networkChangeReceiver, intentFilter);
+
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+		updateConnectionStatus(isConnected);
+
+	}
+
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
 		}
 	}
 }

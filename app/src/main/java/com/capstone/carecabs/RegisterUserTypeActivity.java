@@ -26,6 +26,13 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 	private ActivityRegisterUserTypeBinding binding;
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 
@@ -51,12 +58,9 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 		binding = ActivityRegisterUserTypeBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		initializeNetworkChecker();
-
 		binding.googleRegisterLayout.setVisibility(View.GONE);
 
 		intent = getIntent();
-		//From Login
 		String getRegisterType = intent.getStringExtra("registerType");
 
 		if (getRegisterType != null) {
@@ -71,11 +75,9 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			return;
 		}
 
-
 		binding.cancelBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
 		});
-
 
 		binding.driverImgBtn.setOnClickListener(v -> {
 			intent = new Intent(this, RegisterActivity.class);
@@ -187,7 +189,7 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_email_is_already_registered, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

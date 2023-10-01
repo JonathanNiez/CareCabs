@@ -15,8 +15,9 @@
 		android:layout_marginTop="20dp"
 		android:layout_marginEnd="20dp"
 		android:background="@drawable/custom_card_view_1"
+		android:elevation="5dp"
 		android:fontFamily="@font/opensans_semibold"
-		android:padding="5dp"
+		android:padding="10dp"
 		android:text="What kind of Passenger are you?"
 		android:textAlignment="center"
 		android:textColor="@color/black"
@@ -35,8 +36,6 @@
 			android:layout_height="wrap_content"
 			android:layout_marginEnd="5dp"
 			android:layout_weight="1"
-			android:backgroundTint="@color/white"
-			app:cardBackgroundColor="@color/platinum"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
 
@@ -52,7 +51,7 @@
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/background"
+					android:backgroundTint="@color/cheese"
 					android:elevation="5dp"
 					android:fontFamily="@font/opensans_bold"
 					android:padding="5dp"
@@ -81,7 +80,6 @@
 			android:layout_height="wrap_content"
 			android:layout_marginStart="5dp"
 			android:layout_weight="1"
-			android:backgroundTint="@color/white"
 			app:cardBackgroundColor="@color/platinum"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
@@ -112,7 +110,7 @@
 					android:layout_width="110dp"
 					android:layout_height="110dp"
 					android:layout_marginBottom="20dp"
-					android:backgroundTint="@color/white"
+					android:backgroundTint="@color/platinum"
 					android:scaleType="centerCrop"
 					android:src="@drawable/pwd_128_2" />
 
@@ -125,15 +123,14 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/cancelBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
-		android:layout_marginTop="10dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/button_shape_1"
+		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/red"
 		android:fontFamily="@font/opensans_bold"
 		android:text="Cancel"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </LinearLayout>

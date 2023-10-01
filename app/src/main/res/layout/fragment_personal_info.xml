@@ -310,7 +310,6 @@
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-
 				</LinearLayout>
 
 			</androidx.cardview.widget.CardView>
@@ -318,6 +317,5 @@
 		</LinearLayout>
 
 	</ScrollView>
-
 
 </RelativeLayout>

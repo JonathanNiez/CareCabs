@@ -70,7 +70,7 @@
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/bisayaBtn"
+			android:id="@+id/cebuanoBtn"
 			android:layout_width="match_parent"
 			android:layout_height="60dp"
 			android:layout_marginBottom="5dp"
@@ -87,7 +87,7 @@
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/languageSizeBtn"
+			android:id="@+id/filipinoBtn"
 			android:layout_width="match_parent"
 			android:layout_height="60dp"
 			android:background="@drawable/custom_card_view_1"

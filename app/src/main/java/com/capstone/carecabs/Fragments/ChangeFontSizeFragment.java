@@ -263,6 +263,4 @@ public class ChangeFontSizeFragment extends Fragment {
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
-
-
 }

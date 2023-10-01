@@ -117,26 +117,26 @@ import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity() {
 
-    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
-        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
-    }
-
-    private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
-        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
-        binding.mapView.gestures.focalPoint = binding.mapView.getMapboxMap().pixelForCoordinate(it)
-    }
-
-    private val onMoveListener = object : OnMoveListener {
-        override fun onMoveBegin(detector: MoveGestureDetector) {
-            onCameraTrackingDismissed()
-        }
-
-        override fun onMove(detector: MoveGestureDetector): Boolean {
-            return false
-        }
-
-        override fun onMoveEnd(detector: MoveGestureDetector) {}
-    }
+//    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
+//        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
+//    }
+//
+//    private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
+//        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
+//        binding.mapView.gestures.focalPoint = binding.mapView.getMapboxMap().pixelForCoordinate(it)
+//    }
+//
+//    private val onMoveListener = object : OnMoveListener {
+//        override fun onMoveBegin(detector: MoveGestureDetector) {
+//            onCameraTrackingDismissed()
+//        }
+//
+//        override fun onMove(detector: MoveGestureDetector): Boolean {
+//            return false
+//        }
+//
+//        override fun onMoveEnd(detector: MoveGestureDetector) {}
+//    }
 
     //navigation
     private val mapboxReplayer = MapboxReplayer()
@@ -650,7 +650,7 @@ class MapDriverActivity : AppCompatActivity() {
     }
 
     private fun setupGesturesListener() {
-        binding.mapView.gestures.addOnMoveListener(onMoveListener)
+//        binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
         binding.mapView.gestures.addOnMapLongClickListener {
             findRoute(it)
@@ -753,11 +753,11 @@ class MapDriverActivity : AppCompatActivity() {
     private fun onCameraTrackingDismissed() {
 //        Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
 
-        binding.mapView.location
-            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
-        binding.mapView.location
-            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
-        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
+//        binding.mapView.location
+//            .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+//        binding.mapView.location
+//            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+//        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
     }
 
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {

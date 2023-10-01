@@ -32,6 +32,9 @@
 		android:theme="@style/Theme.CareCabs"
 		tools:targetApi="31">
 		<activity
+			android:name=".FeedbackActivity"
+			android:exported="false" />
+		<activity
 			android:name=".TripActivity"
 			android:exported="false" />
 		<activity
@@ -47,9 +50,6 @@
 			android:name=".PassengerBookingsOverview"
 			android:exported="false" />
 		<activity
-			android:name=".MapDriverActivity2"
-			android:exported="false" />
-		<activity
 			android:name=".LoginOrRegisterActivity"
 			android:exported="false" />
 		<activity
@@ -63,9 +63,6 @@
 			android:exported="false" />
 		<activity
 			android:name=".BookingsActivity"
-			android:exported="false" />
-		<activity
-			android:name=".ChangePassword"
 			android:exported="false" />
 		<activity
 			android:name=".ScanIDActivity"

@@ -23,9 +23,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,12 +36,12 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterDriverBinding;
+import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -55,20 +52,21 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterDriverActivity extends AppCompatActivity {
+	private final String TAG = "RegisterDriver";
 	private DocumentReference documentReference;
-	private StorageReference storageReference, imageRef;
+	private StorageReference storageReference, profilePicRef, vehiclePicRef;
 	private FirebaseStorage firebaseStorage;
 	private Uri imageUri;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
-	private String userID, profilePictureUrl = "default";
-	private final String TAG = "RegisterDriver";
-	private boolean verificationStatus = false;
+	private static final int PROFILE_PICTURE_REQUEST_CODE = 103;
+	private static final int VEHICLE_PICTURE_REQUEST_CODE = 104;
+	private String userID;
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
-	private Intent intent, galleryIntent, cameraIntent;
+	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog noInternetDialog, registerFailedDialog,
 			idNotScannedDialog, cancelRegisterDialog, birthdateInputChoiceDialog,
@@ -78,6 +76,39 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private ActivityRegisterDriverBinding binding;
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeRegisterFailedDialog();
+		closeEnterBirthdateDialog();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeRegisterFailedDialog();
+		closeEnterBirthdateDialog();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityRegisterDriverBinding.inflate(getLayoutInflater());
@@ -85,7 +116,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		binding.progressBarLayout.setVisibility(View.GONE);
 
-		initializeNetworkChecker();
 		checkPermission();
 
 		FirebaseApp.initializeApp(this);
@@ -97,7 +127,15 @@ public class RegisterDriverActivity extends AppCompatActivity {
 					.crop()                    //Crop image(Optional), Check Customization for more option
 					.compress(1024)            //Final image size will be less than 1 MB(Optional)
 					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start();
+					.start(PROFILE_PICTURE_REQUEST_CODE);
+		});
+
+		binding.vehicleImageView.setOnClickListener(v -> {
+			ImagePicker.with(RegisterDriverActivity.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start(VEHICLE_PICTURE_REQUEST_CODE);
 		});
 
 		binding.imgBackBtn.setOnClickListener(v -> {
@@ -153,6 +191,8 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
 			String stringLastname = binding.lastnameEditText.getText().toString().trim();
+			String plateNumber = binding.vehiclePlateNumberEditText.getText().toString().trim();
+			String vehicleColor = binding.vehicleColorEditText.getText().toString().trim();
 
 			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
 					|| StaticDataPasser.storeBirthdate == null
@@ -160,20 +200,31 @@ public class RegisterDriverActivity extends AppCompatActivity {
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
 					|| imageUri == null) {
 
-				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Please enter your info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
+			} else if (plateNumber.isEmpty() || vehicleColor.isEmpty()) {
+				Toast.makeText(this, "Please enter your vehicle info", Toast.LENGTH_LONG).show();
+
 			} else {
 				if (!isIDScanned) {
-					showIDNotScannedDialog(stringFirstname, stringLastname);
+					showIDNotScannedDialog(
+							stringFirstname,
+							stringLastname,
+							vehicleColor,
+							plateNumber
+					);
 				} else {
-					verificationStatus = true;
-					updateUserRegisterToFireStore(stringFirstname, stringFirstname, verificationStatus);
+					updateUserRegisterToFireStore(
+							stringFirstname,
+							stringFirstname,
+							true,
+							vehicleColor,
+							plateNumber
+					);
 				}
-
-
 			}
 		});
 	}
@@ -189,41 +240,20 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
-		closeEnterBirthdateDialog();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeRegisterFailedDialog();
-		closeEnterBirthdateDialog();
-	}
-
-	private void updateUserRegisterToFireStore(String firstname, String lastname,
-	                                           boolean verificationStatus) {
+	private void updateUserRegisterToFireStore(String firstname,
+	                                           String lastname,
+	                                           boolean isVerified,
+	                                           String vehicleColor,
+	                                           String vehiclePlateNumber) {
 		if (FirebaseMain.getUser() != null) {
+
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(userID);
 
 			Map<String, Object> registerUser = new HashMap<>();
+			registerUser.put("profilePicture", "default");
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
 			registerUser.put("age", StaticDataPasser.storeCurrentAge);
@@ -233,16 +263,32 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
 			registerUser.put("driverRating", 0.0);
 			registerUser.put("passengersTransported", 0);
-			registerUser.put("isVerified", verificationStatus);
+			registerUser.put("isVerified", isVerified);
 			registerUser.put("isRegisterComplete", true);
+			registerUser.put("vehicleColor", vehicleColor);
+			registerUser.put("vehiclePlateNumber", vehiclePlateNumber);
+			registerUser.put("vehiclePicture", null);
 
 			documentReference.update(registerUser).addOnSuccessListener(unused -> {
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-				uploadImageToFirebaseStorage(StaticDataPasser.storeUri);
 				showRegisterSuccessNotification();
+
+				firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+				storageReference = firebaseStorage.getReference("images/");
+
+				if (StaticDataPasser.storeProfilePictureUri != null) {
+					uploadProfileImageToFirebaseStorage(
+							userID,
+							StaticDataPasser.storeProfilePictureUri
+					);
+				} else if (StaticDataPasser.storeVehiclePictureUri != null) {
+					uploadVehicleImageToFirebaseStorage(
+							userID,
+							StaticDataPasser.storeVehiclePictureUri);
+				}
 
 				intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
 				startActivity(intent);
@@ -310,7 +356,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		});
 	}
 
-	private void showIDNotScannedDialog(String firstname, String lastname) {
+	private void showIDNotScannedDialog(String firstname,
+	                                    String lastname,
+	                                    String vehicleColor,
+	                                    String vehiclePlateNumber) {
 		builder = new AlertDialog.Builder(this);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_not_scanned, null);
@@ -319,8 +368,12 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			verificationStatus = true;
-			updateUserRegisterToFireStore(firstname, lastname, verificationStatus);
+			updateUserRegisterToFireStore(
+					firstname,
+					lastname,
+					false,
+					vehicleColor,
+					vehiclePlateNumber);
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -361,10 +414,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void openGallery() {
-		galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		galleryIntent.setType("image/*");
-		if (galleryIntent.resolveActivity(this.getPackageManager()) != null) {
-			startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+		intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		intent.setType("image/*");
+		if (intent.resolveActivity(this.getPackageManager()) != null) {
+			startActivityForResult(intent, GALLERY_REQUEST_CODE);
 			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
 				cameraGalleryOptionsDialog.dismiss();
 			}
@@ -376,9 +429,9 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void openCamera() {
-		cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		if (cameraIntent.resolveActivity(this.getPackageManager()) != null) {
-			startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+		intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (intent.resolveActivity(this.getPackageManager()) != null) {
+			startActivityForResult(intent, CAMERA_REQUEST_CODE);
 			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
 				cameraGalleryOptionsDialog.dismiss();
 			}
@@ -397,34 +450,50 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		return Uri.parse(path);
 	}
 
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
+	private void uploadProfileImageToFirebaseStorage(String userID, Uri imageUri) {
+		profilePicRef = storageReference.child("profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		userID = FirebaseMain.getUser().getUid();
+		storageReference.putFile(imageUri)
+				.addOnSuccessListener(taskSnapshot -> {
 
-		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+					profilePicRef.getDownloadUrl()
+							.addOnSuccessListener(uri -> {
 
-		UploadTask uploadTask = imageRef.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-				.addOnSuccessListener(uri -> {
-					String imageUrl = uri.toString();
+								String imageUrl = uri.toString();
+								storeProfileImageUrlInFireStore(imageUrl, userID);
+							})
+							.addOnFailureListener(e -> {
+								Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 
-					storeImageUrlInFireStore(imageUrl);
-
-				}).addOnFailureListener(e -> {
-					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-
-				})).addOnFailureListener(e -> {
-			Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-			Log.e(TAG, e.getMessage());
-
-		});
+								Log.e(TAG, e.getMessage());
+							});
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-	private void storeImageUrlInFireStore(String imageUrl) {
-		userID = FirebaseMain.getUser().getUid();
+	private void uploadVehicleImageToFirebaseStorage(String userID, Uri imageUri) {
+		vehiclePicRef = storageReference.child("vehiclePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		storageReference.putFile(imageUri)
+				.addOnSuccessListener(taskSnapshot -> {
+
+					profilePicRef.getDownloadUrl()
+							.addOnSuccessListener(uri -> {
+
+								String imageUrl = uri.toString();
+								storeVehicleImageUrlInFireStore(imageUrl, userID);
+							})
+							.addOnFailureListener(e -> {
+								Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+
+								Log.e(TAG, e.getMessage());
+							});
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+	}
+
+	private void storeProfileImageUrlInFireStore(String imageUrl, String userID) {
+
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -439,6 +508,24 @@ public class RegisterDriverActivity extends AppCompatActivity {
 					Log.e(TAG, e.getMessage());
 				});
 	}
+
+	private void storeVehicleImageUrlInFireStore(String imageUrl, String userID) {
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection).document(userID);
+
+		Map<String, Object> vehiclePicture = new HashMap<>();
+		vehiclePicture.put("vehiclePicture", imageUrl);
+
+		documentReference.update(vehiclePicture)
+				.addOnSuccessListener(unused ->
+						Toast.makeText(RegisterDriverActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+				.addOnFailureListener(e -> {
+					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, e.getMessage());
+				});
+	}
+
 
 	private void showCameraOrGalleryOptionsDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -546,18 +633,20 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void showEnterBirthdateDialog() {
+		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
+				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_enter_birthdate, null);
+		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
-		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
-		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
-		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
-		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
+//		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+//		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
+//		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
+//		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
+//		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
+//		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
+//		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
+//		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -565,28 +654,28 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerMonth.setAdapter(adapter);
-		spinnerMonth.setSelection(0);
-		spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
+		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					spinnerMonth.setSelection(0);
+					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 				} else {
 					String selectedMonth = parent.getItemAtPosition(position).toString();
 					StaticDataPasser.storeSelectedMonth = selectedMonth;
 
-					monthTextView.setText(selectedMonth);
+					dialogEnterBirthdateBinding.monthTextView.setText(selectedMonth);
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				spinnerMonth.setSelection(0);
+				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 			}
 		});
 
-		dayEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -595,7 +684,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				dayTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
 			}
 
 			@Override
@@ -604,7 +693,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		yearEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -612,7 +701,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				yearTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
 
 			}
 
@@ -622,9 +711,9 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		doneBtn.setOnClickListener(view -> {
-			String year = yearEditText.getText().toString();
-			String day = dayEditText.getText().toString();
+		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
+			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
+			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
 			if (StaticDataPasser.storeSelectedMonth == null
 					|| year.isEmpty()
@@ -654,7 +743,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		cancelBtn.setOnClickListener(v -> {
+		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> {
 			closeEnterBirthdateDialog();
 		});
 
@@ -769,14 +858,18 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (resultCode == Activity.RESULT_OK) {
+		if (resultCode == Activity.RESULT_OK && data != null) {
 
-			if (data != null) {
+			imageUri = data.getData();
+			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
 
-				imageUri = data.getData();
 				StaticDataPasser.storeUri = imageUri;
 				binding.imgBtnProfilePic.setImageURI(imageUri);
 
+			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
+
+				StaticDataPasser.storeUri = imageUri;
+				binding.vehicleImageView.setImageURI(imageUri);
 			}
 
 //			if (requestCode == CAMERA_REQUEST_CODE) {

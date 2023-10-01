@@ -163,76 +163,166 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:gravity="center"
-					android:orientation="horizontal"
-					android:padding="5dp">
+					android:orientation="vertical"
+					android:gravity="center">
 
-					<androidx.cardview.widget.CardView
-						android:id="@+id/bookingHistoryBtn"
-						android:layout_width="0dp"
-						android:layout_height="100dp"
-						android:layout_margin="5dp"
-						android:layout_weight="1"
-						app:cardBackgroundColor="@color/light_blue"
-						app:cardCornerRadius="10dp"
-						app:cardElevation="5dp">
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="horizontal"
+						android:padding="5dp">
 
-						<LinearLayout
-							android:layout_width="match_parent"
+						<androidx.cardview.widget.CardView
+							android:id="@+id/bookingHistoryBtn"
+							android:layout_width="0dp"
 							android:layout_height="wrap_content"
-							android:gravity="center"
-							android:orientation="vertical">
+							android:layout_margin="5dp"
+							android:layout_weight="1"
+							app:cardBackgroundColor="@color/light_blue"
+							app:cardCornerRadius="10dp"
+							app:cardElevation="5dp">
 
-							<TextView
-								android:layout_width="wrap_content"
+							<LinearLayout
+								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
-								android:fontFamily="@font/opensans_bold"
-								android:text="Booking History"
-								android:textColor="@color/white"
-								android:textSize="17sp" />
+								android:gravity="center"
+								android:orientation="vertical">
 
-							<ImageView
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:src="@drawable/calendar_64" />
+								<TextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
+									android:text="Booking History"
+									android:textColor="@color/white"
+									android:textSize="17sp" />
 
-						</LinearLayout>
+								<ImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/calendar_64" />
 
-					</androidx.cardview.widget.CardView>
+							</LinearLayout>
 
-					<androidx.cardview.widget.CardView
-						android:id="@+id/bookARideBtn"
-						android:layout_width="0dp"
-						android:layout_height="100dp"
-						android:layout_margin="5dp"
-						android:layout_weight="1"
-						app:cardBackgroundColor="@color/cheese"
-						app:cardCornerRadius="10dp"
-						app:cardElevation="5dp">
+						</androidx.cardview.widget.CardView>
 
-						<LinearLayout
-							android:layout_width="match_parent"
+						<androidx.cardview.widget.CardView
+							android:id="@+id/bookARideBtn"
+							android:layout_width="0dp"
 							android:layout_height="wrap_content"
-							android:gravity="center"
-							android:orientation="vertical">
+							android:layout_margin="5dp"
+							android:layout_weight="1"
+							app:cardBackgroundColor="@color/cheese"
+							app:cardCornerRadius="10dp"
+							app:cardElevation="5dp">
 
-							<TextView
-								android:layout_width="wrap_content"
+							<LinearLayout
+								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
-								android:fontFamily="@font/opensans_bold"
-								android:text="Book a Ride"
-								android:textColor="@color/black"
-								android:textSize="17sp" />
+								android:gravity="center"
+								android:orientation="vertical">
 
-							<ImageView
-								android:layout_width="wrap_content"
+								<TextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
+									android:text="Book a Ride"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<ImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/ride_booking_64" />
+
+							</LinearLayout>
+
+						</androidx.cardview.widget.CardView>
+
+					</LinearLayout>
+
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="horizontal"
+						android:padding="5dp">
+
+						<androidx.cardview.widget.CardView
+							android:id="@+id/myProfileBtn"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:layout_weight="1"
+							app:cardBackgroundColor="@color/wisteria"
+							app:cardCornerRadius="10dp"
+							app:cardElevation="5dp">
+
+							<LinearLayout
+								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
-								android:src="@drawable/ride_booking_64" />
+								android:gravity="center"
+								android:orientation="vertical">
 
-						</LinearLayout>
+								<TextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
+									android:text="My Profile"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
 
-					</androidx.cardview.widget.CardView>
+								<ImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/profile_64" />
 
+							</LinearLayout>
+
+						</androidx.cardview.widget.CardView>
+
+						<androidx.cardview.widget.CardView
+							android:id="@+id/tripHistoryBtn"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:layout_weight="1"
+							app:cardBackgroundColor="@color/tomato"
+							app:cardCornerRadius="10dp"
+							app:cardElevation="5dp">
+
+							<LinearLayout
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:gravity="center"
+								android:orientation="vertical">
+
+								<TextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
+									android:text="Trip History"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+								<ImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/location_64_2" />
+
+							</LinearLayout>
+
+						</androidx.cardview.widget.CardView>
+
+					</LinearLayout>
 
 				</LinearLayout>
 

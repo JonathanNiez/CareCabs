@@ -14,8 +14,10 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentChangeLanguageBinding;
 
 public class ChangeLanguageFragment extends Fragment {
+	private final String TAG = "ChangeLanguageFragment";
 
 	private FragmentChangeLanguageBinding binding;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,17 +30,46 @@ public class ChangeLanguageFragment extends Fragment {
 		binding = FragmentChangeLanguageBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-
 		binding.imgBackBtn.setOnClickListener(v -> {
 			backToAccountFragment();
+		});
+
+		binding.englishBtn.setOnClickListener(v -> {
+			changeLanguage("English");
+		});
+
+		binding.cebuanoBtn.setOnClickListener(v -> {
+			changeLanguage("Filipino");
+		});
+
+		binding.filipinoBtn.setOnClickListener(v -> {
+			changeLanguage("Cebuano");
 		});
 
 		return view;
 
 	}
 
-	public void onBackPressed(){
+	public void onBackPressed() {
 		backToAccountFragment();
+	}
+
+	private void changeLanguage(String language) {
+		switch (language) {
+			case "English":
+				binding.textView.setText("Change Language");
+
+				break;
+
+			case "Filipino":
+				binding.textView.setText("Palitan nang Lengwahe");
+
+				break;
+
+			case "Cebuano":
+				binding.textView.setText("Ilisan og Sinultihan");
+				break;
+		}
 	}
 
 	private void backToAccountFragment() {

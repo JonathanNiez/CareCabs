@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOutActivity;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
@@ -59,6 +60,13 @@ public class AccountFragment extends Fragment {
 	private FragmentManager fragmentManager;
 
 	@Override
+	public void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
+
+	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
@@ -70,8 +78,6 @@ public class AccountFragment extends Fragment {
 		closePleaseWaitDialog();
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
-		closeExitConfirmationDialog();
-
 	}
 
 
@@ -83,8 +89,6 @@ public class AccountFragment extends Fragment {
 		closePleaseWaitDialog();
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
-		closeExitConfirmationDialog();
-
 	}
 
 	@Override
@@ -95,8 +99,6 @@ public class AccountFragment extends Fragment {
 		closePleaseWaitDialog();
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
-		closeExitConfirmationDialog();
-
 	}
 
 	@Override
@@ -119,7 +121,6 @@ public class AccountFragment extends Fragment {
 		binding.idScannedTextView.setVisibility(View.GONE);
 
 		context = getContext();
-		initializeNetworkChecker();
 		FirebaseApp.initializeApp(context);
 
 		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
@@ -169,25 +170,26 @@ public class AccountFragment extends Fragment {
 
 	private void checkUserIfRegisterComplete() {
 		if (FirebaseMain.getUser() != null) {
-			String getUserID = FirebaseMain.getUser().getUid();
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot.exists()) {
-					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
 
-					if (!getUserRegisterStatus) {
-						showRegisterNotCompleteDialog();
-					} else {
-						loadUserProfileInfo();
-					}
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(FirebaseMain.getUser().getUid());
+
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot.exists()) {
+							boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+
+							if (!getUserRegisterStatus) {
+								showRegisterNotCompleteDialog();
+							} else {
+								loadUserProfileInfo();
+							}
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 
 		} else {
-			FirebaseMain.signOutUser();
-
-			Intent intent = new Intent(context, LoginActivity.class);
+			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			getActivity().finish();
 		}
@@ -409,38 +411,8 @@ public class AccountFragment extends Fragment {
 			});
 		} else {
 			closePleaseWaitDialog();
-
 		}
 	}
-
-
-	private void showExitConfirmationDialog() {
-		builder = new AlertDialog.Builder(context);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
-
-		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		exitBtn.setOnClickListener(v -> {
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeExitConfirmationDialog();
-		});
-
-		builder.setView(dialogView);
-
-		exitAppDialog = builder.create();
-		exitAppDialog.show();
-	}
-
-	private void closeExitConfirmationDialog() {
-		if (exitAppDialog != null && exitAppDialog.isShowing()) {
-			exitAppDialog.dismiss();
-		}
-	}
-
 
 	private void showRegisterNotCompleteDialog() {
 		builder = new AlertDialog.Builder(context);

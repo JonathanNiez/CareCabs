@@ -14,7 +14,7 @@
 		android:layout_marginTop="20dp"
 		android:background="@drawable/custom_card_view_1"
 		android:fontFamily="@font/opensans_bold"
-		android:padding="5dp"
+		android:padding="10dp"
 		android:text="Register Using:"
 		android:textColor="@color/black"
 		android:textSize="20sp" />
@@ -109,14 +109,14 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/cancelBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/button_shape_1"
+		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/red"
-		android:fontFamily="@font/opensans_bold"
+		android:fontFamily="@font/gabarito_bold"
 		android:text="Cancel"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </LinearLayout>

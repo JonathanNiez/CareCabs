@@ -5,11 +5,8 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,14 +15,11 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
@@ -35,18 +29,16 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
 public class LoginActivity extends AppCompatActivity {
+	private final String TAG = "Login";
 	private Intent intent;
-	private GoogleSignInOptions googleSignInOptions;
 	private GoogleSignInAccount googleSignInAccount;
 	private GoogleSignInClient googleSignInClient;
-	private final String TAG = "Login";
 	private boolean shouldExit = false;
 	private static final int RC_SIGN_IN = 69;
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
-			pleaseWaitDialog, registerUsingDialog, loginFailedDialog,
-			exitAppDialog, idScanInfoDialog, unknownOccurredDialog,
-			invalidCredentialsDialog;
+			pleaseWaitDialog, loginFailedDialog, exitAppDialog,
+			idScanInfoDialog, unknownOccurredDialog, invalidCredentialsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private AlertDialog.Builder builder;
 	private ActivityLoginBinding binding;
@@ -56,7 +48,18 @@ public class LoginActivity extends AppCompatActivity {
 		super.onStart();
 
 		initializeNetworkChecker();
+	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeExitConfirmationDialog();
+		closeLoginFailedDialog();
+		closePleaseWaitDialog();
+		closeNoInternetDialog();
+		closeUnknownOccurredDialog();
+		closeInvalidCredentialsDialog();
 	}
 
 	@Override
@@ -76,18 +79,6 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeExitConfirmationDialog();
-		closeLoginFailedDialog();
-		closePleaseWaitDialog();
-		closeNoInternetDialog();
-		closeUnknownOccurredDialog();
-		closeInvalidCredentialsDialog();
-	}
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityLoginBinding.inflate(getLayoutInflater());
@@ -97,13 +88,12 @@ public class LoginActivity extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+		GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(getString(R.string.default_web_client_id))
 				.requestEmail()
 				.build();
-
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-//		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
 		binding.resetPasswordBtn.setOnClickListener(view -> {
 			intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
@@ -119,9 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 		});
 
 		binding.backBtn.setOnClickListener(v -> {
-			intent = new Intent(LoginActivity.this, LoginOrRegisterActivity.class);
-			startActivity(intent);
-			finish();
+			goToLoginOrRegisterActivity();
 		});
 
 		binding.loginBtn.setOnClickListener(v -> {
@@ -151,6 +139,12 @@ public class LoginActivity extends AppCompatActivity {
 			}
 		});
 	}
+
+	@Override
+	public void onBackPressed() {
+		goToLoginOrRegisterActivity();
+	}
+
 
 	public boolean isValidEmail(String email) {
 		String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}";
@@ -191,11 +185,9 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 
-	@Override
-	public void onBackPressed() {
+	private void goToLoginOrRegisterActivity() {
 		intent = new Intent(LoginActivity.this, LoginOrRegisterActivity.class);
 		startActivity(intent);
-		overridePendingTransition(R.anim.slide_in_left, R.anim.popup_exit);
 		finish();
 	}
 
@@ -355,7 +347,7 @@ public class LoginActivity extends AppCompatActivity {
 
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.email_is_already_registered_dialog, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_email_is_already_registered, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 

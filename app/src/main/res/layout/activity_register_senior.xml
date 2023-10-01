@@ -84,10 +84,7 @@
 					android:layout_height="wrap_content"
 					android:layout_below="@id/textView"
 					android:layout_centerHorizontal="true"
-					android:layout_marginStart="20dp"
-					android:layout_marginEnd="20dp"
-					android:layout_marginBottom="10dp"
-					app:cardBackgroundColor="@color/platinum"
+					android:layout_margin="10dp"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -109,7 +106,7 @@
 
 						<TextView
 							android:id="@+id/textView4"
-							android:layout_width="match_parent"
+							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
 							android:fontFamily="@font/opensans_semibold"
@@ -124,171 +121,185 @@
 
 			</RelativeLayout>
 
-
-			<LinearLayout
-				android:id="@+id/linearLayout"
+			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="20dp"
-				android:gravity="center"
-				android:orientation="vertical">
-
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
-					android:background="@drawable/edit_text"
-					android:elevation="5dp"
-					app:endIconMode="clear_text"
-					app:helperText="*Required"
-					app:helperTextTextColor="@color/red">
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/firstnameEditText"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:autofillHints="name"
-						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_bold"
-						android:hint="FIRSTNAME"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="17sp" />
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
-					android:background="@drawable/edit_text"
-					android:elevation="5dp"
-					app:endIconMode="clear_text"
-					app:helperText="*Required"
-					app:helperTextTextColor="@color/red"
-					app:hintTextColor="@color/black">
-
-					<com.google.android.material.textfield.TextInputEditText
-						android:id="@+id/lastnameEditText"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:autofillHints="name"
-						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_bold"
-						android:hint="LASTNAME"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="17sp" />
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
-					android:background="@drawable/edit_text"
-					android:elevation="5dp"
-					app:helperText="*Required"
-					app:helperTextTextColor="@color/red"
-					app:hintTextColor="@color/black">
-
-					<androidx.appcompat.widget.AppCompatSpinner
-						android:id="@+id/spinnerMedicalCondition"
-						android:layout_width="match_parent"
-						android:layout_height="60dp"
-						android:background="@drawable/edit_text"
-						android:theme="@style/SpinnerTextStyle" />
-
-				</com.google.android.material.textfield.TextInputLayout>
+				android:layout_margin="10dp"
+				app:cardBackgroundColor="@color/tomato"
+				app:cardCornerRadius="20dp"
+				app:cardElevation="5dp">
 
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
 					android:gravity="center"
-					android:orientation="horizontal">
+					android:orientation="vertical"
+					android:padding="8dp">
 
 					<com.google.android.material.textfield.TextInputLayout
-						android:layout_width="0dp"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_marginEnd="5dp"
-						android:layout_weight="2"
-						android:background="@drawable/edit_text"
+						android:layout_marginTop="10dp"
+						android:layout_marginBottom="20dp"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
+						android:padding="5dp"
+						app:endIconMode="clear_text"
 						app:helperText="*Required"
-						app:helperTextTextColor="@color/red"
-						app:hintTextColor="@color/black">
+						app:helperTextTextColor="@color/red">
 
-						<androidx.appcompat.widget.AppCompatButton
-							android:id="@+id/birthdateBtn"
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/firstnameEditText"
 							android:layout_width="match_parent"
-							android:layout_height="60dp"
-							android:background="@drawable/edit_text"
+							android:layout_height="wrap_content"
+							android:autofillHints="name"
+							android:background="@drawable/smooth_edit_text_2"
 							android:fontFamily="@font/opensans_bold"
-							android:text="Date of Birth"
+							android:hint="FIRSTNAME"
 							android:textColor="@color/black"
+							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
-						android:layout_width="0dp"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_marginStart="5dp"
-						android:layout_weight="1"
-						android:background="@drawable/edit_text"
+						android:layout_marginBottom="20dp"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
+						android:padding="5dp"
+						app:endIconMode="clear_text"
 						app:helperText="*Required"
 						app:helperTextTextColor="@color/red"
 						app:hintTextColor="@color/black">
 
-						<androidx.appcompat.widget.AppCompatButton
-							android:id="@+id/ageBtn"
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/lastnameEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="name"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/opensans_bold"
+							android:hint="LASTNAME"
+							android:textColor="@color/black"
+							android:textColorHint="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="20dp"
+						android:background="@drawable/smooth_edit_text"
+						android:elevation="5dp"
+						android:padding="5dp"
+						app:helperText="*Required"
+						app:helperTextTextColor="@color/red"
+						app:hintTextColor="@color/black">
+
+						<androidx.appcompat.widget.AppCompatSpinner
+							android:id="@+id/spinnerMedicalCondition"
 							android:layout_width="match_parent"
 							android:layout_height="60dp"
-							android:background="@drawable/edit_text"
-							android:fontFamily="@font/opensans_bold"
-							android:text="Age"
-							android:textColor="@color/black"
-							android:textSize="17sp" />
+							android:background="@drawable/smooth_edit_text_2"
+							android:theme="@style/SpinnerTextStyle" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<LinearLayout
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="20dp"
+						android:gravity="center"
+						android:orientation="horizontal">
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_marginEnd="5dp"
+							android:layout_weight="2"
+							android:background="@drawable/smooth_edit_text"
+							android:elevation="5dp"
+							android:padding="5dp"
+							app:helperText="*Required"
+							app:helperTextTextColor="@color/red"
+							app:hintTextColor="@color/black">
+
+							<androidx.appcompat.widget.AppCompatButton
+								android:id="@+id/birthdateBtn"
+								android:layout_width="match_parent"
+								android:layout_height="60dp"
+								android:background="@drawable/smooth_edit_text_2"
+								android:fontFamily="@font/opensans_bold"
+								android:text="Date of Birth"
+								android:textColor="@color/black"
+								android:textSize="17sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+						<com.google.android.material.textfield.TextInputLayout
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_marginStart="5dp"
+							android:layout_weight="1"
+							android:background="@drawable/smooth_edit_text"
+							android:elevation="5dp"
+							android:padding="5dp"
+							app:helperText="*Required"
+							app:helperTextTextColor="@color/red"
+							app:hintTextColor="@color/black">
+
+							<androidx.appcompat.widget.AppCompatButton
+								android:id="@+id/ageBtn"
+								android:layout_width="match_parent"
+								android:layout_height="60dp"
+								android:background="@drawable/smooth_edit_text_2"
+								android:fontFamily="@font/opensans_bold"
+								android:text="Age"
+								android:textColor="@color/black"
+								android:textSize="17sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
+
+					</LinearLayout>
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="10dp"
+						android:background="@drawable/smooth_edit_text"
+						android:elevation="5dp"
+						android:padding="5dp"
+						app:helperText="*Required"
+						app:helperTextTextColor="@color/red"
+						app:hintTextColor="@color/black">
+
+						<androidx.appcompat.widget.AppCompatSpinner
+							android:id="@+id/spinnerSex"
+							android:layout_width="150dp"
+							android:layout_height="60dp"
+							android:background="@drawable/smooth_edit_text_2"
+							android:theme="@style/SpinnerTextStyle" />
 
 					</com.google.android.material.textfield.TextInputLayout>
 
 				</LinearLayout>
 
-				<com.google.android.material.textfield.TextInputLayout
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
-					android:background="@drawable/edit_text"
-					app:helperText="*Required"
-					app:helperTextTextColor="@color/red"
-					app:hintTextColor="@color/black">
-
-					<androidx.appcompat.widget.AppCompatSpinner
-						android:id="@+id/spinnerSex"
-						android:layout_width="150dp"
-						android:layout_height="60dp"
-						android:background="@drawable/edit_text"
-						android:theme="@style/SpinnerTextStyle" />
-
-				</com.google.android.material.textfield.TextInputLayout>
-
-			</LinearLayout>
+			</androidx.cardview.widget.CardView>
 
 			<View
 				android:layout_width="match_parent"
 				android:layout_height="5dp"
-				android:layout_marginStart="10dp"
-				android:layout_marginEnd="10dp"
+				android:layout_margin="10dp"
 				android:background="@color/dark_gray"
 				android:elevation="5dp" />
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="20dp"
-				app:cardBackgroundColor="@color/platinum"
+				android:layout_margin="10dp"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -300,7 +311,7 @@
 					android:padding="5dp">
 
 					<TextView
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/opensans_semibold"
@@ -310,7 +321,7 @@
 						android:textSize="17sp" />
 
 					<TextView
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/opensans_semibold"
@@ -388,7 +399,7 @@
 				android:layout_height="60dp"
 				android:layout_marginTop="10dp"
 				android:layout_marginBottom="50dp"
-				android:background="@drawable/button_shape_1"
+				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_bold"

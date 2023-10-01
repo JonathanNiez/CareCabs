@@ -4,15 +4,29 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/tomato"
 	tools:context=".LoginOrRegisterActivity">
+
+	<ImageView
+		android:layout_width="350dp"
+		android:layout_height="350dp"
+		android:layout_alignParentTop="true"
+		android:layout_centerInParent="true"
+		android:src="@drawable/bg_1" />
+
+	<ImageView
+		android:layout_width="350dp"
+		android:layout_height="350dp"
+		android:layout_alignParentBottom="true"
+		android:layout_centerInParent="true"
+		android:src="@drawable/bg_1" />
 
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
 		android:layout_margin="20dp"
-		app:cardBackgroundColor="@color/tomato"
+		app:cardBackgroundColor="@color/vermillion"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -52,7 +66,7 @@
 						android:text="Hi! and welcome to CareCabs"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="22sp" />
 
 					<TextView
 						android:layout_width="wrap_content"
@@ -63,7 +77,7 @@
 						android:text="Please select an option to continue"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="20sp" />
 
 					<LinearLayout
 						android:layout_width="match_parent"
@@ -74,7 +88,7 @@
 						<LinearLayout
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
-							android:layout_weight="2"
+							android:layout_weight="1"
 							android:gravity="center"
 							android:orientation="vertical">
 
@@ -93,7 +107,7 @@
 								android:layout_width="130dp"
 								android:layout_height="50dp"
 								android:layout_margin="10dp"
-								android:background="@drawable/button_shape_1"
+								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/yinmn_blue"
 								android:elevation="5dp"
 								android:fontFamily="@font/opensans_bold"
@@ -106,7 +120,7 @@
 						<LinearLayout
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
-							android:layout_weight="2"
+							android:layout_weight="1"
 							android:gravity="center"
 							android:orientation="vertical">
 
@@ -125,7 +139,7 @@
 								android:layout_width="130dp"
 								android:layout_height="50dp"
 								android:layout_margin="10dp"
-								android:background="@drawable/button_shape_1"
+								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/blue"
 								android:elevation="5dp"
 								android:fontFamily="@font/opensans_bold"

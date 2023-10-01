@@ -37,6 +37,14 @@ public class ResetPasswordActivity extends AppCompatActivity {
 	private ActivityResetPasswordBinding binding;
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 
@@ -70,24 +78,20 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 		binding.progressBarLayout.setVisibility(View.GONE);
 
-		initializeNetworkChecker();
-
 		FirebaseApp.initializeApp(this);
 
 		calendar = Calendar.getInstance();
 		date = calendar.getTime();
 
-		binding.imgBackBtn.setOnClickListener(view -> {
-			showCancelPasswordResetDialog();
+		binding.backBtn.setOnClickListener(view -> {
+			backToLoginActivity();
 		});
 
 		binding.resetPasswordBtn.setOnClickListener(view -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 			binding.resetPasswordBtn.setVisibility(View.GONE);
 
-			String email = binding.emailEditText.getText().toString().trim();
-			String password = binding.passwordEditText.getText().toString();
-			String confirmPassword = binding.confirmPasswordEditText.getText().toString();
+			final String email = binding.emailEditText.getText().toString().trim();
 
 			if (email.isEmpty()) {
 				binding.progressBarLayout.setVisibility(View.GONE);
@@ -101,18 +105,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 				binding.emailEditText.setError("Please enter a valid Email");
 
-			} else if (password.isEmpty() || confirmPassword.isEmpty()) {
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.resetPasswordBtn.setVisibility(View.VISIBLE);
-
-				binding.passwordEditText.setError("Please enter the password you want to reset");
-
-			} else if (!confirmPassword.equals(password)) {
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.resetPasswordBtn.setVisibility(View.VISIBLE);
-
-				binding.confirmPasswordEditText.setError("Confirm password did not match");
-
 			} else {
 				showPasswordResetConfirmationDialog(email);
 			}
@@ -123,7 +115,13 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		showCancelPasswordResetDialog();
+		backToLoginActivity();
+	}
+
+	private void backToLoginActivity() {
+		intent = new Intent(ResetPasswordActivity.this, LoginActivity.class);
+		startActivity(intent);
+		finish();
 	}
 
 	public boolean isValidEmail(String email) {

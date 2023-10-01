@@ -3,7 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/yellow"
+	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -21,10 +21,10 @@
 			android:orientation="vertical">
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="You are registering as a:"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -34,18 +34,19 @@
 				android:id="@+id/userTypeImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:src="@drawable/senior_64_2" />
 
 			<TextView
 				android:id="@+id/registerAsTextView"
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:background="@drawable/custom_card_view_1"
 				android:backgroundTint="@color/background"
 				android:fontFamily="@font/opensans_bold"
-				android:padding="5dp"
+				android:padding="10dp"
+				android:elevation="5dp"
 				android:text="User Type"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -57,13 +58,14 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/custom_button"
-		android:fontFamily="@font/opensans_semibold"
-		android:text="Ok"
+		android:background="@drawable/smooth_edge_button"
+		android:backgroundTint="@color/yinmn_blue"
+		android:fontFamily="@font/opensans_bold"
+		android:text="Okay"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </LinearLayout>

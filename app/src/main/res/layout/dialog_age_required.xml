@@ -57,10 +57,10 @@
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/button_shape_1"
+		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/yinmn_blue"
 		android:fontFamily="@font/opensans_bold"
-		android:text="Ok"
+		android:text="Okay"
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 

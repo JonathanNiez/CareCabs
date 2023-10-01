@@ -41,7 +41,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/opensans_bold"
 				android:text="Your Profile Info is incomplete"
 				android:textAlignment="center"
 				android:textColor="@color/red"
@@ -66,11 +66,11 @@
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/button_shape_1"
+		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/yinmn_blue"
 		android:elevation="5dp"
 		android:fontFamily="@font/opensans_bold"
-		android:text="Ok"
+		android:text="Okay"
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 

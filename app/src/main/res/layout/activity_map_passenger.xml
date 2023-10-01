@@ -6,92 +6,41 @@
 	android:layout_height="match_parent"
 	tools:context=".MapPassengerActivity">
 
-	<androidx.cardview.widget.CardView
-		android:id="@+id/customActionBarLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/vermillion"
-		app:cardElevation="10dp">
-
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-			<ImageButton
-				android:id="@+id/imgBackBtn"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentStart="true"
-				android:layout_alignParentTop="true"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
-				android:background="@color/vermillion"
-				android:src="@drawable/back_50_2" />
-
-			<TextView
-				android:id="@+id/textView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerInParent="true"
-				android:fontFamily="@font/opensans_bold"
-				android:text="MAP"
-				android:textColor="@color/white"
-				android:textSize="20sp" />
-
-			<androidx.appcompat.widget.SwitchCompat
-				android:id="@+id/switchDemo"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentEnd="true"
-				android:layout_centerVertical="true"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
-				android:backgroundTint="@color/white"
-				android:checked="false" />
-
-		</RelativeLayout>
-
-
-	</androidx.cardview.widget.CardView>
-
-
-	<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
-		android:id="@+id/routeOverviewBtn"
+	<LinearLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/customActionBarLayout"
 		android:layout_alignParentEnd="true"
-		android:layout_marginTop="100dp"
+		android:layout_centerVertical="true"
 		android:layout_marginEnd="15dp"
-		android:elevation="10dp" />
+		android:gravity="center"
+		android:orientation="vertical">
 
-	<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
-		android:id="@+id/recenterBtn"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/routeOverviewBtn"
-		android:layout_alignParentEnd="true"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="15dp"
-		android:elevation="10dp" />
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
+			android:id="@+id/routeOverviewBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:elevation="10dp" />
+
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
+			android:id="@+id/recenterBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:elevation="10dp" />
+
+	</LinearLayout>
 
 	<com.mapbox.maps.MapView
 		android:id="@+id/mapView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@id/bottomNavigationView"
-		android:layout_below="@id/customActionBarLayout" />
+		android:layout_above="@id/bottomNavigationView" />
 
 	<FrameLayout
 		android:id="@+id/whereToLayout"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/customActionBarLayout"
+		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true">
 
 		<TextView
@@ -100,17 +49,16 @@
 			android:layout_gravity="center"
 			android:layout_margin="10dp"
 			android:background="@drawable/custom_card_view_1"
-			android:backgroundTint="@color/yellow"
+			android:backgroundTint="@color/orange"
 			android:elevation="5dp"
 			android:fontFamily="@font/opensans_bold"
-			android:padding="5dp"
+			android:padding="10dp"
 			android:text="Where are you going?"
 			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 	</FrameLayout>
-
 
 	<FrameLayout
 		android:id="@+id/setLocationLayout"
@@ -119,9 +67,9 @@
 		android:layout_above="@id/bottomNavigationView"
 		android:layout_centerHorizontal="true"
 		android:layout_marginBottom="30dp"
-		android:background="@color/platinum"
+		android:background="@color/white"
 		android:elevation="5dp"
-		android:padding="10dp">
+		android:padding="5dp">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -129,33 +77,42 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<TextView
-				android:id="@+id/currentLocationTextView"
-				android:layout_width="wrap_content"
+			<com.google.android.material.textfield.TextInputLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="Current Location"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:layout_marginBottom="10dp"
+				android:background="@drawable/smooth_edit_text"
+				android:elevation="5dp"
+				android:padding="5dp"
+				app:endIconMode="clear_text"
+				app:startIconDrawable="@drawable/baseline_search_24">
+
+				<com.google.android.material.textfield.TextInputEditText
+					android:id="@+id/searchDestinationEditText"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:background="@drawable/smooth_edit_text_2"
+					android:fontFamily="@font/opensans_bold"
+					android:hint="Search destination"
+					android:textColor="@color/black"
+					android:textColorHint="@color/black"
+					android:textSize="17sp" />
+
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<TextView
-				android:id="@+id/desiredDestinationTextView"
+				android:id="@+id/currentCoordinatesTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="Desired Destination"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:text="Current coordinates"
+				android:textColor="@color/black" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/setLocationBtn"
-				android:layout_width="wrap_content"
+				android:layout_width="280dp"
 				android:layout_height="60dp"
 				android:layout_gravity="center"
-				android:background="@drawable/custom_button"
+				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/light_blue"
 				android:drawableStart="@drawable/location"
 				android:fontFamily="@font/opensans_bold"
@@ -167,6 +124,32 @@
 		</LinearLayout>
 
 	</FrameLayout>
+
+	<com.mapbox.search.ui.view.SearchResultsView
+		android:id="@+id/searchResultsView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="?actionBarSize"
+		android:clipToPadding="false"
+		android:paddingTop="22dp"
+		android:paddingBottom="22dp"
+		android:visibility="gone"
+		/>
+
+	<androidx.coordinatorlayout.widget.CoordinatorLayout
+		android:id="@+id/searchContainerView"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="?actionBarSize">
+
+		<com.mapbox.search.ui.view.place.SearchPlaceBottomSheetView
+			android:id="@+id/search_place_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:elevation="10dp" />
+
+	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 	<com.google.android.material.bottomnavigation.BottomNavigationView
 		android:id="@+id/bottomNavigationView"

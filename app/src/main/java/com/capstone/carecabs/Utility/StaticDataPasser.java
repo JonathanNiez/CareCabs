@@ -16,7 +16,10 @@ public class StaticDataPasser {
 	public static String storePhoneNumber = "";
 	public static int storeFontSize = 17;
 	public static Uri storeUri = null;
+	public static Uri storeProfilePictureUri = null;
+	public static Uri storeVehiclePictureUri = null;
 	public static String storeProfilePicUrl = "";
+	public static String storeVehiclePicUrl = "";
 	public static String storeSelectedMonth = "";
 	public static String storeBirthdate = "";
 	public static Double storeLongitude = 0.0;

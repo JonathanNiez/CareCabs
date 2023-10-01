@@ -9,16 +9,21 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -28,6 +33,7 @@ import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
+import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -35,35 +41,55 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.mapbox.android.gestures.MoveGestureDetector
+import com.mapbox.android.gestures.Utils.dpToPx
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
+import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.Style
-import com.mapbox.maps.dsl.cameraOptions
 import com.mapbox.maps.extension.style.expressions.generated.Expression.Companion.interpolate
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.CameraAnimatorOptions.Companion.cameraAnimatorOptions
 import com.mapbox.maps.plugin.animation.MapAnimationOptions
 import com.mapbox.maps.plugin.animation.camera
-import com.mapbox.maps.plugin.annotation.AnnotationConfig
-import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
+import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
-import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
-import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import com.mapbox.search.ApiType
+import com.mapbox.search.BuildConfig
+import com.mapbox.search.SearchEngine
+import com.mapbox.search.SearchEngineSettings
+import com.mapbox.search.ServiceProvider
+import com.mapbox.search.autocomplete.PlaceAutocomplete
+import com.mapbox.search.autocomplete.PlaceAutocompleteOptions
+import com.mapbox.search.autocomplete.PlaceAutocompleteSuggestion
+import com.mapbox.search.autocomplete.PlaceAutocompleteType
+import com.mapbox.search.common.CompletionCallback
+import com.mapbox.search.offline.OfflineSearchEngine
+import com.mapbox.search.offline.OfflineSearchEngineSettings
+import com.mapbox.search.record.HistoryRecord
+import com.mapbox.search.ui.adapter.autocomplete.PlaceAutocompleteUiAdapter
+import com.mapbox.search.ui.adapter.engines.SearchEngineUiAdapter
+import com.mapbox.search.ui.view.CommonSearchViewConfiguration
+import com.mapbox.search.ui.view.DistanceUnitType
+import com.mapbox.search.ui.view.SearchResultAdapterItem
+import com.mapbox.search.ui.view.SearchResultsView
+import com.mapbox.search.ui.view.UiError
+import com.mapbox.search.ui.view.place.SearchPlace
 import java.util.Calendar
 import java.util.UUID
-
 
 class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
@@ -97,12 +123,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         override fun onMoveEnd(detector: MoveGestureDetector) {}
     }
 
+    private val viewAnnotationMap = mutableMapOf<Point, View>()
     private lateinit var mapboxMap: MapboxMap
-    private var annotationPlugin: AnnotationPlugin? = null
-    private lateinit var annotationConfig: AnnotationConfig
-    private var layerID = "map_annotation"
-    private var pointAnnotationManager: PointAnnotationManager? = null
-    private var markerList: ArrayList<PointAnnotationOptions> = ArrayList()
+
+    //search
+    private lateinit var placeAutocomplete: PlaceAutocomplete
+    private lateinit var placeAutocompleteUiAdapter: PlaceAutocompleteUiAdapter
+    private lateinit var mapMarkersManager: MapMarkersManager
+    private var ignoreNextQueryUpdate = false
 
     override fun onDestroy() {
         super.onDestroy()
@@ -119,13 +147,45 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding = ActivityMapPassengerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        placeAutocomplete = PlaceAutocomplete.create(getString(R.string.mapbox_access_token))
+
         checkIfBookingIsAccepted()
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
+        binding.searchResultsView.initialize(
+            SearchResultsView.Configuration(
+                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
+            )
+        )
+        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
+            SearchEngineSettings(getString(R.string.mapbox_access_token))
+        )
+
+        val offlineSearchEngine = OfflineSearchEngine.create(
+            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
+        )
+
+        val searchEngineUiAdapter = SearchEngineUiAdapter(
+            view = binding.searchResultsView,
+            searchEngine = searchEngine,
+            offlineSearchEngine = offlineSearchEngine,
+        )
+
+//        val apiType = if (BuildConfig.ENABLE_SBS) {
+//            ApiType.SBS
+//        } else {
+//            ApiType.GEOCODING
+//        }
+
         binding.recenterBtn.setOnClickListener {
 
         }
+
+        binding.searchDestinationEditText.setOnClickListener {
+
+        }
+
 
     }
 
@@ -234,16 +294,21 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         val locationComponentPlugin = binding.mapView.location
 
-
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
-            binding.currentLocationTextView.text =
+            binding.currentCoordinatesTextView.text =
                 it.latitude().toString() + "\n" + it.longitude().toString()
 
+            createViewAnnotation(
+                binding.mapView,
+                Point.fromLngLat(it.longitude(), it.latitude())
+            )
+
+            //store the current location
             StaticDataPasser.storeLatitude = it.latitude()
             StaticDataPasser.storeLongitude = it.longitude()
         }
 
-        binding.currentLocationTextView.text =
+        binding.currentCoordinatesTextView.text =
             "${StaticDataPasser.storeLatitude}\n${StaticDataPasser.storeLongitude}"
 
         locationComponentPlugin.updateSettings {
@@ -299,71 +364,86 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 R.id.bookings -> {
                     binding.setLocationLayout.visibility = View.GONE
                     intent = Intent(this, BookingsActivity::class.java)
+                    startActivity(intent)
                 }
 
                 R.id.help -> {
                     binding.setLocationLayout.visibility = View.GONE
                     intent = Intent(this, HelpActivity::class.java)
-
+                    startActivity(intent)
                 }
             }
-            startActivity(intent)
             true
         }
     }
 
-    private fun recenterToCurrentLocation() {
-        Log.i(TAG, "zoomCamera")
+    private fun showSearchHistory() {
+        val historyDataProvider = ServiceProvider.INSTANCE.historyDataProvider()
 
-//        binding.mapView.getMapboxMap().setCamera(
-//            CameraOptions.Builder()
-//                .center(view)
-//                .zoom(10.0)
-//                .build()
-//
-//        )
+        // Show `loading` item that indicates the progress of `search history` loading operation.
+        binding.searchResultsView.setAdapterItems(listOf(SearchResultAdapterItem.Loading))
+
+        // Load `search history`
+        var loadingTask =
+            historyDataProvider.getAll(object : CompletionCallback<List<HistoryRecord>> {
+                override fun onComplete(result: List<HistoryRecord>) {
+                    val viewItems = mutableListOf<SearchResultAdapterItem>().apply {
+                        // Add `Recent searches` header
+                        add(SearchResultAdapterItem.RecentSearchesHeader)
+
+                        // Add history record items
+                        addAll(result.map { history ->
+                            SearchResultAdapterItem.History(
+                                history,
+                                isFavorite = false
+                            )
+                        })
+                    }
+
+                    // Show prepared items
+                    binding.searchResultsView.setAdapterItems(viewItems)
+                }
+
+                override fun onError(e: Exception) {
+                    // Show error in case of failure
+                    val errorItem = SearchResultAdapterItem.Error(UiError.createFromException(e))
+                    binding.searchResultsView.setAdapterItems(listOf(errorItem))
+                }
+            })
     }
 
-//    private fun addViewAnnotation(point: Point) {
-//        Toast.makeText(this@MapPassengerActivity, "addViewAnnotation", Toast.LENGTH_SHORT).show()
-//
-//        val viewAnnotation = viewAnnotationManager.addViewAnnotation(
-//            resId = R.layout.activity_map_passenger,
-//            options = viewAnnotationOptions {
-//                geometry(point)
-//                allowOverlap(true)
-//            }
-//        )
-//        viewAnnotationViews.add(viewAnnotation)
-//
-//        binding.setLocationBtn.setOnClickListener {
-//            if (viewAnnotationViews.isNotEmpty()) {
-//                val cameraOptions = viewAnnotationManager.cameraForAnnotations(viewAnnotationViews)
-//                cameraOptions?.let {
-//                    mapboxMap.flyTo(it)
-//                }
-//            } else {
-//                Toast.makeText(
-//                    this@MapPassengerActivity,
-//                    "ADD_VIEW_ANNOTATION_TEXT",
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            }
-//        }
-//
-//        val pointLat: String = point.latitude().toString()
-//        val pointLong: String = point.longitude().toString()
-//
-//        val pointLongDouble: Double = point.longitude()
-//        val pointLatDouble: Double = point.latitude()
-//
-////        addAnnotationToMap(pointLongDouble, pointLatDouble)
-//
-//        addCustomAnnotationToMap(pointLongDouble, pointLatDouble)
-//
-//        binding.desiredDestinationTextView.text = pointLat + "\n" + pointLong
-//
-//    }
+    private fun searchDestination(destination: String) {
+        val placeAutocomplete = PlaceAutocomplete
+            .create(getString(R.string.mapbox_access_token))
+
+        lifecycleScope.launchWhenCreated {
+            val response = placeAutocomplete.suggestions(
+                query = destination,
+            )
+
+            if (response.isValue) {
+                val suggestions = requireNotNull(response.value)
+
+                Log.i("SearchApiExample", "Place Autocomplete suggestions: $suggestions")
+
+                if (suggestions.isNotEmpty()) {
+// Supposing that a user has selected (clicked in UI) the first suggestion
+                    val selectedSuggestion = suggestions.first()
+
+                    Log.i("SearchApiExample", "Selecting first suggestion...")
+
+                    val selectionResponse = placeAutocomplete.select(selectedSuggestion)
+                    selectionResponse.onValue { result ->
+                        Log.i("SearchApiExample", "Place Autocomplete result: $result")
+                    }.onError { e ->
+                        Log.i("SearchApiExample", "An error occurred during selection", e)
+                    }
+                }
+            } else {
+                Log.i("SearchApiExample", "Place Autocomplete error", response.error)
+            }
+        }
+    }
 
     private fun addAnnotationToMap(
         longitude: Double,
@@ -375,7 +455,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             R.drawable.location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(longitude, latitude))
                 .withIconImage(it)
@@ -390,6 +470,30 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                         false
                     }
                 )
+            }
+        }
+    }
+
+    private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
+        if (viewAnnotationMap[coordinate] == null) {
+            mapView.viewAnnotationManager.removeAllViewAnnotations()
+            val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
+                resId = R.layout.mapbox_item_view_annotation,
+                options = viewAnnotationOptions {
+                    geometry(coordinate)
+                    offsetY(170)
+                },
+            ).also { view ->
+                viewAnnotationMap[coordinate] = view
+            }
+//            val locationText = """
+//                My Location:
+//                Longitude = ${coordinate.longitude()}
+//                Latitude = ${coordinate.latitude()}
+//            """.trimIndent()
+//
+            MapboxItemViewAnnotationBinding.bind(viewAnnotation).apply {
+                annotationBackground.clipToOutline = true
             }
         }
     }
@@ -415,41 +519,35 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
-    private companion object {
-        private val CAMERA_TARGET = cameraOptions {
-            center(Point.fromLngLat(-74.0060, 40.7128))
-            zoom(3.0)
-        }
-    }
 
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
-        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "onMapClick is Enabled",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                mapboxMap = binding.mapView.getMapboxMap().apply {
-                    addOnMapClickListener(this@MapPassengerActivity)
-                }
-
-            } else {
-                Toast.makeText(
-                    this@MapPassengerActivity,
-                    "onMapClick is Disabled",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                mapboxMap = binding.mapView.getMapboxMap().apply {
-                    removeOnMapClickListener(this@MapPassengerActivity)
-                }
-
-            }
-        }
+//        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
+//            if (b) {
+//                Toast.makeText(
+//                    this@MapPassengerActivity,
+//                    "onMapClick is Enabled",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//
+//                mapboxMap = binding.mapView.getMapboxMap().apply {
+//                    addOnMapClickListener(this@MapPassengerActivity)
+//                }
+//
+//            } else {
+//                Toast.makeText(
+//                    this@MapPassengerActivity,
+//                    "onMapClick is Disabled",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//
+//                mapboxMap = binding.mapView.getMapboxMap().apply {
+//                    removeOnMapClickListener(this@MapPassengerActivity)
+//                }
+//
+//            }
+//        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -457,8 +555,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         storeCoordinatesInFireStore(point)
 
-        binding.desiredDestinationTextView.text =
-            point.latitude().toString() + "\n" + point.longitude().toString()
+//        binding.desiredDestinationTextView.text =
+//            point.latitude().toString() + "\n" + point.longitude().toString()
 
         return true
     }
@@ -839,5 +937,129 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
             userNotVerifiedDialog.dismiss()
         }
+    }
+
+    private fun reverseGeocoding(point: Point) {
+        val types: List<PlaceAutocompleteType> = when (mapboxMap.cameraState.zoom) {
+            in 0.0..4.0 -> REGION_LEVEL_TYPES
+            in 4.0..6.0 -> DISTRICT_LEVEL_TYPES
+            in 6.0..12.0 -> LOCALITY_LEVEL_TYPES
+            else -> ALL_TYPES
+        }
+
+        lifecycleScope.launchWhenStarted {
+            val response =
+                placeAutocomplete.suggestions(point, PlaceAutocompleteOptions(types = types))
+            response.onValue { suggestions ->
+                if (suggestions.isEmpty()) {
+                    Toast.makeText(this@MapPassengerActivity, "yeah", Toast.LENGTH_LONG).show()
+                } else {
+                    openPlaceCard(suggestions.first())
+                }
+            }.onError { error ->
+                Log.d(LOG_TAG, "Reverse geocoding error", error)
+                Toast.makeText(this@MapPassengerActivity, error.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun openPlaceCard(suggestion: PlaceAutocompleteSuggestion) {
+        ignoreNextQueryUpdate = true
+        binding.searchDestinationEditText.setText("")
+
+        lifecycleScope.launchWhenStarted {
+            placeAutocomplete.select(suggestion).onValue { result ->
+                mapMarkersManager.showMarker(suggestion.coordinate)
+                binding.searchPlaceView.open(SearchPlace.createFromPlaceAutocompleteResult(result))
+//                binding.searchDestinationEditText.hideKeyboard()
+                binding.searchResultsView.isVisible = false
+            }.onError { error ->
+                Log.d(LOG_TAG, "Suggestion selection error", error)
+                Toast.makeText(this@MapPassengerActivity, error.message, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun closePlaceCard() {
+        binding.searchPlaceView.hide()
+        mapMarkersManager.clearMarkers()
+    }
+
+    private class MapMarkersManager(mapView: MapView) {
+
+        private val mapboxMap = mapView.getMapboxMap()
+        private val circleAnnotationManager =
+            mapView.annotations.createCircleAnnotationManager(null)
+        private val markers = mutableMapOf<Long, Point>()
+
+        fun clearMarkers() {
+            markers.clear()
+            circleAnnotationManager.deleteAll()
+        }
+
+        fun showMarker(coordinate: Point) {
+            clearMarkers()
+
+            val circleAnnotationOptions: CircleAnnotationOptions = CircleAnnotationOptions()
+                .withPoint(coordinate)
+                .withCircleRadius(8.0)
+                .withCircleColor("#ee4e8b")
+                .withCircleStrokeWidth(2.0)
+                .withCircleStrokeColor("#ffffff")
+
+            val annotation = circleAnnotationManager.create(circleAnnotationOptions)
+            markers[annotation.id] = coordinate
+
+            CameraOptions.Builder()
+                .center(coordinate)
+                .padding(MARKERS_INSETS_OPEN_CARD)
+                .zoom(14.0)
+                .build().also {
+                    mapboxMap.setCamera(it)
+                }
+        }
+    }
+
+    private companion object {
+
+        const val PERMISSIONS_REQUEST_LOCATION = 0
+
+        const val LOG_TAG = "AutocompleteUiActivity"
+
+        val MARKERS_EDGE_OFFSET = dpToPx(64F).toDouble()
+        val PLACE_CARD_HEIGHT = dpToPx(300F).toDouble()
+        val MARKERS_TOP_OFFSET = dpToPx(88F).toDouble()
+
+        val MARKERS_INSETS_OPEN_CARD = EdgeInsets(
+            MARKERS_TOP_OFFSET, MARKERS_EDGE_OFFSET, PLACE_CARD_HEIGHT, MARKERS_EDGE_OFFSET
+        )
+
+        val REGION_LEVEL_TYPES = listOf(
+            PlaceAutocompleteType.AdministrativeUnit.Country,
+            PlaceAutocompleteType.AdministrativeUnit.Region
+        )
+
+        val DISTRICT_LEVEL_TYPES = REGION_LEVEL_TYPES + listOf(
+            PlaceAutocompleteType.AdministrativeUnit.Postcode,
+            PlaceAutocompleteType.AdministrativeUnit.District
+        )
+
+        val LOCALITY_LEVEL_TYPES = DISTRICT_LEVEL_TYPES + listOf(
+            PlaceAutocompleteType.AdministrativeUnit.Place,
+            PlaceAutocompleteType.AdministrativeUnit.Locality
+        )
+
+        private val ALL_TYPES = listOf(
+            PlaceAutocompleteType.Poi,
+            PlaceAutocompleteType.AdministrativeUnit.Country,
+            PlaceAutocompleteType.AdministrativeUnit.Region,
+            PlaceAutocompleteType.AdministrativeUnit.Postcode,
+            PlaceAutocompleteType.AdministrativeUnit.District,
+            PlaceAutocompleteType.AdministrativeUnit.Place,
+            PlaceAutocompleteType.AdministrativeUnit.Locality,
+            PlaceAutocompleteType.AdministrativeUnit.Neighborhood,
+            PlaceAutocompleteType.AdministrativeUnit.Street,
+            PlaceAutocompleteType.AdministrativeUnit.Address,
+        )
     }
 }
