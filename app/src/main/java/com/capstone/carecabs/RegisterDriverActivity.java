@@ -54,7 +54,8 @@ import java.util.Objects;
 public class RegisterDriverActivity extends AppCompatActivity {
 	private final String TAG = "RegisterDriver";
 	private DocumentReference documentReference;
-	private StorageReference storageReference, profilePicRef, vehiclePicRef;
+	private StorageReference storageReference, profilePictureReference,
+			vehiclePictureReference, profilePicturePath, vehiclePicturePath;
 	private FirebaseStorage firebaseStorage;
 	private Uri imageUri;
 	private static final int CAMERA_REQUEST_CODE = 1;
@@ -253,7 +254,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 					.document(userID);
 
 			Map<String, Object> registerUser = new HashMap<>();
-			registerUser.put("profilePicture", "default");
+			registerUser.put("profilePicture", StaticDataPasser.storeProfilePictureURL);
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
 			registerUser.put("age", StaticDataPasser.storeCurrentAge);
@@ -267,7 +268,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("isRegisterComplete", true);
 			registerUser.put("vehicleColor", vehicleColor);
 			registerUser.put("vehiclePlateNumber", vehiclePlateNumber);
-			registerUser.put("vehiclePicture", null);
+			registerUser.put("vehiclePicture", StaticDataPasser.storeVehiclePictureURL);
 
 			documentReference.update(registerUser).addOnSuccessListener(unused -> {
 				binding.progressBarLayout.setVisibility(View.GONE);
@@ -451,16 +452,17 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void uploadProfileImageToFirebaseStorage(String userID, Uri imageUri) {
-		profilePicRef = storageReference.child("profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		profilePictureReference = storageReference.child("images/profilePictures");
+		profilePicturePath = profilePictureReference.child("profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		storageReference.putFile(imageUri)
+		profilePicturePath.putFile(imageUri)
 				.addOnSuccessListener(taskSnapshot -> {
 
-					profilePicRef.getDownloadUrl()
+					profilePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
 
 								String imageUrl = uri.toString();
-								storeProfileImageUrlInFireStore(imageUrl, userID);
+								storeProfileImageURLInFireStore(imageUrl, userID);
 							})
 							.addOnFailureListener(e -> {
 								Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
@@ -472,16 +474,17 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void uploadVehicleImageToFirebaseStorage(String userID, Uri imageUri) {
-		vehiclePicRef = storageReference.child("vehiclePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		vehiclePictureReference = storageReference.child("images/vehiclePictures");
+		vehiclePicturePath = vehiclePictureReference.child(System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		storageReference.putFile(imageUri)
+		vehiclePicturePath.putFile(imageUri)
 				.addOnSuccessListener(taskSnapshot -> {
 
-					profilePicRef.getDownloadUrl()
+					vehiclePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
 
 								String imageUrl = uri.toString();
-								storeVehicleImageUrlInFireStore(imageUrl, userID);
+								storeVehicleImageURLInFireStore(imageUrl, userID);
 							})
 							.addOnFailureListener(e -> {
 								Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
@@ -492,7 +495,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-	private void storeProfileImageUrlInFireStore(String imageUrl, String userID) {
+	private void storeProfileImageURLInFireStore(String imageUrl, String userID) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
@@ -502,14 +505,17 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		documentReference.update(profilePicture)
 				.addOnSuccessListener(unused ->
+
 						Toast.makeText(RegisterDriverActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+
 				.addOnFailureListener(e -> {
+
 					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
 				});
 	}
 
-	private void storeVehicleImageUrlInFireStore(String imageUrl, String userID) {
+	private void storeVehicleImageURLInFireStore(String imageUrl, String userID) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
@@ -519,13 +525,15 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		documentReference.update(vehiclePicture)
 				.addOnSuccessListener(unused ->
+
 						Toast.makeText(RegisterDriverActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+
 				.addOnFailureListener(e -> {
+
 					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
 				});
 	}
-
 
 	private void showCameraOrGalleryOptionsDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -863,44 +871,14 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			imageUri = data.getData();
 			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
 
-				StaticDataPasser.storeUri = imageUri;
+				StaticDataPasser.storeProfilePictureUri = imageUri;
 				binding.imgBtnProfilePic.setImageURI(imageUri);
 
 			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
 
-				StaticDataPasser.storeUri = imageUri;
+				StaticDataPasser.storeVehiclePictureUri = imageUri;
 				binding.vehicleImageView.setImageURI(imageUri);
 			}
-
-//			if (requestCode == CAMERA_REQUEST_CODE) {
-//				if (data != null) {
-//
-//					Bundle extras = data.getExtras();
-//					Bitmap imageBitmap = (Bitmap) extras.get("data");
-//
-//					imageUri = getImageUri(imageBitmap);
-//					StaticDataPasser.storeUri = imageUri;
-//					binding.imgBtnProfilePic.setImageURI(imageUri);
-//
-//					Toast.makeText(this, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
-//
-//				} else {
-//					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-//				}
-//
-//			} else if (requestCode == GALLERY_REQUEST_CODE) {
-//				if (data != null) {
-//
-//					imageUri = data.getData();
-//					StaticDataPasser.storeUri = imageUri;
-//					binding.imgBtnProfilePic.setImageURI(imageUri);
-//
-//					Toast.makeText(this, "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
-//
-//				} else {
-//					Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
-//				}
-//			}
 
 		} else {
 			Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();

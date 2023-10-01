@@ -19,7 +19,6 @@
 			android:id="@+id/routeOverviewBtn"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
 			android:elevation="10dp" />
 
 		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton

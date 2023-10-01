@@ -86,7 +86,7 @@
 							android:orientation="horizontal">
 
 							<de.hdodenhof.circleimageview.CircleImageView
-								android:id="@+id/imgBtnProfilePic"
+								android:id="@+id/profilePicture"
 								android:layout_width="0dp"
 								android:layout_height="150dp"
 								android:layout_margin="10dp"
@@ -167,10 +167,10 @@
 				android:textSize="17sp" />
 
 			<TextView
-				android:layout_width="match_parent"
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginTop="20dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
 				android:text="Tap the info you want to edit"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -295,6 +295,73 @@
 					android:textColor="@color/black"
 					android:textColorHint="@color/black"
 					android:textSize="17sp" />
+
+				<LinearLayout
+					android:id="@+id/vehicleInfoLayout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<View
+						android:layout_width="match_parent"
+						android:layout_height="5dp"
+						android:layout_margin="10dp"
+						android:background="@color/dark_gray" />
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Vehicle Information"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
+
+					<ImageView
+						android:id="@+id/vehicleImageView"
+						android:layout_width="150dp"
+						android:layout_height="150dp"
+						android:layout_marginBottom="10dp"
+						android:background="@drawable/custom_card_view_1"
+						android:src="@drawable/car_100" />
+
+					<androidx.appcompat.widget.AppCompatButton
+						android:id="@+id/vehiclePlateNumberBtn"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="10dp"
+						android:background="@drawable/stroke_button"
+						android:drawableStart="@drawable/edit_32"
+						android:elevation="5dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="10dp"
+						android:text="Vehicle Plate Number"
+						android:textAlignment="center"
+						android:textAllCaps="false"
+						android:textColor="@color/black"
+						android:textColorHint="@color/black"
+						android:textSize="17sp" />
+
+					<androidx.appcompat.widget.AppCompatButton
+						android:id="@+id/vehicleColorBtn"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_marginBottom="10dp"
+						android:background="@drawable/stroke_button"
+						android:drawableStart="@drawable/edit_32"
+						android:elevation="5dp"
+						android:fontFamily="@font/opensans_bold"
+						android:padding="10dp"
+						android:text="Vehicle Color"
+						android:textAlignment="center"
+						android:textAllCaps="false"
+						android:textColor="@color/black"
+						android:textColorHint="@color/black"
+						android:textSize="17sp" />
+
+				</LinearLayout>
 
 			</LinearLayout>
 

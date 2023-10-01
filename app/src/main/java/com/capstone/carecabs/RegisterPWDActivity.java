@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class RegisterPWDActivity extends AppCompatActivity {
+	private final String TAG = "RegisterPWDActivity";
 	private DocumentReference documentReference;
 	private StorageReference storageReference, imageRef;
 	private FirebaseStorage firebaseStorage;
@@ -61,7 +62,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private String userID;
-	private final String TAG = "RegisterPWDActivity";
 	private boolean verificationStatus = false;
 	private boolean shouldExit = false;
 	private boolean isIDScanned = false;

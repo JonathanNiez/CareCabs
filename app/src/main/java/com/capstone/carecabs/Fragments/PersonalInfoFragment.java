@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,8 +32,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
 public class PersonalInfoFragment extends Fragment {
-	private DocumentReference documentReference;
 	private final String TAG = "FragmentPersonalInfo";
+	private DocumentReference documentReference;
 	private String userID;
 	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private AlertDialog.Builder builder;
@@ -41,6 +42,13 @@ public class PersonalInfoFragment extends Fragment {
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
 	private FragmentPersonalInfoBinding binding;
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
 
 	@Override
 	public void onDestroy() {
@@ -77,13 +85,13 @@ public class PersonalInfoFragment extends Fragment {
 		binding = FragmentPersonalInfoBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		binding.vehicleInfoLayout.setVisibility(View.GONE);
 		binding.medConTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 
 		context = getContext();
-		initializeNetworkChecker();
-		loadUserProfileInfo();
 		FirebaseApp.initializeApp(context);
+		loadUserProfileInfo();
 
 		binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
 
@@ -172,6 +180,7 @@ public class PersonalInfoFragment extends Fragment {
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
 
@@ -199,6 +208,24 @@ public class PersonalInfoFragment extends Fragment {
 					String getRegisterType = documentSnapshot.getString("registerType");
 
 					switch (getUserType) {
+						case "Driver":
+							binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+
+							String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+							String getVehicleColor = documentSnapshot.getString("vehicleColor");
+							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+
+							if (!getVehiclePicture.equals("none")){
+								Glide.with(context)
+										.load(getVehiclePicture)
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.vehicleImageView);
+							}
+
+							binding.vehicleColorTextView.setText("Vehicle Color: " + getVehicleColor);
+							binding.vehiclePlateNumberTextView.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+
+							break;
 
 						case "Persons with Disabilities (PWD)":
 							String getDisability = documentSnapshot.getString("disability");

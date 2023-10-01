@@ -1,6 +1,7 @@
 package com.capstone.carecabs.Fragments;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -9,16 +10,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,26 +31,36 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.RegisterDriverActivity;
-import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
+import com.capstone.carecabs.ml.ModelUnquant;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -62,9 +68,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public class EditAccountFragment extends Fragment {
-	private String userID;
 	private final String TAG = "EditAccountFragment";
-	private Intent intent, cameraIntent, galleryIntent;
+	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
 	private AlertDialog editFirstNameDialog, editLastNameDialog,
@@ -73,25 +78,35 @@ public class EditAccountFragment extends Fragment {
 			profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
 			profilePicUpdateSuccessConfirmation, pleaseWaitDialog,
 			birthdateInputChoiceDialog;
-	private Uri imageUri;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
+	private static final int PROFILE_PICTURE_REQUEST_CODE = 103;
+	private static final int VEHICLE_PICTURE_REQUEST_CODE = 104;
+	private final int imageSize = 224;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private DocumentReference documentReference;
-	private StorageReference storageReference, imageRef;
+	private StorageReference storageReference, profilePictureReference,
+			vehiclePictureReference, profilePicturePath, vehiclePicturePath;
 	private FirebaseStorage firebaseStorage;
 	private RequestManager requestManager;
 	private FragmentEditAccountBinding binding;
+
+	@Override
+	public void onStart() {
+		super.onStart();
+
+		initializeNetworkChecker();
+	}
 
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 
 		if (requestManager != null) {
-			requestManager.clear(binding.imgBtnProfilePic);
+			requestManager.clear(binding.profilePicture);
 		}
 	}
 
@@ -109,9 +124,9 @@ public class EditAccountFragment extends Fragment {
 		binding.editMedConBtn.setVisibility(View.GONE);
 		binding.editDisabilityBtn.setVisibility(View.GONE);
 		binding.idScannedTextView.setVisibility(View.GONE);
+		binding.vehicleInfoLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		initializeNetworkChecker();
 		getCurrentFontSizeFromUserSetting();
 		checkPermission();
 
@@ -120,15 +135,25 @@ public class EditAccountFragment extends Fragment {
 
 		loadUserProfileInfo();
 
-		binding.imgBtnProfilePic.setOnClickListener(v -> {
-//			showCameraOrGalleryOptionsDialog();
+		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		storageReference = firebaseStorage.getReference();
 
+		binding.profilePicture.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
 					.crop()                    //Crop image(Optional), Check Customization for more option
 					.compress(1024)            //Final image size will be less than 1 MB(Optional)
 					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start();
+					.start(PROFILE_PICTURE_REQUEST_CODE);
 		});
+
+		binding.vehicleImageView.setOnClickListener(v -> {
+			ImagePicker.with(EditAccountFragment.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start(VEHICLE_PICTURE_REQUEST_CODE);
+		});
+
 
 		binding.editFirstnameBtn.setOnClickListener(v -> {
 			showEditFirstNameDialog();
@@ -296,11 +321,12 @@ public class EditAccountFragment extends Fragment {
 		datePickerDialog.show();
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
-			userID = FirebaseMain.getUser().getUid();
+			String userID = FirebaseMain.getUser().getUid();
 
 			userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -324,6 +350,21 @@ public class EditAccountFragment extends Fragment {
 
 					switch (getUserType) {
 						case "Driver":
+							binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+
+							String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+							String getVehicleColor = documentSnapshot.getString("vehicleColor");
+							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+
+							if (!getVehiclePicture.equals("none")) {
+								Glide.with(context)
+										.load(getVehiclePicture)
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.vehicleImageView);
+							}
+
+							binding.vehicleColorBtn.setText("Vehicle Color: " + getVehicleColor);
+							binding.vehiclePlateNumberBtn.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
 
 							break;
 
@@ -348,7 +389,7 @@ public class EditAccountFragment extends Fragment {
 								.load(getProfilePicture)
 								.centerCrop()
 								.placeholder(R.drawable.loading_gif)
-								.into(binding.imgBtnProfilePic);
+								.into(binding.profilePicture);
 					}
 
 					if (!getVerificationStatus) {
@@ -847,10 +888,10 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	private void openGallery() {
-		galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		galleryIntent.setType("image/*");
-		if (galleryIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+		intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		intent.setType("image/*");
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivityForResult(intent, GALLERY_REQUEST_CODE);
 			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
 				cameraGalleryOptionsDialog.dismiss();
 			}
@@ -862,9 +903,9 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	private void openCamera() {
-		cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-			startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+		intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+		if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+			startActivityForResult(intent, CAMERA_REQUEST_CODE);
 			if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
 				cameraGalleryOptionsDialog.dismiss();
 			}
@@ -883,47 +924,53 @@ public class EditAccountFragment extends Fragment {
 		return Uri.parse(path);
 	}
 
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		showPleaseWaitDialog();
+	private void uploadProfileImageToFirebaseStorage(String userID, Uri imageUri) {
+		profilePictureReference = storageReference.child("images/profilePictures");
+		profilePicturePath = profilePictureReference.child("profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
+		profilePicturePath.putFile(imageUri)
+				.addOnSuccessListener(taskSnapshot -> {
 
-		userID = FirebaseMain.getUser().getUid();
+					profilePicturePath.getDownloadUrl()
+							.addOnSuccessListener(uri -> {
 
-		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+								String imageUrl = uri.toString();
+								storeProfileImageURLInFireStore(imageUrl, userID);
+							})
+							.addOnFailureListener(e -> {
+								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 
-		UploadTask uploadTask = imageRef.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-				.addOnSuccessListener(uri -> {
-
-					closePleaseWaitDialog();
-
-					String imageUrl = uri.toString();
-					storeImageUrlInFireStore(imageUrl);
-
-					Glide.with(context).load(uri).placeholder(R.drawable.loading_gif).into(binding.imgBtnProfilePic);
-
-				}).addOnFailureListener(e -> {
-
-					closePleaseWaitDialog();
-
-					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-
-				})).addOnFailureListener(e -> {
-
-			closePleaseWaitDialog();
-
-
-			Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-			Log.e(TAG, e.getMessage());
-
-		});
+								Log.e(TAG, e.getMessage());
+							});
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-	private void storeImageUrlInFireStore(String imageUrl) {
-		userID = FirebaseMain.getUser().getUid();
+	private void uploadVehicleImageToFirebaseStorage(String userID, Uri imageUri) {
+
+		vehiclePictureReference = storageReference.child("images/vehiclePictures");
+		vehiclePicturePath = vehiclePictureReference.child(System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		vehiclePicturePath.putFile(imageUri)
+				.addOnSuccessListener(taskSnapshot -> {
+
+					vehiclePicturePath.getDownloadUrl()
+							.addOnSuccessListener(uri -> {
+
+								String imageUrl = uri.toString();
+								storeVehicleImageURLInFireStore(imageUrl, userID);
+							})
+							.addOnFailureListener(e -> {
+								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+
+								Log.e(TAG, e.getMessage());
+							});
+				})
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+	}
+
+	private void storeProfileImageURLInFireStore(String imageUrl, String userID) {
+
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -932,14 +979,27 @@ public class EditAccountFragment extends Fragment {
 
 		documentReference.update(profilePicture)
 				.addOnSuccessListener(unused ->
-
 						Toast.makeText(context, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
-
 				.addOnFailureListener(e -> {
-
 					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, e.getMessage());
+				});
+	}
 
+	private void storeVehicleImageURLInFireStore(String imageUrl, String userID) {
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection).document(userID);
+
+		Map<String, Object> vehiclePicture = new HashMap<>();
+		vehiclePicture.put("vehiclePicture", imageUrl);
+
+		documentReference.update(vehiclePicture)
+				.addOnSuccessListener(unused ->
+						Toast.makeText(context, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+				.addOnFailureListener(e -> {
+					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, e.getMessage());
 				});
 	}
 
@@ -973,69 +1033,6 @@ public class EditAccountFragment extends Fragment {
 	private void closeCameraOrGalleryOptionsDialog() {
 		if (cameraGalleryOptionsDialog != null && cameraGalleryOptionsDialog.isShowing()) {
 			cameraGalleryOptionsDialog.dismiss();
-		}
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == Activity.RESULT_OK) {
-			if (data != null) {
-
-				imageUri = data.getData();
-				uploadImageToFirebaseStorage(imageUri);
-
-			}
-
-//			if (requestCode == CAMERA_REQUEST_CODE) {
-//				if (data != null) {
-//
-////					Bundle extras = data.getExtras();
-////					Bitmap imageBitmap = (Bitmap) extras.get("data");
-//
-////					imageUri = getImageUri(context, imageBitmap);
-//
-//					imageUri = data.getData();
-//					uploadImageToFirebaseStorage(imageUri);
-//
-//					Toast.makeText(context, "Image is Loaded from Camera", Toast.LENGTH_LONG).show();
-//
-//
-//				} else {
-//					Toast.makeText(context, "Image is not Selected", Toast.LENGTH_LONG).show();
-//				}
-//
-//			} else if (requestCode == GALLERY_REQUEST_CODE) {
-//				if (data != null) {
-//
-//					imageUri = data.getData();
-//					uploadImageToFirebaseStorage(imageUri);
-//
-//					Toast.makeText(getContext(), "Image is Loaded from Gallery", Toast.LENGTH_LONG).show();
-//
-//				} else {
-//					Toast.makeText(getContext(), "Image is not Selected", Toast.LENGTH_LONG).show();
-//				}
-//			}
-
-		}
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-		if (requestCode == CAMERA_PERMISSION_REQUEST) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.i(TAG, "Camera Permission Granted");
-			}
-		} else if (requestCode == STORAGE_PERMISSION_REQUEST) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.i(TAG, "Gallery Permission Granted");
-			}
-		} else {
-			Log.e(TAG, "Permission Denied");
 		}
 	}
 
@@ -1091,6 +1088,119 @@ public class EditAccountFragment extends Fragment {
 			}
 		} else {
 			showNoInternetDialog();
+		}
+	}
+
+	private void identifyCar(Bitmap bitmap) {
+		try {
+			ModelUnquant model = ModelUnquant.newInstance(context);
+
+			// Creates inputs for reference.
+			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
+			byteBuffer.order(ByteOrder.nativeOrder());
+
+			int[] intValues = new int[imageSize * imageSize];
+			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+			int pixel = 0;
+			for (int n = 0; n < imageSize; n++) {
+				for (int i = 0; i < imageSize; i++) {
+					int val = intValues[pixel++];
+					byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
+					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
+					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
+				}
+			}
+			byteBuffer.rewind(); // Set the position back to 0
+			inputFeature0.loadBuffer(byteBuffer);
+
+			// Runs model inference and gets result.
+			ModelUnquant.Outputs outputs = model.process(inputFeature0);
+			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+			float[] confidences = outputFeature0.getFloatArray();
+			int maxPos = 0;
+			float maxConfidence = 0;
+			for (int i = 0; i < confidences.length; i++) {
+				if (confidences[i] > maxConfidence) {
+					maxConfidence = confidences[i];
+					maxPos = i;
+				}
+			}
+
+			String[] classes = {"Car", "Not Car"};
+			String predictedClass;
+			if (maxPos == 0) {
+				predictedClass = "Car";
+
+				Toast.makeText(context, predictedClass, Toast.LENGTH_LONG).show();
+			} else {
+				predictedClass = "Not Car";
+				Toast.makeText(context, predictedClass, Toast.LENGTH_LONG).show();
+			}
+
+			// Releases model resources if no longer used.
+			model.close();
+		} catch (IOException e) {
+			// TODO Handle the exception
+		}
+	}
+
+	public Bitmap uriToBitmap(Context context, Uri uri) throws IOException {
+		InputStream inputStream = context.getContentResolver().openInputStream(uri);
+		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+		if (inputStream != null) {
+			inputStream.close();
+		}
+		return bitmap;
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == Activity.RESULT_OK && data != null) {
+
+			Uri imageUri = data.getData();
+
+			Bitmap bitmap = null;
+			try {
+				bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
+			bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
+
+			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
+
+				binding.profilePicture.setImageBitmap(bitmap);
+//				uploadProfileImageToFirebaseStorage(FirebaseMain.getUser().getUid(), imageUri);
+				identifyCar(bitmap);
+
+			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
+
+				binding.vehicleImageView.setImageBitmap(bitmap);
+//				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), imageUri);
+				identifyCar(bitmap);
+
+			}
+		}
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (requestCode == CAMERA_PERMISSION_REQUEST) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.i(TAG, "Camera Permission Granted");
+			}
+		} else if (requestCode == STORAGE_PERMISSION_REQUEST) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+				Log.i(TAG, "Gallery Permission Granted");
+			}
+		} else {
+			Log.e(TAG, "Permission Denied");
 		}
 	}
 }
