@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.carecabs.Model.CurrentPassengerBookingsHistoryModel;
 import com.capstone.carecabs.Model.CurrentPassengerPendingBookingsModel;
-import com.capstone.carecabs.databinding.ItemBookingHistoryBinding;
 import com.capstone.carecabs.databinding.ItemPendingBookingBinding;
 
 import java.util.List;

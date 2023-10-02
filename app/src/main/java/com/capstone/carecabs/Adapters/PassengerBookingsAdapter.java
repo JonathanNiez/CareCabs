@@ -57,7 +57,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 					.into(holder.binding.passengerImage);
 		}
 		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
-		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingTime());
+		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingDate());
 
 		if (passengerBookingModel.getBookingStatus().equals("Waiting")){
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);

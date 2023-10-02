@@ -17,15 +17,6 @@
 		android:padding="5dp">
 
 		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_bold"
-			android:text="YOUR CURRENT BOOKING"
-			android:textColor="@color/black"
-			android:textSize="20sp" />
-
-		<TextView
 			android:id="@+id/bookingDateTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

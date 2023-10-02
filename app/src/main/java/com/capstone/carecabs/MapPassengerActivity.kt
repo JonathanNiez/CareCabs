@@ -29,7 +29,6 @@ import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
-import com.capstone.carecabs.databinding.DialogExitMapBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.google.firebase.database.DataSnapshot
@@ -190,8 +189,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.searchDestinationEditText.setOnClickListener {
 
         }
-
-
     }
 
     @Deprecated("Deprecated in Java")
@@ -295,7 +292,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
-
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
 
             createViewAnnotation(
@@ -303,37 +299,47 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 Point.fromLngLat(it.longitude(), it.latitude())
             )
 
-            val pickupLocationGeocode = MapboxGeocoding.builder()
-                .accessToken(getString(R.string.mapbox_access_token))
-                .query(Point.fromLngLat(it.longitude(), it.latitude()))
-                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-                .build()
-
-            pickupLocationGeocode.enqueueCall(object : Callback<GeocodingResponse> {
-                override fun onResponse(
-                    call: Call<GeocodingResponse>,
-                    response: Response<GeocodingResponse>
-                ) {
-                    if (response.body() != null && response.body()!!.features() != null) {
-                        val feature: CarmenFeature = response.body()!!.features()!![0]
-                        val locationName: String? = feature.placeName()
-
-                        // Display the location name in your TextView
-                        binding.currentCoordinatesTextView.text = locationName
-                    } else {
-                        // Handle no results
-                    }
-                }
-
-                override fun onFailure(call: Call<GeocodingResponse>, t: Throwable) {
-                    // Handle failure
-                }
-            })
-
-
             //store the current location
-            StaticDataPasser.storeLatitude = it.latitude()
-            StaticDataPasser.storeLongitude = it.longitude()
+            StaticDataPasser.storePickupLatitude = it.latitude()
+            StaticDataPasser.storePickupLongitude = it.longitude()
+
+            val passengerBookingModel = PassengerBookingModel(
+                pickupLatitude = it.latitude(),
+                pickupLongitude = it.longitude()
+            )
+
+//            val pickupLocationGeocode = MapboxGeocoding.builder()
+//                .accessToken(getString(R.string.mapbox_access_token))
+//                .query(
+//                    Point.fromLngLat(
+//                        StaticDataPasser.storeLongitude,
+//                        StaticDataPasser.storeLatitude
+//                    )
+//                )
+//                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+//                .build()
+//
+//            pickupLocationGeocode.enqueueCall(object : Callback<GeocodingResponse> {
+//                override fun onResponse(
+//                    call: Call<GeocodingResponse>,
+//                    response: Response<GeocodingResponse>
+//                ) {
+//                    if (response.body() != null && response.body()!!.features() != null) {
+//                        val feature: CarmenFeature = response.body()!!.features()!![0]
+//                        val locationName: String? = feature.placeName()
+//
+//                        // Display the location name in your TextView
+//                        binding.currentCoordinatesTextView.text = locationName
+//                    } else {
+//                        // Handle no results
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<GeocodingResponse>, t: Throwable) {
+//                    // Handle failure
+//                }
+//            })
+
         }
 
 //        binding.currentCoordinatesTextView.text =
@@ -586,6 +592,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     @SuppressLint("SetTextI18n")
     override fun onMapClick(point: Point): Boolean {
 
+        StaticDataPasser.storeDestinationLongitude = point.longitude()
+        StaticDataPasser.storeDestinationLatitude = point.latitude()
+
         storeCoordinatesInFireStore(point)
 
 //        binding.desiredDestinationTextView.text =
@@ -619,24 +628,27 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                                 locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                             if (passengerBookingData != null) {
-                                val getDestinationLatitude =
-                                    passengerBookingData.destinationLatitude
-                                val getDestinationLongitude =
-                                    passengerBookingData.destinationLongitude
-                                val getBookingID = passengerBookingData.bookingID
+                                if (passengerBookingData.bookingStatus.equals("Waiting")){
+                                    val getDestinationLatitude =
+                                        passengerBookingData.destinationLatitude
+                                    val getDestinationLongitude =
+                                        passengerBookingData.destinationLongitude
+                                    val getBookingID = passengerBookingData.bookingID
 
-                                if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid) {
-                                    addAnnotationToMap(
-                                        getDestinationLongitude,
-                                        getDestinationLatitude,
-                                        getBookingID
-                                    )
-                                } else {
-                                    Toast.makeText(
-                                        this@MapPassengerActivity,
-                                        "passengerBookingModel.passengerUserID",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid) {
+                                        addAnnotationToMap(
+                                            getDestinationLongitude,
+                                            getDestinationLatitude,
+                                            getBookingID
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            this@MapPassengerActivity,
+                                            "passengerBookingModel.passengerUserID",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
                                 }
                             } else {
                                 Toast.makeText(
@@ -781,11 +793,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
-            pickupLongitude = StaticDataPasser.storeLongitude,
-            pickupLatitude = StaticDataPasser.storeLatitude,
+            pickupLongitude = StaticDataPasser.storePickupLongitude,
+            pickupLatitude = StaticDataPasser.storePickupLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
-            bookingTime = getCurrentTimeAndDate(),
+            bookingDate = getCurrentTimeAndDate(),
             passengerFirstname = firstname,
             passengerLastname = lastname,
             passengerProfilePicture = profilePicture,
@@ -820,11 +832,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
-            pickupLongitude = StaticDataPasser.storeLongitude,
-            pickupLatitude = StaticDataPasser.storeLatitude,
+            pickupLongitude = StaticDataPasser.storePickupLongitude,
+            pickupLatitude = StaticDataPasser.storePickupLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
-            bookingTime = getCurrentTimeAndDate(),
+            bookingDate = getCurrentTimeAndDate(),
             passengerFirstname = firstname,
             passengerLastname = lastname,
             passengerProfilePicture = profilePicture,
@@ -882,8 +894,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             "A Driver has accepted your Booking and is on the way to your location"
         )
     }
-
-
     private fun showPassengerOwnBookingInfoDialog(bookingID: String) {
 
         val binding: DialogPassengerOwnBookingInfoBinding =

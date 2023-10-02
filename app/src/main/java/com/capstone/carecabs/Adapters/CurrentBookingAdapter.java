@@ -1,13 +1,17 @@
 package com.capstone.carecabs.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.capstone.carecabs.ChatActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemCurrentBookingBinding;
@@ -27,11 +31,18 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 	private final String TAG = "CurrentBookingAdapter";
 	private Context context;
 	private List<CurrentBookingModel> currentBookingModelList;
+	private ItemCurrentBookingClickListener itemCurrentBookingClickListener;
+
+	public interface ItemCurrentBookingClickListener {
+		void onCurrentBookingClick(CurrentBookingModel currentBookingModel);
+	}
 
 	public CurrentBookingAdapter(Context context,
-	                             List<CurrentBookingModel> currentBookingModelList) {
+	                             List<CurrentBookingModel> currentBookingModelList,
+	                             ItemCurrentBookingClickListener itemCurrentBookingClickListener) {
 		this.context = context;
 		this.currentBookingModelList = currentBookingModelList;
+		this.itemCurrentBookingClickListener = itemCurrentBookingClickListener;
 	}
 
 	@NonNull
@@ -45,6 +56,8 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 	@Override
 	public void onBindViewHolder(@NonNull CurrentBookingViewHolder holder, int position) {
 		CurrentBookingModel currentBookingModel = currentBookingModelList.get(position);
+		holder.binding.chatDriverBtn.setVisibility(View.GONE);
+		holder.binding.driverOnTheWayTextView.setVisibility(View.GONE);
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -57,14 +70,16 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && response.body().features() != null) {
+			public void onResponse(@NonNull Call<GeocodingResponse> call,
+			                       @NonNull Response<GeocodingResponse> response) {
+				if (response.body() != null && !response.body().features().isEmpty()) {
 					CarmenFeature feature = response.body().features().get(0);
 					String locationName = feature.placeName();
 
 					holder.binding.pickupLocationTextView.setText(locationName);
 				} else {
 					Log.e(TAG, response.message());
+					holder.binding.pickupLocationTextView.setText("Location not found");
 				}
 			}
 
@@ -83,14 +98,17 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 				.build();
 		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && response.body().features() != null) {
+			public void onResponse(@NonNull Call<GeocodingResponse> call,
+			                       @NonNull Response<GeocodingResponse> response) {
+				if (response.body() != null && !response.body().features().isEmpty()) {
 					CarmenFeature feature = response.body().features().get(0);
 					String locationName = feature.placeName();
 
 					holder.binding.destinationLocationTextView.setText(locationName);
 				} else {
 					Log.e(TAG, response.message());
+
+					holder.binding.destinationLocationTextView.setText("Location not found");
 				}
 			}
 
@@ -100,11 +118,31 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			}
 		});
 
-		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
-		holder.binding.chatDriverBtn.setOnClickListener(v -> {
+		holder.binding.loadingDestinationLocation.setVisibility(View.GONE);
+		holder.binding.loadingPickupLocation.setVisibility(View.GONE);
 
+		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
+
+		if (currentBookingModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
+			holder.binding.driverOnTheWayTextView.setVisibility(View.VISIBLE);
+			holder.binding.chatDriverBtn.setVisibility(View.VISIBLE);
+			holder.binding.chatDriverBtn.setOnClickListener(v -> {
+				Intent intent = new Intent(context, ChatActivity.class);
+				intent.putExtra("driverID", currentBookingModel.getDriverUserID());
+				context.startActivity(intent);
+			});
+		}
+
+		holder.binding.cancelBookingBtn.setOnClickListener(v -> {
+			if (itemCurrentBookingClickListener != null) {
+				itemCurrentBookingClickListener
+						.onCurrentBookingClick(currentBookingModelList.get(position));
+			}
 		});
+
 	}
+
 
 	@Override
 	public int getItemCount() {

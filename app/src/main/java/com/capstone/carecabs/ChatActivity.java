@@ -41,29 +41,30 @@ public class ChatActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		Intent intent = getIntent();
-		String getDriverID = intent.getStringExtra("driverID");
-		String getTripID = intent.getStringExtra("tripID");
+		if (getIntent().hasExtra("driverID")) {
+			String getDriverID = intent.getStringExtra("driverID");
+			String getTripID = intent.getStringExtra("tripID");
 
-		loadCurrentChatUser(getDriverID);
+			loadCurrentChatUser(getDriverID);
 
-		binding.sendMessageBtn.setOnClickListener(v -> {
-			String message = binding.messageEditText.getText().toString();
-			if (message.isEmpty()) {
-				binding.messageEditText.setText("");
-				return;
-			} else {
-				binding.messageEditText.setText("");
-
-				sendMessage(
-						generateRandomChatID(),
-						getTripID,
-						getCurrentTimeAndDate(),
-						FirebaseMain.getUser().getUid(),
-						getDriverID,
-						message
-				);
-			}
-		});
+			binding.sendMessageBtn.setOnClickListener(v -> {
+				String message = binding.messageEditText.getText().toString();
+				if (message.isEmpty()) {
+					binding.messageEditText.setText("");
+					return;
+				} else {
+					binding.messageEditText.setText("");
+					sendMessage(
+							generateRandomChatID(),
+							getTripID,
+							getCurrentTimeAndDate(),
+							FirebaseMain.getUser().getUid(),
+							getDriverID,
+							message
+					);
+				}
+			});
+		}
 	}
 
 
@@ -81,6 +82,7 @@ public class ChatActivity extends AppCompatActivity {
 	private void loadCurrentChatUser(String driverID) {
 
 		readMessage(FirebaseMain.getUser().getUid(), driverID);
+
 		//load the message receiver profile
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
@@ -119,9 +121,7 @@ public class ChatActivity extends AppCompatActivity {
 			String receiver,
 			String message
 	) {
-
 		databaseReference = FirebaseDatabase.getInstance().getReference();
-
 		ChatModel chatModel = new ChatModel(
 				chatID,
 				tripID,
@@ -130,12 +130,10 @@ public class ChatActivity extends AppCompatActivity {
 				receiver,
 				message
 		);
-
 		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatModel);
 	}
 
 	private void readMessage(String senderID, String receiverID) {
-
 		databaseReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.chatCollection);
 		databaseReference.addValueEventListener(new ValueEventListener() {

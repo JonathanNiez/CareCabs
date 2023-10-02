@@ -14,12 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.capstone.carecabs.Adapters.CurrentPassengerBookingsHistoryAdapter;
-import com.capstone.carecabs.Adapters.CurrentPassengerPendingBookingsAdapter;
+import com.capstone.carecabs.Adapters.BookingsHistoryAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
-import com.capstone.carecabs.Model.CurrentPassengerBookingsHistoryModel;
-import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Model.BookingsHistoryModel;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
 import com.capstone.carecabs.databinding.FragmentBookingHistoryBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +47,8 @@ public class BookingHistoryFragment extends Fragment {
 		binding = FragmentBookingHistoryBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		binding.noBookingsHistoryTextView.setVisibility(View.GONE);
+
 		context = getContext();
 
 		loadBookingsFromDatabase();
@@ -66,25 +66,30 @@ public class BookingHistoryFragment extends Fragment {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
-						List<CurrentPassengerBookingsHistoryModel> currentPassengerBookingsHistoryModelList = new ArrayList<>();
+						List<BookingsHistoryModel> bookingsHistoryModelList = new ArrayList<>();
 
-						for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
-							CurrentPassengerBookingsHistoryModel currentPassengerBookingsHistoryModel =
-									bookingSnapshot.getValue(CurrentPassengerBookingsHistoryModel.class);
-							if (currentPassengerBookingsHistoryModel != null) {
-								if (currentPassengerBookingsHistoryModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
-									currentPassengerBookingsHistoryModelList.add(currentPassengerBookingsHistoryModel);
+						for (DataSnapshot bookingHistorySnapshot : snapshot.getChildren()) {
+							BookingsHistoryModel bookingsHistoryModel =
+									bookingHistorySnapshot.getValue(BookingsHistoryModel.class);
+							if (bookingsHistoryModel != null) {
+								if (bookingsHistoryModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
+									bookingsHistoryModelList.add(bookingsHistoryModel);
+
+									BookingsHistoryAdapter bookingsHistoryAdapter =
+											new BookingsHistoryAdapter(
+													context,
+													bookingsHistoryModelList);
+									binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+									binding.bookingHistoryRecyclerView.setAdapter(bookingsHistoryAdapter);
+								} else {
+									binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
 								}
+							} else {
+								binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
 							}
 						}
-
-						CurrentPassengerBookingsHistoryAdapter currentPassengerBookingsHistoryAdapter =
-								new CurrentPassengerBookingsHistoryAdapter(
-										context,
-										currentPassengerBookingsHistoryModelList);
-						binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-						binding.bookingHistoryRecyclerView.setAdapter(currentPassengerBookingsHistoryAdapter);
-
+					} else {
+						binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
 					}
 				}
 

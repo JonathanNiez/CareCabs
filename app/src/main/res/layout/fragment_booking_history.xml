@@ -44,4 +44,14 @@
 		android:layout_below="@id/customActionBarLayout"
 		tools:listitem="@layout/item_booking_history" />
 
+	<TextView
+		android:id="@+id/noBookingsHistoryTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="Bookings history will be shown here"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
+
 </RelativeLayout>

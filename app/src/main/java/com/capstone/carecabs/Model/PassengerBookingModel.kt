@@ -1,7 +1,5 @@
 package com.capstone.carecabs.Model
 
-import com.mapbox.geojson.Point
-
 data class PassengerBookingModel(
     val passengerUserID: String = "",
     val driverUserID: String = "",
@@ -12,7 +10,7 @@ data class PassengerBookingModel(
     val pickupLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,
     val destinationLatitude: Double = 0.0,
-    val bookingTime: String = "",
+    val bookingDate: String = "",
     val passengerFirstname: String = "",
     val passengerLastname: String = "",
     val passengerProfilePicture: String = "",
