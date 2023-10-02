@@ -29,6 +29,7 @@ import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.capstone.carecabs.databinding.DialogExitMapBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.google.firebase.database.DataSnapshot
@@ -62,6 +63,7 @@ import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
@@ -101,6 +103,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerOwnBookingInfoDialog: AlertDialog
+    private lateinit var exitMapDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
     private lateinit var intent: Intent
 
@@ -193,10 +196,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-
+        showExitMapDialog()
     }
 
     private fun onMapReady() {
@@ -392,6 +392,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 R.id.bookings -> {
                     binding.setLocationLayout.visibility = View.GONE
                     intent = Intent(this, BookingsActivity::class.java)
+                    intent.putExtra("dataSent", true)
                     startActivity(intent)
                 }
 
@@ -550,6 +551,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
+
+        mapboxMap = binding.mapView.getMapboxMap().apply {
+            addOnMapClickListener(this@MapPassengerActivity)
+        }
 
 //        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
 //            if (b) {
@@ -962,10 +967,39 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun closeUserNotVerifiedDialog() {
-        if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
+        if (userNotVerifiedDialog.isShowing) {
             userNotVerifiedDialog.dismiss()
         }
     }
+
+    private fun showExitMapDialog() {
+        builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_exit_map, null)
+        val exitBtn = dialogView.findViewById<Button>(R.id.exitBtn)
+        val cancelBtn = dialogView.findViewById<Button>(R.id.cancelBtn)
+
+        exitBtn.setOnClickListener {
+            intent = Intent(this@MapPassengerActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+
+            closeExitMapDialog()
+        }
+        cancelBtn.setOnClickListener {
+            closeExitMapDialog()
+        }
+
+        builder.setView(dialogView)
+        exitMapDialog = builder.create()
+        exitMapDialog.show()
+    }
+
+    private fun closeExitMapDialog() {
+        if (exitMapDialog.isShowing) {
+            exitMapDialog.dismiss()
+        }
+    }
+
 
     private fun reverseGeocoding(point: Point) {
         val types: List<PlaceAutocompleteType> = when (mapboxMap.cameraState.zoom) {

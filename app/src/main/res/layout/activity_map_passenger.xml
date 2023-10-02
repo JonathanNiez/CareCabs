@@ -103,7 +103,11 @@
 				android:id="@+id/currentCoordinatesTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Current coordinates"
+				android:text="Current Location"
+				android:layout_margin="5dp"
+				android:textAlignment="center"
+				android:fontFamily="@font/gabarito_semibold"
+				android:textSize="16sp"
 				android:textColor="@color/black" />
 
 			<androidx.appcompat.widget.AppCompatButton

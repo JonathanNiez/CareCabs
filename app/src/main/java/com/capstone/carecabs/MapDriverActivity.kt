@@ -657,13 +657,15 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun addSeniorAnnotationToMap(
-        longitude: Double, latitude: Double, bookingID: String
+        longitude: Double,
+        latitude: Double,
+        bookingID: String
     ) {
 
         val latLng = LatLng(
             latitude, longitude
         )
-        val point = Point.fromLngLat(latLng.latitude, latLng.longitude)
+        val point = Point.fromLngLat(latLng.longitude, latLng.latitude)
 
         createPassengersWaitingViewAnnotation(binding.mapView, point)
 
@@ -694,12 +696,14 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun addPWDAnnotationToMap(
-        longitude: Double, latitude: Double, bookingID: String
+        longitude: Double,
+        latitude: Double,
+        bookingID: String
     ) {
         val latLng = LatLng(
             latitude, longitude
         )
-        val point = Point.fromLngLat(latLng.latitude, latLng.longitude)
+        val point = Point.fromLngLat(latLng.longitude, latLng.latitude)
 
         createPassengersWaitingViewAnnotation(binding.mapView, point)
 
@@ -764,7 +768,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         if (viewAnnotationMap[coordinate] == null) {
             mapView.viewAnnotationManager.removeAllViewAnnotations()
             val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
-                resId = R.layout.mapbox_item_view_annotation,
+                resId = R.layout.mapbox_passenger_waiting_annotation,
                 options = viewAnnotationOptions {
                     geometry(coordinate)
                     offsetY(170)

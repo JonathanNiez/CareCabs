@@ -4,7 +4,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/orange"
-	tools:context=".Fragments.PendingBookingFragment">
+	tools:context=".Fragments.CurrentBookingFragment">
 
 	<RelativeLayout
 		android:id="@+id/upperLayout"
@@ -17,22 +17,28 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
-			android:fontFamily="@font/opensans_bold"
-			android:text="PENDING BOOKINGS"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="CURRENT BOOKING"
 			android:textColor="@color/white"
 			android:textSize="20sp" />
 
 	</RelativeLayout>
 
 	<androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pendingBookingsRecyclerView"
+		android:id="@+id/currentBookingsRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/upperLayout"
-		android:layout_marginStart="10dp"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="10dp"
-		android:layout_marginBottom="10dp"
-		tools:listitem="@layout/item_passengers" />
+		tools:listitem="@layout/item_current_booking" />
+
+	<TextView
+		android:id="@+id/noCurrentBookingTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="You have no current Bookings right now"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 </RelativeLayout>

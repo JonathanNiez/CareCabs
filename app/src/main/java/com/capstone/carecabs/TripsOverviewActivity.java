@@ -14,13 +14,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.capstone.carecabs.Fragments.BookingHistoryFragment;
 import com.capstone.carecabs.Fragments.CurrentTripFragment;
-import com.capstone.carecabs.Fragments.PendingBookingFragment;
 import com.capstone.carecabs.Fragments.TripHistoryFragment;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.ViewPagerAdapter;
 import com.capstone.carecabs.databinding.ActivityTripsOverviewBinding;
 
 import java.util.ArrayList;

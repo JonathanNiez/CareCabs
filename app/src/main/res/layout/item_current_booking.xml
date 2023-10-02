@@ -27,7 +27,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="YOUR CURRENT BOOKING"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
@@ -56,7 +56,7 @@
 						android:textSize="17sp" />
 
 					<TextView
-						android:id="@+id/currentLocationTextView"
+						android:id="@+id/pickupLocationTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="3dp"
@@ -107,17 +107,21 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
+				android:background="@drawable/custom_card_view_1"
+				android:elevation="5dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
 				android:text="Booking Status"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textColor="@color/blue"
+				android:textSize="20sp" />
 
 			<TextView
+				android:id="@+id/driverOnTheWayTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Your Driver on the way"
+				android:text="Your Driver is on the way"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 
@@ -125,6 +129,7 @@
 				android:id="@+id/chatDriverBtn"
 				android:layout_width="150dp"
 				android:layout_height="50dp"
+				android:layout_marginBottom="20dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:fontFamily="@font/opensans_bold"
@@ -147,10 +152,8 @@
 				android:layout_height="200dp"
 				android:src="@drawable/loading_gif" />
 
-
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
-
 
 </androidx.cardview.widget.CardView>
