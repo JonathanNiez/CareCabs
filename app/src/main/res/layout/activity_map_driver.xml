@@ -6,59 +6,17 @@
 	android:layout_height="match_parent"
 	tools:context=".MapDriverActivity">
 
-	<androidx.cardview.widget.CardView
-		android:id="@+id/customActionBarLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/vermillion"
-		app:cardElevation="10dp">
-
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-			<ImageButton
-				android:id="@+id/imgBackBtn"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentStart="true"
-				android:layout_alignParentTop="true"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
-				android:background="@color/vermillion"
-				android:src="@drawable/back_50_2" />
-
-			<TextView
-				android:id="@+id/textView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerInParent="true"
-				android:fontFamily="@font/opensans_bold"
-				android:text="MAP"
-				android:textColor="@color/white"
-				android:textSize="20sp" />
-
-
-		</RelativeLayout>
-
-
-	</androidx.cardview.widget.CardView>
-
 	<com.mapbox.maps.MapView
 		android:id="@+id/mapView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_above="@id/bottomNavigationView"
-		android:layout_below="@id/customActionBarLayout" />
+		android:layout_above="@id/bottomNavigationView" />
 
 	<com.mapbox.navigation.ui.maneuver.view.MapboxManeuverView
 		android:id="@+id/maneuverView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/customActionBarLayout"
+		android:layout_alignParentTop="true"
 		android:layout_marginStart="10dp"
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
@@ -120,7 +78,6 @@
 
 	</LinearLayout>
 
-
 	<androidx.cardview.widget.CardView
 		android:id="@+id/tripProgressLayout"
 		android:layout_width="match_parent"
@@ -158,6 +115,27 @@
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
+
+	<FrameLayout
+		android:id="@+id/passengersInMapLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="10dp">
+
+		<TextView
+			android:id="@+id/passengersInMapTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:background="@drawable/custom_card_view_1"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="There are no Passengers right now"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+	</FrameLayout>
 
 	<com.google.android.material.bottomnavigation.BottomNavigationView
 		android:id="@+id/bottomNavigationView"

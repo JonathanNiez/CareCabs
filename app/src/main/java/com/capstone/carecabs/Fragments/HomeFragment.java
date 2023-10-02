@@ -33,6 +33,7 @@ import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.MapDriverActivity;
 import com.capstone.carecabs.MapPassengerActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
@@ -66,6 +67,9 @@ public class HomeFragment extends Fragment {
 	private DocumentReference documentReference;
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
+	public interface OnFragmentInteractionListener {
+		void onFragmentChange(int menuItemId);
+	}
 
 	@Override
 	public void onPause() {
@@ -105,7 +109,6 @@ public class HomeFragment extends Fragment {
 
 		binding.driverStatsLayout.setVisibility(View.GONE);
 		binding.passengerStatsLayout.setVisibility(View.GONE);
-		binding.passengerQuickBtnLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
@@ -129,12 +132,6 @@ public class HomeFragment extends Fragment {
 
 		binding.tripHistoryBtn.setOnClickListener(view1 -> {
 
-		});
-
-		binding.bookARideBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), MapPassengerActivity.class);
-			startActivity(intent);
-			getActivity().finish();
 		});
 
 		binding.bookingHistoryBtn.setOnClickListener(v -> {
@@ -245,7 +242,7 @@ public class HomeFragment extends Fragment {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if ("user_not_verified_action".equals(intent.getAction())) {
-				goToEditAccountFragment(context);
+//				goToEditAccountFragment(context);
 			}
 		}
 
@@ -392,11 +389,18 @@ public class HomeFragment extends Fragment {
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
 
+									binding.bookingHistoryBtn.setVisibility(View.GONE);
+									binding.bookARideTextView.setText("Pickup Passengers");
 									binding.driverStatsLayout.setVisibility(View.VISIBLE);
 									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
 									binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
-
 									binding.driverStatusTextView.setVisibility(View.VISIBLE);
+
+									binding.bookARideBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), MapDriverActivity.class);
+										startActivity(intent);
+										getActivity().finish();
+									});
 
 									if (getDriverStatus) {
 										binding.driverStatusTextView.setTextColor(Color.BLUE);
@@ -412,9 +416,15 @@ public class HomeFragment extends Fragment {
 
 								case "Persons with Disability (PWD)":
 								case "Senior Citizen":
+
+									binding.bookARideBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), MapPassengerActivity.class);
+										startActivity(intent);
+										getActivity().finish();
+									});
+
 									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
 									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
-									binding.passengerQuickBtnLayout.setVisibility(View.VISIBLE);
 									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
 
 									break;

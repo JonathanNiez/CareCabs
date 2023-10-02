@@ -82,6 +82,8 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 		binding = ActivityPassengerBookingsOverviewBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		binding.noPassengerBookingsTextView.setVisibility(View.GONE);
+
 		binding.imgBackBtn.setOnClickListener(v -> {
 			finish();
 		});
@@ -108,7 +110,14 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 					for (DataSnapshot passengerBookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingModel = passengerBookingSnapshot.getValue(PassengerBookingModel.class);
-						passengerBookingModelList.add(passengerBookingModel);
+						if (passengerBookingModel != null){
+
+							if (passengerBookingModel.getBookingStatus().equals("Waiting")){
+								passengerBookingModelList.add(passengerBookingModel);
+							}else{
+								binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
+							}
+						}
 					}
 
 					PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
@@ -124,8 +133,8 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 									passengerBookingModel.getBookingStatus(),
 									passengerBookingModel.getBookingID(),
 									passengerBookingModel.getPassengerUserID(),
-									passengerBookingModel.getCurrentLatitude(),
-									passengerBookingModel.getCurrentLongitude(),
+									passengerBookingModel.getPickupLatitude(),
+									passengerBookingModel.getPickupLongitude(),
 									passengerBookingModel.getDestinationLatitude(),
 									passengerBookingModel.getDestinationLongitude()
 							));
@@ -344,7 +353,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 	}
 
 	private void closeBookingInfoDialog() {
-		if (bookingInfoDialog != null & bookingInfoDialog.isShowing()) {
+		if (bookingInfoDialog != null && bookingInfoDialog.isShowing()) {
 			bookingInfoDialog.dismiss();
 		}
 	}

@@ -54,4 +54,14 @@
 		android:layout_below="@id/customActionBarLayout"
 		tools:listitem="@layout/item_passengers" />
 
+	<TextView
+		android:id="@+id/noPassengerBookingsTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="There are no Passenger Bookings right now"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
+
 </RelativeLayout>

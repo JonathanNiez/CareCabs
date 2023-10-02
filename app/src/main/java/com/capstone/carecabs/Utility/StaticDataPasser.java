@@ -26,8 +26,8 @@ public class StaticDataPasser {
 	public static Double storeLatitude = 0.0;
 	public static String storePassengerID = "";
 	public static Double storePoint = 0.0;
-	public static Double storeCurrentLatitude = 0.0;
-	public static Double storeCurrentLongitude = 0.0;
+	public static Double storePickupLatitude = 0.0;
+	public static Double storePickupLongitude = 0.0;
 	public static Double storeDestinationLatitude = 0.0;
 	public static Double storeDestinationLongitude = 0.0;
 }

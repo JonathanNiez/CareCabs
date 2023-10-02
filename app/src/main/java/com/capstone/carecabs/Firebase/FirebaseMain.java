@@ -12,7 +12,6 @@ public class FirebaseMain {
 	public static String bookingCollection = "bookings";
 	public static String tripCollection = "trips";
 	public static String chatCollection = "chats";
-
 	private static FirebaseFirestore firebaseFirestore;
 	public static DatabaseReference databaseReference;
 	private static FirebaseAuth auth;

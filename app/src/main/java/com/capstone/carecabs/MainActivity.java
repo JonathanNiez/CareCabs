@@ -49,17 +49,18 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
+	private final String TAG = "MainActivity";
 	private Intent intent;
 	private AlertDialog exitAppDialog;
 	private AlertDialog.Builder builder;
-	private final String TAG = "MainActivity";
 	private boolean shouldExit = false;
 	private BadgeDrawable badgeDrawable;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
 	private DatabaseReference bookingReference;
 	private ActivityMainBinding binding;
+
 
 	@Override
 	protected void onResume() {
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onPause();
 
 		closeExitConfirmationDialog();
-		updateDriverStatus(false);
+//		updateDriverStatus(false);
 	}
 
 	@Override
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 		checkUserIfVerified();
 
 		showFragment(new HomeFragment());
+
 
 		binding.bottomNavigationView.setSelectedItemId(R.id.home);
 		binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -269,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
 									badgeDrawable.setVisible(true);
 									badgeDrawable.setNumber(1);
 								}
-							}else{
+							} else {
 								if (badgeDrawable != null) {
 									binding.bottomNavigationView.removeBadge(R.id.map);
 								}
@@ -309,7 +311,6 @@ public class MainActivity extends AppCompatActivity {
 							break;
 
 					}
-					intent.putExtra("dataSent", false);
 					startActivity(intent);
 					finish();
 				}
@@ -404,7 +405,6 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -414,7 +414,12 @@ public class MainActivity extends AppCompatActivity {
 		if (editAccountFragment != null) {
 			editAccountFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
-
 	}
 
+	@Override
+	public void onFragmentChange(int menuItemId) {
+		Toast.makeText(this, "Nigga", Toast.LENGTH_SHORT).show();
+		binding.bottomNavigationView.setSelectedItemId(menuItemId);
+
+	}
 }

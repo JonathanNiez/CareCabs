@@ -1,6 +1,7 @@
 package com.capstone.carecabs;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Notification;
@@ -621,7 +622,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		int month = currentDate.get(Calendar.MONTH);
 		int day = currentDate.get(Calendar.DAY_OF_MONTH);
 
-		DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+		@SuppressLint("SetTextI18n") DatePickerDialog datePickerDialog = new DatePickerDialog(this,
 				(view, year1, monthOfYear, dayOfMonth) -> {
 					selectedDate = Calendar.getInstance();
 					selectedDate.set(year1, monthOfYear, dayOfMonth);
@@ -641,11 +642,11 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void showEnterBirthdateDialog() {
-		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
+		DialogEnterBirthdateBinding binding =
 				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = dialogEnterBirthdateBinding.getRoot();
+		View dialogView = binding.getRoot();
 
 //		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 //		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
@@ -662,28 +663,28 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
-		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		binding.spinnerMonth.setAdapter(adapter);
+		binding.spinnerMonth.setSelection(0);
+		binding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+					binding.spinnerMonth.setSelection(0);
 				} else {
 					String selectedMonth = parent.getItemAtPosition(position).toString();
 					StaticDataPasser.storeSelectedMonth = selectedMonth;
 
-					dialogEnterBirthdateBinding.monthTextView.setText(selectedMonth);
+					binding.monthTextView.setText(selectedMonth);
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+				binding.spinnerMonth.setSelection(0);
 			}
 		});
 
-		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
+		binding.dayEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -692,7 +693,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
+				binding.dayTextView.setText(enteredText);
 			}
 
 			@Override
@@ -701,7 +702,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
+		binding.yearEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -709,7 +710,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
+				binding.yearTextView.setText(enteredText);
 
 			}
 
@@ -719,9 +720,9 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
-			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
-			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
+		binding.doneBtn.setOnClickListener(view -> {
+			String year = binding.yearEditText.getText().toString();
+			String day = binding.dayEditText.getText().toString();
 
 			if (StaticDataPasser.storeSelectedMonth == null
 					|| year.isEmpty()
@@ -744,14 +745,14 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				StaticDataPasser.storeBirthdate = fullBirthdate;
 				StaticDataPasser.storeCurrentAge = age;
 
-				binding.birthdateBtn.setText(fullBirthdate);
-				binding.ageBtn.setText(String.valueOf(age));
+				this.binding.birthdateBtn.setText(fullBirthdate);
+				this.binding.ageBtn.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}
 		});
 
-		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> {
+		binding.cancelBtn.setOnClickListener(v -> {
 			closeEnterBirthdateDialog();
 		});
 

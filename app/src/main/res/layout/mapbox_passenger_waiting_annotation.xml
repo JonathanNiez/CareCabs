@@ -7,7 +7,7 @@
 	android:layout_height="wrap_content"
 	android:gravity="center"
 	android:padding="10dp"
-	app:cardBackgroundColor="@color/vermillion"
+	app:cardBackgroundColor="@color/blue"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
@@ -17,6 +17,6 @@
 		android:layout_margin="10dp"
 		android:fontFamily="@font/gabarito_bold"
 		android:textColor="@android:color/white"
-		android:text="You" />
+		android:text="Waiting" />
 
 </androidx.cardview.widget.CardView>

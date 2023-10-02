@@ -152,7 +152,6 @@
 			</androidx.cardview.widget.CardView>
 
 			<androidx.cardview.widget.CardView
-				android:id="@+id/passengerQuickBtnLayout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -225,6 +224,7 @@
 								android:orientation="vertical">
 
 								<TextView
+									android:id="@+id/bookARideTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
@@ -345,7 +345,7 @@
 
 					<TextView
 						android:id="@+id/driverDashBoardTextView"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:drawableEnd="@drawable/driver_32"
@@ -392,7 +392,7 @@
 						android:id="@+id/driverStatusTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="Driver Status"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -410,7 +410,7 @@
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/background"
+							app:cardBackgroundColor="@color/cheese"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 
@@ -442,13 +442,12 @@
 
 						</androidx.cardview.widget.CardView>
 
-
 						<androidx.cardview.widget.CardView
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/background"
+							app:cardBackgroundColor="@color/yellow"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 

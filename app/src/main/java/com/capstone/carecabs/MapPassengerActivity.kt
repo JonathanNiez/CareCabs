@@ -9,15 +9,12 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -42,6 +39,10 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.Utils.dpToPx
+import com.mapbox.api.geocoding.v5.GeocodingCriteria
+import com.mapbox.api.geocoding.v5.MapboxGeocoding
+import com.mapbox.api.geocoding.v5.models.CarmenFeature
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
@@ -61,14 +62,11 @@ import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
-import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
-import com.mapbox.search.ApiType
-import com.mapbox.search.BuildConfig
 import com.mapbox.search.SearchEngine
 import com.mapbox.search.SearchEngineSettings
 import com.mapbox.search.ServiceProvider
@@ -88,8 +86,12 @@ import com.mapbox.search.ui.view.SearchResultAdapterItem
 import com.mapbox.search.ui.view.SearchResultsView
 import com.mapbox.search.ui.view.UiError
 import com.mapbox.search.ui.view.place.SearchPlace
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 import java.util.UUID
+
 
 class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
@@ -295,21 +297,47 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         val locationComponentPlugin = binding.mapView.location
 
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
-            binding.currentCoordinatesTextView.text =
-                it.latitude().toString() + "\n" + it.longitude().toString()
 
             createViewAnnotation(
                 binding.mapView,
                 Point.fromLngLat(it.longitude(), it.latitude())
             )
 
+            val pickupLocationGeocode = MapboxGeocoding.builder()
+                .accessToken(getString(R.string.mapbox_access_token))
+                .query(Point.fromLngLat(it.longitude(), it.latitude()))
+                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                .build()
+
+            pickupLocationGeocode.enqueueCall(object : Callback<GeocodingResponse> {
+                override fun onResponse(
+                    call: Call<GeocodingResponse>,
+                    response: Response<GeocodingResponse>
+                ) {
+                    if (response.body() != null && response.body()!!.features() != null) {
+                        val feature: CarmenFeature = response.body()!!.features()!![0]
+                        val locationName: String? = feature.placeName()
+
+                        // Display the location name in your TextView
+                        binding.currentCoordinatesTextView.text = locationName
+                    } else {
+                        // Handle no results
+                    }
+                }
+
+                override fun onFailure(call: Call<GeocodingResponse>, t: Throwable) {
+                    // Handle failure
+                }
+            })
+
+
             //store the current location
             StaticDataPasser.storeLatitude = it.latitude()
             StaticDataPasser.storeLongitude = it.longitude()
         }
 
-        binding.currentCoordinatesTextView.text =
-            "${StaticDataPasser.storeLatitude}\n${StaticDataPasser.storeLongitude}"
+//        binding.currentCoordinatesTextView.text =
+//            "${StaticDataPasser.storeLatitude}\n${StaticDataPasser.storeLongitude}"
 
         locationComponentPlugin.updateSettings {
             this.enabled = true
@@ -748,8 +776,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
-            currentLongitude = StaticDataPasser.storeLongitude,
-            currentLatitude = StaticDataPasser.storeLatitude,
+            pickupLongitude = StaticDataPasser.storeLongitude,
+            pickupLatitude = StaticDataPasser.storeLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
             bookingTime = getCurrentTimeAndDate(),
@@ -787,8 +815,8 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
-            currentLongitude = StaticDataPasser.storeLongitude,
-            currentLatitude = StaticDataPasser.storeLatitude,
+            pickupLongitude = StaticDataPasser.storeLongitude,
+            pickupLatitude = StaticDataPasser.storeLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
             bookingTime = getCurrentTimeAndDate(),
@@ -872,7 +900,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                         if (passengerBookingModel != null) {
                             if (passengerBookingModel.bookingID == bookingID) {
                                 binding.currentLocationTextView.text =
-                                    "${passengerBookingModel.currentLatitude}\n${passengerBookingModel.currentLongitude}"
+                                    "${passengerBookingModel.pickupLatitude}\n${passengerBookingModel.pickupLongitude}"
 
                                 binding.destinationLocationTextView.text =
                                     "${passengerBookingModel.destinationLatitude}\n${passengerBookingModel.destinationLongitude}"

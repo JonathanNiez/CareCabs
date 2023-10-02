@@ -27,13 +27,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.capstone.carecabs.Firebase.FirebaseMain
+import com.capstone.carecabs.Fragments.ModalBottomSheet
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.TripModel
-import com.capstone.carecabs.Utility.ParcelablePoint
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
+import com.capstone.carecabs.databinding.MapboxPassengerWaitingAnnotationBinding
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -41,7 +42,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
-import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.api.directions.v5.models.Bearing
 import com.mapbox.api.directions.v5.models.RouteOptions
 import com.mapbox.bindgen.Expected
@@ -49,7 +49,6 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
 import com.mapbox.maps.MapView
-import com.mapbox.maps.extension.style.expressions.dsl.generated.get
 import com.mapbox.maps.plugin.LocationPuck2D
 import com.mapbox.maps.plugin.animation.CameraAnimatorOptions
 import com.mapbox.maps.plugin.animation.camera
@@ -57,10 +56,7 @@ import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.gestures
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.mapbox.navigation.base.TimeFormat
@@ -115,7 +111,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
-class MapDriverActivity : AppCompatActivity() {
+class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener {
 
 //    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
 //        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -387,20 +383,11 @@ class MapDriverActivity : AppCompatActivity() {
         binding.tripProgressLayout.visibility = View.INVISIBLE
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
+        binding.passengersInMapLayout.visibility = View.GONE
 
         checkIfUserIsVerified()
         checkLocationPermission()
         initializeBottomNavButtons()
-
-        val dataSent = intent.getBooleanExtra("dataSent", false)
-        if (dataSent) {
-            val receivedParcelable = intent.getParcelableExtra<ParcelablePoint>("point")
-            val receivedPoint = receivedParcelable?.point
-            if (receivedPoint != null) {
-
-                findRoute(receivedPoint)
-            }
-        }
 
         binding.fullscreenImgBtn.setOnClickListener {
             Toast.makeText(
@@ -411,7 +398,6 @@ class MapDriverActivity : AppCompatActivity() {
             binding.fullscreenImgBtn.visibility = View.GONE
             binding.minimizeScreenImgBtn.visibility = View.VISIBLE
 
-            binding.customActionBarLayout.visibility = View.GONE
             binding.bottomNavigationView.visibility = View.GONE
         }
 
@@ -424,7 +410,6 @@ class MapDriverActivity : AppCompatActivity() {
             binding.minimizeScreenImgBtn.visibility = View.GONE
             binding.fullscreenImgBtn.visibility = View.VISIBLE
 
-            binding.customActionBarLayout.visibility = View.VISIBLE
             binding.bottomNavigationView.visibility = View.VISIBLE
         }
 
@@ -473,7 +458,7 @@ class MapDriverActivity : AppCompatActivity() {
             loadStyleUri(getString(R.string.custom_map_style_url)) {
 
                 setupGesturesListener()
-                loadPassengerCoordinatesToMapFromDatabase()
+                loadPassengerLocationToMapFromDatabase()
                 initializeLocationComponent()
                 initializeNavigationComponents()
 
@@ -675,6 +660,13 @@ class MapDriverActivity : AppCompatActivity() {
         longitude: Double, latitude: Double, bookingID: String
     ) {
 
+        val latLng = LatLng(
+            latitude, longitude
+        )
+        val point = Point.fromLngLat(latLng.latitude, latLng.longitude)
+
+        createPassengersWaitingViewAnnotation(binding.mapView, point)
+
         bitmapFromDrawableRes(
             this@MapDriverActivity,
             R.drawable.senior_location_pin_128
@@ -690,9 +682,10 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerBookingLocationInfoDialog(bookingID)
+//                        showPassengerBookingLocationInfoDialog(bookingID)
+                        showBottomSheetDialog(bookingID)
 
-                        false
+                        true
                     }
                 )
             }
@@ -703,6 +696,12 @@ class MapDriverActivity : AppCompatActivity() {
     private fun addPWDAnnotationToMap(
         longitude: Double, latitude: Double, bookingID: String
     ) {
+        val latLng = LatLng(
+            latitude, longitude
+        )
+        val point = Point.fromLngLat(latLng.latitude, latLng.longitude)
+
+        createPassengersWaitingViewAnnotation(binding.mapView, point)
 
         bitmapFromDrawableRes(
             this@MapDriverActivity,
@@ -719,9 +718,10 @@ class MapDriverActivity : AppCompatActivity() {
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showPassengerBookingLocationInfoDialog(bookingID)
+//                        showPassengerBookingLocationInfoDialog(bookingID)
 
-                        false
+                        showBottomSheetDialog(bookingID)
+                        true
                     }
                 )
             }
@@ -758,6 +758,30 @@ class MapDriverActivity : AppCompatActivity() {
 //        binding.mapView.location
 //            .removeOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
 //        binding.mapView.gestures.removeOnMoveListener(onMoveListener)
+    }
+
+    private fun createPassengersWaitingViewAnnotation(mapView: MapView, coordinate: Point) {
+        if (viewAnnotationMap[coordinate] == null) {
+            mapView.viewAnnotationManager.removeAllViewAnnotations()
+            val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
+                resId = R.layout.mapbox_item_view_annotation,
+                options = viewAnnotationOptions {
+                    geometry(coordinate)
+                    offsetY(170)
+                },
+            ).also { view ->
+                viewAnnotationMap[coordinate] = view
+            }
+//            val locationText = """
+//                My Location:
+//                Longitude = ${coordinate.longitude()}
+//                Latitude = ${coordinate.latitude()}
+//            """.trimIndent()
+//
+            MapboxPassengerWaitingAnnotationBinding.bind(viewAnnotation).apply {
+                annotationBackground.clipToOutline = true
+            }
+        }
     }
 
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
@@ -842,7 +866,6 @@ class MapDriverActivity : AppCompatActivity() {
         binding.routeOverviewBtn.visibility = View.VISIBLE
         binding.tripProgressLayout.visibility = View.VISIBLE
 
-        binding.customActionBarLayout.visibility = View.GONE
         binding.bottomNavigationView.visibility = View.GONE
         binding.fullscreenImgBtn.visibility = View.GONE
         binding.minimizeScreenImgBtn.visibility = View.GONE
@@ -864,7 +887,6 @@ class MapDriverActivity : AppCompatActivity() {
         binding.routeOverviewBtn.visibility = View.INVISIBLE
         binding.tripProgressLayout.visibility = View.INVISIBLE
 
-        binding.customActionBarLayout.visibility = View.VISIBLE
         binding.bottomNavigationView.visibility = View.VISIBLE
         binding.fullscreenImgBtn.visibility = View.VISIBLE
     }
@@ -886,7 +908,7 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadPassengerCoordinatesToMapFromDatabase() {
+    private fun loadPassengerLocationToMapFromDatabase() {
 
         val locationReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
@@ -900,23 +922,28 @@ class MapDriverActivity : AppCompatActivity() {
                             locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                         if (locationData != null) {
-                            when (locationData.passengerUserType) {
-                                "Senior Citizen" -> {
-                                    addSeniorAnnotationToMap(
-                                        locationData.destinationLongitude,
-                                        locationData.destinationLatitude,
-                                        locationData.bookingID
-                                    )
-                                }
+                            if (locationData.bookingStatus == "Waiting") {
+                                when (locationData.passengerUserType) {
+                                    "Senior Citizen" -> {
+                                        addSeniorAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
 
-                                "Persons with Disability (PWD)" -> {
-                                    addPWDAnnotationToMap(
-                                        locationData.destinationLongitude,
-                                        locationData.destinationLatitude,
-                                        locationData.bookingID
-                                    )
+                                    "Persons with Disability (PWD)" -> {
+                                        addPWDAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
                                 }
+                            } else {
+                                binding.passengersInMapLayout.visibility = View.VISIBLE
                             }
+
                         }
                     }
                 }
@@ -1153,6 +1180,13 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
+    private fun showBottomSheetDialog(bookingID: String) {
+        val data = bookingID
+        val modalBottomSheet = ModalBottomSheet.newInstance(data)
+        modalBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
+        modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+    }
+
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -1208,13 +1242,17 @@ class MapDriverActivity : AppCompatActivity() {
         }
     }
 
+    //once the pickup button is clicked
+    override fun onDataReceived(data: Point) {
+        findRoute(data)
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, proceed to location retrieval
