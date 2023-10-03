@@ -77,14 +77,13 @@ public class EditAccountFragment extends Fragment {
 			cameraGalleryOptionsDialog, noInternetDialog,
 			profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
 			profilePicUpdateSuccessConfirmation, pleaseWaitDialog,
-			birthdateInputChoiceDialog;
+			birthdateInputChoiceDialog, yourVehiclePictureDialog;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private static final int PROFILE_PICTURE_REQUEST_CODE = 103;
 	private static final int VEHICLE_PICTURE_REQUEST_CODE = 104;
-	private final int imageSize = 224;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private DocumentReference documentReference;
@@ -302,7 +301,6 @@ public class EditAccountFragment extends Fragment {
 
 	}
 
-
 	private void showDatePickerDialog() {
 		final Calendar currentDate = Calendar.getInstance();
 		int year = currentDate.get(Calendar.YEAR);
@@ -356,7 +354,7 @@ public class EditAccountFragment extends Fragment {
 							String getVehicleColor = documentSnapshot.getString("vehicleColor");
 							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-							if (!getVehiclePicture.equals("none")) {
+							if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
 								Glide.with(context)
 										.load(getVehiclePicture)
 										.placeholder(R.drawable.loading_gif)
@@ -946,12 +944,16 @@ public class EditAccountFragment extends Fragment {
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-	private void uploadVehicleImageToFirebaseStorage(String userID, Uri imageUri) {
+	private void uploadVehicleImageToFirebaseStorage(String userID, Bitmap bitmap) {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+		byte[] data = baos.toByteArray();
 
 		vehiclePictureReference = storageReference.child("images/vehiclePictures");
 		vehiclePicturePath = vehiclePictureReference.child(System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		vehiclePicturePath.putFile(imageUri)
+		vehiclePicturePath.putBytes(data)
 				.addOnSuccessListener(taskSnapshot -> {
 
 					vehiclePicturePath.getDownloadUrl()
@@ -1036,6 +1038,30 @@ public class EditAccountFragment extends Fragment {
 		}
 	}
 
+	private void showUploadYourVehiclePictureDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_upload_the_picture_of_your_vehicle, null);
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			closeUploadYourVehiclePictureDialog();
+		});
+
+		builder.setView(dialogView);
+
+		yourVehiclePictureDialog = builder.create();
+		yourVehiclePictureDialog.show();
+	}
+
+	private void closeUploadYourVehiclePictureDialog() {
+		if (yourVehiclePictureDialog != null && yourVehiclePictureDialog.isShowing()) {
+			yourVehiclePictureDialog.dismiss();
+		}
+	}
+
+
 	private void showNoInternetDialog() {
 
 		builder = new AlertDialog.Builder(getContext());
@@ -1091,25 +1117,33 @@ public class EditAccountFragment extends Fragment {
 		}
 	}
 
+	//			int pixel = 0;
+//			for (int n = 0; n < imageSize; n++) {
+//				for (int i = 0; i < imageSize; i++) {
+//					int val = intValues[pixel++];
+//					byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
+//					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
+//					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
+//				}
+//			}
+
 	private void identifyCar(Bitmap bitmap) {
 		try {
 			ModelUnquant model = ModelUnquant.newInstance(context);
 
 			// Creates inputs for reference.
 			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+			int imageSize = 224;
 			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
 			byteBuffer.order(ByteOrder.nativeOrder());
 
-			int[] intValues = new int[imageSize * imageSize];
+			//TODO
+			int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
 			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-			int pixel = 0;
-			for (int n = 0; n < imageSize; n++) {
-				for (int i = 0; i < imageSize; i++) {
-					int val = intValues[pixel++];
-					byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
-					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
-					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
-				}
+			for (int pixelValue : intValues) {
+				byteBuffer.putFloat(((pixelValue >> 16) & 0xFF) * (1.f / 255.f));
+				byteBuffer.putFloat(((pixelValue >> 8) & 0xFF) * (1.f / 255.f));
+				byteBuffer.putFloat((pixelValue & 0xFF) * (1.f / 255.f));
 			}
 			byteBuffer.rewind(); // Set the position back to 0
 			inputFeature0.loadBuffer(byteBuffer);
@@ -1130,18 +1164,17 @@ public class EditAccountFragment extends Fragment {
 			String[] classes = {"Car", "Not Car"};
 			String predictedClass;
 			if (maxPos == 0) {
-				predictedClass = "Car";
-
-				Toast.makeText(context, predictedClass, Toast.LENGTH_LONG).show();
+				binding.vehicleImageView.setImageBitmap(bitmap);
+				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), bitmap);
 			} else {
-				predictedClass = "Not Car";
-				Toast.makeText(context, predictedClass, Toast.LENGTH_LONG).show();
+				showUploadYourVehiclePictureDialog();
 			}
 
 			// Releases model resources if no longer used.
 			model.close();
+
 		} catch (IOException e) {
-			// TODO Handle the exception
+			Log.e(TAG, e.getMessage());
 		}
 	}
 
@@ -1175,12 +1208,9 @@ public class EditAccountFragment extends Fragment {
 
 				binding.profilePicture.setImageBitmap(bitmap);
 //				uploadProfileImageToFirebaseStorage(FirebaseMain.getUser().getUid(), imageUri);
-				identifyCar(bitmap);
 
 			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
 
-				binding.vehicleImageView.setImageBitmap(bitmap);
-//				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), imageUri);
 				identifyCar(bitmap);
 
 			}

@@ -215,7 +215,7 @@ public class PersonalInfoFragment extends Fragment {
 							String getVehicleColor = documentSnapshot.getString("vehicleColor");
 							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-							if (!getVehiclePicture.equals("none")){
+							if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
 								Glide.with(context)
 										.load(getVehiclePicture)
 										.placeholder(R.drawable.loading_gif)

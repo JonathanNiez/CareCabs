@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -45,29 +46,39 @@ public class TripHistoryFragment extends Fragment {
 		return view;
 	}
 
-
+	@SuppressLint("NotifyDataSetChanged")
 	private void loadTripHistoryFromFireStore() {
 		if (FirebaseMain.getUser() != null) {
 
 			CollectionReference collectionReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.tripCollection);
 
+			List<TripModel> tripModelList = new ArrayList<>();
+			TripAdapter tripAdapter = new TripAdapter(context, tripModelList, new TripAdapter.OnTripItemClickListener() {
+				@Override
+				public void onTripItemClick(TripModel tripModel) {
+					// Handle item click if needed
+				}
+			});
+
+			binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+			binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
+
 			collectionReference.addSnapshotListener((value, error) -> {
 				if (value != null) {
-					List<TripModel> tripModelList = new ArrayList<>();
+					tripModelList.clear(); // Clear the list before adding new data
 
 					for (QueryDocumentSnapshot tripSnapshot : value) {
 						TripModel tripModel = tripSnapshot.toObject(TripModel.class);
 
-						if (tripModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
+						if (tripModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())
+								|| tripModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
 							tripModelList.add(tripModel);
 						}
 					}
 
-					TripAdapter tripAdapter = new TripAdapter(context, tripModelList);
-					binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-					binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
-
+					// Notify the adapter that the data set has changed
+					tripAdapter.notifyDataSetChanged();
 				}
 			});
 

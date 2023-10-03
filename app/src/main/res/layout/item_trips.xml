@@ -3,9 +3,7 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:layout_margin="5dp"
-	android:layout_marginBottom="10dp"
-	android:padding="5dp"
+	android:layout_margin="10dp"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
@@ -21,9 +19,29 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
-			android:layout_marginBottom="5dp"
-			android:fontFamily="@font/opensans_bold"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_bold"
 			android:text="Trip Date"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
+		<TextView
+			android:id="@+id/passengerNameTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_regular"
+			android:text="Passenger Name"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<TextView
+			android:id="@+id/passengerTypeTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Passenger Type"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
@@ -32,7 +50,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:fontFamily="@font/opensans_semibold"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Pickup Location Name"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
@@ -42,7 +60,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:fontFamily="@font/opensans_semibold"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location Name"
 			android:textColor="@color/black"
 			android:textSize="17sp" />

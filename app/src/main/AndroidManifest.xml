@@ -44,7 +44,7 @@
 			android:name=".HelpActivity"
 			android:exported="false" />
 		<activity
-			android:name=".TripsOverviewActivity"
+			android:name=".TripsActivity"
 			android:exported="false" />
 		<activity
 			android:name=".PassengerBookingsOverview"

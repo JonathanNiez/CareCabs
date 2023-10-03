@@ -14,15 +14,19 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
@@ -33,8 +37,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class ModalBottomSheet extends BottomSheetDialogFragment {
 	private static final String ARG_DATA = "data";
@@ -197,9 +203,13 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						binding.userTypeTextView.setText(getPassengerUserType);
 
 						binding.pickupBtn.setOnClickListener(v -> {
-							updatePassengerBooking(bookingID,
+							updatePassengerBooking(
+									bookingID,
+									getPassengerPickupLatitude,
+									getPassengerPickupLongitude,
 									getPassengerDestinationLatitude,
-									getPassengerDestinationLongitude);
+									getPassengerDestinationLongitude
+							);
 						});
 					}
 				}
@@ -214,11 +224,13 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private void updatePassengerBooking(String bookingID,
-	                                    Double latitude,
-	                                    Double longitude) {
+	                                    Double pickupLatitude,
+	                                    Double pickupLongitude,
+	                                    Double destinationLatitude,
+	                                    Double destinationLongitude) {
 
 		//convert to point
-		LatLng latLng = new LatLng(latitude, longitude);
+		LatLng latLng = new LatLng(destinationLatitude, destinationLongitude);
 		Point point = Point.fromLngLat(latLng.longitude, latLng.latitude);
 
 		//update booking from passenger
@@ -238,6 +250,17 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 							"Booking Accepted", Toast.LENGTH_LONG).show();
 
 					sendDataToMap(point);
+
+					//TODO
+					storeTripToDatabase(
+							generateRandomTripID(),
+							bookingID,
+							"passID",
+							pickupLatitude,
+							pickupLongitude,
+							destinationLatitude,
+							destinationLongitude
+					);
 					dismiss();
 
 				})
@@ -251,12 +274,63 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				});
 	}
 
+	private void storeTripToDatabase(
+			String generateTripID,
+			String bookingID,
+			String passengerID,
+			Double pickupLatitude,
+			Double pickupLongitude,
+			Double destinationLatitude,
+			Double destinationLongitude
+	) {
+
+		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.tripCollection).document(generateTripID);
+
+		TripModel tripModel = new TripModel(
+				generateTripID,
+				bookingID,
+				"Ongoing",
+				FirebaseMain.getUser().getUid(),
+				passengerID,
+				getCurrentTimeAndDate(),
+				pickupLatitude,
+				pickupLongitude,
+				destinationLatitude,
+				destinationLongitude
+		);
+
+		documentReference.set(tripModel).addOnSuccessListener(new OnSuccessListener<Void>() {
+			@Override
+			public void onSuccess(Void unused) {
+
+			}
+		}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+	}
+
 	private void updateDriverStatus(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 		}
+	}
+
+	private String generateRandomTripID() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
+	}
+
+	private String getCurrentTimeAndDate() {
+		Calendar calendar = Calendar.getInstance(); // Get a Calendar instance
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based, so add 1
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+
+		return month + "-" + day + "-" + year + " " + hour + ":" + minute + ":" + second;
 	}
 
 	public static ModalBottomSheet newInstance(String data) {

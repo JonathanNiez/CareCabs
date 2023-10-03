@@ -110,16 +110,22 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 					for (DataSnapshot passengerBookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingModel = passengerBookingSnapshot.getValue(PassengerBookingModel.class);
-						if (passengerBookingModel != null){
+						if (passengerBookingModel != null) {
 
-							if (passengerBookingModel.getBookingStatus().equals("Waiting")){
+							if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
+
 								passengerBookingModelList.add(passengerBookingModel);
-							}else{
+
+							} else if (passengerBookingModel.getBookingStatus().equals("Driver on the way") &&
+									passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
+
+								passengerBookingModelList.add(passengerBookingModel);
+
+							} else {
 								binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 							}
 						}
 					}
-
 					PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
 							getApplicationContext(),
 							passengerBookingModelList,

@@ -4,10 +4,11 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/orange"
-	android:gravity="center">
+	android:gravity="center"
+	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
 		app:cardCornerRadius="10dp"
@@ -24,22 +25,19 @@
 				android:id="@+id/loadingGif"
 				android:layout_width="150dp"
 				android:layout_height="150dp"
-				android:layout_margin="10dp"
 				android:src="@drawable/loading_gif" />
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="PLEASE WAIT..."
-				android:textColor="@color/black"
-				android:textSize="20sp" />
 
 		</LinearLayout>
 
-
 	</androidx.cardview.widget.CardView>
 
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="PLEASE WAIT..."
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 </LinearLayout>

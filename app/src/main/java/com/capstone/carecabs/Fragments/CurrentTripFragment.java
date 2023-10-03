@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.databinding.FragmentCurrentTripBinding;
 
 public class CurrentTripFragment extends Fragment {
+	private final String TAG = "CurrentTripFragment";
+	private FragmentCurrentTripBinding binding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,11 @@ public class CurrentTripFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_current_trip, container, false);
+		binding = FragmentCurrentTripBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
+
+
+
+		return view;
 	}
 }

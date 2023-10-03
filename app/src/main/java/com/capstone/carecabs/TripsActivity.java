@@ -1,5 +1,11 @@
 package com.capstone.carecabs;
 
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -8,25 +14,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-
 import com.capstone.carecabs.Fragments.CurrentTripFragment;
 import com.capstone.carecabs.Fragments.TripHistoryFragment;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.databinding.ActivityTripsOverviewBinding;
+import com.capstone.carecabs.databinding.ActivityTripsBinding;
 
 import java.util.ArrayList;
 
-public class TripsOverviewActivity extends AppCompatActivity {
-	private final String TAG = "TripsOverviewActivity";
+public class TripsActivity extends AppCompatActivity {
+	private final String TAG = "TripsActivity";
 	private AlertDialog noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityTripsOverviewBinding binding;
+	private ActivityTripsBinding binding;
 
 	@Override
 	protected void onStart() {
@@ -57,7 +57,7 @@ public class TripsOverviewActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = ActivityTripsOverviewBinding.inflate(getLayoutInflater());
+		binding = ActivityTripsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.imgBackBtn.setOnClickListener(v -> {

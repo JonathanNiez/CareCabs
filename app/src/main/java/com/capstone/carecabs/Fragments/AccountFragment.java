@@ -3,10 +3,8 @@ package com.capstone.carecabs.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,14 +25,13 @@ import androidx.fragment.app.FragmentTransaction;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOutActivity;
-import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
 import com.capstone.carecabs.RegisterSeniorActivity;
 import com.capstone.carecabs.ScanIDActivity;
-import com.capstone.carecabs.TripsOverviewActivity;
+import com.capstone.carecabs.TripsActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -134,7 +131,7 @@ public class AccountFragment extends Fragment {
 		binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
 
 		binding.tripsBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), TripsOverviewActivity.class);
+			intent = new Intent(getActivity(), TripsActivity.class);
 			startActivity(intent);
 		});
 

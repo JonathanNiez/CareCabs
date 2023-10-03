@@ -113,27 +113,6 @@ import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener {
 
-//    private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
-//        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
-//    }
-//
-//    private val onIndicatorPositionChangedListener = OnIndicatorPositionChangedListener {
-//        binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
-//        binding.mapView.gestures.focalPoint = binding.mapView.getMapboxMap().pixelForCoordinate(it)
-//    }
-//
-//    private val onMoveListener = object : OnMoveListener {
-//        override fun onMoveBegin(detector: MoveGestureDetector) {
-//            onCameraTrackingDismissed()
-//        }
-//
-//        override fun onMove(detector: MoveGestureDetector): Boolean {
-//            return false
-//        }
-//
-//        override fun onMoveEnd(detector: MoveGestureDetector) {}
-//    }
-
     //navigation
     private val mapboxReplayer = MapboxReplayer()
     private val replayLocationEngine = ReplayLocationEngine(mapboxReplayer)
@@ -372,7 +351,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     private lateinit var builder: AlertDialog.Builder
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerLocationInfoDialog: AlertDialog
-
+    private lateinit var exitMapDialog: AlertDialog
     private lateinit var binding: ActivityMapDriverBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -446,11 +425,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-
-        intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
-
+        showExitMapDialog()
     }
 
     private fun onMapReady() {
@@ -615,7 +590,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.trips -> {
-                    intent = Intent(this, TripsOverviewActivity::class.java)
+                    intent = Intent(this, TripsActivity::class.java)
                     startActivity(intent)
                 }
 
@@ -927,6 +902,27 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
                         if (locationData != null) {
                             if (locationData.bookingStatus == "Waiting") {
+
+                                when (locationData.passengerUserType) {
+                                    "Senior Citizen" -> {
+                                        addSeniorAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+
+                                    "Persons with Disability (PWD)" -> {
+                                        addPWDAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+                                }
+                            } else if (locationData.bookingStatus == "Driver on the way"
+                                && locationData.driverUserID == FirebaseMain.getUser().uid
+                            ) {
                                 when (locationData.passengerUserType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
@@ -947,7 +943,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                             } else {
                                 binding.passengersInMapLayout.visibility = View.VISIBLE
                             }
-
                         }
                     }
                 }
@@ -978,40 +973,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         return uuid.toString()
     }
 
-    private fun storeTripToDatabase(
-        generateTripID: String,
-        bookingID: String,
-        passengerID: String,
-        currentLatitude: Double,
-        currentLongitude: Double,
-        destinationLatitude: Double,
-        destinationLongitude: Double
-    ) {
-
-        documentReference = FirebaseMain.getFireStoreInstance()
-            .collection(FirebaseMain.tripCollection).document(generateTripID)
-
-        val tripModel = TripModel(
-            tripID = generateTripID,
-            bookingID = bookingID,
-            tripStatus = "Ongoing",
-            driverUserID = FirebaseMain.getUser().uid,
-            passengerUserID = passengerID,
-            tripDate = getCurrentTimeAndDate(),
-            currentLatitude = currentLatitude,
-            currentLongitude = currentLongitude,
-            destinationLatitude = destinationLatitude,
-            destinationLongitude = destinationLongitude
-        )
-
-        documentReference.set(tripModel)
-            .addOnSuccessListener {
-            }.addOnFailureListener {
-                Log.e(TAG, it.message.toString())
-            }
-
-
-    }
 
     private fun updateDriverAvailabilityStatus(isAvailable: Boolean) {
         if (FirebaseMain.getUser() != null) {
@@ -1060,128 +1021,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                     "Booking Failed to Accept", Toast.LENGTH_LONG
                 ).show()
             }
-    }
-
-    @SuppressLint("SetTextI18n", "RestrictedApi")
-    private fun showPassengerBookingLocationInfoDialog(bookingID: String) {
-
-        val binding = DialogBookingInfoBinding.inflate(layoutInflater)
-        builder = AlertDialog.Builder(this)
-        val dialogView = binding.root
-
-        binding.disabilityTextView.visibility = View.GONE
-        binding.medicalConditionTextView.visibility = View.GONE
-
-        val locationReference = FirebaseDatabase.getInstance()
-            .getReference(FirebaseMain.bookingCollection)
-
-        locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot != null && snapshot.exists()) {
-
-                    for (locationSnapshot in snapshot.children) {
-                        val passengerBookingData =
-                            locationSnapshot.getValue(PassengerBookingModel::class.java)
-
-                        if (passengerBookingData != null) {
-                            if (passengerBookingData.bookingID == bookingID) {
-                                binding.progressBarLayout.visibility = View.GONE
-
-//                                StaticDataPasser.storePassengerID =
-//                                    passengerBookingData.passengerUserID
-//                                StaticDataPasser.storeCurrentLatitude =
-//                                    passengerBookingData.currentLatitude
-//                                StaticDataPasser.storeCurrentLongitude =
-//                                    passengerBookingData.currentLongitude
-                                StaticDataPasser.storeDestinationLatitude =
-                                    passengerBookingData.destinationLatitude
-                                StaticDataPasser.storeDestinationLongitude =
-                                    passengerBookingData.destinationLongitude
-
-                                if (passengerBookingData.bookingStatus == "Waiting") {
-                                    val textColor = ContextCompat.getColor(
-                                        this@MapDriverActivity,
-                                        R.color.light_blue
-                                    )
-                                    binding.bookingStatusTextView.setTextColor(textColor)
-                                    binding.bookingStatusTextView.text =
-                                        "Status: ${passengerBookingData.bookingStatus}"
-                                } else if (passengerBookingData.bookingStatus == "StandBy") {
-                                    binding.bookingStatusTextView.text =
-                                        "Status: ${passengerBookingData.bookingStatus}"
-                                }
-
-                                binding.fullNameTextView.text =
-                                    "${passengerBookingData.passengerFirstname} ${passengerBookingData.passengerLastname}"
-
-                                binding.userTypeTextView.text =
-                                    passengerBookingData.passengerUserType
-
-                                if (passengerBookingData.passengerProfilePicture != "default") {
-                                    Glide.with(this@MapDriverActivity)
-                                        .load(passengerBookingData.passengerProfilePicture)
-                                        .placeholder(R.drawable.loading_gif)
-                                        .into(binding.passengerProfilePic)
-
-                                }
-                                when (passengerBookingData.passengerUserType) {
-                                    "Senior Citizen" -> {
-                                        binding.medicalConditionTextView.visibility =
-                                            View.VISIBLE
-                                        binding.medicalConditionTextView.text =
-                                            "Medical Condition(s):\n${passengerBookingData.passengerMedicalCondition}"
-
-                                    }
-
-                                    "Persons with Disability (PWD)" -> {
-                                        binding.disabilityTextView.visibility = View.VISIBLE
-                                        binding.disabilityTextView.text =
-                                            "Disability:\n${passengerBookingData.passengerDisability}"
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
-            }
-
-        })
-
-        binding.pickupBtn.setOnClickListener {
-            //TODO: navigation to passenger location
-
-            updatePassengerBooking(bookingID)
-//            storeTripToDatabase(
-//                generateRandomTripID(),
-//                bookingID,
-//                StaticDataPasser.storePassengerID,
-//                StaticDataPasser.storeCurrentLatitude,
-//                StaticDataPasser.storeCurrentLongitude,
-//                StaticDataPasser.storeDestinationLatitude,
-//                StaticDataPasser.storeDestinationLongitude
-//            )
-
-            closePassengerBookingLocationInfoDialog()
-        }
-
-        binding.closeBtn.setOnClickListener {
-            closePassengerBookingLocationInfoDialog()
-        }
-
-        builder.setView(dialogView)
-        passengerLocationInfoDialog = builder.create()
-        passengerLocationInfoDialog.show()
-    }
-
-    private fun closePassengerBookingLocationInfoDialog() {
-        if (passengerLocationInfoDialog != null && passengerLocationInfoDialog.isShowing) {
-            passengerLocationInfoDialog.dismiss()
-        }
     }
 
     private fun showBottomSheetDialog(bookingID: String) {
@@ -1241,8 +1080,36 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun closeUserNotVerifiedDialog() {
-        if (userNotVerifiedDialog != null && userNotVerifiedDialog.isShowing) {
+        if (userNotVerifiedDialog.isShowing) {
             userNotVerifiedDialog.dismiss()
+        }
+    }
+
+    private fun showExitMapDialog() {
+        builder = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_exit_map, null)
+        val exitBtn = dialogView.findViewById<Button>(R.id.exitBtn)
+        val cancelBtn = dialogView.findViewById<Button>(R.id.cancelBtn)
+
+        exitBtn.setOnClickListener {
+            intent = Intent(this@MapDriverActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+
+            closeExitMapDialog()
+        }
+        cancelBtn.setOnClickListener {
+            closeExitMapDialog()
+        }
+
+        builder.setView(dialogView)
+        exitMapDialog = builder.create()
+        exitMapDialog.show()
+    }
+
+    private fun closeExitMapDialog() {
+        if (exitMapDialog.isShowing) {
+            exitMapDialog.dismiss()
         }
     }
 

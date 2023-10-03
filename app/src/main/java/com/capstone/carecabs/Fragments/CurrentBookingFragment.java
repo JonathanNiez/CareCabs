@@ -92,7 +92,7 @@ public class CurrentBookingFragment extends Fragment {
 									binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
 								}
 							} else {
-//								binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+								binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
 							}
 						}
 						binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));

@@ -7,8 +7,8 @@ data class TripModel(
     val driverUserID: String = "",
     val passengerUserID: String = "",
     val tripDate: String = "",
-    val currentLongitude: Double = 0.0,
-    val currentLatitude: Double = 0.0,
+    val pickupLongitude: Double = 0.0,
+    val pickupLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,
     val destinationLatitude: Double = 0.0
 )

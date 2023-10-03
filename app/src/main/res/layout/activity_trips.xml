@@ -4,44 +4,17 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".TripsOverviewActivity">
+	tools:context=".TripsActivity">
 
-	<androidx.cardview.widget.CardView
-		android:id="@+id/customActionBarLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/vermillion"
-		app:cardElevation="10dp">
-
-		<RelativeLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
-
-
-			<TextView
-				android:id="@+id/textView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_centerInParent="true"
-				android:layout_margin="20dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="TRIPS OVERVIEW"
-				android:textColor="@color/white"
-				android:textSize="20sp" />
-
-		</RelativeLayout>
-
-	</androidx.cardview.widget.CardView>
 
 	<com.google.android.material.tabs.TabLayout
 		android:id="@+id/tabLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
 		android:background="@color/vermillion"
 		app:tabSelectedTextColor="@color/white"
 		app:tabTextAppearance="@font/opensans_bold"
-		android:layout_below="@id/customActionBarLayout"
 		app:tabTextColor="@color/white" />
 
 	<androidx.viewpager.widget.ViewPager
