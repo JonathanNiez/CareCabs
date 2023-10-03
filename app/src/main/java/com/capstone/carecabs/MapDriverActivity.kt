@@ -25,14 +25,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Fragments.ModalBottomSheet
 import com.capstone.carecabs.Model.PassengerBookingModel
-import com.capstone.carecabs.Model.TripModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
-import com.capstone.carecabs.databinding.DialogBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.capstone.carecabs.databinding.MapboxPassengerWaitingAnnotationBinding
 import com.google.android.gms.maps.model.LatLng
@@ -467,9 +464,31 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
             }
         }
+//        binding.mapView.getMapboxMap().setCamera(
+//            CameraOptions.Builder()
+//                .zoom(14.0)
+//                .build()
+//        )
+    }
+
+    private fun zoomInCamera(coordinate: Point) {
+        binding.zoomInImgBtn.visibility = View.GONE
+        binding.zoomOutImgBtn.visibility = View.VISIBLE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(14.0)
+                .zoom(8.0)
+                .center(coordinate)
+                .build()
+        )
+    }
+
+    private fun zoomOutCamera(coordinate: Point) {
+        binding.zoomInImgBtn.visibility = View.VISIBLE
+        binding.zoomOutImgBtn.visibility = View.GONE
+        binding.mapView.getMapboxMap().setCamera(
+            CameraOptions.Builder()
+                .zoom(6.0)
+                .center(coordinate)
                 .build()
         )
     }
@@ -642,7 +661,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         )
         val point = Point.fromLngLat(latLng.longitude, latLng.latitude)
 
-        createPassengersWaitingViewAnnotation(binding.mapView, point)
+//        createPassengersWaitingViewAnnotation(binding.mapView, point)
 
         bitmapFromDrawableRes(
             this@MapDriverActivity,
@@ -764,6 +783,15 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
+
+        binding.zoomInImgBtn.setOnClickListener {
+            zoomInCamera(coordinate)
+        }
+
+        binding.zoomOutImgBtn.setOnClickListener {
+            zoomOutCamera(coordinate)
+        }
+
         if (viewAnnotationMap[coordinate] == null) {
             mapView.viewAnnotationManager.removeAllViewAnnotations()
             val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(

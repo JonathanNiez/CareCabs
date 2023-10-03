@@ -76,6 +76,27 @@
 			android:scaleType="centerCrop"
 			android:src="@drawable/fullscreen_32" />
 
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/zoomInImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/zoom_in_32" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/zoomOutImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/zoom_out_32"
+			android:visibility="gone"/>
+
 	</LinearLayout>
 
 	<androidx.cardview.widget.CardView

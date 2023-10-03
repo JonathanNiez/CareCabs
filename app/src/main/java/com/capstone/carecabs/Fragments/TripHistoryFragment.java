@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TripHistoryFragment extends Fragment {
+	private final String TAG = "TripHistoryFragment";
 	private Context context;
 	private FragmentTripHistoryBinding binding;
 
@@ -60,7 +61,6 @@ public class TripHistoryFragment extends Fragment {
 					// Handle item click if needed
 				}
 			});
-
 			binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
 
@@ -76,7 +76,6 @@ public class TripHistoryFragment extends Fragment {
 							tripModelList.add(tripModel);
 						}
 					}
-
 					// Notify the adapter that the data set has changed
 					tripAdapter.notifyDataSetChanged();
 				}

@@ -82,10 +82,11 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 					holder.binding.pickupLocationTextView.setText("Location not found");
 				}
 			}
-
 			@Override
 			public void onFailure(Call<GeocodingResponse> call, Throwable t) {
 				Log.e(TAG, t.getMessage());
+
+				holder.binding.pickupLocationTextView.setText("Location not found");
 			}
 		});
 
@@ -115,6 +116,8 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			@Override
 			public void onFailure(Call<GeocodingResponse> call, Throwable t) {
 				Log.e(TAG, t.getMessage());
+
+				holder.binding.destinationLocationTextView.setText("Location not found");
 			}
 		});
 

@@ -18,8 +18,6 @@ import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -71,10 +69,6 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		binding.medicalConditionTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 
-		binding.pickupBtn.setOnClickListener(v -> {
-
-		});
-
 		binding.closeBtn.setOnClickListener(v -> {
 			dismiss();
 		});
@@ -106,8 +100,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot != null && snapshot.exists()) {
-						binding.progressBarLayout.setVisibility(View.GONE);
-
+						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
 						String getPassengerUserType = snapshot.child("passengerUserType").getValue(String.class);
 						String getPassengerFirstname = snapshot.child("passengerFirstname").getValue(String.class);
@@ -129,19 +122,21 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
 							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null && response.body().features() != null) {
+								if (response.body() != null) {
 									CarmenFeature feature = response.body().features().get(0);
 									String locationName = feature.placeName();
 
 									binding.pickupLocationTextView.setText(locationName);
 								} else {
-									Log.e(TAG, response.message());
+									binding.pickupLocationTextView.setText("Location not found");
 								}
 							}
 
 							@Override
 							public void onFailure(Call<GeocodingResponse> call, Throwable t) {
 								Log.e(TAG, t.getMessage());
+
+								binding.pickupLocationTextView.setText("Location not found");
 							}
 						});
 
@@ -153,19 +148,23 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
 							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null && response.body().features() != null) {
+								if (response.body() != null) {
 									CarmenFeature feature = response.body().features().get(0);
 									String locationName = feature.placeName();
 
 									binding.destinationLocationTextView.setText(locationName);
 								} else {
 									Log.e(TAG, response.message());
+
+									binding.destinationLocationTextView.setText("Location not found");
 								}
 							}
 
 							@Override
 							public void onFailure(Call<GeocodingResponse> call, Throwable t) {
 								Log.e(TAG, t.getMessage());
+
+								binding.destinationLocationTextView.setText("Location not found");
 							}
 						});
 
@@ -190,7 +189,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 								break;
 						}
 
-						if (!getPassengerProfilePicture.equals("default")) {
+						if (getPassengerProfilePicture != null && !getPassengerProfilePicture.equals("default")) {
 							Glide.with(context)
 									.load(getPassengerProfilePicture)
 									.placeholder(R.drawable.loading_gif)
@@ -204,6 +203,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 						binding.pickupBtn.setOnClickListener(v -> {
 							updatePassengerBooking(
+									getPassengerID,
 									bookingID,
 									getPassengerPickupLatitude,
 									getPassengerPickupLongitude,
@@ -223,7 +223,8 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		}
 	}
 
-	private void updatePassengerBooking(String bookingID,
+	private void updatePassengerBooking(String passengerID,
+	                                    String bookingID,
 	                                    Double pickupLatitude,
 	                                    Double pickupLongitude,
 	                                    Double destinationLatitude,
@@ -245,17 +246,12 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				.updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> {
 
-					updateDriverStatus(false);
-					Toast.makeText(context,
-							"Booking Accepted", Toast.LENGTH_LONG).show();
-
+					updateDriverStatus();
 					sendDataToMap(point);
-
-					//TODO
 					storeTripToDatabase(
 							generateRandomTripID(),
 							bookingID,
-							"passID",
+							passengerID,
 							pickupLatitude,
 							pickupLongitude,
 							destinationLatitude,
@@ -300,19 +296,25 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				destinationLongitude
 		);
 
-		documentReference.set(tripModel).addOnSuccessListener(new OnSuccessListener<Void>() {
-			@Override
-			public void onSuccess(Void unused) {
+		documentReference.set(tripModel)
+				.addOnSuccessListener(unused -> {
+					Toast.makeText(context,
+							"Booking Accepted", Toast.LENGTH_LONG).show();
 
-			}
-		}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				})
+				.addOnFailureListener(e -> {
+					Toast.makeText(context,
+							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
+
+					Log.e(TAG, e.getMessage());
+				});
 	}
 
-	private void updateDriverStatus(boolean isAvailable) {
+	private void updateDriverStatus() {
 		if (FirebaseMain.getUser() != null) {
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
-					.update("isAvailable", isAvailable);
+					.update("isAvailable", false);
 		}
 	}
 

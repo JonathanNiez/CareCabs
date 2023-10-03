@@ -103,50 +103,64 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
+			List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
+			PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
+					getApplicationContext(),
+					passengerBookingModelList,
+					passengerBookingModel -> showBookingInfoDialog(
+							passengerBookingModel.getPassengerFirstname(),
+							passengerBookingModel.getPassengerLastname(),
+							passengerBookingModel.getPassengerUserType(),
+							passengerBookingModel.getPassengerProfilePicture(),
+							passengerBookingModel.getPassengerDisability(),
+							passengerBookingModel.getPassengerMedicalCondition(),
+							passengerBookingModel.getBookingStatus(),
+							passengerBookingModel.getBookingID(),
+							passengerBookingModel.getPassengerUserID(),
+							passengerBookingModel.getPickupLatitude(),
+							passengerBookingModel.getPickupLongitude(),
+							passengerBookingModel.getDestinationLatitude(),
+							passengerBookingModel.getDestinationLongitude()
+					));
+			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+			binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
+
 			databaseReference.addValueEventListener(new ValueEventListener() {
+				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
-					List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
+					if (snapshot.exists()) {
+						binding.loadingLayout.setVisibility(View.GONE);
 
-					for (DataSnapshot passengerBookingSnapshot : snapshot.getChildren()) {
-						PassengerBookingModel passengerBookingModel = passengerBookingSnapshot.getValue(PassengerBookingModel.class);
-						if (passengerBookingModel != null) {
+						boolean hasPassengersBookings = false;
+						passengerBookingModelList.clear();
 
-							if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
+						for (DataSnapshot passengerBookingSnapshot : snapshot.getChildren()) {
+							PassengerBookingModel passengerBookingModel = passengerBookingSnapshot.getValue(PassengerBookingModel.class);
+							if (passengerBookingModel != null) {
 
-								passengerBookingModelList.add(passengerBookingModel);
+								if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
 
-							} else if (passengerBookingModel.getBookingStatus().equals("Driver on the way") &&
-									passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
+									passengerBookingModelList.add(passengerBookingModel);
+									hasPassengersBookings = true;
 
-								passengerBookingModelList.add(passengerBookingModel);
+								} else if (passengerBookingModel.getBookingStatus().equals("Driver on the way") &&
+										passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
 
-							} else {
-								binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
+									passengerBookingModelList.add(passengerBookingModel);
+									hasPassengersBookings = true;
+								}
 							}
 						}
+						if (hasPassengersBookings){
+							binding.noPassengerBookingsTextView.setVisibility(View.GONE);
+						}else {
+							binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
+						}
+						passengerBookingsAdapter.notifyDataSetChanged();
+					}else {
+						binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 					}
-					PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
-							getApplicationContext(),
-							passengerBookingModelList,
-							passengerBookingModel -> showBookingInfoDialog(
-									passengerBookingModel.getPassengerFirstname(),
-									passengerBookingModel.getPassengerLastname(),
-									passengerBookingModel.getPassengerUserType(),
-									passengerBookingModel.getPassengerProfilePicture(),
-									passengerBookingModel.getPassengerDisability(),
-									passengerBookingModel.getPassengerMedicalCondition(),
-									passengerBookingModel.getBookingStatus(),
-									passengerBookingModel.getBookingID(),
-									passengerBookingModel.getPassengerUserID(),
-									passengerBookingModel.getPickupLatitude(),
-									passengerBookingModel.getPickupLongitude(),
-									passengerBookingModel.getDestinationLatitude(),
-									passengerBookingModel.getDestinationLongitude()
-							));
-					binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-					binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
-
 				}
 
 				@SuppressLint("LongLogTag")

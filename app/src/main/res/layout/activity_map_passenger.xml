@@ -6,29 +6,6 @@
 	android:layout_height="match_parent"
 	tools:context=".MapPassengerActivity">
 
-	<LinearLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentEnd="true"
-		android:layout_centerVertical="true"
-		android:layout_marginEnd="15dp"
-		android:gravity="center"
-		android:orientation="vertical">
-
-		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
-			android:id="@+id/routeOverviewBtn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:elevation="10dp" />
-
-		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
-			android:id="@+id/recenterBtn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:elevation="10dp" />
-
-	</LinearLayout>
-
 	<com.mapbox.maps.MapView
 		android:id="@+id/mapView"
 		android:layout_width="match_parent"
@@ -58,6 +35,73 @@
 			android:textSize="20sp" />
 
 	</FrameLayout>
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentEnd="true"
+		android:layout_centerVertical="true"
+		android:layout_marginEnd="15dp"
+		android:gravity="center"
+		android:orientation="vertical">
+
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
+			android:id="@+id/routeOverviewBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="10dp" />
+
+		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
+			android:id="@+id/recenterBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="10dp" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/minimizeScreenImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/minimize_32"
+			android:visibility="gone" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/fullscreenImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/fullscreen_32" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/zoomInImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/zoom_in_32" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/zoomOutImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/zoom_out_32"
+			android:visibility="gone" />
+
+	</LinearLayout>
 
 	<FrameLayout
 		android:id="@+id/setLocationLayout"
@@ -103,12 +147,12 @@
 				android:id="@+id/currentCoordinatesTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Current Location"
 				android:layout_margin="5dp"
-				android:textAlignment="center"
 				android:fontFamily="@font/gabarito_semibold"
-				android:textSize="16sp"
-				android:textColor="@color/black" />
+				android:text="Current Location"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="16sp" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/setLocationBtn"
@@ -136,8 +180,7 @@
 		android:clipToPadding="false"
 		android:paddingTop="22dp"
 		android:paddingBottom="22dp"
-		android:visibility="gone"
-		/>
+		android:visibility="gone" />
 
 	<androidx.coordinatorlayout.widget.CoordinatorLayout
 		android:id="@+id/searchContainerView"

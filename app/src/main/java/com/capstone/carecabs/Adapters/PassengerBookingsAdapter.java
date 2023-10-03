@@ -3,7 +3,9 @@ package com.capstone.carecabs.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,18 +14,28 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemPassengersBinding;
+import com.mapbox.api.geocoding.v5.GeocodingCriteria;
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.geojson.Point;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
+	private final String TAG = "PassengerBookingsAdapter";
 	private Context context;
 	private final List<PassengerBookingModel> passengerBookingModelList;
 	private ItemPassengerClickListener itemPassengerClickListener;
 
 	public interface ItemPassengerClickListener {
-		void onItemClick(PassengerBookingModel passengerBookingModel);
+		void onPassengerItemClick(PassengerBookingModel passengerBookingModel);
 	}
 
 	public PassengerBookingsAdapter(Context context,
@@ -56,16 +68,99 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 					.placeholder(R.drawable.loading_gif)
 					.into(holder.binding.passengerImage);
 		}
+
+		switch (passengerBookingModel.getPassengerUserType()) {
+			case "Senior Citizen":
+				holder.binding.passengerTypeImage.setImageResource(R.drawable.senior_32);
+				break;
+
+			case "Persons with Disability (PWD)":
+				holder.binding.passengerTypeImage.setImageResource(R.drawable.pwd_32);
+				break;
+		}
 		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
 		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingDate());
 
-		if (passengerBookingModel.getBookingStatus().equals("Waiting")){
+		//geocode
+		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
+				.accessToken(context.getString(R.string.mapbox_access_token))
+				.query(Point.fromLngLat(
+						passengerBookingModel.getPickupLongitude(),
+						passengerBookingModel.getPickupLatitude()))
+				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+				.build();
+
+		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+			@SuppressLint("LongLogTag")
+			@Override
+			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
+			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
+				if (response.body() != null && !response.body().features().isEmpty()) {
+					CarmenFeature feature = response.body().features().get(0);
+					String locationName = feature.placeName();
+
+					holder.binding.pickupLocationTextView.setText(locationName);
+				} else {
+					Log.e(TAG, response.message());
+					holder.binding.pickupLocationTextView.setText("Location not found");
+				}
+			}
+
+			@SuppressLint("LongLogTag")
+			@Override
+			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
+			                      @androidx.annotation.NonNull Throwable t) {
+				Log.e(TAG, t.getMessage());
+
+				holder.binding.pickupLocationTextView.setText("Location not found");
+			}
+		});
+
+		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
+				.accessToken(context.getString(R.string.mapbox_access_token))
+				.query(Point.fromLngLat(
+						passengerBookingModel.getDestinationLongitude(),
+						passengerBookingModel.getDestinationLatitude()))
+				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+				.build();
+		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+			@SuppressLint("LongLogTag")
+			@Override
+			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
+			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
+				if (response.body() != null && !response.body().features().isEmpty()) {
+					CarmenFeature feature = response.body().features().get(0);
+					String locationName = feature.placeName();
+
+					holder.binding.destinationLocationTextView.setText(locationName);
+				} else {
+					Log.e(TAG, response.message());
+
+					holder.binding.destinationLocationTextView.setText("Location not found");
+				}
+			}
+
+			@SuppressLint("LongLogTag")
+			@Override
+			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
+			                      @androidx.annotation.NonNull Throwable t) {
+				Log.e(TAG, t.getMessage());
+
+				holder.binding.destinationLocationTextView.setText("Location not found");
+			}
+		});
+
+		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);
 		}
 		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
 
-		holder.itemView.setOnClickListener(view -> {
-			itemPassengerClickListener.onItemClick(passengerBookingModelList.get(position));
+		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.viewBtn.setVisibility(View.GONE);
+		}
+
+		holder.binding.viewBtn.setOnClickListener(view -> {
+			itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
 		});
 	}
 

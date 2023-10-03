@@ -67,38 +67,48 @@ public class CurrentBookingFragment extends Fragment {
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
+			List<CurrentBookingModel> currentBookingModelList = new ArrayList<>();
+			currentBookingAdapter = new CurrentBookingAdapter(
+					context,
+					currentBookingModelList,
+					currentBookingModel ->
+							showCancelBookingDialog(currentBookingModel.getBookingID()));
+			binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+			binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
+
 			databaseReference.addValueEventListener(new ValueEventListener() {
+				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
-						List<CurrentBookingModel> currentBookingModelList = new ArrayList<>();
+						binding.loadingLayout.setVisibility(View.GONE);
+						currentBookingModelList.clear();
+
+						boolean hasCurrentBookings = false; // Flag to check if there are current bookings
 
 						for (DataSnapshot currentBookingSnapshot : snapshot.getChildren()) {
+							CurrentBookingModel currentBookingModel = currentBookingSnapshot.getValue(CurrentBookingModel.class);
+							if (currentBookingModel != null &&
+									(currentBookingModel.getBookingStatus().equals("Waiting") &&
+											currentBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) ||
+											currentBookingModel.getBookingStatus().equals("Driver on the way")) &&
+									currentBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
 
-							CurrentBookingModel currentBookingModel =
-									currentBookingSnapshot.getValue(CurrentBookingModel.class);
-							if (currentBookingModel != null) {
-								if (currentBookingModel.getBookingStatus().equals("Waiting") ||
-										currentBookingModel.getBookingStatus().equals("Driver on the way")) {
-									currentBookingModelList.add(currentBookingModel);
-
-									currentBookingAdapter = new CurrentBookingAdapter(
-											context,
-											currentBookingModelList,
-											currentBookingModel1 ->
-													showCancelBookingDialog(currentBookingModel.getBookingID()));
-
-								} else if (currentBookingModel.getBookingStatus().equals("Cancelled")) {
-									binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
-								}
-							} else {
-								binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+								currentBookingModelList.add(currentBookingModel);
+								hasCurrentBookings = true; // Set the flag to true if there are current bookings
 							}
 						}
-						binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-						binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
+
+						// Update the visibility of noCurrentBookingTextView based on the flag
+						if (hasCurrentBookings) {
+							binding.noCurrentBookingTextView.setVisibility(View.GONE);
+						} else {
+							binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+						}
+
+						currentBookingAdapter.notifyDataSetChanged();
 					} else {
-//						binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+						binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
 					}
 				}
 

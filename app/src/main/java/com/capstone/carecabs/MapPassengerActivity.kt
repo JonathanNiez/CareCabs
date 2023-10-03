@@ -157,6 +157,30 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
+        binding.fullscreenImgBtn.setOnClickListener {
+            Toast.makeText(
+                this@MapPassengerActivity,
+                "Entered Fullscreen", Toast.LENGTH_SHORT
+            ).show()
+
+            binding.fullscreenImgBtn.visibility = View.GONE
+            binding.minimizeScreenImgBtn.visibility = View.VISIBLE
+
+            binding.bottomNavigationView.visibility = View.GONE
+        }
+
+        binding.minimizeScreenImgBtn.setOnClickListener {
+            Toast.makeText(
+                this@MapPassengerActivity,
+                "Exited Fullscreen", Toast.LENGTH_SHORT
+            ).show()
+
+            binding.minimizeScreenImgBtn.visibility = View.GONE
+            binding.fullscreenImgBtn.visibility = View.VISIBLE
+
+            binding.bottomNavigationView.visibility = View.VISIBLE
+        }
+
         binding.searchResultsView.initialize(
             SearchResultsView.Configuration(
                 CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
@@ -232,13 +256,34 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
             }
         }
+//        binding.mapView.getMapboxMap().setCamera(
+//            CameraOptions.Builder()
+//                .zoom(14.0)
+//                .build()
+//        )
+    }
+
+    private fun zoomInCamera(coordinate: Point) {
+        binding.zoomInImgBtn.visibility = View.GONE
+        binding.zoomOutImgBtn.visibility = View.VISIBLE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(14.0)
+                .zoom(8.0)
+                .center(coordinate)
                 .build()
         )
     }
 
+    private fun zoomOutCamera(coordinate: Point) {
+        binding.zoomInImgBtn.visibility = View.VISIBLE
+        binding.zoomOutImgBtn.visibility = View.GONE
+        binding.mapView.getMapboxMap().setCamera(
+            CameraOptions.Builder()
+                .zoom(6.0)
+                .center(coordinate)
+                .build()
+        )
+    }
     private fun getUserProfilePictureFromFireStore() {
 
         documentReference = FirebaseMain.getFireStoreInstance()
@@ -510,6 +555,15 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
+
+        binding.zoomInImgBtn.setOnClickListener {
+            zoomInCamera(coordinate)
+        }
+
+        binding.zoomOutImgBtn.setOnClickListener {
+            zoomOutCamera(coordinate)
+        }
+
         if (viewAnnotationMap[coordinate] == null) {
             mapView.viewAnnotationManager.removeAllViewAnnotations()
             val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
