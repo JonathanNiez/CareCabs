@@ -359,7 +359,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.tripProgressLayout.visibility = View.INVISIBLE
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
-        binding.passengersInMapLayout.visibility = View.GONE
 
         checkIfUserIsVerified()
         checkLocationPermission()
@@ -916,21 +915,23 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun loadPassengerLocationToMapFromDatabase() {
-
+        var waitingPassengerCount = 0
         val locationReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
 
         locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            @SuppressLint("SetTextI18n")
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot != null && snapshot.exists()) {
-
+                if (snapshot.exists()) {
+                    var hasPassengersWaiting : Boolean = false
                     for (locationSnapshot in snapshot.children) {
                         val locationData =
                             locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                         if (locationData != null) {
                             if (locationData.bookingStatus == "Waiting") {
-
+                                waitingPassengerCount++
+                                hasPassengersWaiting = true
                                 when (locationData.passengerUserType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
@@ -951,6 +952,8 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                             } else if (locationData.bookingStatus == "Driver on the way"
                                 && locationData.driverUserID == FirebaseMain.getUser().uid
                             ) {
+                                hasPassengersWaiting = true
+
                                 when (locationData.passengerUserType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
@@ -968,14 +971,17 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                                         )
                                     }
                                 }
-                            } else {
-                                binding.passengersInMapLayout.visibility = View.VISIBLE
                             }
                         }
                     }
+                    if (hasPassengersWaiting){
+                        binding.passengersInMapTextView.text = "There are $waitingPassengerCount Passenger(s) waiting right now"
+                    }else{
+                        binding.passengersInMapTextView.text = "There are no Passengers right now"
+
+                    }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, error.message)
             }

@@ -138,7 +138,6 @@
 	</androidx.cardview.widget.CardView>
 
 	<FrameLayout
-		android:id="@+id/passengersInMapLayout"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"

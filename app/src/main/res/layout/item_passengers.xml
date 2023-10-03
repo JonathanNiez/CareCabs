@@ -16,9 +16,21 @@
 		android:orientation="vertical"
 		android:padding="5dp">
 
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="10dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="PASSENGER"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
 			android:gravity="center"
 			android:orientation="horizontal">
 
@@ -31,8 +43,8 @@
 
 				<de.hdodenhof.circleimageview.CircleImageView
 					android:id="@+id/passengerImage"
-					android:layout_width="100dp"
-					android:layout_height="100dp"
+					android:layout_width="125dp"
+					android:layout_height="125dp"
 					android:layout_margin="5dp"
 					android:elevation="5dp"
 					android:src="@drawable/mar"
@@ -81,8 +93,8 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:fontFamily="@font/gabarito_bold"
-						android:textAlignment="center"
 						android:text="Passenger Type"
+						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
