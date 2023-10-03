@@ -199,8 +199,8 @@
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/loginBtn"
-				android:layout_width="150dp"
-				android:layout_height="60dp"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="10dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
@@ -208,12 +208,12 @@
 				android:fontFamily="@font/opensans_bold"
 				android:text="Login"
 				android:textColor="@color/white"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 			<LinearLayout
 				android:id="@+id/googleLoginBtn"
-				android:layout_width="320dp"
-				android:layout_height="60dp"
+				android:layout_width="300dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="10dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/white"
@@ -232,7 +232,7 @@
 					android:fontFamily="@font/opensans_bold"
 					android:text="LOGIN WITH GOOGLE"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<ImageView
 					android:layout_width="wrap_content"
@@ -248,8 +248,8 @@
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/backBtn"
-				android:layout_width="150dp"
-				android:layout_height="60dp"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="50dp"
 				android:layout_marginBottom="50dp"
 				android:background="@drawable/smooth_edge_button"
@@ -259,7 +259,7 @@
 				android:fontFamily="@font/opensans_bold"
 				android:text="Back"
 				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 		</LinearLayout>
 

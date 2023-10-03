@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -23,6 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.capstone.carecabs.FeedbackActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOutActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -39,16 +41,14 @@ import com.capstone.carecabs.databinding.FragmentAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.util.Objects;
+
 public class AccountFragment extends Fragment {
 	private DocumentReference documentReference;
 	private final String TAG = "AccountFragment";
-	private String userID;
 	private Intent intent;
-	private boolean shouldExit = false;
-
 	private AlertDialog signOutDialog, pleaseWaitDialog,
-			noInternetDialog, registerNotCompleteDialog,
-			exitAppDialog;
+			noInternetDialog, registerNotCompleteDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
@@ -137,6 +137,11 @@ public class AccountFragment extends Fragment {
 
 		binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
+		binding.feedbackBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), FeedbackActivity.class);
+			startActivity(intent);
+		});
+
 		binding.imgBackBtn.setOnClickListener(v -> backToHomeFragment());
 
 		binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
@@ -145,7 +150,7 @@ public class AccountFragment extends Fragment {
 			intent = new Intent(getActivity(), ScanIDActivity.class);
 			intent.putExtra("userType", "From Main");
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		});
 
 		return view;
@@ -162,7 +167,7 @@ public class AccountFragment extends Fragment {
 	private void logoutUser() {
 		intent = new Intent(getActivity(), LoggingOutActivity.class);
 		startActivity(intent);
-		getActivity().finish();
+		Objects.requireNonNull(getActivity()).finish();
 	}
 
 	private void checkUserIfRegisterComplete() {
@@ -188,7 +193,7 @@ public class AccountFragment extends Fragment {
 		} else {
 			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 
@@ -295,13 +300,14 @@ public class AccountFragment extends Fragment {
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
 			getCurrentFontSizeFromUserSetting();
 
-			userID = FirebaseMain.getUser().getUid();
+			String userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
@@ -361,7 +367,7 @@ public class AccountFragment extends Fragment {
 							break;
 					}
 
-					if (!getProfilePicture.equals("default")) {
+					if (getProfilePicture != null && !getProfilePicture.equals("default")) {
 						Glide.with(context)
 								.load(getProfilePicture)
 								.centerCrop()
@@ -439,7 +445,7 @@ public class AccountFragment extends Fragment {
 
 			}
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 
 		});
 
@@ -595,7 +601,7 @@ public class AccountFragment extends Fragment {
 		});
 
 		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-		getContext().registerReceiver(networkChangeReceiver, intentFilter);
+		Objects.requireNonNull(getContext()).registerReceiver(networkChangeReceiver, intentFilter);
 
 		// Initial network status check
 		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(getContext());

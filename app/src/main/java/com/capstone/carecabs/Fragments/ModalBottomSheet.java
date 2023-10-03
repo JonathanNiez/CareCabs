@@ -285,6 +285,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 		TripModel tripModel = new TripModel(
 				generateTripID,
+				false,
 				bookingID,
 				"Ongoing",
 				FirebaseMain.getUser().getUid(),

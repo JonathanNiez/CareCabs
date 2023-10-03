@@ -212,6 +212,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 		TripModel tripModel = new TripModel(
 				generateTripID,
+				false,
 				bookingID,
 				"Ongoing",
 				FirebaseMain.getUser().getUid(),

@@ -6,5 +6,6 @@ data class ChatModel(
     val chatDate: String = "",
     val sender: String = "",
     val receiver: String = "",
-    val message: String = ""
+    val message: String = "",
+    val isAvailable : Boolean = false
 )

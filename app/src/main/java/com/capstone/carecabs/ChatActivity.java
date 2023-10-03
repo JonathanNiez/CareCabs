@@ -128,7 +128,8 @@ public class ChatActivity extends AppCompatActivity {
 				chatDate,
 				sender,
 				receiver,
-				message
+				message,
+				true
 		);
 		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatModel);
 	}

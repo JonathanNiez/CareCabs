@@ -448,6 +448,23 @@
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
+					android:id="@+id/feedbackBtn"
+					android:layout_width="match_parent"
+					android:layout_height="60dp"
+					android:layout_marginBottom="5dp"
+					android:background="@drawable/custom_card_view_1"
+					android:backgroundTint="@color/platinum"
+					android:drawableStart="@drawable/feedback_32"
+					android:drawableEnd="@drawable/right_arrow"
+					android:drawablePadding="5dp"
+					android:fontFamily="@font/opensans_semibold"
+					android:padding="10dp"
+					android:text="Submit a Feedback"
+					android:textAlignment="textStart"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/signOutBtn"
 					android:layout_width="match_parent"
 					android:layout_height="60dp"

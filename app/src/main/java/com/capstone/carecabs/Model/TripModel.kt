@@ -2,6 +2,7 @@ package com.capstone.carecabs.Model
 
 data class TripModel(
     val tripID: String = "",
+    val isComplete : Boolean = false,
     val bookingID: String = "",
     val tripStatus: String = "",
     val driverUserID: String = "",
