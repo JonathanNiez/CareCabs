@@ -23,8 +23,8 @@
 		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"
-		app:labelVisibilityMode="auto"
-		app:menu="@menu/bottom_nav_menu"
+		app:labelVisibilityMode="labeled"
+		app:menu="@menu/menu_bottom_nav"
 		/>
 
 </RelativeLayout>

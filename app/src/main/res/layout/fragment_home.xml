@@ -173,7 +173,7 @@
 						android:padding="5dp">
 
 						<androidx.cardview.widget.CardView
-							android:id="@+id/bookingHistoryBtn"
+							android:id="@+id/bookingsBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
@@ -189,11 +189,12 @@
 								android:orientation="vertical">
 
 								<TextView
+									android:id="@+id/bookingsTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_medium"
-									android:text="Booking History"
+									android:text="Bookings"
 									android:textColor="@color/white"
 									android:textSize="17sp" />
 

@@ -364,6 +364,11 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         checkLocationPermission()
         initializeBottomNavButtons()
 
+        binding.bookingsImgBtn.setOnClickListener {
+            intent = Intent(this@MapDriverActivity, PassengerBookingsOverview::class.java)
+            startActivity(intent)
+        }
+
         binding.fullscreenImgBtn.setOnClickListener {
             Toast.makeText(
                 this@MapDriverActivity,

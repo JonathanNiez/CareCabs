@@ -35,6 +35,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.MapDriverActivity;
 import com.capstone.carecabs.MapPassengerActivity;
+import com.capstone.carecabs.PassengerBookingsOverview;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.RegisterDriverActivity;
 import com.capstone.carecabs.RegisterPWDActivity;
@@ -50,6 +51,7 @@ import com.google.firebase.firestore.DocumentReference;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 	private final String TAG = "HomeFragment";
@@ -132,12 +134,6 @@ public class HomeFragment extends Fragment {
 
 		binding.tripHistoryBtn.setOnClickListener(view1 -> {
 
-		});
-
-		binding.bookingHistoryBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), BookingsActivity.class);
-			startActivity(intent);
-			getActivity().finish();
 		});
 
 		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
@@ -389,7 +385,12 @@ public class HomeFragment extends Fragment {
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
 
-									binding.bookingHistoryBtn.setVisibility(View.GONE);
+									binding.bookingsTextView.setText("Passenger Bookings");
+									binding.bookingsBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), PassengerBookingsOverview.class);
+										startActivity(intent);
+									});
+
 									binding.bookARideTextView.setText("Pickup Passengers");
 									binding.driverStatsLayout.setVisibility(View.VISIBLE);
 									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
@@ -399,7 +400,7 @@ public class HomeFragment extends Fragment {
 									binding.bookARideBtn.setOnClickListener(v -> {
 										intent = new Intent(getActivity(), MapDriverActivity.class);
 										startActivity(intent);
-										getActivity().finish();
+										Objects.requireNonNull(getActivity()).finish();
 									});
 
 									if (getDriverStatus) {
@@ -417,10 +418,16 @@ public class HomeFragment extends Fragment {
 								case "Persons with Disability (PWD)":
 								case "Senior Citizen":
 
+									binding.bookingsTextView.setText("My Bookings");
+									binding.bookingsBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), BookingsActivity.class);
+										startActivity(intent);
+									});
+
 									binding.bookARideBtn.setOnClickListener(v -> {
 										intent = new Intent(getActivity(), MapPassengerActivity.class);
 										startActivity(intent);
-										getActivity().finish();
+										Objects.requireNonNull(getActivity()).finish();
 									});
 
 									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
@@ -435,15 +442,13 @@ public class HomeFragment extends Fragment {
 						binding.progressBarLayout1.setVisibility(View.GONE);
 						binding.progressBarLayout2.setVisibility(View.GONE);
 
-						Log.e(TAG, e.getMessage());
+						Log.e(TAG, Objects.requireNonNull(e.getMessage()));
 					});
 
 		} else {
-			FirebaseMain.signOutUser();
-
 			Intent intent = new Intent(context, LoginActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 
 	}
@@ -475,7 +480,7 @@ public class HomeFragment extends Fragment {
 
 			}
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		});
 
 		builder.setView(dialogView);

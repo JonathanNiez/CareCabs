@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.capstone.carecabs.Adapters.CurrentBookingAdapter;
-import com.capstone.carecabs.ChatActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
@@ -33,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CurrentBookingFragment extends Fragment {
 	private final String TAG = "CurrentBookingFragment";
@@ -48,7 +48,7 @@ public class CurrentBookingFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentCurrentBookingBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -72,7 +72,9 @@ public class CurrentBookingFragment extends Fragment {
 					context,
 					currentBookingModelList,
 					currentBookingModel ->
-							showCancelBookingDialog(currentBookingModel.getBookingID()));
+							showCancelBookingDialog(
+									currentBookingModel.getBookingID()
+									));
 			binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
 
@@ -83,9 +85,7 @@ public class CurrentBookingFragment extends Fragment {
 					if (snapshot.exists()) {
 						binding.loadingLayout.setVisibility(View.GONE);
 						currentBookingModelList.clear();
-
-						boolean hasCurrentBookings = false; // Flag to check if there are current bookings
-
+						boolean hasCurrentBookings = false;
 						for (DataSnapshot currentBookingSnapshot : snapshot.getChildren()) {
 							CurrentBookingModel currentBookingModel = currentBookingSnapshot.getValue(CurrentBookingModel.class);
 							if (currentBookingModel != null &&
@@ -95,11 +95,9 @@ public class CurrentBookingFragment extends Fragment {
 									currentBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
 
 								currentBookingModelList.add(currentBookingModel);
-								hasCurrentBookings = true; // Set the flag to true if there are current bookings
+								hasCurrentBookings = true;
 							}
 						}
-
-						// Update the visibility of noCurrentBookingTextView based on the flag
 						if (hasCurrentBookings) {
 							binding.noCurrentBookingTextView.setVisibility(View.GONE);
 						} else {
@@ -109,6 +107,7 @@ public class CurrentBookingFragment extends Fragment {
 						currentBookingAdapter.notifyDataSetChanged();
 					} else {
 						binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+						binding.loadingLayout.setVisibility(View.GONE);
 					}
 				}
 
@@ -121,7 +120,7 @@ public class CurrentBookingFragment extends Fragment {
 		} else {
 			Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 
@@ -163,7 +162,7 @@ public class CurrentBookingFragment extends Fragment {
 						Toast.makeText(context,
 								"Booking failed to cancel",
 								Toast.LENGTH_LONG).show();
-						Log.e(TAG, e.getMessage());
+						Log.e(TAG, Objects.requireNonNull(e.getMessage()));
 					});
 		});
 
@@ -177,12 +176,5 @@ public class CurrentBookingFragment extends Fragment {
 		if (cancelBookingDialog != null && cancelBookingDialog.isShowing()) {
 			cancelBookingDialog.dismiss();
 		}
-	}
-
-	private void goToChatActivity(String driverID, String tripID) {
-		Intent intent = new Intent(getActivity(), ChatActivity.class);
-		intent.putExtra("driverID", driverID);
-		intent.putExtra("tripID", tripID);
-		startActivity(intent);
 	}
 }

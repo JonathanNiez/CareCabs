@@ -105,7 +105,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 			List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
 			PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
-					getApplicationContext(),
+					this,
 					passengerBookingModelList,
 					passengerBookingModel -> showBookingInfoDialog(
 							passengerBookingModel.getPassengerFirstname(),
@@ -122,7 +122,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 							passengerBookingModel.getDestinationLatitude(),
 							passengerBookingModel.getDestinationLongitude()
 					));
-			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 			binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
 
 			databaseReference.addValueEventListener(new ValueEventListener() {
@@ -152,13 +152,13 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 								}
 							}
 						}
-						if (hasPassengersBookings){
+						if (hasPassengersBookings) {
 							binding.noPassengerBookingsTextView.setVisibility(View.GONE);
-						}else {
+						} else {
 							binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 						}
 						passengerBookingsAdapter.notifyDataSetChanged();
-					}else {
+					} else {
 						binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 					}
 				}

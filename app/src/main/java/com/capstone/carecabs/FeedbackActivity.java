@@ -85,11 +85,10 @@ public class FeedbackActivity extends AppCompatActivity {
 				binding.commentEditText.setText("");
 				Toast.makeText(FeedbackActivity.this, "Feedback submitted", Toast.LENGTH_SHORT).show();
 
-			}).addOnFailureListener(new OnFailureListener() {
-				@Override
-				public void onFailure(@NonNull Exception e) {
-					Log.e(TAG, e.getMessage());
-				}
+			}).addOnFailureListener(e -> {
+				Toast.makeText(FeedbackActivity.this, "Feedback failed to submit", Toast.LENGTH_LONG).show();
+
+				Log.e(TAG, e.getMessage());
 			});
 		}
 	}

@@ -4,7 +4,8 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".ChatActivity">
+	android:background="@color/orange"
+	tools:context=".ChatOverviewActivity">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
@@ -18,7 +19,6 @@
 			android:layout_height="wrap_content">
 
 			<TextView
-				android:id="@+id/receiverFullNameTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
@@ -27,7 +27,7 @@
 				android:layout_marginEnd="20dp"
 				android:layout_marginBottom="20dp"
 				android:fontFamily="@font/opensans_bold"
-				android:text="Driver Name"
+				android:text="CHAT"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
@@ -37,49 +37,42 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/chatRecyclerView"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@color/white"
-		android:layout_above="@id/messageInputLayout"
-		android:layout_below="@id/customActionBarLayout"
-		tools:listitem="@layout/item_chat_right"/>
-
-	<LinearLayout
-		android:id="@+id/messageInputLayout"
+		android:id="@+id/chatOverviewRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentBottom="true"
-		android:background="@color/orange"
-		android:gravity="center"
-		android:orientation="horizontal"
-		android:padding="5dp">
+		android:layout_below="@id/customActionBarLayout"
+		tools:listitem="@layout/item_chat_overview" />
 
-		<EditText
-			android:id="@+id/messageEditText"
-			android:layout_width="0dp"
+	<androidx.cardview.widget.CardView
+		android:id="@+id/loadingLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		app:cardBackgroundColor="@color/white"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
+
+		<pl.droidsonroids.gif.GifImageView
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginStart="5dp"
-			android:layout_marginTop="5dp"
-			android:layout_marginEnd="5dp"
-			android:layout_marginBottom="5dp"
-			android:layout_weight="8"
-			android:fontFamily="@font/opensans_semibold"
-			android:hint="Type a message"
-			android:inputType="text"
-			android:textColor="@color/black"
-			android:textColorHint="@color/black"
-			android:textSize="17sp" />
+			android:layout_margin="10dp"
+			android:src="@drawable/loading_gif" />
 
-		<ImageButton
-			android:id="@+id/sendMessageBtn"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:background="@color/orange"
-			android:src="@drawable/send_32" />
+	</androidx.cardview.widget.CardView>
 
-	</LinearLayout>
-
+	<TextView
+		android:id="@+id/noAvailableChatsTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:layout_margin="10dp"
+		android:background="@drawable/custom_card_view_1"
+		android:elevation="5dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:padding="10dp"
+		android:text="You have no current available chats right now"
+		android:textAlignment="center"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 </RelativeLayout>

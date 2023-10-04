@@ -1,7 +1,6 @@
 package com.capstone.carecabs.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,31 +12,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Model.ChatModel;
+import com.capstone.carecabs.Model.ChatDriverModel;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.databinding.ItemChatLeftBinding;
-import com.capstone.carecabs.databinding.ItemChatRightBinding;
-import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
+public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.ChatDriverViewHolder> {
 
 	private Context context;
-	private List<ChatModel> chatModelList;
+	private List<ChatDriverModel> chatDriverModelList;
 	public static final int MSG_TYPE_LEFT = 0;
 	public static final int MSG_TYPE_RIGHT = 1;
 
-	public ChatAdapter(Context context, List<ChatModel> chatModelList) {
+	public ChatDriverAdapter(Context context, List<ChatDriverModel> chatDriverModelList) {
 		this.context = context;
-		this.chatModelList = chatModelList;
+		this.chatDriverModelList = chatDriverModelList;
 	}
 
 	@NonNull
 	@Override
-	public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public ChatDriverViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		View view;
 		if (viewType == MSG_TYPE_RIGHT) {
 			view = LayoutInflater.from(parent.getContext())
@@ -46,28 +41,28 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 			view = LayoutInflater.from(parent.getContext())
 					.inflate(R.layout.item_chat_left, parent, false);
 		}
-		return new ChatViewHolder(view);
+		return new ChatDriverViewHolder(view);
 	}
 
 
 	@Override
-	public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-		ChatModel chatModel = chatModelList.get(position);
+	public void onBindViewHolder(@NonNull ChatDriverViewHolder holder, int position) {
+		ChatDriverModel chatDriverModel = chatDriverModelList.get(position);
 
-		holder.messageTextView.setText(chatModel.getMessage());
+		holder.messageTextView.setText(chatDriverModel.getMessage());
 
 
 	}
 
 	@Override
 	public int getItemCount() {
-		return chatModelList.size();
+		return chatDriverModelList.size();
 	}
 
 	@Override
 	public int getItemViewType(int position) {
 
-		if (chatModelList.get(position).getSender()
+		if (chatDriverModelList.get(position).getSender()
 				.equals(FirebaseMain.getUser().getUid())) {
 			return MSG_TYPE_RIGHT;
 		} else {
@@ -75,13 +70,13 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
 		}
 	}
 
-	public class ChatViewHolder extends RecyclerView.ViewHolder {
+	public class ChatDriverViewHolder extends RecyclerView.ViewHolder {
 		private TextView messageTextView;
 		private EditText messageEditText;
 		private Button sendMessageBtn;
 		private ImageView receiverProfilePicture;
 
-		public ChatViewHolder(@NonNull View itemView) {
+		public ChatDriverViewHolder(@NonNull View itemView) {
 			super(itemView);
 
 			messageTextView = itemView.findViewById(R.id.messageTextView);

@@ -97,6 +97,17 @@
 			android:src="@drawable/zoom_out_32"
 			android:visibility="gone"/>
 
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/bookingsImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/calendar"
+			/>
+
 	</LinearLayout>
 
 	<androidx.cardview.widget.CardView

@@ -6,12 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.carecabs.ChatActivity;
+import com.capstone.carecabs.ChatDriverActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemCurrentBookingBinding;
@@ -131,8 +130,9 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			holder.binding.driverOnTheWayTextView.setVisibility(View.VISIBLE);
 			holder.binding.chatDriverBtn.setVisibility(View.VISIBLE);
 			holder.binding.chatDriverBtn.setOnClickListener(v -> {
-				Intent intent = new Intent(context, ChatActivity.class);
+				Intent intent = new Intent(context, ChatDriverActivity.class);
 				intent.putExtra("driverID", currentBookingModel.getDriverUserID());
+				intent.putExtra("bookingID", currentBookingModel.getBookingID());
 				context.startActivity(intent);
 			});
 		}

@@ -1,11 +1,11 @@
 package com.capstone.carecabs.Model
 
-data class ChatModel(
+data class ChatPassengerModel(
     val chatID: String = "",
-    val tripID: String = "",
+    val bookingID : String = "",
     val chatDate: String = "",
     val sender: String = "",
     val receiver: String = "",
     val message: String = "",
-    val isAvailable : Boolean = false
+    val chatStatus : String = ""
 )

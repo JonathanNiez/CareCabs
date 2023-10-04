@@ -1,7 +1,9 @@
 package com.capstone.carecabs.Adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.capstone.carecabs.ChatPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemPassengersBinding;
@@ -23,6 +26,7 @@ import com.mapbox.geojson.Point;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -58,7 +62,6 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 	@Override
 	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
 		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
-
 		String fullName = passengerBookingModel.getPassengerFirstname() + " " + passengerBookingModel.getPassengerLastname();
 
 		holder.binding.passengerName.setText(fullName);
@@ -110,7 +113,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			@Override
 			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, t.getMessage());
+				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 				holder.binding.pickupLocationTextView.setText("Location not found");
 			}
@@ -144,7 +147,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			@Override
 			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, t.getMessage());
+				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 				holder.binding.destinationLocationTextView.setText("Location not found");
 			}
@@ -152,15 +155,39 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 
 		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);
+			holder.binding.chatPassengerBtn.setVisibility(View.GONE);
 		}
 		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
 
 		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 			holder.binding.viewBtn.setVisibility(View.GONE);
+
+			holder.binding.chatPassengerBtn.setOnClickListener(view -> {
+				if (itemPassengerClickListener != null) {
+					itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+
+					Intent intent = new Intent(context, ChatPassengerActivity.class);
+					intent.putExtra("passengerID", passengerBookingModel.getPassengerUserID());
+					intent.putExtra("bookingID", passengerBookingModel.getBookingID());
+
+					// Add the FLAG_ACTIVITY_NEW_TASK flag
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+					// Check if context is an instance of Activity before starting the activity
+					if (context instanceof Activity) {
+						((Activity) context).startActivity(intent);
+					} else {
+						// If context is not an Activity, use the application context
+						context.getApplicationContext().startActivity(intent);
+					}
+				}
+			});
 		}
 
 		holder.binding.viewBtn.setOnClickListener(view -> {
-			itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+			if (itemPassengerClickListener != null) {
+				itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+			}
 		});
 	}
 

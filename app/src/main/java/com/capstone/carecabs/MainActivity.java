@@ -107,6 +107,10 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			} else if (item.getItemId() == R.id.myProfile) {
 				showFragment(new AccountFragment());
 
+			} else if (item.getItemId() == R.id.chat) {
+				intent = new Intent(MainActivity.this, ChatOverviewActivity.class);
+				startActivity(intent);
+
 			} else if (item.getItemId() == R.id.map) {
 
 				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
@@ -210,7 +214,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 	private void showBookingIsAcceptedNotification() {
 		NotificationHelper notificationHelper = new NotificationHelper(this);
-		notificationHelper.showBookingIsAcceptedNotificationNotification("CareCabs", "A Driver has accepted your Booking and is on the way to pick up you");
+		notificationHelper.showBookingIsAcceptedNotificationNotification("CareCabs",
+				"A Driver has accepted your Booking and is on the way to pick up you");
 	}
 
 	private void checkUserIfVerified() {

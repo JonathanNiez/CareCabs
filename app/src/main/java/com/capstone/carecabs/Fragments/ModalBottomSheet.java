@@ -248,15 +248,15 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 					updateDriverStatus();
 					sendDataToMap(point);
-					storeTripToDatabase(
-							generateRandomTripID(),
-							bookingID,
-							passengerID,
-							pickupLatitude,
-							pickupLongitude,
-							destinationLatitude,
-							destinationLongitude
-					);
+//					storeTripToDatabase(
+//							generateRandomTripID(),
+//							bookingID,
+//							passengerID,
+//							pickupLatitude,
+//							pickupLongitude,
+//							destinationLatitude,
+//							destinationLongitude
+//					);
 					dismiss();
 
 				})

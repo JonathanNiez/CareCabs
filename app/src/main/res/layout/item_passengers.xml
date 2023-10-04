@@ -179,6 +179,18 @@
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/chatPassengerBtn"
+			android:layout_width="200dp"
+			android:layout_height="50dp"
+			android:layout_margin="10dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:fontFamily="@font/opensans_bold"
+			android:text="Chat Passenger"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
 	</LinearLayout>
 
 

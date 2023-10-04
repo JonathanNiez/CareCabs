@@ -20,4 +20,10 @@
 		android:icon="@drawable/map_32_2"
 		android:title="Map" />
 
+	<item
+		android:id="@+id/chat"
+		android:enabled="true"
+		android:icon="@drawable/chat_32"
+		android:title="Chat" />
+
 </menu>
