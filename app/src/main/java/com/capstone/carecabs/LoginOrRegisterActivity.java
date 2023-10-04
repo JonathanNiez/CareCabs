@@ -23,7 +23,6 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 	private AlertDialog exitAppDialog, registerUsingDialog,
 			noInternetDialog;
 	private AlertDialog.Builder builder;
-	private boolean shouldExit = false;
 
 	@Override
 	protected void onStart() {
@@ -63,7 +62,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 		binding.loginBtn.setOnClickListener(v -> {
 			intent = new Intent(LoginOrRegisterActivity.this, LoginActivity.class);
 			startActivity(intent);
-			overridePendingTransition(R.anim.popup_enter, R.anim.popup_exit);
+//			overridePendingTransition(R.anim.popup_enter, R.anim.popup_exit);
 			finish();
 		});
 
@@ -75,13 +74,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed();
-		} else {
-			showExitConfirmationDialog();
-
-		}
+		showExitConfirmationDialog();
 
 	}
 

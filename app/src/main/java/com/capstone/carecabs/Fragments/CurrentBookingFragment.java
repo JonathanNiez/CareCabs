@@ -56,6 +56,7 @@ public class CurrentBookingFragment extends Fragment {
 		binding.noCurrentBookingTextView.setVisibility(View.GONE);
 
 		context = getContext();
+
 		loadCurrentBookingFromDatabase();
 
 		return view;

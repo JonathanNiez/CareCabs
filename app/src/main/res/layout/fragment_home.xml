@@ -193,6 +193,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
+									android:textAlignment="center"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Bookings"
 									android:textColor="@color/white"
@@ -231,6 +232,7 @@
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Book a Ride"
+									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 

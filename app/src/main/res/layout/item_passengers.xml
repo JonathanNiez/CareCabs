@@ -111,6 +111,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_medium"
 			android:text="Booking Date"
+			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
@@ -131,6 +132,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Pickup Location Name"
+			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
@@ -151,6 +153,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location Name"
+			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 

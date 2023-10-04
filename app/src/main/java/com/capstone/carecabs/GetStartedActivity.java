@@ -24,7 +24,6 @@ public class GetStartedActivity extends AppCompatActivity {
         binding = ActivityGetStartedBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        FirebaseMain.getAuth();
         FirebaseApp.initializeApp(this);
 
         if (FirebaseMain.getUser() != null) {

@@ -45,13 +45,6 @@
 		android:gravity="center"
 		android:orientation="vertical">
 
-		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
-			android:id="@+id/routeOverviewBtn"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:elevation="10dp" />
-
 		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
 			android:id="@+id/recenterBtn"
 			android:layout_width="wrap_content"
@@ -64,8 +57,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
 			android:backgroundTint="@color/white"
 			android:elevation="10dp"
+			android:padding="10dp"
 			android:scaleType="centerCrop"
 			android:src="@drawable/minimize_32"
 			android:visibility="gone" />
@@ -75,8 +70,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
 			android:backgroundTint="@color/white"
 			android:elevation="10dp"
+			android:padding="10dp"
 			android:scaleType="centerCrop"
 			android:src="@drawable/fullscreen_32" />
 
@@ -85,8 +82,10 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
 			android:backgroundTint="@color/white"
 			android:elevation="10dp"
+			android:padding="10dp"
 			android:scaleType="centerCrop"
 			android:src="@drawable/zoom_in_32" />
 
@@ -95,11 +94,26 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
 			android:backgroundTint="@color/white"
 			android:elevation="10dp"
+			android:padding="10dp"
 			android:scaleType="centerCrop"
 			android:src="@drawable/zoom_out_32"
 			android:visibility="gone" />
+
+		<androidx.appcompat.widget.SwitchCompat
+			android:id="@+id/mapStyleSwitch"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
+			android:backgroundTint="@color/white"
+			android:checked="false"
+			android:elevation="10dp"
+			android:padding="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/calendar" />
 
 	</LinearLayout>
 
@@ -108,8 +122,9 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_above="@id/bottomNavigationView"
+		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="30dp"
+		android:layout_marginBottom="10dp"
 		android:background="@color/white"
 		android:elevation="5dp"
 		android:padding="5dp">
@@ -154,19 +169,19 @@
 				android:textColor="@color/black"
 				android:textSize="16sp" />
 
-			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/setLocationBtn"
-				android:layout_width="280dp"
-				android:layout_height="60dp"
-				android:layout_gravity="center"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/light_blue"
-				android:drawableStart="@drawable/location"
-				android:fontFamily="@font/opensans_bold"
-				android:padding="10dp"
-				android:text="Set Location on Map"
-				android:textColor="@color/white"
-				android:textSize="17sp" />
+<!--			<androidx.appcompat.widget.AppCompatButton-->
+<!--				android:id="@+id/setLocationBtn"-->
+<!--				android:layout_width="280dp"-->
+<!--				android:layout_height="60dp"-->
+<!--				android:layout_gravity="center"-->
+<!--				android:background="@drawable/smooth_edge_button"-->
+<!--				android:backgroundTint="@color/light_blue"-->
+<!--				android:drawableStart="@drawable/location"-->
+<!--				android:fontFamily="@font/opensans_bold"-->
+<!--				android:padding="10dp"-->
+<!--				android:text="Set Location on Map"-->
+<!--				android:textColor="@color/white"-->
+<!--				android:textSize="17sp" />-->
 
 		</LinearLayout>
 

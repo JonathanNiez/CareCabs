@@ -157,6 +157,24 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
+        binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
+            if (b){
+                binding.mapView.getMapboxMap().apply {
+                    loadStyleUri(Style.MAPBOX_STREETS){
+                        Toast.makeText(this@MapPassengerActivity, "Changed Map style to Streets", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
+            }else{
+                binding.mapView.getMapboxMap().apply {
+                    loadStyleUri(Style.SATELLITE_STREETS){
+                        Toast.makeText(this@MapPassengerActivity, "Changed Map style to Satellite", Toast.LENGTH_SHORT).show()
+
+                    }
+                }
+            }
+        }
+
         binding.fullscreenImgBtn.setOnClickListener {
             Toast.makeText(
                 this@MapPassengerActivity,
@@ -206,9 +224,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 //            ApiType.GEOCODING
 //        }
 
-        binding.recenterBtn.setOnClickListener {
-
-        }
 
         binding.searchDestinationEditText.setOnClickListener {
 
@@ -223,7 +238,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun onMapReady() {
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
-            loadStyleUri(Style.MAPBOX_STREETS) {
+            loadStyleUri(Style.SATELLITE_STREETS) {
 
                 setupGesturesListener()
                 initializeLocationComponent()
@@ -280,6 +295,20 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
                 .zoom(6.0)
+                .center(coordinate)
+                .build()
+        )
+    }
+
+    private fun recenterCamera(coordinate: Point) {
+        binding.mapView.location
+            .addOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
+        binding.mapView.location
+            .addOnIndicatorBearingChangedListener(onIndicatorBearingChangedListener)
+        binding.mapView.gestures.addOnMoveListener(onMoveListener)
+
+        binding.mapView.getMapboxMap().setCamera(
+            CameraOptions.Builder()
                 .center(coordinate)
                 .build()
         )
@@ -564,6 +593,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             zoomOutCamera(coordinate)
         }
 
+        binding.recenterBtn.setOnClickListener {
+            recenterCamera(coordinate)
+        }
+
         if (viewAnnotationMap[coordinate] == null) {
             mapView.viewAnnotationManager.removeAllViewAnnotations()
             val viewAnnotation = mapView.viewAnnotationManager.addViewAnnotation(
@@ -658,8 +691,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun onCameraTrackingDismissed() {
-        Toast.makeText(this, "onCameraTrackingDismissed", Toast.LENGTH_SHORT).show()
-
         binding.mapView.location
             .removeOnIndicatorPositionChangedListener(onIndicatorPositionChangedListener)
         binding.mapView.location

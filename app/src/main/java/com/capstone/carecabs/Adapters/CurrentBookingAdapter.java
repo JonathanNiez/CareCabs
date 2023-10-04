@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
 
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +70,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 				.build();
 
 		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+			@SuppressLint("SetTextI18n")
 			@Override
 			public void onResponse(@NonNull Call<GeocodingResponse> call,
 			                       @NonNull Response<GeocodingResponse> response) {
@@ -77,18 +80,21 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 					holder.binding.pickupLocationTextView.setText(locationName);
 				} else {
-					Log.e(TAG, response.message());
+					Log.e(TAG, "Geocode error" + response.message());
+
 					holder.binding.pickupLocationTextView.setText("Location not found");
 				}
 			}
+			@SuppressLint("SetTextI18n")
 			@Override
-			public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-				Log.e(TAG, t.getMessage());
+			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 				holder.binding.pickupLocationTextView.setText("Location not found");
 			}
 		});
 
+		//TODO:geocode
 		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
 				.accessToken(context.getString(R.string.mapbox_access_token))
 				.query(Point.fromLngLat(
@@ -97,6 +103,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 				.build();
 		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+			@SuppressLint("SetTextI18n")
 			@Override
 			public void onResponse(@NonNull Call<GeocodingResponse> call,
 			                       @NonNull Response<GeocodingResponse> response) {
@@ -106,15 +113,16 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 					holder.binding.destinationLocationTextView.setText(locationName);
 				} else {
-					Log.e(TAG, response.message());
+					Log.e(TAG, "Geocode error" + response.message());
 
 					holder.binding.destinationLocationTextView.setText("Location not found");
 				}
 			}
 
+			@SuppressLint("SetTextI18n")
 			@Override
-			public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-				Log.e(TAG, t.getMessage());
+			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 				holder.binding.destinationLocationTextView.setText("Location not found");
 			}

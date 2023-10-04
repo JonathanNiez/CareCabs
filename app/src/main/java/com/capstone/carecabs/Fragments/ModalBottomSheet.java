@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Model.BottomSheetData;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
@@ -38,6 +39,7 @@ import retrofit2.Response;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class ModalBottomSheet extends BottomSheetDialogFragment {
@@ -45,7 +47,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	public static final String TAG = "ModalBottomSheet";
 
 	public interface BottomSheetListener {
-		void onDataReceived(Point data);
+		void onDataReceived(BottomSheetData bottomSheetData);
 	}
 
 	private BottomSheetListener mBottomSheetListener;
@@ -83,9 +85,17 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		mBottomSheetListener = bottomSheetListener;
 	}
 
-	private void sendDataToMap(Point data) {
+	private void sendDataToMap(String bookingID,
+							   String passengerID,
+	                           Point pickupCoordinates,
+	                           Point destinationCoordinates) {
+		BottomSheetData bottomSheetData = new BottomSheetData(
+				bookingID,
+				passengerID,
+				pickupCoordinates,
+				destinationCoordinates);
 		if (mBottomSheetListener != null) {
-			mBottomSheetListener.onDataReceived(data);
+			mBottomSheetListener.onDataReceived(bottomSheetData);
 		}
 	}
 
@@ -99,7 +109,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				@SuppressLint("SetTextI18n")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
-					if (snapshot != null && snapshot.exists()) {
+					if (snapshot.exists()) {
 						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
 						String getPassengerUserType = snapshot.child("passengerUserType").getValue(String.class);
@@ -122,7 +132,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
 							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null) {
+								if (response.body() != null && !response.body().features().isEmpty()) {
 									CarmenFeature feature = response.body().features().get(0);
 									String locationName = feature.placeName();
 
@@ -133,8 +143,8 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 							}
 
 							@Override
-							public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-								Log.e(TAG, t.getMessage());
+							public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+								Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 								binding.pickupLocationTextView.setText("Location not found");
 							}
@@ -148,7 +158,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
 							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null) {
+								if (response.body() != null && !response.body().features().isEmpty()) {
 									CarmenFeature feature = response.body().features().get(0);
 									String locationName = feature.placeName();
 
@@ -161,8 +171,8 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 							}
 
 							@Override
-							public void onFailure(Call<GeocodingResponse> call, Throwable t) {
-								Log.e(TAG, t.getMessage());
+							public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+								Log.e(TAG, Objects.requireNonNull(t.getMessage()));
 
 								binding.destinationLocationTextView.setText("Location not found");
 							}
@@ -231,8 +241,12 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	                                    Double destinationLongitude) {
 
 		//convert to point
-		LatLng latLng = new LatLng(destinationLatitude, destinationLongitude);
-		Point point = Point.fromLngLat(latLng.longitude, latLng.latitude);
+		LatLng pickupLatLng = new LatLng(pickupLatitude, pickupLongitude);
+		Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
+
+		LatLng destinationLatLng = new LatLng(destinationLatitude, destinationLongitude);
+		Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
+
 
 		//update booking from passenger
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
@@ -247,7 +261,11 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				.addOnSuccessListener(unused -> {
 
 					updateDriverStatus();
-					sendDataToMap(point);
+					sendDataToMap(bookingID,
+							passengerID,
+							pickupCoordinates,
+							destinationCoordinates);
+
 //					storeTripToDatabase(
 //							generateRandomTripID(),
 //							bookingID,
@@ -262,7 +280,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				})
 				.addOnFailureListener(e -> {
 
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, Objects.requireNonNull(e.getMessage()));
 
 					Toast.makeText(context,
 							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
