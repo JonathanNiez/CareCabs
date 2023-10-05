@@ -44,8 +44,8 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.Objects;
 
 public class AccountFragment extends Fragment {
-	private DocumentReference documentReference;
 	private final String TAG = "AccountFragment";
+	private DocumentReference documentReference;
 	private Intent intent;
 	private AlertDialog signOutDialog, pleaseWaitDialog,
 			noInternetDialog, registerNotCompleteDialog;
@@ -351,7 +351,7 @@ public class AccountFragment extends Fragment {
 							String getDisability = documentSnapshot.getString("disability");
 
 							binding.disabilityTextView.setVisibility(View.VISIBLE);
-							binding.disabilityTextView.setText("Disabilities:\n" + getDisability);
+							binding.disabilityTextView.setText("Disability:\n" + getDisability);
 							binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
 
 
@@ -361,7 +361,7 @@ public class AccountFragment extends Fragment {
 							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
 							binding.medConTextView.setVisibility(View.VISIBLE);
-							binding.medConTextView.setText("Medical Conditions:\n" + getMedicalCondition);
+							binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
 							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 							break;

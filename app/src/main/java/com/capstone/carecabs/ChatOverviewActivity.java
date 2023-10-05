@@ -43,6 +43,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 		finish();
 	}
 
+	//TODO:recent chat
 	private void loadAvailableChats() {
 		DatabaseReference databaseReference = FirebaseDatabase
 				.getInstance().getReference(FirebaseMain.chatCollection);

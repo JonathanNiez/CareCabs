@@ -9,21 +9,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.ChatPassengerActivity;
-import com.capstone.carecabs.Model.PassengerBookingModel;
+import com.capstone.carecabs.Model.PickupPassengerModel;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.databinding.ItemPassengersBinding;
+import com.capstone.carecabs.databinding.ItemPickupPassengerBinding;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
-
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,48 +32,47 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
-	private final String TAG = "PassengerBookingsAdapter";
+public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassengerAdapter.PickupPassengerViewHolder> {
+	private final String TAG = "PickupPassengerAdapter";
 	private Context context;
-	private final List<PassengerBookingModel> passengerBookingModelList;
-	private ItemPassengerClickListener itemPassengerClickListener;
+	private List<PickupPassengerModel> pickupPassengerModelList;
+	private PickupPassengerClickListener pickupPassengerClickListener;
 
-	public interface ItemPassengerClickListener {
-		void onPassengerItemClick(PassengerBookingModel passengerBookingModel);
+	public interface PickupPassengerClickListener {
+		void onPickupPassengerItemClick(PickupPassengerModel pickupPassengerModel);
 	}
 
-	public PassengerBookingsAdapter(Context context,
-	                                List<PassengerBookingModel> passengerBookingModelList,
-	                                ItemPassengerClickListener itemPassengerClickListener) {
+	public PickupPassengerAdapter(Context context,
+	                              List<PickupPassengerModel> pickupPassengerModelList,
+	                              PickupPassengerClickListener pickupPassengerClickListener) {
 		this.context = context;
-		this.passengerBookingModelList = passengerBookingModelList;
-		this.itemPassengerClickListener = itemPassengerClickListener;
+		this.pickupPassengerModelList = pickupPassengerModelList;
+		this.pickupPassengerClickListener = pickupPassengerClickListener;
 	}
 
 	@NonNull
 	@Override
-	public PassengerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		ItemPassengersBinding binding = ItemPassengersBinding
+	public PickupPassengerAdapter.PickupPassengerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		ItemPickupPassengerBinding binding = ItemPickupPassengerBinding
 				.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-		return new PassengerViewHolder(binding);
+		return new PickupPassengerViewHolder(binding);
 	}
 
-	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
-		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
-
-		String fullName = passengerBookingModel.getPassengerFirstname() + " " + passengerBookingModel.getPassengerLastname();
+	public void onBindViewHolder(@NonNull PickupPassengerAdapter.PickupPassengerViewHolder holder, int position) {
+		PickupPassengerModel pickupPassengerModel = pickupPassengerModelList.get(position);
+		holder.binding.renavigateBtn.setVisibility(View.GONE);
+		String fullName = pickupPassengerModel.getPassengerFirstname() + " " + pickupPassengerModel.getPassengerLastname();
 
 		holder.binding.passengerName.setText(fullName);
-		if (!passengerBookingModel.getPassengerProfilePicture().equals("default")) {
+		if (!pickupPassengerModel.getPassengerProfilePicture().equals("default")) {
 			Glide.with(context)
-					.load(passengerBookingModel.getPassengerProfilePicture())
+					.load(pickupPassengerModel.getPassengerProfilePicture())
 					.placeholder(R.drawable.loading_gif)
 					.into(holder.binding.passengerImage);
 		}
 
-		switch (passengerBookingModel.getPassengerUserType()) {
+		switch (pickupPassengerModel.getPassengerUserType()) {
 			case "Senior Citizen":
 				holder.binding.passengerTypeImage.setImageResource(R.drawable.senior_32);
 				break;
@@ -82,15 +81,15 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 				holder.binding.passengerTypeImage.setImageResource(R.drawable.pwd_32);
 				break;
 		}
-		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
-		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingDate());
+		holder.binding.passengerType.setText(pickupPassengerModel.getPassengerUserType());
+		holder.binding.bookingDate.setText("Booking Date: " + pickupPassengerModel.getBookingDate());
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
 				.accessToken(context.getString(R.string.mapbox_access_token))
 				.query(Point.fromLngLat(
-						passengerBookingModel.getPickupLongitude(),
-						passengerBookingModel.getPickupLatitude()))
+						pickupPassengerModel.getPickupLongitude(),
+						pickupPassengerModel.getPickupLatitude()))
 				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 				.build();
 
@@ -123,8 +122,8 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
 				.accessToken(context.getString(R.string.mapbox_access_token))
 				.query(Point.fromLngLat(
-						passengerBookingModel.getDestinationLongitude(),
-						passengerBookingModel.getDestinationLatitude()))
+						pickupPassengerModel.getDestinationLongitude(),
+						pickupPassengerModel.getDestinationLatitude()))
 				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 				.build();
 		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
@@ -154,22 +153,29 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			}
 		});
 
-		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
+		if (pickupPassengerModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);
 			holder.binding.chatPassengerBtn.setVisibility(View.GONE);
 		}
-		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
+		holder.binding.bookingStatus.setText(pickupPassengerModel.getBookingStatus());
 
-		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
-			holder.binding.viewBtn.setVisibility(View.GONE);
+		if (pickupPassengerModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.pickupBtn.setVisibility(View.GONE);
+			holder.binding.renavigateBtn.setVisibility(View.VISIBLE);
+
+			holder.binding.renavigateBtn.setOnClickListener(v -> {
+				if (pickupPassengerClickListener != null){
+					pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
+				}
+			});
 
 			holder.binding.chatPassengerBtn.setOnClickListener(view -> {
-				if (itemPassengerClickListener != null) {
-					itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+				if (pickupPassengerClickListener != null) {
+					pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
 
 					Intent intent = new Intent(context, ChatPassengerActivity.class);
-					intent.putExtra("passengerID", passengerBookingModel.getPassengerUserID());
-					intent.putExtra("bookingID", passengerBookingModel.getBookingID());
+					intent.putExtra("passengerID", pickupPassengerModel.getPassengerUserID());
+					intent.putExtra("bookingID", pickupPassengerModel.getBookingID());
 
 					// Add the FLAG_ACTIVITY_NEW_TASK flag
 					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -185,23 +191,22 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			});
 		}
 
-		holder.binding.viewBtn.setOnClickListener(view -> {
-			if (itemPassengerClickListener != null) {
-				itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+		holder.binding.pickupBtn.setOnClickListener(v -> {
+			if (pickupPassengerClickListener != null){
+				pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
 			}
 		});
 	}
 
 	@Override
 	public int getItemCount() {
-		return passengerBookingModelList.size();
+		return pickupPassengerModelList.size();
 	}
 
-	public static class PassengerViewHolder extends RecyclerView.ViewHolder {
+	public class PickupPassengerViewHolder extends RecyclerView.ViewHolder {
+		private ItemPickupPassengerBinding binding;
 
-		private final ItemPassengersBinding binding;
-
-		public PassengerViewHolder(ItemPassengersBinding binding) {
+		public PickupPassengerViewHolder(@NonNull ItemPickupPassengerBinding binding) {
 			super(binding.getRoot());
 			this.binding = binding;
 		}

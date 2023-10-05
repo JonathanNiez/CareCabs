@@ -115,7 +115,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="emailAddress"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="EMAIL"
 							android:inputType="textEmailAddress"
 							android:textColor="@color/black"
@@ -142,7 +142,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="password"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="PASSWORD"
 							android:inputType="textPassword"
 							android:textColor="@color/black"
@@ -169,7 +169,7 @@
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="CONFIRM PASSWORD"
 							android:inputType="textPassword"
 							android:textColor="@color/black"
@@ -199,7 +199,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="phone"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="PHONE NUMBER (+63)"
 							android:inputType="phone"
 							android:maxLength="10"
@@ -213,7 +213,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:shadowColor="@color/black"
 						android:shadowDx="2"
 						android:shadowDy="2"
@@ -240,46 +240,46 @@
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_bold"
 					android:text="Please Wait..."
 					android:textColor="@color/black"
 					android:textSize="20sp" />
 
 				<pl.droidsonroids.gif.GifImageView
 					android:id="@+id/progressBar"
-					android:layout_width="50pt"
-					android:layout_height="50pt"
+					android:layout_width="100dp"
+					android:layout_height="100dp"
 					android:src="@drawable/loading_gif" />
 
 			</LinearLayout>
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/nextBtn"
-				android:layout_width="150dp"
-				android:layout_height="60dp"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Next"
 				android:textColor="@color/white"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/backBtn"
-				android:layout_width="150dp"
-				android:layout_height="60dp"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="50dp"
 				android:layout_marginBottom="50dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/platinum"
 				android:drawableStart="@drawable/back_50_2"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Back"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 		</LinearLayout>
 

@@ -36,7 +36,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="EDIT PROFILE"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
@@ -69,7 +69,7 @@
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					android:backgroundTint="@color/platinum"
+					android:backgroundTint="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -110,7 +110,7 @@
 									android:id="@+id/firstnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
-									android:fontFamily="@font/opensans_bold"
+									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Firstname"
 									android:textAlignment="center"
@@ -122,7 +122,7 @@
 									android:id="@+id/lastnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
-									android:fontFamily="@font/opensans_bold"
+									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Lastname"
 									android:textAlignment="center"
@@ -134,15 +134,14 @@
 						</LinearLayout>
 
 						<TextView
-							android:layout_width="match_parent"
+							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
-							android:fontFamily="@font/opensans_semibold"
-							android:text="Tap on the profile picture to icon change your profile picture"
+							android:fontFamily="@font/gabarito_medium"
+							android:text="Tap/Click on the profile picture to icon update your profile picture"
 							android:textAlignment="center"
 							android:textColor="@color/black"
 							android:textSize="17sp" />
-
 
 					</LinearLayout>
 
@@ -157,9 +156,8 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:background="@drawable/custom_card_view_1"
-				android:backgroundTint="@color/platinum"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:padding="5dp"
 				android:text="You have not scanned your ID"
 				android:textAlignment="center"
@@ -172,7 +170,7 @@
 				android:layout_margin="5dp"
 				android:background="@drawable/custom_card_view_1"
 				android:fontFamily="@font/gabarito_medium"
-				android:padding="10dp"
+				android:padding="5dp"
 				android:text="Flick the switch on the right to edit"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -200,7 +198,7 @@
 						android:background="@drawable/stroke_button"
 						android:elevation="5dp"
 						android:enabled="false"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Firstname"
 						android:padding="10dp"
 						android:textAlignment="center"
@@ -244,7 +242,7 @@
 						android:background="@drawable/stroke_button"
 						android:elevation="5dp"
 						android:enabled="false"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Lastname"
 						android:padding="10dp"
 						android:textAlignment="center"
@@ -287,7 +285,7 @@
 						android:background="@drawable/stroke_button"
 						android:elevation="5dp"
 						android:enabled="false"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Age"
 						android:inputType="number"
 						android:maxLength="2"
@@ -332,7 +330,7 @@
 						android:background="@drawable/stroke_button"
 						android:elevation="5dp"
 						android:enabled="false"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Birthdate"
 						android:textAlignment="center"
@@ -409,10 +407,10 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="Disability"
-					android:padding="10dp"
 					android:background="@drawable/custom_card_view_1"
+					android:fontFamily="@font/gabarito_semibold"
+					android:padding="10dp"
+					android:text="Disability"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="20sp" />
@@ -464,10 +462,10 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="Medical Condition"
 					android:background="@drawable/custom_card_view_1"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
+					android:text="Medical Condition"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="20sp" />
@@ -531,8 +529,10 @@
 					<TextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
+						android:layout_margin="10dp"
+						android:background="@drawable/custom_card_view_1"
 						android:fontFamily="@font/gabarito_medium"
+						android:padding="10dp"
 						android:text="Vehicle Information"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -546,39 +546,95 @@
 						android:background="@drawable/custom_card_view_1"
 						android:src="@drawable/car_100" />
 
-					<androidx.appcompat.widget.AppCompatButton
-						android:id="@+id/vehiclePlateNumberBtn"
+					<LinearLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
-						android:background="@drawable/stroke_button"
-						android:drawableStart="@drawable/edit_32"
-						android:elevation="5dp"
-						android:fontFamily="@font/opensans_bold"
-						android:padding="10dp"
-						android:text="Vehicle Plate Number"
-						android:textAlignment="center"
-						android:textAllCaps="false"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						android:gravity="center"
+						android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatButton
-						android:id="@+id/vehicleColorBtn"
+						<androidx.appcompat.widget.AppCompatEditText
+							android:id="@+id/vehicleColorEditText"
+							android:layout_width="0dp"
+							android:layout_height="50dp"
+							android:layout_weight="8"
+							android:background="@drawable/stroke_button"
+							android:elevation="5dp"
+							android:enabled="false"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="Vehicle color"
+							android:inputType="number"
+							android:maxLength="2"
+							android:padding="10dp"
+							android:textAlignment="center"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+						<androidx.appcompat.widget.AppCompatImageButton
+							android:id="@+id/vehicleColorImgBtn"
+							android:layout_width="0dp"
+							android:layout_height="50dp"
+							android:layout_weight="2"
+							android:background="@drawable/stroke_button"
+							android:padding="10dp"
+							android:scaleType="center"
+							android:src="@drawable/edit_32" />
+
+						<androidx.appcompat.widget.SwitchCompat
+							android:id="@+id/vehicleColorSwitch"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="2"
+							android:background="@drawable/stroke_button"
+							android:checked="false"
+							android:padding="10dp" />
+
+					</LinearLayout>
+
+					<LinearLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
-						android:background="@drawable/stroke_button"
-						android:drawableStart="@drawable/edit_32"
-						android:elevation="5dp"
-						android:fontFamily="@font/opensans_bold"
-						android:padding="10dp"
-						android:text="Vehicle Color"
-						android:textAlignment="center"
-						android:textAllCaps="false"
-						android:textColor="@color/black"
-						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						android:gravity="center"
+						android:orientation="horizontal">
+
+						<androidx.appcompat.widget.AppCompatEditText
+							android:id="@+id/vehiclePlateNumberEditText"
+							android:layout_width="0dp"
+							android:layout_height="50dp"
+							android:layout_weight="8"
+							android:background="@drawable/stroke_button"
+							android:elevation="5dp"
+							android:enabled="false"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="Vehicle plate number"
+							android:inputType="number"
+							android:maxLength="2"
+							android:padding="10dp"
+							android:textAlignment="center"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+						<androidx.appcompat.widget.AppCompatImageButton
+							android:id="@+id/vehiclePlateNumberImgBtn"
+							android:layout_width="0dp"
+							android:layout_height="50dp"
+							android:layout_weight="2"
+							android:background="@drawable/stroke_button"
+							android:padding="10dp"
+							android:scaleType="center"
+							android:src="@drawable/edit_32" />
+
+						<androidx.appcompat.widget.SwitchCompat
+							android:id="@+id/vehiclePlateNumberSwitch"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_weight="2"
+							android:background="@drawable/stroke_button"
+							android:checked="false"
+							android:padding="10dp" />
+
+					</LinearLayout>
 
 				</LinearLayout>
 

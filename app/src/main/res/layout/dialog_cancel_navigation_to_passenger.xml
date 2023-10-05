@@ -7,11 +7,11 @@
 	android:gravity="center"
 	android:orientation="vertical">
 
-
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
+		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -26,25 +26,33 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:src="@drawable/exit_128" />
+				app:srcCompat="@drawable/map_64_2" />
 
-
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="EXIT APP"
-				android:textAlignment="center"
+				android:text="NAVIGATING TO PASSENGER"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="Are you sure you want to Exit the App?"
+				android:text="The passenger you are picking-up is waiting right now"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Are you sure you want to cancel the navigation?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
@@ -57,7 +65,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:gravity="center">
+		android:gravity="center"
+		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/cancelBtn"
@@ -65,7 +74,7 @@
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
+			android:backgroundTint="@color/red"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Cancel"
@@ -73,19 +82,20 @@
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/exitBtn"
+			android:id="@+id/closeBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
-			android:layout_marginStart="5dp"
 			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/light_red"
+			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Exit"
+			android:text="Close"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 
+
 	</LinearLayout>
+
 
 </LinearLayout>

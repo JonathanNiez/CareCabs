@@ -35,7 +35,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
-		android:fontFamily="@font/gabarito_semibold"
+		android:fontFamily="@font/gabarito_bold"
 		android:text="PLEASE WAIT..."
 		android:textColor="@color/black"
 		android:textSize="20sp" />

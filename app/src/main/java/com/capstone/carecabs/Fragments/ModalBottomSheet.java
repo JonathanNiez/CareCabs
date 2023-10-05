@@ -43,8 +43,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ModalBottomSheet extends BottomSheetDialogFragment {
-	private static final String ARG_DATA = "data";
+
 	public static final String TAG = "ModalBottomSheet";
+	private static final String ARG_DATA = "data";
 
 	public interface BottomSheetListener {
 		void onDataReceived(BottomSheetData bottomSheetData);
@@ -80,6 +81,14 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		return view;
 
 	}
+	//show the bottom sheet
+	public static ModalBottomSheet newInstance(String data) {
+		ModalBottomSheet fragment = new ModalBottomSheet();
+		Bundle args = new Bundle();
+		args.putString(ARG_DATA, data);
+		fragment.setArguments(args);
+		return fragment;
+	}
 
 	public void setBottomSheetListener(BottomSheetListener bottomSheetListener) {
 		mBottomSheetListener = bottomSheetListener;
@@ -111,21 +120,22 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
 						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
+						String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
 						String getPassengerUserType = snapshot.child("passengerUserType").getValue(String.class);
 						String getPassengerFirstname = snapshot.child("passengerFirstname").getValue(String.class);
 						String getPassengerLastname = snapshot.child("passengerLastname").getValue(String.class);
 
-						Double getPassengerPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
-						Double getPassengerPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
-						Double getPassengerDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
-						Double getPassengerDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
+						Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
+						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
+						Double getDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
+						Double getDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
 
 
 						//geocode
 						MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
 								.accessToken(getString(R.string.mapbox_access_token))
-								.query(Point.fromLngLat(getPassengerPickupLongitude, getPassengerPickupLatitude))
+								.query(Point.fromLngLat(getPickupLongitude, getPickupLatitude))
 								.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 								.build();
 
@@ -152,7 +162,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 						MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
 								.accessToken(getString(R.string.mapbox_access_token))
-								.query(Point.fromLngLat(getPassengerDestinationLongitude, getPassengerDestinationLatitude))
+								.query(Point.fromLngLat(getDestinationLongitude, getDestinationLatitude))
 								.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 								.build();
 						destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
@@ -199,6 +209,42 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 								break;
 						}
 
+						switch (getBookingStatus){
+							case "Waiting":
+								binding.renavigateBtn.setVisibility(View.GONE);
+								binding.pickupBtn.setOnClickListener(v -> {
+									updatePassengerBooking(
+											getPassengerID,
+											bookingID,
+											getPickupLatitude,
+											getPickupLongitude,
+											getDestinationLatitude,
+											getDestinationLongitude
+									);
+								});
+								break;
+
+							case "Driver on the way":
+								binding.pickupBtn.setVisibility(View.GONE);
+								binding.renavigateBtn.setOnClickListener(v -> {
+									//convert to point
+									LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
+									Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
+
+									LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
+									Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
+
+									//renavigate
+									sendDataToMap(bookingID,
+											getPassengerID,
+											pickupCoordinates,
+											destinationCoordinates);
+
+									dismiss();
+								});
+								break;
+						}
+
 						if (getPassengerProfilePicture != null && !getPassengerProfilePicture.equals("default")) {
 							Glide.with(context)
 									.load(getPassengerProfilePicture)
@@ -210,17 +256,6 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						binding.fullNameTextView.setText(getPassengerFirstname + " " +
 								getPassengerLastname);
 						binding.userTypeTextView.setText(getPassengerUserType);
-
-						binding.pickupBtn.setOnClickListener(v -> {
-							updatePassengerBooking(
-									getPassengerID,
-									bookingID,
-									getPassengerPickupLatitude,
-									getPassengerPickupLongitude,
-									getPassengerDestinationLatitude,
-									getPassengerDestinationLongitude
-							);
-						});
 					}
 				}
 
@@ -352,13 +387,5 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		int second = calendar.get(Calendar.SECOND);
 
 		return month + "-" + day + "-" + year + " " + hour + ":" + minute + ":" + second;
-	}
-
-	public static ModalBottomSheet newInstance(String data) {
-		ModalBottomSheet fragment = new ModalBottomSheet();
-		Bundle args = new Bundle();
-		args.putString(ARG_DATA, data);
-		fragment.setArguments(args);
-		return fragment;
 	}
 }

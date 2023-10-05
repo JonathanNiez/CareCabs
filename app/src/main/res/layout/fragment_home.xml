@@ -27,11 +27,10 @@
 				android:layout_marginTop="20dp"
 				android:layout_marginEnd="20dp"
 				android:layout_marginBottom="20dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="HOME"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
-
 
 		</RelativeLayout>
 
@@ -63,44 +62,60 @@
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:fontFamily="@font/opensans_semicondensed_semibold"
+						android:fontFamily="@font/gabarito_semibold"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="Hi and Welcome to CareCabs"
 						android:textAlignment="center"
 						android:textColor="@color/white"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/firstnameTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_bold"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="Name"
 						android:textAlignment="center"
 						android:textColor="@color/white"
-						android:textSize="20sp" />
+						android:textSize="22sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/currentTimeTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:fontFamily="@font/opensans_semicondensed_semibold"
+						android:fontFamily="@font/gabarito_semibold"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="Current Time"
 						android:textAlignment="center"
 						android:textColor="@color/white"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/greetTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:fontFamily="@font/opensans_semicondensed_semibold"
+						android:fontFamily="@font/gabarito_medium"
+						android:shadowColor="@color/black"
+						android:shadowDx="2"
+						android:shadowDy="2"
+						android:shadowRadius="4"
 						android:text="Good Morning"
 						android:textAlignment="center"
 						android:textColor="@color/white"
@@ -162,8 +177,8 @@
 				<LinearLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:orientation="vertical"
-					android:gravity="center">
+					android:gravity="center"
+					android:orientation="vertical">
 
 					<LinearLayout
 						android:layout_width="match_parent"
@@ -188,22 +203,22 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/bookingsTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:textAlignment="center"
-									android:fontFamily="@font/gabarito_medium"
+									android:fontFamily="@font/gabarito_semibold"
 									android:text="Bookings"
+									android:textAlignment="center"
 									android:textColor="@color/white"
 									android:textSize="17sp" />
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:src="@drawable/calendar_64" />
+									app:srcCompat="@drawable/calendar_64" />
 
 							</LinearLayout>
 
@@ -225,22 +240,22 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/bookARideTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:fontFamily="@font/gabarito_medium"
+									android:fontFamily="@font/gabarito_semibold"
 									android:text="Book a Ride"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:src="@drawable/ride_booking_64" />
+									app:srcCompat="@drawable/ride_booking_64" />
 
 							</LinearLayout>
 
@@ -271,20 +286,20 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:fontFamily="@font/gabarito_medium"
+									android:fontFamily="@font/gabarito_semibold"
 									android:text="My Profile"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:src="@drawable/profile_64" />
+									app:srcCompat="@drawable/profile_64" />
 
 							</LinearLayout>
 
@@ -306,20 +321,20 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:fontFamily="@font/gabarito_medium"
+									android:fontFamily="@font/gabarito_semibold"
 									android:text="Trip History"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:src="@drawable/location_64_2" />
+									app:srcCompat="@drawable/location_64_2" />
 
 							</LinearLayout>
 
@@ -346,34 +361,35 @@
 					android:gravity="center"
 					android:orientation="vertical">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverDashBoardTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:drawableEnd="@drawable/driver_32"
-						android:fontFamily="@font/opensans_condensed_extrabold"
+						android:fontFamily="@font/gabarito_semibold"
+						android:padding="10dp"
 						android:text="Driver Dashboard"
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverRatingTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_extrabold"
+						android:fontFamily="@font/gabarito_black"
 						android:text="Driver Rating"
 						android:textAlignment="center"
 						android:textColor="@color/blue"
 						android:textSize="25sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_regular"
+						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/driver_availability_info"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -384,18 +400,18 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:checked="true"
-						android:fontFamily="@font/opensans_regular"
+						android:checked="false"
+						android:fontFamily="@font/gabarito_regular"
 						android:text="or set your Availability manually"
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverStatusTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:fontFamily="@font/gabarito_medium"
+						android:fontFamily="@font/gabarito_semibold"
 						android:text="Driver Status"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -424,24 +440,23 @@
 								android:orientation="vertical"
 								android:padding="10dp">
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:src="@drawable/car_64_2" />
+									app:srcCompat="@drawable/car_64_2" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/passengerTransportedTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
-									android:fontFamily="@font/opensans_medium"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Passengers\nTransported: 0"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</LinearLayout>
-
 
 						</androidx.cardview.widget.CardView>
 
@@ -461,24 +476,23 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:src="@drawable/distance_64" />
+									app:srcCompat="@drawable/distance_64" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/totalDistanceTravelledTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
-									android:fontFamily="@font/opensans_medium"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Total Distance Travelled: 0km"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</LinearLayout>
-
 
 						</androidx.cardview.widget.CardView>
 
@@ -503,23 +517,23 @@
 					android:gravity="center"
 					android:orientation="vertical">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/yourTripOverviewTextView"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_condensed_extrabold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:text="Your Trip Overview"
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/totalTripsTextView"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/opensans_extrabold"
+						android:fontFamily="@font/gabarito_black"
 						android:text="Total Trips"
 						android:textAlignment="center"
 						android:textColor="@color/blue"
@@ -528,7 +542,6 @@
 				</LinearLayout>
 
 			</androidx.cardview.widget.CardView>
-
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"

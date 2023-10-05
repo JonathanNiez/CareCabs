@@ -22,14 +22,15 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Fragments.ModalBottomSheet
+import com.capstone.carecabs.Fragments.PassengerBookingsBottomSheet
 import com.capstone.carecabs.Model.BottomSheetData
 import com.capstone.carecabs.Model.PassengerBookingModel
+import com.capstone.carecabs.Model.PickupPassengerBottomSheetData
 import com.capstone.carecabs.Model.TripModel
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
@@ -108,12 +109,12 @@ import com.mapbox.navigation.ui.voice.model.SpeechAnnouncement
 import com.mapbox.navigation.ui.voice.model.SpeechError
 import com.mapbox.navigation.ui.voice.model.SpeechValue
 import com.mapbox.navigation.ui.voice.model.SpeechVolume
-import org.checkerframework.common.subtyping.qual.Bottom
 import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
-class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener {
+class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener,
+    PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener {
 
     //navigation
     private val mapboxReplayer = MapboxReplayer()
@@ -356,6 +357,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerLocationInfoDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
+    private lateinit var cancelNavtigationDialog: AlertDialog
     private lateinit var binding: ActivityMapDriverBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -369,32 +371,32 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
         checkIfUserIsVerified()
         checkLocationPermission()
-        initializeBottomNavButtons()
-
 
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
-            if (b){
+            if (b) {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.MAPBOX_STREETS){
-                        Toast.makeText(this@MapDriverActivity, "Changed Map style to Streets", Toast.LENGTH_SHORT).show()
+                    loadStyleUri(Style.MAPBOX_STREETS) {
+                        Toast.makeText(
+                            this@MapDriverActivity,
+                            "Changed Map style to Streets",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     }
                 }
-            }else{
+            } else {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.SATELLITE_STREETS){
-                        Toast.makeText(this@MapDriverActivity, "Changed Map style to Satellite", Toast.LENGTH_SHORT).show()
+                    loadStyleUri(Style.SATELLITE_STREETS) {
+                        Toast.makeText(
+                            this@MapDriverActivity,
+                            "Changed Map style to Satellite",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     }
                 }
             }
         }
-
-        binding.bookingsImgBtn.setOnClickListener {
-            intent = Intent(this@MapDriverActivity, PassengerBookingsOverview::class.java)
-            startActivity(intent)
-        }
-
 
         binding.fullscreenImgBtn.setOnClickListener {
             Toast.makeText(
@@ -421,7 +423,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
 
         binding.stopNavigationImgBtn.setOnClickListener {
-            clearRouteAndStopNavigation()
+            showCancelNavigationDialog()
         }
         binding.recenterBtn.setOnClickListener {
             navigationCamera.requestNavigationCameraToFollowing()
@@ -439,7 +441,9 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         // set initial sounds button state
         binding.soundBtn.unmute()
     }
+
     data class CurrentTheme(val theme: Int)
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -636,7 +640,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
-    private fun initializeBottomNavButtons() {
+    private fun initializeBottomNavButtons(bookingID: String) {
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.trips -> {
@@ -645,8 +649,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 }
 
                 R.id.bookings -> {
-                    intent = Intent(this, PassengerBookingsOverview::class.java)
-                    startActivity(intent)
+                    showPassengerBookingsBottomSheetDialog(bookingID)
                 }
 
                 R.id.help -> {
@@ -758,7 +761,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
-    private fun createDestinationAnnotationToMap(destinationCoordinate: Point){
+    private fun createDestinationAnnotationToMap(destinationCoordinate: Point) {
         bitmapFromDrawableRes(
             this@MapDriverActivity,
             R.drawable.location_pin_128
@@ -766,7 +769,12 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             val annotationApi = binding.mapView.annotations
             val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-                .withPoint(Point.fromLngLat(destinationCoordinate.longitude(), destinationCoordinate.latitude()))
+                .withPoint(
+                    Point.fromLngLat(
+                        destinationCoordinate.longitude(),
+                        destinationCoordinate.latitude()
+                    )
+                )
                 .withIconImage(it)
             pointAnnotationManager.create(pointAnnotationOptions)
 
@@ -874,6 +882,12 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
     private fun findRoute(destination: Point) {
 
+        Toast.makeText(
+            this@MapDriverActivity,
+            "Navigation to Passenger",
+            Toast.LENGTH_LONG
+        ).show()
+
         val originLocation = navigationLocationProvider.lastLocation
         val originPoint = originLocation?.let {
             Point.fromLngLat(it.longitude, it.latitude)
@@ -940,6 +954,11 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun clearRouteAndStopNavigation() {
+        Toast.makeText(
+            this@MapDriverActivity,
+            "Cancelled Navigation",
+            Toast.LENGTH_LONG
+        ).show()
         // clear
         mapboxNavigation.setNavigationRoutes(listOf())
 
@@ -973,6 +992,13 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
                         if (locationData != null) {
                             if (locationData.bookingStatus == "Waiting") {
+
+                                binding.bookingsImgBtn.setOnClickListener {
+                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                }
+
+                                initializeBottomNavButtons(locationData.bookingID)
+
                                 waitingPassengerCount++
                                 hasPassengersWaiting = true
                                 when (locationData.passengerUserType) {
@@ -995,6 +1021,13 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                             } else if (locationData.bookingStatus == "Driver on the way"
                                 && locationData.driverUserID == FirebaseMain.getUser().uid
                             ) {
+
+                                binding.bookingsImgBtn.setOnClickListener {
+                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                }
+
+                                initializeBottomNavButtons(locationData.bookingID)
+
                                 when (locationData.passengerUserType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
@@ -1148,14 +1181,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             }
     }
 
-
-    private fun showBottomSheetDialog(bookingID: String) {
-        val data = bookingID
-        val modalBottomSheet = ModalBottomSheet.newInstance(data)
-        modalBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
-        modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
-    }
-
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -1211,6 +1236,34 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
+    private fun showCancelNavigationDialog() {
+        builder = AlertDialog.Builder(this)
+        val dialogView =
+            layoutInflater.inflate(R.layout.dialog_cancel_navigation_to_passenger, null)
+
+        val cancelBtn = dialogView.findViewById<Button>(R.id.cancelBtn)
+        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
+
+        cancelBtn.setOnClickListener {
+            clearRouteAndStopNavigation()
+
+            closeCancelNavigationDialog()
+        }
+        closeBtn.setOnClickListener {
+            closeCancelNavigationDialog()
+        }
+
+        builder.setView(dialogView)
+        cancelNavtigationDialog = builder.create()
+        cancelNavtigationDialog.show()
+    }
+
+    private fun closeCancelNavigationDialog() {
+        if (cancelNavtigationDialog.isShowing) {
+            cancelNavtigationDialog.dismiss()
+        }
+    }
+
     private fun showExitMapDialog() {
         builder = AlertDialog.Builder(this)
         val dialogView = layoutInflater.inflate(R.layout.dialog_exit_map, null)
@@ -1253,6 +1306,35 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             )
         }
     }
+
+    override fun onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData: PickupPassengerBottomSheetData) {
+        findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
+
+        binding.passengerOnBoardBtn.setOnClickListener {
+            storeTripToDatabase(
+                generateRandomTripID(),
+                pickupPassengerBottomSheetData.bookingID,
+                pickupPassengerBottomSheetData.passengerID,
+                pickupPassengerBottomSheetData.pickupCoordinates,
+                pickupPassengerBottomSheetData.destinationCoordinates
+            )
+        }
+    }
+
+    private fun showBottomSheetDialog(bookingID: String) {
+        val data = bookingID
+        val modalBottomSheet = ModalBottomSheet.newInstance(data)
+        modalBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
+        modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+    }
+
+    private fun showPassengerBookingsBottomSheetDialog(bookingID: String) {
+        val data = bookingID
+        val passengerBookingsBottomSheet = PassengerBookingsBottomSheet.newInstance(data)
+        passengerBookingsBottomSheet.setPassengerBookingsBottomSheetListener(this) // Set the listener in the activity
+        passengerBookingsBottomSheet.show(supportFragmentManager, PassengerBookingsBottomSheet.TAG)
+    }
+
 
     private fun checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(

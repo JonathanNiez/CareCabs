@@ -66,7 +66,7 @@
 					android:layout_marginTop="10dp"
 					android:layout_marginEnd="10dp"
 					android:layout_marginBottom="10dp"
-					android:fontFamily="@font/gabarito_semibold"
+					android:fontFamily="@font/gabarito_bold"
 					android:shadowColor="@color/black"
 					android:shadowDx="2"
 					android:shadowDy="2"
@@ -84,7 +84,7 @@
 					android:layout_below="@id/textView"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					app:cardBackgroundColor="@color/platinum"
+					app:cardBackgroundColor="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -115,8 +115,8 @@
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
-							android:fontFamily="@font/opensans_semibold"
-							android:text="Tap/Click on the picture icon to upload your profile picture"
+							android:fontFamily="@font/gabarito_medium"
+							android:text="@string/tap_to_upload_profile_picture"
 							android:textAlignment="center"
 							android:textColor="@color/black"
 							android:textSize="15sp" />
@@ -160,7 +160,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="firstname"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="FIRSTNAME"
 							android:textColor="@color/black"
 							android:textColorHint="@color/black"
@@ -185,7 +185,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="lastname"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="LASTNAME"
 							android:textColor="@color/black"
 							android:textColorHint="@color/black"
@@ -217,7 +217,7 @@
 								android:layout_width="match_parent"
 								android:layout_height="60dp"
 								android:background="@drawable/smooth_edit_text_2"
-								android:fontFamily="@font/opensans_bold"
+								android:fontFamily="@font/gabarito_medium"
 								android:text="Date of Birth"
 								android:textColor="@color/black"
 								android:textSize="16sp" />
@@ -241,7 +241,7 @@
 								android:layout_width="match_parent"
 								android:layout_height="60dp"
 								android:background="@drawable/smooth_edit_text_2"
-								android:fontFamily="@font/opensans_bold"
+								android:fontFamily="@font/gabarito_medium"
 								android:text="Age"
 								android:textColor="@color/black"
 								android:textSize="16sp" />
@@ -331,7 +331,7 @@
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
-								android:fontFamily="@font/opensans_semibold"
+								android:fontFamily="@font/gabarito_medium"
 								android:text="Tap/Click on the picture icon to upload the image of your vehicle"
 								android:textAlignment="center"
 								android:textColor="@color/black"
@@ -344,9 +344,8 @@
 					<TextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:layout_marginTop="20dp"
-						android:fontFamily="@font/gabarito_semibold"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="Fill up the vehicle info below so that passengers can easily spot you"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -428,7 +427,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/string_driver_license_scan"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -439,7 +438,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:fontFamily="@font/opensans_semibold"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/string_tap_the_id_scan_below"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -461,7 +460,7 @@
 				<TextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_bold"
 					android:text="Please Wait..."
 					android:textColor="@color/black"
 					android:textSize="20sp" />
@@ -490,10 +489,10 @@
 					android:background="@drawable/custom_button"
 					android:backgroundTint="@color/wisteria"
 					android:drawableStart="@drawable/scan_id_64"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="Scan ID"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<ImageButton
 					android:id="@+id/helpImgBtn"
@@ -511,17 +510,17 @@
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"
-				android:layout_width="150dp"
-				android:layout_height="60dp"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="10dp"
 				android:layout_marginBottom="50dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Done"
 				android:textColor="@color/white"
-				android:textSize="20sp" />
+				android:textSize="17sp" />
 
 		</LinearLayout>
 

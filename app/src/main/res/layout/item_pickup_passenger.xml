@@ -171,14 +171,26 @@
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/viewBtn"
+			android:id="@+id/pickupBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="View"
+			android:text="Pickup"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/renavigateBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="10dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Renavigate"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 

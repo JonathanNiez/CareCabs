@@ -214,6 +214,8 @@ public class EditAccountFragment extends Fragment {
 		binding.editSexImgBtn.setVisibility(View.GONE);
 		binding.editDisabilityImgBtn.setVisibility(View.GONE);
 		binding.editMedicalConditionImgBtn.setVisibility(View.GONE);
+		binding.vehicleColorImgBtn.setVisibility(View.GONE);
+		binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
 
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
@@ -490,6 +492,76 @@ public class EditAccountFragment extends Fragment {
 				binding.editMedicalConditionImgBtn.setVisibility(View.GONE);
 			}
 		});
+
+		binding.vehicleColorSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.vehicleColorEditText.setEnabled(true);
+				binding.vehicleColorEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.vehicleColorImgBtn.setVisibility(View.VISIBLE);
+				binding.vehicleColorImgBtn.setOnClickListener(v -> {
+					if (TextUtils.isEmpty(binding.vehicleColorEditText.getText().toString().trim())) {
+						Toast.makeText(context, "Vehicle color cannot be empty", Toast.LENGTH_SHORT).show();
+						return;
+					} else {
+						updateInfo.put("vehicleColor", binding.vehicleColorEditText.getText().toString());
+
+						documentReference.update(updateInfo)
+								.addOnSuccessListener(unused -> {
+									loadUserProfileInfo();
+
+									Toast.makeText(context, "Vehicle color updated", Toast.LENGTH_LONG).show();
+									binding.vehicleColorEditText.setEnabled(false);
+									binding.vehicleColorSwitch.setChecked(false);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Vehicle color failed to update", Toast.LENGTH_LONG).show();
+
+									Log.e(TAG, e.getMessage());
+								});
+					}
+				});
+			} else {
+				binding.vehicleColorEditText.setEnabled(false);
+				binding.vehicleColorEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.vehicleColorImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.vehiclePlateNumberSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.vehiclePlateNumberEditText.setEnabled(true);
+				binding.vehiclePlateNumberEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.vehiclePlateNumberImgBtn.setVisibility(View.VISIBLE);
+				binding.vehicleColorImgBtn.setOnClickListener(v -> {
+					if (TextUtils.isEmpty(binding.vehiclePlateNumberEditText.getText().toString().trim())) {
+						Toast.makeText(context, "Vehicle plate number cannot be empty", Toast.LENGTH_SHORT).show();
+						return;
+					} else {
+						updateInfo.put("vehiclePlateNumber", binding.vehiclePlateNumberEditText.getText().toString());
+
+						documentReference.update(updateInfo)
+								.addOnSuccessListener(unused -> {
+									loadUserProfileInfo();
+
+									Toast.makeText(context, "Vehicle plate number updated", Toast.LENGTH_LONG).show();
+									binding.vehiclePlateNumberEditText.setEnabled(false);
+									binding.vehiclePlateNumberSwitch.setChecked(false);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Vehicle plate number failed to update", Toast.LENGTH_LONG).show();
+
+									Log.e(TAG, e.getMessage());
+								});
+					}
+				});
+			} else {
+				binding.vehiclePlateNumberEditText.setEnabled(false);
+				binding.vehiclePlateNumberEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+
 	}
 
 	private void getCurrentFontSizeFromUserSetting() {
@@ -631,8 +703,8 @@ public class EditAccountFragment extends Fragment {
 										.into(binding.vehicleImageView);
 							}
 
-							binding.vehicleColorBtn.setText("Vehicle Color: " + getVehicleColor);
-							binding.vehiclePlateNumberBtn.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+							binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
+							binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
 
 							break;
 

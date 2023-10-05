@@ -35,7 +35,7 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="You are Registering using Google"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -55,7 +55,7 @@
 		android:background="@drawable/custom_card_view_1"
 		android:backgroundTint="@color/white"
 		android:elevation="5dp"
-		android:fontFamily="@font/opensans_semibold"
+		android:fontFamily="@font/gabarito_semibold"
 		android:padding="10dp"
 		android:text="Are you a..."
 		android:textColor="@color/black"
@@ -94,12 +94,12 @@
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/cheese"
 					android:elevation="5dp"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="5dp"
 					android:text="PASSENGER"
 					android:textAlignment="center"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<ImageButton
 					android:id="@+id/passengerImgBtn"
@@ -138,13 +138,13 @@
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/tomato"
 					android:elevation="5dp"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:gravity="center"
 					android:padding="5dp"
 					android:text="DRIVER"
 					android:textAlignment="center"
 					android:textColor="@color/black"
-					android:textSize="20sp" />
+					android:textSize="17sp" />
 
 				<ImageButton
 					android:id="@+id/driverImgBtn"
@@ -164,17 +164,17 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/cancelBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
 		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"
 		android:layout_marginBottom="100dp"
 		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/light_red"
 		android:elevation="5dp"
-		android:fontFamily="@font/opensans_bold"
+		android:fontFamily="@font/gabarito_semibold"
 		android:text="Cancel"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </RelativeLayout>

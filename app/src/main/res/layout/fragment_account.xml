@@ -37,7 +37,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="MY PROFILE"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
@@ -70,7 +70,7 @@
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					app:cardBackgroundColor="@color/platinum"
+					app:cardBackgroundColor="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -106,11 +106,11 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/firstnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
-									android:fontFamily="@font/opensans_bold"
+									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Firstname"
 									android:textAlignment="center"
@@ -118,11 +118,11 @@
 									android:textSize="22sp" />
 
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/lastnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
-									android:fontFamily="@font/opensans_bold"
+									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Lastname"
 									android:textAlignment="center"
@@ -139,17 +139,17 @@
 									android:gravity="center"
 									android:padding="5dp">
 
-									<TextView
+									<androidx.appcompat.widget.AppCompatTextView
 										android:id="@+id/verificationStatusTextView"
 										android:layout_width="wrap_content"
 										android:layout_height="wrap_content"
-										android:fontFamily="@font/opensans_semibold"
+										android:fontFamily="@font/gabarito_semibold"
 										android:text="Verification Status"
 										android:textAlignment="center"
 										android:textColor="@color/black"
 										android:textSize="17sp" />
 
-									<ImageView
+									<androidx.appcompat.widget.AppCompatImageView
 										android:id="@+id/imageViewVerificationMark"
 										android:layout_width="wrap_content"
 										android:layout_height="wrap_content"
@@ -165,7 +165,7 @@
 
 						</LinearLayout>
 
-						<TextView
+						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/idScannedTextView"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
@@ -173,7 +173,7 @@
 							android:background="@drawable/custom_card_view_1"
 							android:backgroundTint="@color/white"
 							android:elevation="10dp"
-							android:fontFamily="@font/opensans_bold"
+							android:fontFamily="@font/gabarito_semibold"
 							android:padding="5dp"
 							android:text="You have not scanned your ID"
 							android:textAlignment="center"
@@ -184,81 +184,74 @@
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:gravity="center"
-							android:orientation="horizontal">
+							android:orientation="horizontal"
+							android:baselineAligned="false">
 
 							<LinearLayout
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
 								android:layout_weight="2"
-								android:orientation="vertical">
+								android:gravity="center"
+								android:orientation="vertical"
+								android:padding="5dp">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/userTypeTextView"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
 									android:background="@drawable/custom_card_view_1"
 									android:backgroundTint="@color/background"
 									android:elevation="5dp"
-									android:fontFamily="@font/opensans_bold"
-									android:padding="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:padding="10dp"
 									android:text="User Type"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/disabilityTextView"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_marginStart="20dp"
-									android:layout_marginEnd="20dp"
-									android:layout_marginBottom="10dp"
-									android:fontFamily="@font/opensans_semibold"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Disability"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/medConTextView"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_marginStart="20dp"
-									android:layout_marginEnd="20dp"
-									android:layout_marginBottom="10dp"
-									android:fontFamily="@font/opensans_semibold"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Medical Condition"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/driverStatusTextView1"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_marginStart="20dp"
-									android:layout_marginEnd="20dp"
-									android:layout_marginBottom="10dp"
-									android:fontFamily="@font/opensans_semibold"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Driver Status:"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/driverStatusTextView2"
-									android:layout_width="match_parent"
+									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_marginStart="20dp"
-									android:layout_marginEnd="20dp"
-									android:layout_marginBottom="10dp"
-									android:fontFamily="@font/opensans_semibold"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_medium"
 									android:text="Available"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
-
 
 							</LinearLayout>
 
@@ -270,19 +263,19 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<ImageView
+								<androidx.appcompat.widget.AppCompatImageView
 									android:id="@+id/userTypeImageView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:src="@drawable/driver_64" />
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/driverRatingTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									android:fontFamily="@font/opensans_condensed_semibold"
-									android:text="Driver Ratings: "
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="Driver Ratings"
 									android:textAlignment="center"
 									android:textColor="@color/blue"
 									android:textSize="17sp" />
@@ -317,11 +310,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/personal_data_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Personal Info"
 					android:textAlignment="textStart"
@@ -334,11 +326,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/edit_32png"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Edit Profile"
 					android:textAlignment="textStart"
@@ -351,11 +342,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/trip_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Trips"
 					android:textAlignment="textStart"
@@ -368,11 +358,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/scan_id_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Scan ID"
 					android:textAlignment="textStart"
@@ -385,11 +374,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/reset_password_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Change Password"
 					android:textAlignment="textStart"
@@ -402,11 +390,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/settings_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="App Settings"
 					android:textAlignment="textStart"
@@ -419,11 +406,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/information_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="About"
 					android:textAlignment="textStart"
@@ -436,11 +422,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/contact_us_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Contact Us"
 					android:textAlignment="textStart"
@@ -453,11 +438,10 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
 					android:drawableStart="@drawable/feedback_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Submit a Feedback"
 					android:textAlignment="textStart"
@@ -472,7 +456,7 @@
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/platinum"
 					android:drawableEnd="@drawable/shutdown_32"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_bold"
 					android:padding="10dp"
 					android:text="Sign Out"
 					android:textAlignment="center"

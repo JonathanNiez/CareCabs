@@ -202,6 +202,18 @@
 
 			</androidx.cardview.widget.CardView>
 
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/renavigateBtn"
+				android:layout_width="130dp"
+				android:layout_height="50dp"
+				android:layout_margin="10dp"
+				android:background="@drawable/smooth_edge_button"
+				android:backgroundTint="@color/yinmn_blue"
+				android:fontFamily="@font/gabarito_semibold"
+				android:text="Renavigate"
+				android:textColor="@color/white"
+				android:textSize="17sp" />
+
 			<LinearLayout
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"

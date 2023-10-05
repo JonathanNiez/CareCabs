@@ -62,7 +62,7 @@
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
 						android:layout_margin="5dp"
-						android:fontFamily="sans-serif-medium"
+						android:fontFamily="@font/gabarito_semibold"
 						android:text="Hi! and welcome to CareCabs"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -73,7 +73,7 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:layout_marginTop="200dp"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="Please select an option to continue"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -82,6 +82,7 @@
 					<LinearLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
+						android:layout_marginTop="10dp"
 						android:gravity="center"
 						android:orientation="horizontal">
 
@@ -96,7 +97,7 @@
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
-								android:fontFamily="@font/opensans_semibold"
+								android:fontFamily="@font/gabarito_medium"
 								android:text="Already have an Account?"
 								android:textAlignment="center"
 								android:textColor="@color/black"
@@ -110,7 +111,7 @@
 								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/yinmn_blue"
 								android:elevation="5dp"
-								android:fontFamily="@font/opensans_bold"
+								android:fontFamily="@font/gabarito_semibold"
 								android:text="Login"
 								android:textColor="@color/white"
 								android:textSize="17sp" />
@@ -128,7 +129,7 @@
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
-								android:fontFamily="@font/opensans_semibold"
+								android:fontFamily="@font/gabarito_medium"
 								android:text="Don't have an Account?"
 								android:textAlignment="center"
 								android:textColor="@color/black"
@@ -142,7 +143,7 @@
 								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/blue"
 								android:elevation="5dp"
-								android:fontFamily="@font/opensans_bold"
+								android:fontFamily="@font/gabarito_semibold"
 								android:text="Register"
 								android:textColor="@color/white"
 								android:textSize="17sp" />
