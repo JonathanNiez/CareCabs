@@ -4,52 +4,73 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/background"
+	android:background="@color/vermillion"
 	tools:context=".RequestLocationPermissionActivity">
 
 	<ImageView
 		android:id="@+id/logo"
-		android:layout_width="200dp"
+		android:layout_width="300dp"
 		android:layout_height="200dp"
-		android:src="@drawable/logo"
-		android:layout_marginTop="20dp"
+		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
-		android:layout_alignParentTop="true"/>
-
-	<ImageView
-		android:id="@+id/imageView"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:src="@drawable/location_128"
-		android:layout_centerHorizontal="true"
-		android:layout_below="@id/logo"
-		android:layout_marginTop="20dp"/>
-
-	<TextView
-		android:id="@+id/textView"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@+id/imageView"
-		android:layout_centerInParent="true"
 		android:layout_margin="20dp"
-		android:fontFamily="@font/opensans_semibold"
-		android:text="Allow CareCabs to access your Location"
-		android:textAlignment="center"
-		android:textColor="@color/black"
-		android:textSize="20sp" />
+		android:layout_marginStart="20dp"
+		android:layout_marginEnd="20dp"
+		android:layout_marginBottom="20dp"
+		android:src="@drawable/logo_2_v2" />
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/cardView"
+		android:layout_centerInParent="true"
+		android:layout_width="match_parent"
+		android:layout_margin="20dp"
+		app:cardBackgroundColor="@color/white"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp"
+		android:layout_height="wrap_content">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
+
+			<ImageView
+				android:id="@+id/imageView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:src="@drawable/location_pin_128" />
+
+			<TextView
+				android:id="@+id/textView"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/opensans_semibold"
+				android:text="Please allow CareCabs to access your location"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+		</LinearLayout>
+
+	</androidx.cardview.widget.CardView>
+
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/allowLocationBtn"
-		android:layout_width="150dp"
-		android:layout_height="60dp"
-		android:layout_marginTop="10dp"
-		android:layout_marginBottom="20dp"
-		android:background="@drawable/custom_button"
-		android:fontFamily="@font/opensans_semibold"
+		android:layout_width="220dp"
+		android:layout_height="50dp"
+		android:layout_below="@id/cardView"
 		android:layout_centerHorizontal="true"
-		android:layout_below="@id/textView"
+		android:background="@drawable/smooth_edge_button"
+		android:backgroundTint="@color/yinmn_blue"
+		android:elevation="5dp"
+		android:fontFamily="@font/opensans_bold"
 		android:text="Allow Location"
 		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:textSize="17sp" />
 
 </RelativeLayout>

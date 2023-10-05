@@ -28,12 +28,11 @@ public class ResetPasswordActivity extends AppCompatActivity {
 	private final String TAG = "ResetPasswordActivity";
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, cancelPasswordResetDialog, passwordUpdateFailedDialog,
-			passwordUpdateSuccessDialog, passwordResetConfirmationDialog;
+			passwordUpdateSuccessDialog, passwordResetConfirmationDialog, passwordWarningDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Intent intent;
 	private Calendar calendar;
 	private Date date;
-	private DocumentReference documentReference;
 	private ActivityResetPasswordBinding binding;
 
 	@Override
@@ -53,6 +52,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 		closePasswordUpdateFailedDialog();
 		closePasswordUpdateSuccessDialog();
 		closePasswordResetConfirmationDialog();
+		closePasswordWarningDialog();
 	}
 
 	@Override
@@ -68,6 +68,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 		closePasswordUpdateFailedDialog();
 		closePasswordUpdateSuccessDialog();
 		closePasswordResetConfirmationDialog();
+		closePasswordWarningDialog();
 	}
 
 	@Override
@@ -77,6 +78,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		binding.progressBarLayout.setVisibility(View.GONE);
+		showPasswordWarningDialog();
 
 		FirebaseApp.initializeApp(this);
 
@@ -147,9 +149,26 @@ public class ResetPasswordActivity extends AppCompatActivity {
 				});
 	}
 
-	private void closePasswordResetConfirmationDialog() {
-		if (passwordResetConfirmationDialog != null && passwordResetConfirmationDialog.isShowing()) {
-			passwordResetConfirmationDialog.dismiss();
+	private void showPasswordWarningDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_reset_password_warning, null);
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			closePasswordWarningDialog();
+		});
+
+		builder.setView(dialogView);
+
+		passwordWarningDialog = builder.create();
+		passwordWarningDialog.show();
+	}
+
+	private void closePasswordWarningDialog() {
+		if (passwordWarningDialog != null && passwordWarningDialog.isShowing()) {
+			passwordWarningDialog.dismiss();
 		}
 	}
 
@@ -173,6 +192,12 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 		passwordResetConfirmationDialog = builder.create();
 		passwordResetConfirmationDialog.show();
+	}
+
+	private void closePasswordResetConfirmationDialog() {
+		if (passwordResetConfirmationDialog != null && passwordResetConfirmationDialog.isShowing()) {
+			passwordResetConfirmationDialog.dismiss();
+		}
 	}
 
 	private void showPasswordUpdateSuccessDialog(String email) {

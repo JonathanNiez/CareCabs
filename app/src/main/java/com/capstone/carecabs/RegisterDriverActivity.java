@@ -66,7 +66,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private static final int PROFILE_PICTURE_REQUEST_CODE = 103;
 	private static final int VEHICLE_PICTURE_REQUEST_CODE = 104;
 	private String userID;
-	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent;
 	private Calendar selectedDate;
@@ -233,13 +232,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
+		showCancelRegisterDialog();
 	}
 
 	private void updateUserRegisterToFireStore(String firstname,

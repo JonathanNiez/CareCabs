@@ -31,14 +31,35 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 public class ChangePasswordFragment extends Fragment {
-	private DocumentReference documentReference;
+	private final String TAG = "ChangePasswordFragment";
 	private AlertDialog.Builder builder;
 	private AlertDialog passwordResetConfirmationDialog, cancelPasswordResetDialog,
-			passwordUpdateSuccessDialog, passwordUpdateFailedDialog;
+	passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
 	private Intent intent;
-	private final String TAG = "ChangePasswordFragment";
 	private Context context;
 	private FragmentChangePasswordBinding binding;
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		closePasswordResetConfirmationDialog();
+		closePasswordWarningDialog();
+		closePasswordUpdateFailedDialog();
+		closePasswordUpdateSuccessDialog();
+		closeCancelPasswordResetDialog();
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+
+		closePasswordResetConfirmationDialog();
+		closePasswordWarningDialog();
+		closePasswordUpdateFailedDialog();
+		closePasswordUpdateSuccessDialog();
+		closeCancelPasswordResetDialog();
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,7 +68,7 @@ public class ChangePasswordFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentChangePasswordBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -62,7 +83,7 @@ public class ChangePasswordFragment extends Fragment {
 			backToAccountFragment();
 		});
 
-		binding.okBtn.setOnClickListener(v -> {
+		binding.okayBtn.setOnClickListener(v -> {
 			backToAccountFragment();
 		});
 
@@ -87,7 +108,7 @@ public class ChangePasswordFragment extends Fragment {
 
 	private void checkUserRegisterMethod() {
 		if (FirebaseMain.getUser() != null) {
-			documentReference = FirebaseMain.getFireStoreInstance()
+			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
@@ -99,6 +120,8 @@ public class ChangePasswordFragment extends Fragment {
 						binding.googleSignInLayout.setVisibility(View.VISIBLE);
 						binding.editTextLayout.setVisibility(View.GONE);
 						binding.resetPasswordBtn.setVisibility(View.GONE);
+					}else {
+						showPasswordWarningDialog();
 					}
 				}
 			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
@@ -109,6 +132,28 @@ public class ChangePasswordFragment extends Fragment {
 		backToAccountFragment();
 	}
 
+	private void showPasswordWarningDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_reset_password_warning, null);
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			closePasswordWarningDialog();
+		});
+
+		builder.setView(dialogView);
+
+		passwordWarningDialog = builder.create();
+		passwordWarningDialog.show();
+	}
+
+	private void closePasswordWarningDialog() {
+		if (passwordWarningDialog != null && passwordWarningDialog.isShowing()) {
+			passwordWarningDialog.dismiss();
+		}
+	}
 
 	private void showPasswordUpdateSuccessDialog(String email) {
 		builder = new AlertDialog.Builder(context);

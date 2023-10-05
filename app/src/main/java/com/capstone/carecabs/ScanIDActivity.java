@@ -46,7 +46,6 @@ public class ScanIDActivity extends AppCompatActivity {
 	private Intent intent;
 	private final String TAG = "ScanID";
 	private String getUserType;
-	private boolean shouldExit = false;
 	private boolean isIDScanningCancelled = false;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private StorageReference storageRef;
@@ -76,6 +75,7 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeNoInternetDialog();
 		closeOptionsDialog();
 	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,15 +99,8 @@ public class ScanIDActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelScanIDDialog();
-		}
+		showCancelScanIDDialog();
 	}
-
 
 
 	private void showCancelScanIDDialog() {

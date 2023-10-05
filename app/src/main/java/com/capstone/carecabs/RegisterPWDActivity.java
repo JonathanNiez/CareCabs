@@ -63,7 +63,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private String userID;
 	private boolean verificationStatus = false;
-	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
@@ -73,6 +72,31 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			birthdateInputChoiceDialog, cameraGalleryOptionsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterPwdBinding binding;
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeIDScanInfoDialog();
+		closeNoInternetDialog();
+		closeEnterBirthdateDialog();
+	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+		if (networkChangeReceiver != null) {
+			unregisterReceiver(networkChangeReceiver);
+		}
+
+		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
+
+		closeCancelRegisterDialog();
+		closeIDNotScannedDialog();
+		closeIDScanInfoDialog();
+		closeNoInternetDialog();
+		closeEnterBirthdateDialog();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -200,42 +224,9 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		});
 	}
 
-
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
-		closeNoInternetDialog();
-		closeEnterBirthdateDialog();
-	}
-
-	protected void onDestroy() {
-		super.onDestroy();
-		if (networkChangeReceiver != null) {
-			unregisterReceiver(networkChangeReceiver);
-		}
-
-		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
-
-		closeCancelRegisterDialog();
-		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
-		closeNoInternetDialog();
-		closeEnterBirthdateDialog();
+		showCancelRegisterDialog();
 	}
 
 	private void showIDScanInfoDialog() {

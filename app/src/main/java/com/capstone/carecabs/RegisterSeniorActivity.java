@@ -63,7 +63,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private String userID;
-	private boolean shouldExit = false;
 	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
@@ -98,6 +97,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		closeRegisterFailedDialog();
 		closeEnterBirthdateDialog();
 	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -235,14 +235,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
-
+		showCancelRegisterDialog();
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname,

@@ -50,4 +50,6 @@
 
 	<string name="driver_availability_info">Your availability will automatically updated once you\'re transporting a passenger</string>
 	<string name="never_share_your_password_to_anyone">Never share your Password to anyone</string>
+	<string name="app_description">"A Ride Sharing for Senior Citizens\nand Persons with Disabilities"</string>
+	<string name="change_password_warning">Once you reset your password\nYou won\'t be able to change it in 30 days</string>
 </resources>

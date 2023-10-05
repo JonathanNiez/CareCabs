@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
 	private Intent intent;
 	private GoogleSignInAccount googleSignInAccount;
 	private GoogleSignInClient googleSignInClient;
-	private boolean shouldExit = false;
 	private static final int RC_SIGN_IN = 69;
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,

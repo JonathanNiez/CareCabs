@@ -17,20 +17,24 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -48,6 +52,8 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.capstone.carecabs.ml.ModelUnquant;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -110,87 +116,6 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-	                         Bundle savedInstanceState) {
-		binding = FragmentEditAccountBinding.inflate(inflater, container, false);
-		View view = binding.getRoot();
-
-		binding.editMedConBtn.setVisibility(View.GONE);
-		binding.editDisabilityBtn.setVisibility(View.GONE);
-		binding.idScannedTextView.setVisibility(View.GONE);
-		binding.vehicleInfoLayout.setVisibility(View.GONE);
-
-		context = getContext();
-		getCurrentFontSizeFromUserSetting();
-		checkPermission();
-
-		requestManager = Glide.with(context);
-		FirebaseApp.initializeApp(context);
-
-		loadUserProfileInfo();
-
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
-
-		binding.profilePicture.setOnClickListener(v -> {
-			ImagePicker.with(EditAccountFragment.this)
-					.crop()                    //Crop image(Optional), Check Customization for more option
-					.compress(1024)            //Final image size will be less than 1 MB(Optional)
-					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start(PROFILE_PICTURE_REQUEST_CODE);
-		});
-
-		binding.vehicleImageView.setOnClickListener(v -> {
-			ImagePicker.with(EditAccountFragment.this)
-					.crop()                    //Crop image(Optional), Check Customization for more option
-					.compress(1024)            //Final image size will be less than 1 MB(Optional)
-					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start(VEHICLE_PICTURE_REQUEST_CODE);
-		});
-
-
-		binding.editFirstnameBtn.setOnClickListener(v -> {
-			showEditFirstNameDialog();
-		});
-
-		binding.editLastnameBtn.setOnClickListener(v -> {
-			showEditLastNameDialog();
-		});
-
-		binding.editAgeBtn.setOnClickListener(v -> {
-			showEditAgeDialog();
-		});
-
-		binding.editSexBtn.setOnClickListener(v -> {
-			showEditSexDialog();
-		});
-
-		binding.editDisabilityBtn.setOnClickListener(v -> {
-			showEditDisabilityDialog();
-		});
-
-		binding.doneBtn.setOnClickListener(v -> {
-			backToAccountFragment();
-		});
-
-
-		binding.editBirthdateBtn.setOnClickListener(v -> {
-			showEnterBirthdateDialog();
-		});
-
-		binding.imgBackBtn.setOnClickListener(v -> {
-			backToAccountFragment();
-		});
-
-		return view;
-	}
-
-	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
@@ -220,8 +145,351 @@ public class EditAccountFragment extends Fragment {
 		closeCameraOrGalleryOptionsDialog();
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		binding = FragmentEditAccountBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
+
+		binding.editDisabilityLayout.setVisibility(View.GONE);
+		binding.editMedicalConditionLayout.setVisibility(View.GONE);
+		binding.disabilityTextView.setVisibility(View.GONE);
+		binding.medicalConditionTextView.setVisibility(View.GONE);
+		binding.idScannedTextView.setVisibility(View.GONE);
+		binding.vehicleInfoLayout.setVisibility(View.GONE);
+
+		context = getContext();
+		checkPermission();
+
+		requestManager = Glide.with(context);
+		FirebaseApp.initializeApp(context);
+
+		loadUserProfileInfo();
+
+		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		storageReference = firebaseStorage.getReference();
+
+		binding.profilePicture.setOnClickListener(v -> {
+			ImagePicker.with(EditAccountFragment.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start(PROFILE_PICTURE_REQUEST_CODE);
+		});
+
+		binding.vehicleImageView.setOnClickListener(v -> {
+			ImagePicker.with(EditAccountFragment.this)
+					.crop()                    //Crop image(Optional), Check Customization for more option
+					.compress(1024)            //Final image size will be less than 1 MB(Optional)
+					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.start(VEHICLE_PICTURE_REQUEST_CODE);
+		});
+
+		binding.doneBtn.setOnClickListener(v -> {
+			backToAccountFragment();
+		});
+
+		binding.imgBackBtn.setOnClickListener(v -> {
+			backToAccountFragment();
+		});
+
+		return view;
+	}
+
 	public void onBackPressed() {
 		backToAccountFragment();
+	}
+
+	@SuppressLint("ClickableViewAccessibility")
+	private void initializeEditTexts() {
+
+		binding.editFirstnameImgBtn.setVisibility(View.GONE);
+		binding.editLastnameImgBtn.setVisibility(View.GONE);
+		binding.editAgeImgBtn.setVisibility(View.GONE);
+		binding.editSexImgBtn.setVisibility(View.GONE);
+		binding.editDisabilityImgBtn.setVisibility(View.GONE);
+		binding.editMedicalConditionImgBtn.setVisibility(View.GONE);
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(FirebaseMain.getUser().getUid());
+
+		Map<String, Object> updateInfo = new HashMap<>();
+
+		binding.editFirstnameSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editFirstnameEditText.setEnabled(true);
+				binding.editFirstnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editFirstnameImgBtn.setVisibility(View.VISIBLE);
+				binding.editFirstnameImgBtn.setOnClickListener(v -> {
+					if (TextUtils.isEmpty(binding.editFirstnameEditText.getText().toString().trim())) {
+						Toast.makeText(context, "Firstname cannot be empty", Toast.LENGTH_SHORT).show();
+						return;
+					} else {
+						updateInfo.put("firstname", binding.editFirstnameEditText.getText().toString());
+
+						documentReference.update(updateInfo)
+								.addOnSuccessListener(unused -> {
+									loadUserProfileInfo();
+
+									Toast.makeText(context, "Firstname updated", Toast.LENGTH_LONG).show();
+									binding.editFirstnameEditText.setEnabled(false);
+									binding.editFirstnameSwitch.setChecked(false);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Firstname failed to update", Toast.LENGTH_LONG).show();
+
+									Log.e(TAG, e.getMessage());
+								});
+					}
+				});
+			} else {
+				binding.editFirstnameEditText.setEnabled(false);
+				binding.editFirstnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editFirstnameImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.editLastnameSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editLastnameEditText.setEnabled(true);
+				binding.editLastnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editLastnameImgBtn.setVisibility(View.VISIBLE);
+				binding.editLastnameImgBtn.setOnClickListener(v -> {
+					if (TextUtils.isEmpty(binding.editLastnameEditText.getText().toString().trim())) {
+						Toast.makeText(context, "Lastname cannot be empty", Toast.LENGTH_SHORT).show();
+						return;
+					} else {
+						updateInfo.put("lastname", binding.editLastnameEditText.getText().toString());
+
+						documentReference.update(updateInfo)
+								.addOnSuccessListener(unused -> {
+									loadUserProfileInfo();
+
+									Toast.makeText(context, "Lastname updated", Toast.LENGTH_LONG).show();
+									binding.editLastnameEditText.setEnabled(false);
+									binding.editLastnameSwitch.setChecked(false);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Lastname failed to update", Toast.LENGTH_LONG).show();
+
+									Log.e(TAG, e.getMessage());
+								});
+					}
+				});
+			} else {
+				binding.editLastnameEditText.setEnabled(false);
+				binding.editLastnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editLastnameImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.editAgeSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editAgeEditText.setEnabled(true);
+				binding.editAgeEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editAgeImgBtn.setVisibility(View.VISIBLE);
+				binding.editAgeImgBtn.setOnClickListener(v -> {
+					if (TextUtils.isEmpty(binding.editAgeEditText.getText().toString())) {
+						Toast.makeText(context, "Age cannot be empty", Toast.LENGTH_SHORT).show();
+						return;
+					} else {
+						updateInfo.put("age", Integer.parseInt(binding.editAgeEditText.getText().toString()));
+
+						documentReference.update(updateInfo)
+								.addOnSuccessListener(unused -> {
+									loadUserProfileInfo();
+
+									Toast.makeText(context, "Age updated", Toast.LENGTH_LONG).show();
+									binding.editAgeEditText.setEnabled(false);
+									binding.editAgeSwitch.setChecked(false);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Age failed to update", Toast.LENGTH_LONG).show();
+
+									Log.e(TAG, e.getMessage());
+								});
+					}
+				});
+			} else {
+				binding.editAgeEditText.setEnabled(false);
+				binding.editAgeEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editAgeImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.editBirthdateSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editBirthdateBtn.setEnabled(true);
+				binding.editBirthdateBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editBirthdateBtn.setOnClickListener(v -> {
+
+					showEnterBirthdateDialog();
+				});
+			} else {
+				binding.editBirthdateBtn.setEnabled(false);
+				binding.editBirthdateBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+			}
+		});
+
+		binding.editSexSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editSexSpinner.setEnabled(true);
+				binding.editSexSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editSexImgBtn.setVisibility(View.VISIBLE);
+
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+						context,
+						R.array.sex_options,
+						android.R.layout.simple_spinner_item
+				);
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				binding.editSexSpinner.setAdapter(adapter);
+				binding.editSexSpinner.setSelection(0);
+				binding.editSexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+						if (position == 0) {
+							binding.editSexSpinner.setSelection(0);
+						} else {
+							binding.editSexImgBtn.setOnClickListener(v -> {
+								updateInfo.put("sex", parent.getItemAtPosition(position).toString());
+								documentReference.update(updateInfo)
+										.addOnSuccessListener(unused -> {
+											loadUserProfileInfo();
+
+											Toast.makeText(context, "Sex updated", Toast.LENGTH_LONG).show();
+											binding.editSexSpinner.setEnabled(false);
+											binding.editSexSwitch.setChecked(false);
+										})
+										.addOnFailureListener(e -> {
+											Toast.makeText(context, "Sex failed to update", Toast.LENGTH_LONG).show();
+
+											Log.e(TAG, e.getMessage());
+										});
+							});
+						}
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						binding.editSexSpinner.setSelection(0);
+					}
+				});
+			} else {
+				binding.editSexSpinner.setEnabled(false);
+				binding.editSexSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editSexImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.editDisabilitySwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editDisabilitySpinner.setEnabled(true);
+				binding.editDisabilitySpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editDisabilityImgBtn.setVisibility(View.VISIBLE);
+
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+						context,
+						R.array.sex_options,
+						android.R.layout.simple_spinner_item
+				);
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				binding.editDisabilitySpinner.setAdapter(adapter);
+				binding.editDisabilitySpinner.setSelection(0);
+				binding.editDisabilitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+						if (position == 0) {
+							binding.editDisabilitySpinner.setSelection(0);
+						} else {
+							binding.editDisabilityImgBtn.setOnClickListener(v -> {
+								updateInfo.put("disability", parent.getItemAtPosition(position).toString());
+								documentReference.update(updateInfo)
+										.addOnSuccessListener(unused -> {
+											loadUserProfileInfo();
+
+											Toast.makeText(context, "Disability updated", Toast.LENGTH_LONG).show();
+											binding.editDisabilitySpinner.setEnabled(false);
+											binding.editDisabilitySwitch.setChecked(false);
+										})
+										.addOnFailureListener(e -> {
+											Toast.makeText(context, "Disability failed to update", Toast.LENGTH_LONG).show();
+
+											Log.e(TAG, e.getMessage());
+										});
+							});
+						}
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						binding.editDisabilitySpinner.setSelection(0);
+					}
+				});
+			} else {
+				binding.editDisabilitySpinner.setEnabled(false);
+				binding.editDisabilitySpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editDisabilityImgBtn.setVisibility(View.GONE);
+			}
+		});
+
+		binding.editMedicalConditionSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+			if (b) {
+				binding.editMedicalConditionSpinner.setEnabled(true);
+				binding.editMedicalConditionSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
+				binding.editMedicalConditionImgBtn.setVisibility(View.VISIBLE);
+
+				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+						context,
+						R.array.senior_citizen_medical_condition,
+						android.R.layout.simple_spinner_item
+				);
+				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+				binding.editMedicalConditionSpinner.setAdapter(adapter);
+				binding.editMedicalConditionSpinner.setSelection(0);
+				binding.editMedicalConditionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+					@Override
+					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+						if (position == 0) {
+							binding.editMedicalConditionSpinner.setSelection(0);
+						} else {
+							binding.editMedicalConditionImgBtn.setOnClickListener(v -> {
+								updateInfo.put("medicalCondition", parent.getItemAtPosition(position).toString());
+
+								documentReference.update(updateInfo)
+										.addOnSuccessListener(unused -> {
+											loadUserProfileInfo();
+
+											Toast.makeText(context, "Medical Condition updated", Toast.LENGTH_LONG).show();
+											binding.editMedicalConditionSpinner.setEnabled(false);
+											binding.editMedicalConditionSwitch.setChecked(false);
+										})
+										.addOnFailureListener(e -> {
+											Toast.makeText(context, "Medical Condition failed to update", Toast.LENGTH_LONG).show();
+
+											Log.e(TAG, e.getMessage());
+										});
+							});
+						}
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> parent) {
+						binding.editMedicalConditionSpinner.setSelection(0);
+					}
+				});
+			} else {
+				binding.editMedicalConditionSpinner.setEnabled(false);
+				binding.editMedicalConditionSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+				binding.editMedicalConditionImgBtn.setVisibility(View.GONE);
+			}
+		});
 	}
 
 	private void getCurrentFontSizeFromUserSetting() {
@@ -231,13 +499,13 @@ public class EditAccountFragment extends Fragment {
 				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
 
-				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
 				break;
 
@@ -245,13 +513,13 @@ public class EditAccountFragment extends Fragment {
 				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
+				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 
 				break;
 
@@ -259,42 +527,42 @@ public class EditAccountFragment extends Fragment {
 				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.editBirthdateSwitch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
+				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 
-				binding.editFirstnameBtn.setHeight(62);
-				binding.editLastnameBtn.setHeight(62);
-				binding.editAgeBtn.setHeight(62);
-				binding.editSexBtn.setHeight(62);
+				binding.editFirstnameEditText.setHeight(62);
+				binding.editLastnameEditText.setHeight(62);
+				binding.editAgeEditText.setHeight(62);
+				binding.sexTextView.setHeight(62);
 				binding.editBirthdateBtn.setHeight(62);
-				binding.editDisabilityBtn.setHeight(62);
-				binding.editMedConBtn.setHeight(62);
+				binding.disabilityTextView.setHeight(62);
+				binding.medicalConditionTextView.setHeight(62);
 				break;
 
 			case 21:
 				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 
-				binding.editFirstnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editLastnameBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editAgeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editSexBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editLastnameSwitch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editDisabilityBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editMedConBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
+				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
-				binding.editFirstnameBtn.setHeight(64);
-				binding.editLastnameBtn.setHeight(64);
-				binding.editAgeBtn.setHeight(64);
-				binding.editSexBtn.setHeight(64);
+				binding.editFirstnameEditText.setHeight(64);
+				binding.editLastnameEditText.setHeight(64);
+				binding.editAgeEditText.setHeight(64);
+				binding.sexTextView.setHeight(64);
 				binding.editBirthdateBtn.setHeight(64);
-				binding.editDisabilityBtn.setHeight(64);
-				binding.editMedConBtn.setHeight(64);
+				binding.disabilityTextView.setHeight(64);
+				binding.medicalConditionTextView.setHeight(64);
 
 				break;
 		}
@@ -324,9 +592,11 @@ public class EditAccountFragment extends Fragment {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
-			String userID = FirebaseMain.getUser().getUid();
 
-			userID = FirebaseMain.getUser().getUid();
+			getCurrentFontSizeFromUserSetting();
+			initializeEditTexts();
+
+			String userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
@@ -368,17 +638,28 @@ public class EditAccountFragment extends Fragment {
 
 						case "Persons with Disabilities (PWD)":
 							String getDisability = documentSnapshot.getString("disability");
-							binding.editDisabilityBtn.setVisibility(View.VISIBLE);
-							binding.editDisabilityBtn.setText("Disability: " + getDisability);
+							binding.editDisabilityLayout.setVisibility(View.VISIBLE);
+							binding.disabilityTextView.setText("Disability: " + getDisability);
 
 							break;
 
 						case "Senior Citizen":
 							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-							binding.editMedConBtn.setVisibility(View.VISIBLE);
-							binding.editMedConBtn.setText(getMedicalCondition);
+							binding.editMedicalConditionLayout.setVisibility(View.VISIBLE);
+							binding.medicalConditionTextView.setVisibility(View.VISIBLE);
+							binding.medicalConditionTextView.setText(getMedicalCondition);
 
+							break;
+					}
+
+					switch (getSex) {
+						case "Male":
+							binding.editSexSpinner.setSelection(1);
+							break;
+
+						case "Female":
+							binding.editSexSpinner.setSelection(2);
 							break;
 					}
 
@@ -403,15 +684,14 @@ public class EditAccountFragment extends Fragment {
 
 					binding.firstnameTextView.setText(getFirstName);
 					binding.lastnameTextView.setText(getLastName);
-					binding.editFirstnameBtn.setText(getFirstName);
-					binding.editLastnameBtn.setText(getLastName);
+					binding.editFirstnameEditText.setText(getFirstName);
+					binding.editLastnameEditText.setText(getLastName);
 					binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-					binding.editAgeBtn.setText("Age: " + getAge);
-					binding.editSexBtn.setText("Sex: " + getSex);
+					binding.editAgeEditText.setText(String.valueOf(getAge));
+					binding.sexTextView.setText("Sex: " + getSex);
 
 				} else {
 					closePleaseWaitDialog();
-
 				}
 			}).addOnFailureListener(e -> {
 				closePleaseWaitDialog();
@@ -526,7 +806,7 @@ public class EditAccountFragment extends Fragment {
 				StaticDataPasser.storeCurrentAge = age;
 
 				binding.editBirthdateBtn.setText(fullBirthdate);
-				binding.editAgeBtn.setText(String.valueOf(age));
+				binding.editAgeEditText.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}

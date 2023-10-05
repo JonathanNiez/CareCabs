@@ -25,9 +25,13 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		binding.allowLocationBtn.setOnClickListener(view -> {
-
 			requestLocationPermission();
 		});
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
 	}
 
 	private void requestLocationPermission() {
@@ -38,7 +42,8 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, @androidx.annotation.NonNull @NonNull String[] permissions,
+	                                       int @NonNull [] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (requestCode == REQUEST_CODE_LOCATION_PERMISSION) {
@@ -55,8 +60,6 @@ public class RequestLocationPermissionActivity extends AppCompatActivity {
 			}
 			startActivity(intent);
 			finish();
-
 		}
 	}
-
 }
