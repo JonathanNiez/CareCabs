@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:padding="10dp">
 
 	<RelativeLayout
@@ -17,22 +18,24 @@
 			android:layout_centerVertical="true"
 			android:layout_marginStart="10dp"
 			android:layout_marginTop="30dp"
-			android:layout_toEndOf="@+id/receiverProfilePicture"
+			android:layout_toEndOf="@+id/chatProfilePicture"
 			android:background="@drawable/background_chat_left"
 			android:elevation="5dp"
-			android:fontFamily="@font/gabarito_semibold"
+			android:fontFamily="@font/gabarito_medium"
 			android:padding="10dp"
 			android:text="Message"
 			android:textColor="@color/black"
 			android:textSize="18sp" />
 
 		<de.hdodenhof.circleimageview.CircleImageView
-			android:id="@+id/receiverProfilePicture"
+			android:id="@+id/chatProfilePicture"
 			android:layout_width="40dp"
 			android:layout_height="40dp"
 			android:layout_alignParentStart="true"
 			android:scaleType="centerCrop"
-			android:src="@drawable/user_32" />
+			android:src="@drawable/user_32"
+			app:civ_border_color="@color/black"
+			app:civ_border_width="2dp"/>
 
 		<TextView
 			android:id="@+id/seen"

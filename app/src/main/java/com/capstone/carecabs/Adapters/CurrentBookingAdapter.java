@@ -140,7 +140,6 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			holder.binding.chatDriverBtn.setOnClickListener(v -> {
 				Intent intent = new Intent(context, ChatDriverActivity.class);
 				intent.putExtra("driverID", currentBookingModel.getDriverUserID());
-				intent.putExtra("bookingID", currentBookingModel.getBookingID());
 				context.startActivity(intent);
 			});
 		}

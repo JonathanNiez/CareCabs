@@ -7,9 +7,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.capstone.carecabs.Adapters.ChatPassengerAdapter;
+import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatPassengerModel;
 import com.capstone.carecabs.databinding.ActivityChatPassengerBinding;
@@ -18,42 +20,58 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatPassengerActivity extends AppCompatActivity {
 	private final String TAG = "ChatPassengerActivity";
 	private ActivityChatPassengerBinding binding;
+	private List<ChatPassengerModel> chatPassengerModelList = new ArrayList<>();
+
 	private DatabaseReference databaseReference;
 
+	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		binding = ActivityChatPassengerBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		if (getIntent().hasExtra("passengerID")) {
+		if (getIntent().hasExtra("chatUserID")) {
 			Intent intent = getIntent();
-			String getPassengerID = intent.getStringExtra("passengerID");
-			String getBookingID = intent.getStringExtra("bookingID");
+			String getPassengerID = intent.getStringExtra("chatUserID");
+			String getFirstname = intent.getStringExtra("firstname");
+			String getLastname = intent.getStringExtra("lastname");
+			String getProfilePicture = intent.getStringExtra("profilePicture");
+			String getFCMToken = intent.getStringExtra("fcmToken");
 
-			loadPassengerInfo(getPassengerID);
+			binding.passengerNameTextView.setText(getFirstname + " " + getLastname);
+
+			readMessage(FirebaseMain.getUser().getUid(), getPassengerID, getProfilePicture);
 
 			binding.sendMessageBtn.setOnClickListener(v -> {
-				String message = binding.messageEditText.getText().toString();
-				if (message.isEmpty()) {
+				binding.chatRecyclerView.smoothScrollToPosition(chatPassengerModelList.size() - 1);
+
+				if (TextUtils.isEmpty(binding.messageEditText.getText().toString())) {
 					binding.messageEditText.setText("");
 					return;
 				} else {
+					String message = binding.messageEditText.getText().toString();
+
 					binding.messageEditText.setText("");
 					sendMessage(
-							generateRandomChatID(),
-							getBookingID,
+							getFCMToken,
 							getCurrentTimeAndDate(),
 							FirebaseMain.getUser().getUid(),
 							getPassengerID,
@@ -74,27 +92,6 @@ public class ChatPassengerActivity extends AppCompatActivity {
 		return uuid.toString();
 	}
 
-	@SuppressLint("SetTextI18n")
-	private void loadPassengerInfo(String passengerID) {
-
-		readMessage(FirebaseMain.getUser().getUid(), passengerID);
-
-		//load the message receiver profile
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection)
-				.document(passengerID);
-
-		documentReference.get()
-				.addOnSuccessListener(documentSnapshot -> {
-					if (documentSnapshot != null && documentSnapshot.exists()) {
-						String getFirstname = documentSnapshot.getString("firstname");
-						String getLastname = documentSnapshot.getString("lastname");
-
-						binding.passengerNameTextView.setText(getFirstname + " " + getLastname);
-					}
-				})
-				.addOnFailureListener(e -> Log.e(TAG, Objects.requireNonNull(e.getMessage())));
-	}
 
 	@SuppressLint("DefaultLocale")
 	private String getCurrentTimeAndDate() {
@@ -110,8 +107,7 @@ public class ChatPassengerActivity extends AppCompatActivity {
 	}
 
 	private void sendMessage(
-			String chatID,
-			String bookingID,
+			String fcmToken,
 			String chatDate,
 			String sender,
 			String receiver,
@@ -119,8 +115,6 @@ public class ChatPassengerActivity extends AppCompatActivity {
 	) {
 		databaseReference = FirebaseDatabase.getInstance().getReference();
 		ChatPassengerModel chatPassengerModel = new ChatPassengerModel(
-				chatID,
-				bookingID,
 				chatDate,
 				sender,
 				receiver,
@@ -128,14 +122,18 @@ public class ChatPassengerActivity extends AppCompatActivity {
 				"available"
 		);
 		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatPassengerModel);
+		notificationData(fcmToken, message);
 	}
 
-	private void readMessage(String senderID, String receiverID) {
+	private void readMessage(String senderID, String receiverID, String profilePicture) {
 		databaseReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.chatCollection);
 
-		List<ChatPassengerModel> chatPassengerModelList = new ArrayList<>();
-		ChatPassengerAdapter chatPassengerAdapter = new ChatPassengerAdapter(ChatPassengerActivity.this, chatPassengerModelList);
+		ChatPassengerAdapter chatPassengerAdapter =
+				new ChatPassengerAdapter(
+						ChatPassengerActivity.this,
+						chatPassengerModelList
+						, profilePicture);
 		binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 		binding.chatRecyclerView.setAdapter(chatPassengerAdapter);
 
@@ -167,4 +165,61 @@ public class ChatPassengerActivity extends AppCompatActivity {
 			}
 		});
 	}
+
+	void notificationData(String fcmToken, String message) {
+		try {
+			JSONArray tokens = new JSONArray();
+			tokens.put(fcmToken);
+
+			Log.e(TAG, "notificationData: " + fcmToken);
+
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("chat", message);
+
+			JSONObject body = new JSONObject();
+			body.put("data", jsonObject);
+			body.put("registration_ids", tokens);
+
+			sendNotification(body.toString());
+
+		} catch (Exception ex) {
+			Log.e(TAG, "notificationData: ", ex);
+		}
+	}
+
+	private void sendNotification(String messageBody) {
+		FirebaseMain.getClient().create(APIService.class).sendMessage(
+				FirebaseMain.getRemoteMsgHeaders(),
+				messageBody
+		).enqueue(new Callback<String>() {
+			@Override
+			public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+				if (response.isSuccessful()) {
+					try {
+						if (response.body() != null) {
+							JSONObject responseJSON = new JSONObject(response.body());
+							JSONArray results = responseJSON.getJSONArray("results");
+							if (responseJSON.getInt("failure") == 1) {
+								JSONObject error = (JSONObject) results.get(0);
+								//   showToast(error.getString("error"));
+								return;
+							}
+
+							Log.e(TAG, "onResponse: " + response.body());
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				} else {
+					Log.e(TAG, "onResponse: " + response.body());
+				}
+			}
+
+			@Override
+			public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+				Log.e(TAG, "onFailure: ", t);
+			}
+		});
+	}
+
 }

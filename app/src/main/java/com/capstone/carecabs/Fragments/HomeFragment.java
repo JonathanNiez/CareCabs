@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
+import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.MapDriverActivity;
@@ -48,10 +49,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 	private final String TAG = "HomeFragment";

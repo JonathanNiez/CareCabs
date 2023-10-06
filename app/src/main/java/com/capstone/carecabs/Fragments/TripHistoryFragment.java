@@ -23,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class TripHistoryFragment extends Fragment {
 	private final String TAG = "TripHistoryFragment";
@@ -84,7 +85,7 @@ public class TripHistoryFragment extends Fragment {
 		} else {
 			Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 

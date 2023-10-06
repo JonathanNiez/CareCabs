@@ -1,12 +1,6 @@
 package com.capstone.carecabs;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,8 +28,9 @@ import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NotificationHelper;
-import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,10 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
 	private final String TAG = "MainActivity";
@@ -96,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		checkUserIfVerified();
 
 		showFragment(new HomeFragment());
-
 
 		binding.bottomNavigationView.setSelectedItemId(R.id.home);
 		binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -175,6 +166,38 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 	}
 
+	private void retrieveAndStoreFCMToken() {
+		FirebaseMessaging.getInstance().getToken()
+				.addOnSuccessListener(this::updateFCMTokenInFireStore)
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+	}
+
+	private void updateFCMTokenInFireStore(String token) {
+		DocumentReference documentReference = FirebaseFirestore.getInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(FirebaseMain.getUser().getUid());
+
+		documentReference.update("fcmToken", token)
+				.addOnSuccessListener(aVoid -> Log.i(TAG, "Device token stored: " + token))
+				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+	}
+
+//	void getToken() {
+//		FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
+//	}
+//
+//	void updateToken(String token) {
+//		FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+//		DocumentReference documentReference = firebaseFirestore.collection(FirebaseMain.userCollection)
+//				.document(FirebaseMain.getUser().getUid()
+//
+//
+//				);
+//		documentReference.update(BarterApp.KEY_USER_FCM_TOKEN, token)
+//				.addOnSuccessListener(unused -> Log.d("FCM", "Token updated successfully"))
+//				.addOnFailureListener(e -> BarterApp.showToast("Unable to update token"));
+//	}
+
 	private void exitApp() {
 		shouldExit = true;
 		onBackPressed();
@@ -183,14 +206,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	}
 
 	private void checkIfBookingIsAccepted() {
-
 		bookingReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
 
 		bookingReference.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				if (snapshot != null && snapshot.exists()) {
+				if (snapshot.exists()) {
 					for (DataSnapshot locationSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingData =
 								locationSnapshot.getValue(PassengerBookingModel.class);
@@ -242,6 +264,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 					} else {
 						binding.bottomNavigationView.removeBadge(R.id.myProfile);
 						getUserTypeToCheckIfBookingIsAccepted();
+						retrieveAndStoreFCMToken();
 					}
 
 				}

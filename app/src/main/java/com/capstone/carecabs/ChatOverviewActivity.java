@@ -1,18 +1,29 @@
 package com.capstone.carecabs;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.capstone.carecabs.Adapters.ChatOverviewAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Model.ChatModel;
 import com.capstone.carecabs.Model.ChatOverviewModel;
 import com.capstone.carecabs.databinding.ActivityChatOverviewBinding;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -25,6 +36,7 @@ import java.util.List;
 
 public class ChatOverviewActivity extends AppCompatActivity {
 	private final String TAG = "ChatOverviewActivity";
+	private List<String> stringUsersList;
 	private ActivityChatOverviewBinding binding;
 
 	@Override
@@ -33,7 +45,12 @@ public class ChatOverviewActivity extends AppCompatActivity {
 		binding = ActivityChatOverviewBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		FirebaseApp.initializeApp(this);
+
 		binding.noAvailableChatsTextView.setVisibility(View.GONE);
+
+		binding.chatOverviewRecyclerView.setHasFixedSize(true);
+		binding.chatOverviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
 		loadAvailableChats();
 	}
@@ -45,64 +62,91 @@ public class ChatOverviewActivity extends AppCompatActivity {
 
 	//TODO:recent chat
 	private void loadAvailableChats() {
+		stringUsersList = new ArrayList<>();
+
 		DatabaseReference databaseReference = FirebaseDatabase
 				.getInstance().getReference(FirebaseMain.chatCollection);
 
-		List<ChatOverviewModel> chatOverviewModelList = new ArrayList<>();
-		ChatOverviewAdapter chatOverviewAdapter = new ChatOverviewAdapter(this,
-				chatOverviewModelList, chatOverviewModel -> {
-			//on click
-		});
-		binding.chatOverviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-		binding.chatOverviewRecyclerView.setAdapter(chatOverviewAdapter);
 		databaseReference.addValueEventListener(new ValueEventListener() {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
 				if (snapshot.exists()) {
-					chatOverviewModelList.clear();
+					stringUsersList.clear();
 
-					binding.loadingLayout.setVisibility(View.GONE);
-					boolean hasAvailableChats = false;
+					for (DataSnapshot chatSnapshot : snapshot.getChildren()) {
+						ChatModel chatModel = chatSnapshot.getValue(ChatModel.class);
+						if (chatModel != null) {
 
-					for (DataSnapshot chatOverviewSnapshot : snapshot.getChildren()) {
-						ChatOverviewModel chatOverviewModel = chatOverviewSnapshot.getValue(ChatOverviewModel.class);
-						if (chatOverviewModel != null) {
-
-							String chatStatus = chatOverviewModel.getChatStatus();
-							String senderID = chatOverviewModel.getSender();
-							String receiverID = chatOverviewModel.getReceiver();
 							String currentUserID = FirebaseMain.getUser().getUid();
-							String getBookingID = chatOverviewModel.getBookingID();
+							String senderID = chatModel.getSender();
+							String receiverID = chatModel.getReceiver();
+							String chatStatus = chatModel.getChatStatus();
 
-							if ((chatStatus.equals("available") && senderID.equals(currentUserID))
-									|| (chatStatus.equals("available") && receiverID.equals(currentUserID))) {
+							if (chatStatus.equals("available")) {
 
-								hasAvailableChats = true;
-								chatOverviewModelList.add(chatOverviewModel);
+								if (senderID.equals(currentUserID)) {
+									stringUsersList.add(receiverID);
 
-							} else {
-								hasAvailableChats = false;
-
+								}
+								if (receiverID.equals(currentUserID)) {
+									stringUsersList.add(senderID);
+								}
 							}
 						}
 					}
-					if (hasAvailableChats) {
-						binding.noAvailableChatsTextView.setVisibility(View.GONE);
-
-					} else {
-						binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
-					}
-
-					chatOverviewAdapter.notifyDataSetChanged();
-				} else {
-					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
-					binding.loadingLayout.setVisibility(View.GONE);
+					showRecentChats();
 				}
 			}
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, error.getMessage());
+			}
+		});
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	private void showRecentChats() {
+		ArrayList<ChatOverviewModel> chatOverviewModelList = new ArrayList<>();
+
+		String currentUserID = FirebaseMain.getUser().getUid();
+		CollectionReference collectionReference = FirebaseMain
+				.getFireStoreInstance().collection(FirebaseMain.userCollection);
+
+		ChatOverviewAdapter chatOverviewAdapter = new ChatOverviewAdapter(this, chatOverviewModelList, chatOverviewModel -> {
+
+		});
+
+		binding.chatOverviewRecyclerView.setAdapter(chatOverviewAdapter);
+
+		collectionReference.addSnapshotListener((value, error) -> {
+			if (value != null) {
+				chatOverviewModelList.clear();
+				binding.loadingLayout.setVisibility(View.GONE);
+				boolean hasAvailableChats = false;
+
+				for (QueryDocumentSnapshot recentChatSnapshot : value) {
+					ChatOverviewModel chatOverviewModel = recentChatSnapshot.toObject(ChatOverviewModel.class);
+
+					for (String userID : stringUsersList) {
+						if (currentUserID.equals(userID) || chatOverviewModel.getUserID().equals(userID)) {
+							chatOverviewModelList.add(chatOverviewModel);
+							hasAvailableChats = true;
+							break;
+						}
+					}
+				}
+
+				chatOverviewAdapter.notifyDataSetChanged();
+
+				if (hasAvailableChats) {
+					binding.noAvailableChatsTextView.setVisibility(View.GONE);
+				} else {
+					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
+				}
+				Log.i(TAG, "Displaying Recent Chat");
+			} else {
 				Log.e(TAG, error.getMessage());
 			}
 		});

@@ -10,7 +10,7 @@
 		android:layout_alignParentEnd="true">
 
 		<de.hdodenhof.circleimageview.CircleImageView
-			android:id="@+id/receiverProfilePicture"
+			android:id="@+id/chatProfilePicture"
 			android:layout_width="40dp"
 			android:layout_height="40dp"
 			android:visibility="gone" />
@@ -36,7 +36,7 @@
 			android:layout_marginTop="30dp"
 			android:background="@drawable/backgound_chat_right"
 			android:elevation="5dp"
-			android:fontFamily="@font/gabarito_semibold"
+			android:fontFamily="@font/gabarito_medium"
 			android:padding="10dp"
 			android:text="Message"
 			android:textColor="@color/black"

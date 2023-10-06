@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatDriverModel;
 import com.capstone.carecabs.R;
@@ -22,13 +23,17 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 
 	private Context context;
 	private List<ChatDriverModel> chatDriverModelList;
-	public static final int MSG_TYPE_LEFT = 0;
-	public static final int MSG_TYPE_RIGHT = 1;
-
-	public ChatDriverAdapter(Context context, List<ChatDriverModel> chatDriverModelList) {
+	private String profilePicture;
+	public ChatDriverAdapter(Context context,
+	                         List<ChatDriverModel> chatDriverModelList,
+	                         String profilePicture) {
 		this.context = context;
 		this.chatDriverModelList = chatDriverModelList;
+		this.profilePicture = profilePicture;
 	}
+
+	public static final int MSG_TYPE_LEFT = 0;
+	public static final int MSG_TYPE_RIGHT = 1;
 
 	@NonNull
 	@Override
@@ -51,6 +56,12 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 
 		holder.messageTextView.setText(chatDriverModel.getMessage());
 
+		if (!profilePicture.equals("default")){
+			Glide.with(context)
+					.load(profilePicture)
+					.placeholder(R.drawable.loading_gif)
+					.into(holder.chatProfilePicture);
+		}
 
 	}
 
@@ -72,17 +83,13 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 
 	public class ChatDriverViewHolder extends RecyclerView.ViewHolder {
 		private TextView messageTextView;
-		private EditText messageEditText;
-		private Button sendMessageBtn;
-		private ImageView receiverProfilePicture;
+		private ImageView chatProfilePicture;
 
 		public ChatDriverViewHolder(@NonNull View itemView) {
 			super(itemView);
 
 			messageTextView = itemView.findViewById(R.id.messageTextView);
-			messageEditText = itemView.findViewById(R.id.messageEditText);
-			sendMessageBtn = itemView.findViewById(R.id.sendMessageBtn);
-			receiverProfilePicture = itemView.findViewById(R.id.receiverProfilePicture);
+			chatProfilePicture = itemView.findViewById(R.id.chatProfilePicture);
 		}
 	}
 
