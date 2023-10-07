@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.capstone.carecabs.Adapters.CurrentBookingAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
+import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentCurrentBookingBinding;
@@ -53,9 +54,15 @@ public class CurrentBookingFragment extends Fragment {
 		binding = FragmentCurrentBookingBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		binding.noCurrentBookingTextView.setVisibility(View.GONE);
-
 		context = getContext();
+
+		binding.noCurrentBookingsLayout.setVisibility(View.GONE);
+
+		binding.bookARideBtn.setOnClickListener(v -> {
+			Intent intent = new Intent(context, MapPassengerActivity.class);
+			startActivity(intent);
+			Objects.requireNonNull(getActivity()).finish();
+		});
 
 		loadCurrentBookingFromDatabase();
 
@@ -99,15 +106,15 @@ public class CurrentBookingFragment extends Fragment {
 								hasCurrentBookings = true;
 							}
 						}
-						if (hasCurrentBookings) {
-							binding.noCurrentBookingTextView.setVisibility(View.GONE);
-						} else {
-							binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
-						}
-
 						currentBookingAdapter.notifyDataSetChanged();
+
+						if (hasCurrentBookings) {
+							binding.noCurrentBookingsLayout.setVisibility(View.GONE);
+						} else {
+							binding.noCurrentBookingsLayout.setVisibility(View.VISIBLE);
+						}
 					} else {
-						binding.noCurrentBookingTextView.setVisibility(View.VISIBLE);
+						binding.noCurrentBookingsLayout.setVisibility(View.VISIBLE);
 						binding.loadingLayout.setVisibility(View.GONE);
 					}
 				}

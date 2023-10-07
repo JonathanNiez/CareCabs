@@ -8,14 +8,14 @@
 	app:cardBackgroundColor="@color/white"
 	app:cardCornerRadius="10dp">
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
 		android:orientation="horizontal"
 		android:padding="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
@@ -31,9 +31,9 @@
 				app:civ_border_color="@color/black"
 				app:civ_border_width="2dp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="2"
@@ -59,11 +59,22 @@
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Chat User type"
 				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="18sp" />
 
-			<LinearLayout
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/recentMessageTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Recent message"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="16sp" />
+
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/chatBtn"
-				android:layout_width="120dp"
+				android:layout_width="130dp"
 				android:layout_height="50dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
@@ -74,7 +85,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="CHAT"
 					android:textColor="@color/white"
 					android:textSize="17sp" />
@@ -84,10 +95,10 @@
 					android:layout_height="wrap_content"
 					app:srcCompat="@drawable/chat_32_white" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

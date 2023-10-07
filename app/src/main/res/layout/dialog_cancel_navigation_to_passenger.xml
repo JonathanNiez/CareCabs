@@ -34,6 +34,7 @@
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="NAVIGATING TO PASSENGER"
+				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 

@@ -1,4 +1,4 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Register;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -33,6 +33,10 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.MainActivity;
+import com.capstone.carecabs.R;
+import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;

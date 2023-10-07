@@ -1,4 +1,4 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Chat;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -61,14 +61,11 @@ public class ChatPassengerActivity extends AppCompatActivity {
 			readMessage(FirebaseMain.getUser().getUid(), getPassengerID, getProfilePicture);
 
 			binding.sendMessageBtn.setOnClickListener(v -> {
-				binding.chatRecyclerView.smoothScrollToPosition(chatPassengerModelList.size() - 1);
-
 				if (TextUtils.isEmpty(binding.messageEditText.getText().toString())) {
 					binding.messageEditText.setText("");
 					return;
 				} else {
 					String message = binding.messageEditText.getText().toString();
-
 					binding.messageEditText.setText("");
 					sendMessage(
 							getFCMToken,
@@ -134,7 +131,7 @@ public class ChatPassengerActivity extends AppCompatActivity {
 						ChatPassengerActivity.this,
 						chatPassengerModelList
 						, profilePicture);
-		binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+		binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		binding.chatRecyclerView.setAdapter(chatPassengerAdapter);
 
 		databaseReference.addValueEventListener(new ValueEventListener() {
@@ -156,6 +153,7 @@ public class ChatPassengerActivity extends AppCompatActivity {
 						}
 					}
 					chatPassengerAdapter.notifyDataSetChanged();
+					binding.chatRecyclerView.smoothScrollToPosition(chatPassengerAdapter.getItemCount() - 1);
 				}
 			}
 

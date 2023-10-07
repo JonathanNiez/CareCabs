@@ -13,12 +13,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.BottomSheetData;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,11 +29,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,7 +70,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentBottomSheetBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -81,6 +89,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		return view;
 
 	}
+
 	//show the bottom sheet
 	public static ModalBottomSheet newInstance(String data) {
 		ModalBottomSheet fragment = new ModalBottomSheet();
@@ -95,7 +104,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private void sendDataToMap(String bookingID,
-							   String passengerID,
+	                           String passengerID,
 	                           Point pickupCoordinates,
 	                           Point destinationCoordinates) {
 		BottomSheetData bottomSheetData = new BottomSheetData(
@@ -119,6 +128,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
+						String getFCMToken = snapshot.child("fcmToken").getValue(String.class);
 						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
 						String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
@@ -130,7 +140,6 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
 						Double getDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
 						Double getDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
-
 
 						//geocode
 						MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -209,18 +218,19 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 								break;
 						}
 
-						switch (getBookingStatus){
+						switch (getBookingStatus) {
 							case "Waiting":
 								binding.renavigateBtn.setVisibility(View.GONE);
 								binding.pickupBtn.setOnClickListener(v -> {
-									updatePassengerBooking(
+
+									getVehicleInfo(getFCMToken,
 											getPassengerID,
 											bookingID,
 											getPickupLatitude,
 											getPickupLongitude,
 											getDestinationLatitude,
-											getDestinationLongitude
-									);
+											getDestinationLongitude);
+
 								});
 								break;
 
@@ -268,12 +278,49 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		}
 	}
 
-	private void updatePassengerBooking(String passengerID,
+	private void getVehicleInfo(String fcmToken,
+	                            String passengerID,
+	                            String bookingID,
+	                            Double pickupLatitude,
+	                            Double pickupLongitude,
+	                            Double destinationLatitude,
+	                            Double destinationLongitude) {
+		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(FirebaseMain.getUser().getUid());
+
+		documentReference.get()
+				.addOnSuccessListener(documentSnapshot -> {
+					if (documentSnapshot.exists()) {
+						String getVehicleColor = documentSnapshot.getString("vehicleColor");
+						String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+
+						updatePassengerBooking(
+								fcmToken,
+								passengerID,
+								bookingID,
+								pickupLatitude,
+								pickupLongitude,
+								destinationLatitude,
+								destinationLongitude,
+								getVehicleColor,
+								getVehiclePlateNumber
+						);
+					}
+				})
+				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+	}
+
+	private void updatePassengerBooking(String fcmToken,
+	                                    String passengerID,
 	                                    String bookingID,
 	                                    Double pickupLatitude,
 	                                    Double pickupLongitude,
 	                                    Double destinationLatitude,
-	                                    Double destinationLongitude) {
+	                                    Double destinationLongitude,
+	                                    String vehicleColor,
+	                                    String vehiclePlateNumber) {
+
 
 		//convert to point
 		LatLng pickupLatLng = new LatLng(pickupLatitude, pickupLongitude);
@@ -282,7 +329,6 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		LatLng destinationLatLng = new LatLng(destinationLatitude, destinationLongitude);
 		Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
 
-
 		//update booking from passenger
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
@@ -290,26 +336,23 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		Map<String, Object> updateBooking = new HashMap<>();
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
+		updateBooking.put("vehicleColor", vehicleColor);
+		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 
 		bookingReference.child(bookingID)
 				.updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> {
 
+					String notificationMessage = "Vehicle Color: " + vehicleColor
+							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
+
 					updateDriverStatus();
+					notificationData(fcmToken, notificationMessage);
 					sendDataToMap(bookingID,
 							passengerID,
 							pickupCoordinates,
 							destinationCoordinates);
 
-//					storeTripToDatabase(
-//							generateRandomTripID(),
-//							bookingID,
-//							passengerID,
-//							pickupLatitude,
-//							pickupLongitude,
-//							destinationLatitude,
-//							destinationLongitude
-//					);
 					dismiss();
 
 				})
@@ -321,6 +364,87 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
 
 				});
+	}
+
+	private void updateDriverStatus() {
+		if (FirebaseMain.getUser() != null) {
+			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid())
+					.update("isAvailable", false);
+		}
+	}
+
+	private String getCurrentTimeAndDate() {
+		Calendar calendar = Calendar.getInstance(); // Get a Calendar instance
+		int year = calendar.get(Calendar.YEAR);
+		int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based, so add 1
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		int minute = calendar.get(Calendar.MINUTE);
+		int second = calendar.get(Calendar.SECOND);
+
+		return month + "-" + day + "-" + year + " " + hour + ":" + minute + ":" + second;
+	}
+
+	void notificationData(String fcmToken, String message) {
+		try {
+			JSONArray tokens = new JSONArray();
+			tokens.put(fcmToken);
+
+			Log.e(TAG, "notificationData: " + fcmToken);
+
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("driverOTW", message);
+
+			JSONObject body = new JSONObject();
+			body.put("data", jsonObject);
+			body.put("registration_ids", tokens);
+
+			sendNotification(body.toString());
+
+		} catch (Exception ex) {
+			Log.e(TAG, "notificationData: ", ex);
+		}
+	}
+
+	private void sendNotification(String messageBody) {
+		FirebaseMain.getClient().create(APIService.class).sendMessage(
+				FirebaseMain.getRemoteMsgHeaders(),
+				messageBody
+		).enqueue(new Callback<String>() {
+			@Override
+			public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+				if (response.isSuccessful()) {
+					try {
+						if (response.body() != null) {
+							JSONObject responseJSON = new JSONObject(response.body());
+							JSONArray results = responseJSON.getJSONArray("results");
+							if (responseJSON.getInt("failure") == 1) {
+								JSONObject error = (JSONObject) results.get(0);
+
+								return;
+							}
+
+							Log.e(TAG, "onResponse: " + response.body());
+						}
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				} else {
+					Log.e(TAG, "onResponse: " + response.body());
+				}
+			}
+
+			@Override
+			public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+				Log.e(TAG, "onFailure: ", t);
+			}
+		});
+	}
+
+	private String generateRandomTripID() {
+		UUID uuid = UUID.randomUUID();
+		return uuid.toString();
 	}
 
 	private void storeTripToDatabase(
@@ -362,30 +486,5 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 					Log.e(TAG, e.getMessage());
 				});
-	}
-
-	private void updateDriverStatus() {
-		if (FirebaseMain.getUser() != null) {
-			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid())
-					.update("isAvailable", false);
-		}
-	}
-
-	private String generateRandomTripID() {
-		UUID uuid = UUID.randomUUID();
-		return uuid.toString();
-	}
-
-	private String getCurrentTimeAndDate() {
-		Calendar calendar = Calendar.getInstance(); // Get a Calendar instance
-		int year = calendar.get(Calendar.YEAR);
-		int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based, so add 1
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		int hour = calendar.get(Calendar.HOUR_OF_DAY);
-		int minute = calendar.get(Calendar.MINUTE);
-		int second = calendar.get(Calendar.SECOND);
-
-		return month + "-" + day + "-" + year + " " + hour + ":" + minute + ":" + second;
 	}
 }

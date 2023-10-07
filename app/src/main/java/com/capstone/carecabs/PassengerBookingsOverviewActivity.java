@@ -18,12 +18,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Adapters.PassengerBookingsAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.ParcelablePoint;
-import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
 import com.google.android.gms.maps.model.LatLng;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class PassengerBookingsOverview extends AppCompatActivity {
+public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 	private final String TAG = "PassengerBookingsOverview";
 	private AlertDialog bookingInfoDialog, noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
@@ -105,23 +105,9 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 			List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
 			PassengerBookingsAdapter passengerBookingsAdapter = new PassengerBookingsAdapter(
-					this,
+					PassengerBookingsOverviewActivity.this,
 					passengerBookingModelList,
-					passengerBookingModel -> showBookingInfoDialog(
-							passengerBookingModel.getPassengerFirstname(),
-							passengerBookingModel.getPassengerLastname(),
-							passengerBookingModel.getPassengerUserType(),
-							passengerBookingModel.getPassengerProfilePicture(),
-							passengerBookingModel.getPassengerDisability(),
-							passengerBookingModel.getPassengerMedicalCondition(),
-							passengerBookingModel.getBookingStatus(),
-							passengerBookingModel.getBookingID(),
-							passengerBookingModel.getPassengerUserID(),
-							passengerBookingModel.getPickupLatitude(),
-							passengerBookingModel.getPickupLongitude(),
-							passengerBookingModel.getDestinationLatitude(),
-							passengerBookingModel.getDestinationLongitude()
-					));
+					PassengerBookingsOverviewActivity.this);
 			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 			binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
 
@@ -160,6 +146,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 						passengerBookingsAdapter.notifyDataSetChanged();
 					} else {
 						binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
+						binding.loadingLayout.setVisibility(View.GONE);
 					}
 				}
 
@@ -171,7 +158,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 			});
 
 		} else {
-			Intent intent = new Intent(PassengerBookingsOverview.this, LoginOrRegisterActivity.class);
+			Intent intent = new Intent(PassengerBookingsOverviewActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 		}
@@ -264,7 +251,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 				.updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> {
 
-					Toast.makeText(PassengerBookingsOverview.this,
+					Toast.makeText(PassengerBookingsOverviewActivity.this,
 							"Booking Accepted", Toast.LENGTH_LONG).show();
 
 					goToMapAndFindRoute(point);
@@ -274,7 +261,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 					Log.e(TAG, e.getMessage());
 
-					Toast.makeText(PassengerBookingsOverview.this,
+					Toast.makeText(PassengerBookingsOverviewActivity.this,
 							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
 
 				});
@@ -282,7 +269,7 @@ public class PassengerBookingsOverview extends AppCompatActivity {
 
 	private void goToMapAndFindRoute(Point point) {
 		Intent intent = new Intent(
-				PassengerBookingsOverview.this, MapDriverActivity.class);
+				PassengerBookingsOverviewActivity.this, MapDriverActivity.class);
 		intent.putExtra("dataSend", true);
 		intent.putExtra("point", new ParcelablePoint(point));
 		startActivity(intent);

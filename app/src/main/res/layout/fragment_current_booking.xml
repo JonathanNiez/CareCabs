@@ -32,29 +32,15 @@
 		android:layout_below="@id/upperLayout"
 		tools:listitem="@layout/item_current_booking" />
 
-	<TextView
-		android:id="@+id/noCurrentBookingTextView"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_centerInParent="true"
-		android:layout_margin="10dp"
-		android:background="@drawable/custom_card_view_1"
-		android:elevation="5dp"
-		android:fontFamily="@font/gabarito_semibold"
-		android:padding="10dp"
-		android:text="You have no current Bookings right now"
-		android:textAlignment="center"
-		android:textColor="@color/black"
-		android:textSize="20sp" />
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/loadingLayout"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
 		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
-		app:cardElevation="5dp"
-		android:layout_centerInParent="true">
+		app:cardElevation="5dp">
 
 		<LinearLayout
 			android:layout_width="wrap_content"
@@ -65,11 +51,49 @@
 			<pl.droidsonroids.gif.GifImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/loading_gif"
-				android:layout_margin="10dp"/>
+				android:layout_margin="10dp"
+				android:src="@drawable/loading_gif" />
 
 		</LinearLayout>
 
 	</androidx.cardview.widget.CardView>
+
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:id="@+id/noCurrentBookingsLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:gravity="center"
+		android:orientation="vertical">
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_margin="10dp"
+			android:background="@drawable/custom_card_view_1"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="You have no current Bookings right now"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/bookARideBtn"
+			android:layout_width="240dp"
+			android:layout_height="50dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Click to Book a Ride"
+			android:textAlignment="center"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </RelativeLayout>

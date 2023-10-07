@@ -1,8 +1,7 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Chat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -16,15 +15,12 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatDriverModel;
 import com.capstone.carecabs.Utility.NotificationHelper;
 import com.capstone.carecabs.databinding.ActivityChatDriverBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,8 +62,6 @@ public class ChatDriverActivity extends AppCompatActivity {
 			readMessage(FirebaseMain.getUser().getUid(), getDriverID, getProfilePicture);
 
 			binding.sendMessageBtn.setOnClickListener(v -> {
-				binding.chatRecyclerView.smoothScrollToPosition(chatDriverModelList.size() - 1);
-
 				String message = binding.messageEditText.getText().toString();
 				if (message.isEmpty()) {
 					binding.messageEditText.setText("");
@@ -111,7 +105,6 @@ public class ChatDriverActivity extends AppCompatActivity {
 			});
 		}
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -178,29 +171,35 @@ public class ChatDriverActivity extends AppCompatActivity {
 	private void readMessage(String senderID, String receiverID, String profilePicture) {
 		databaseReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.chatCollection);
+
+		ChatDriverAdapter chatDriverAdapter = new
+				ChatDriverAdapter(
+				ChatDriverActivity.this,
+				chatDriverModelList,
+				profilePicture);
+		binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+		binding.chatRecyclerView.setAdapter(chatDriverAdapter);
 		databaseReference.addValueEventListener(new ValueEventListener() {
+			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-					ChatDriverModel chatDriverModel = dataSnapshot.getValue(ChatDriverModel.class);
+				if (snapshot.exists()){
+					chatDriverModelList.clear();
 
-					if (chatDriverModel != null) {
-						if (chatDriverModel.getReceiver().equals(receiverID) && chatDriverModel.getSender().equals(senderID)
-								|| chatDriverModel.getReceiver().equals(senderID) && chatDriverModel.getSender().equals(receiverID)
-						) {
-							chatDriverModelList.add(chatDriverModel);
+					for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+						ChatDriverModel chatDriverModel = dataSnapshot.getValue(ChatDriverModel.class);
+
+						if (chatDriverModel != null) {
+							if (chatDriverModel.getReceiver().equals(receiverID) && chatDriverModel.getSender().equals(senderID)
+									|| chatDriverModel.getReceiver().equals(senderID) && chatDriverModel.getSender().equals(receiverID)
+							) {
+								chatDriverModelList.add(chatDriverModel);
+							}
 						}
 					}
-					/*showChatNotification(chatDriverModel.getMessage());*/
+					chatDriverAdapter.notifyDataSetChanged();
+					binding.chatRecyclerView.smoothScrollToPosition(chatDriverAdapter.getItemCount() - 1);
 				}
-
-				ChatDriverAdapter chatDriverAdapter = new
-						ChatDriverAdapter(
-						ChatDriverActivity.this,
-						chatDriverModelList,
-						profilePicture);
-				binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-				binding.chatRecyclerView.setAdapter(chatDriverAdapter);
 			}
 
 			@Override
@@ -265,11 +264,4 @@ public class ChatDriverActivity extends AppCompatActivity {
 			}
 		});
 	}
-
-	private void showChatNotification(String message) {
-		NotificationHelper notificationHelper = new NotificationHelper(this);
-		notificationHelper.showChatNotification("CareCabs",
-				message);
-	}
-
 }

@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.capstone.carecabs.ChatDriverActivity;
+import com.capstone.carecabs.Chat.ChatDriverActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemCurrentBookingBinding;
@@ -54,11 +54,11 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		return new CurrentBookingViewHolder(binding);
 	}
 
+	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindViewHolder(@NonNull CurrentBookingViewHolder holder, int position) {
 		CurrentBookingModel currentBookingModel = currentBookingModelList.get(position);
-		holder.binding.chatDriverBtn.setVisibility(View.GONE);
-		holder.binding.driverOnTheWayTextView.setVisibility(View.GONE);
+		holder.binding.driverDetailsLayout.setVisibility(View.GONE);
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -74,17 +74,24 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			@Override
 			public void onResponse(@NonNull Call<GeocodingResponse> call,
 			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
+				if (response.isSuccessful()) {
+					if (response.body() != null && !response.body().features().isEmpty()) {
+						CarmenFeature feature = response.body().features().get(0);
+						String locationName = feature.placeName();
 
-					holder.binding.pickupLocationTextView.setText(locationName);
+						holder.binding.pickupLocationTextView.setText(locationName);
+					} else {
+
+						holder.binding.pickupLocationTextView.setText("Location not found");
+					}
 				} else {
 					Log.e(TAG, "Geocode error" + response.message());
 
 					holder.binding.pickupLocationTextView.setText("Location not found");
 				}
+
 			}
+
 			@SuppressLint("SetTextI18n")
 			@Override
 			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
@@ -107,16 +114,23 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			@Override
 			public void onResponse(@NonNull Call<GeocodingResponse> call,
 			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
+				if (response.isSuccessful()) {
+					if (response.body() != null && !response.body().features().isEmpty()) {
+						CarmenFeature feature = response.body().features().get(0);
+						String locationName = feature.placeName();
 
-					holder.binding.destinationLocationTextView.setText(locationName);
+						holder.binding.destinationLocationTextView.setText(locationName);
+					} else {
+
+						holder.binding.destinationLocationTextView.setText("Location not found");
+					}
 				} else {
 					Log.e(TAG, "Geocode error" + response.message());
 
 					holder.binding.destinationLocationTextView.setText("Location not found");
+
 				}
+
 			}
 
 			@SuppressLint("SetTextI18n")
@@ -135,8 +149,10 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 		if (currentBookingModel.getBookingStatus().equals("Driver on the way")) {
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
-			holder.binding.driverOnTheWayTextView.setVisibility(View.VISIBLE);
-			holder.binding.chatDriverBtn.setVisibility(View.VISIBLE);
+			holder.binding.driverDetailsLayout.setVisibility(View.VISIBLE);
+
+			holder.binding.vehicleColorTextView.setText("Vehicle Color: " + currentBookingModel.getVehicleColor());
+			holder.binding.vehiclePlateNumberTextView.setText("Vehicle plate number: " + currentBookingModel.getVehiclePlateNumber());
 			holder.binding.chatDriverBtn.setOnClickListener(v -> {
 				Intent intent = new Intent(context, ChatDriverActivity.class);
 				intent.putExtra("driverID", currentBookingModel.getDriverUserID());

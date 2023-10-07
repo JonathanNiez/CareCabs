@@ -1,4 +1,4 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Register;
 
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -15,6 +15,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;

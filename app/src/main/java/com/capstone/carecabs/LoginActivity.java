@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Register.RegisterActivity;
+import com.capstone.carecabs.Register.RegisterUserTypeActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;

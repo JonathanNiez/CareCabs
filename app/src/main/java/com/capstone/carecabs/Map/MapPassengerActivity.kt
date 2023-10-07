@@ -1,4 +1,4 @@
-package com.capstone.carecabs
+package com.capstone.carecabs.Map
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -24,8 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.capstone.carecabs.BookingsActivity
 import com.capstone.carecabs.Firebase.FirebaseMain
+import com.capstone.carecabs.HelpActivity
+import com.capstone.carecabs.LoginActivity
+import com.capstone.carecabs.LoginOrRegisterActivity
+import com.capstone.carecabs.MainActivity
 import com.capstone.carecabs.Model.PassengerBookingModel
+import com.capstone.carecabs.R
 import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
@@ -37,12 +43,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.Utils.dpToPx
-import com.mapbox.api.geocoding.v5.GeocodingCriteria
-import com.mapbox.api.geocoding.v5.MapboxGeocoding
-import com.mapbox.api.geocoding.v5.models.CarmenFeature
-import com.mapbox.api.geocoding.v5.models.GeocodingResponse
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
@@ -87,9 +91,6 @@ import com.mapbox.search.ui.view.SearchResultAdapterItem
 import com.mapbox.search.ui.view.SearchResultsView
 import com.mapbox.search.ui.view.UiError
 import com.mapbox.search.ui.view.place.SearchPlace
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.Calendar
 import java.util.UUID
 
@@ -158,17 +159,25 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         initializeBottomNavButtons()
 
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
-            if (b){
+            if (b) {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.MAPBOX_STREETS){
-                        Toast.makeText(this@MapPassengerActivity, "Changed Map style to Streets", Toast.LENGTH_SHORT).show()
+                    loadStyleUri(Style.MAPBOX_STREETS) {
+                        Toast.makeText(
+                            this@MapPassengerActivity,
+                            "Changed Map style to Streets",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     }
                 }
-            }else{
+            } else {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.SATELLITE_STREETS){
-                        Toast.makeText(this@MapPassengerActivity, "Changed Map style to Satellite", Toast.LENGTH_SHORT).show()
+                    loadStyleUri(Style.SATELLITE_STREETS) {
+                        Toast.makeText(
+                            this@MapPassengerActivity,
+                            "Changed Map style to Satellite",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
                     }
                 }
@@ -313,6 +322,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 .build()
         )
     }
+
     private fun getUserProfilePictureFromFireStore() {
 
         documentReference = FirebaseMain.getFireStoreInstance()
@@ -682,7 +692,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         StaticDataPasser.storeDestinationLongitude = point.longitude()
         StaticDataPasser.storeDestinationLatitude = point.latitude()
 
-        storeCoordinatesInFireStore(point)
+        retrieveAndStoreFCMToken(point)
 
 //        binding.desiredDestinationTextView.text =
 //            point.latitude().toString() + "\n" + point.longitude().toString()
@@ -713,7 +723,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                                 locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                             if (passengerBookingData != null) {
-                                if (passengerBookingData.bookingStatus.equals("Waiting")){
+                                if (passengerBookingData.bookingStatus.equals("Waiting")) {
                                     val getDestinationLatitude =
                                         passengerBookingData.destinationLatitude
                                     val getDestinationLongitude =
@@ -809,8 +819,21 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         }
     }
 
+    private fun retrieveAndStoreFCMToken(point: Point) {
+        FirebaseMessaging.getInstance().token
+            .addOnSuccessListener { token: String ->
 
-    private fun storeCoordinatesInFireStore(point: Point) {
+                storeCoordinatesInFireStore(point, token)
+            }
+            .addOnFailureListener { e: java.lang.Exception ->
+                Log.e(
+                    TAG,
+                    e.message!!
+                )
+            }
+    }
+
+    private fun storeCoordinatesInFireStore(point: Point, fcmToken: String) {
         if (FirebaseMain.getUser() != null) {
 
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -831,6 +854,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                                     it.getString("medicalCondition")!!
 
                                 storeSeniorLocationInfoToDatabase(
+                                    fcmToken,
                                     point,
                                     getFirstName,
                                     getLastName,
@@ -845,8 +869,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                                 val getDisability = it.getString("disability")!!
 
                                 storePWDLocationInfoToDatabase(
-                                    point, getFirstName, getLastName, getUserType,
-                                    getProfilePicture, getDisability, generateRandomLocationID()
+                                    fcmToken,
+                                    point,
+                                    getFirstName,
+                                    getLastName,
+                                    getUserType,
+                                    getProfilePicture,
+                                    getDisability,
+                                    generateRandomLocationID()
                                 )
                             }
                         }
@@ -858,8 +888,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                 }
 
         } else {
-            FirebaseMain.signOutUser()
-
             intent = Intent(this@MapPassengerActivity, LoginOrRegisterActivity::class.java)
             startActivity(intent)
             finish()
@@ -867,14 +895,21 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun storePWDLocationInfoToDatabase(
-        point: Point, firstname: String, lastname: String, userType: String,
-        profilePicture: String, disability: String, generateLocationID: String
+        fcmToken: String,
+        point: Point,
+        firstname: String,
+        lastname: String,
+        userType: String,
+        profilePicture: String,
+        disability: String,
+        generateLocationID: String
     ) {
         val database = FirebaseDatabase.getInstance()
         val locationReference = database.getReference(FirebaseMain.tripCollection)
             .child(generateLocationID)
 
         val passengerBookingModel = PassengerBookingModel(
+            fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
@@ -905,8 +940,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun storeSeniorLocationInfoToDatabase(
-        point: Point, firstname: String, lastname: String, userType: String,
-        profilePicture: String, medicalCondition: String, generateLocationID: String
+        fcmToken: String,
+        point: Point,
+        firstname: String,
+        lastname: String,
+        userType: String,
+        profilePicture: String,
+        medicalCondition: String,
+        generateLocationID: String
     ) {
 
         val database = FirebaseDatabase.getInstance()
@@ -914,6 +955,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             .child(generateLocationID)
 
         val passengerBookingModel = PassengerBookingModel(
+            fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
             bookingID = generateLocationID,
             bookingStatus = "Waiting",
@@ -979,6 +1021,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             "A Driver has accepted your Booking and is on the way to your location"
         )
     }
+
     private fun showPassengerOwnBookingInfoDialog(bookingID: String) {
 
         val binding: DialogPassengerOwnBookingInfoBinding =

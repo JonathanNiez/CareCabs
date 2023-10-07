@@ -19,6 +19,8 @@ public class FirebaseCloudMessaging extends FirebaseMessagingService {
 			sendChatNotification(message);
 		} else if (message.getData().containsKey("passenger")) {
 			sendPassengerWaitingNotification();
+		}else if (message.getData().containsKey("driverOTW")) {
+			sendDriverOTWNotification(message);
 		}
 	}
 
@@ -29,7 +31,12 @@ public class FirebaseCloudMessaging extends FirebaseMessagingService {
 
 	private void sendPassengerWaitingNotification() {
 		NotificationHelper notificationHelper = new NotificationHelper(this);
-		notificationHelper.showChatNotification("CareCabs",
+		notificationHelper.showPassengersWaitingNotification("CareCabs",
 				"Passenger Waiting");
+	}
+	private void sendDriverOTWNotification(RemoteMessage message) {
+		NotificationHelper notificationHelper = new NotificationHelper(this);
+		notificationHelper.showDriverOTWNotification("CareCabs",
+				"Your Driver is on the way\n" + message.getData().get("driverOTW"));
 	}
 }

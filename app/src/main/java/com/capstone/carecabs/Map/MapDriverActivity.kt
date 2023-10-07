@@ -1,4 +1,4 @@
-package com.capstone.carecabs
+package com.capstone.carecabs.Map
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -28,10 +28,15 @@ import androidx.core.content.ContextCompat
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.Fragments.ModalBottomSheet
 import com.capstone.carecabs.Fragments.PassengerBookingsBottomSheet
+import com.capstone.carecabs.HelpActivity
+import com.capstone.carecabs.LoginActivity
+import com.capstone.carecabs.MainActivity
 import com.capstone.carecabs.Model.BottomSheetData
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.PickupPassengerBottomSheetData
 import com.capstone.carecabs.Model.TripModel
+import com.capstone.carecabs.R
+import com.capstone.carecabs.TripsActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
@@ -884,7 +889,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
         Toast.makeText(
             this@MapDriverActivity,
-            "Navigation to Passenger",
+            "Navigating to Passenger",
             Toast.LENGTH_LONG
         ).show()
 

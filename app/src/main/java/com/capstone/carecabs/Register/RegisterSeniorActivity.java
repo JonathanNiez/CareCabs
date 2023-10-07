@@ -1,4 +1,4 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Register;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -34,7 +34,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Fragments.EditAccountFragment;
+import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.LoginOrRegisterActivity;
+import com.capstone.carecabs.MainActivity;
+import com.capstone.carecabs.R;
+import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;

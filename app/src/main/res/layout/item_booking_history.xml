@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_margin="10dp"
 	android:layout_marginBottom="5dp"
 	app:cardBackgroundColor="@color/white"
@@ -20,89 +20,67 @@
 			android:id="@+id/bookingDateTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_bold"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Date"
+			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
-
-		<LinearLayout
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:gravity="center"
-			android:orientation="horizontal">
-
-			<LinearLayout
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:orientation="vertical">
-
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="3dp"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="5dp"
-					android:text="From"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-				<TextView
-					android:id="@+id/currentLocationTextView"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="3dp"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="5dp"
-					android:text="Current Location"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="1"
-				android:orientation="vertical">
-
-				<TextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="3dp"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="5dp"
-					android:text="To"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-				<TextView
-					android:id="@+id/destinationLocationTextView"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="3dp"
-					android:fontFamily="@font/opensans_bold"
-					android:padding="5dp"
-					android:text="Destination Location"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-			</LinearLayout>
-
-		</LinearLayout>
 
 		<TextView
 			android:id="@+id/bookingStatusTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/opensans_bold"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Status"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="3dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="5dp"
+			android:text="Pickup:"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<TextView
+			android:id="@+id/pickupLocationTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="3dp"
+			android:fontFamily="@font/gabarito_medium"
+			android:padding="5dp"
+			android:text="Current Location"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="3dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="5dp"
+			android:text="Destination:"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<TextView
+			android:id="@+id/destinationLocationTextView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="3dp"
+			android:fontFamily="@font/gabarito_medium"
+			android:padding="5dp"
+			android:text="Destination Location"
+			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
@@ -120,7 +98,6 @@
 			android:layout_width="200dp"
 			android:layout_height="200dp"
 			android:src="@drawable/loading_gif" />
-
 
 	</LinearLayout>
 

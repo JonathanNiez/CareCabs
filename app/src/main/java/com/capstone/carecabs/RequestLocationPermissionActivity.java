@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.databinding.ActivityRequestLocationPermissionBinding;
 
 import org.checkerframework.checker.nullness.qual.NonNull;

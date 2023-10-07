@@ -3,26 +3,36 @@ package com.capstone.carecabs.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.ChatDriverActivity;
-import com.capstone.carecabs.ChatPassengerActivity;
+import com.capstone.carecabs.Chat.ChatDriverActivity;
+import com.capstone.carecabs.Chat.ChatPassengerActivity;
+import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.Model.ChatModel;
 import com.capstone.carecabs.Model.ChatOverviewModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemChatOverviewBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapter.ChatOverviewViewHolder> {
+	private final String TAG = "ChatOverviewAdapter";
 	private Context context;
 	private ArrayList<ChatOverviewModel> chatOverviewModelArrayList;
 	private ChatOverviewOnClickListener chatOverviewOnClickListener;
+	private String recentMessage;
 
 	public interface ChatOverviewOnClickListener {
 		void onChatOverviewItemClick(ChatOverviewModel chatOverviewModel);
@@ -53,6 +63,8 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 				+ " " + chatOverviewModel.getLastname());
 		holder.binding.chatUserTypeTextView.setText(chatOverviewModel.getUserType());
 
+		recentMessage(chatOverviewModel.getUserID(), holder.binding.recentMessageTextView);
+
 		if (!chatOverviewModel.getProfilePicture().equals("default")) {
 			Glide.with(context)
 					.load(chatOverviewModel.getProfilePicture())
@@ -78,6 +90,52 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 				intent.putExtra("fcmToken", chatOverviewModel.getFcmToken());
 				context.startActivity(intent);
 
+			}
+		});
+	}
+
+	private void recentMessage(String chatUserID, TextView recentMessageTextView) {
+		recentMessage = "default";
+
+		String currentUserID = FirebaseMain.getUser().getUid();
+		DatabaseReference databaseReference = FirebaseDatabase
+				.getInstance().getReference(FirebaseMain.chatCollection);
+
+		databaseReference.addValueEventListener(new ValueEventListener() {
+			@SuppressLint("SetTextI18n")
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+						ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
+						if (chatModel != null) {
+							if (chatModel.getReceiver().equals(currentUserID) && chatModel.getSender().equals(chatUserID) ||
+									chatModel.getReceiver().equals(chatUserID) && chatModel.getSender().equals(currentUserID)) {
+
+								recentMessage= chatModel.getMessage();
+							}
+						}
+					}
+
+					switch (recentMessage){
+						case "default":
+							recentMessageTextView.setText("No message");
+
+							break;
+
+						default:
+							recentMessageTextView.setText(recentMessage);
+
+
+							break;
+					}
+					recentMessage = "default";
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, "onCancelled: " + error.getMessage());
 			}
 		});
 	}

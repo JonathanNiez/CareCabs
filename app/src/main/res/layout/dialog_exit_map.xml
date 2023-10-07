@@ -3,15 +3,10 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:gravity="center"
 	android:background="@color/orange"
+	android:gravity="center"
 	android:orientation="vertical">
 
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
-		android:src="@drawable/location_64_2" />
 
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
@@ -27,6 +22,13 @@
 			android:orientation="vertical"
 			android:padding="5dp">
 
+			<ImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:src="@drawable/location_64_2" />
+
+
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -41,7 +43,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/gabarito_semibold"
+				android:fontFamily="@font/gabarito_medium"
 				android:text="Are you sure you want to Exit the Map?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
@@ -61,11 +63,11 @@
 			android:id="@+id/cancelBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
-			android:layout_marginEnd="5dp"
+			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
-			android:fontFamily="@font/opensans_bold"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Cancel"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
@@ -75,11 +77,11 @@
 			android:id="@+id/exitBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
-			android:layout_marginStart="5dp"
+			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/light_red"
 			android:elevation="5dp"
-			android:fontFamily="@font/opensans_bold"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Exit"
 			android:textColor="@color/white"
 			android:textSize="17sp" />

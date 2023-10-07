@@ -184,7 +184,7 @@
 
 		<LinearLayout
 			android:id="@+id/chatPassengerBtn"
-			android:layout_width="220dp"
+			android:layout_width="240dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"
@@ -195,7 +195,6 @@
 			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_gravity="start|center_vertical"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="CHAT PASSENGER"
@@ -206,7 +205,6 @@
 			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_gravity="end|center_vertical"
 				android:layout_margin="5dp"
 				android:src="@drawable/chat_32_white" />
 

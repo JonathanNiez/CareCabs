@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.ChatPassengerActivity;
+import com.capstone.carecabs.Chat.ChatPassengerActivity;
+import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
+import com.capstone.carecabs.PassengerBookingsOverviewActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemPassengersBinding;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
@@ -34,20 +36,24 @@ import retrofit2.Response;
 
 public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
 	private final String TAG = "PassengerBookingsAdapter";
-	private Context context;
-	private final List<PassengerBookingModel> passengerBookingModelList;
-	private ItemPassengerClickListener itemPassengerClickListener;
+	private Intent intent;
 
 	public interface ItemPassengerClickListener {
 		void onPassengerItemClick(PassengerBookingModel passengerBookingModel);
 	}
 
+	private ItemPassengerClickListener itemPassengerClickListener;
+	private Context context;
+	private List<PassengerBookingModel> passengerBookingModelList;
+	private PassengerBookingsOverviewActivity passengerBookingsOverviewActivity;
+
 	public PassengerBookingsAdapter(Context context,
 	                                List<PassengerBookingModel> passengerBookingModelList,
-	                                ItemPassengerClickListener itemPassengerClickListener) {
+	                                PassengerBookingsOverviewActivity passengerBookingsOverviewActivity
+	) {
 		this.context = context;
 		this.passengerBookingModelList = passengerBookingModelList;
-		this.itemPassengerClickListener = itemPassengerClickListener;
+		this.passengerBookingsOverviewActivity = passengerBookingsOverviewActivity;
 	}
 
 	@NonNull
@@ -62,7 +68,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 	@Override
 	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
 		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
-
+		holder.binding.chatPassengerBtn.setVisibility(View.GONE);
 		String fullName = passengerBookingModel.getPassengerFirstname() + " " + passengerBookingModel.getPassengerLastname();
 
 		holder.binding.passengerName.setText(fullName);
@@ -99,13 +105,19 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			@Override
 			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
+				if (response.isSuccessful()) {
+					if (response.body() != null && !response.body().features().isEmpty()) {
+						CarmenFeature feature = response.body().features().get(0);
+						String locationName = feature.placeName();
 
-					holder.binding.pickupLocationTextView.setText(locationName);
+						holder.binding.pickupLocationTextView.setText(locationName);
+					} else {
+						Log.e(TAG, "onResponse: ");
+						holder.binding.pickupLocationTextView.setText("Location not found");
+					}
 				} else {
 					Log.e(TAG, response.message());
+
 					holder.binding.pickupLocationTextView.setText("Location not found");
 				}
 			}
@@ -132,11 +144,16 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			@Override
 			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
+				if (response.isSuccessful()) {
+					if (response.body() != null && !response.body().features().isEmpty()) {
+						CarmenFeature feature = response.body().features().get(0);
+						String locationName = feature.placeName();
 
-					holder.binding.destinationLocationTextView.setText(locationName);
+						holder.binding.destinationLocationTextView.setText(locationName);
+					} else {
+
+						holder.binding.destinationLocationTextView.setText("Location not found");
+					}
 				} else {
 					Log.e(TAG, response.message());
 
@@ -156,38 +173,31 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 
 		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);
-			holder.binding.chatPassengerBtn.setVisibility(View.GONE);
 		}
 		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
 
 		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.chatPassengerBtn.setVisibility(View.VISIBLE);
 			holder.binding.viewBtn.setVisibility(View.GONE);
 
 			holder.binding.chatPassengerBtn.setOnClickListener(view -> {
-				if (itemPassengerClickListener != null) {
-					itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
-
-					Intent intent = new Intent(context, ChatPassengerActivity.class);
-					intent.putExtra("passengerID", passengerBookingModel.getPassengerUserID());
-					intent.putExtra("bookingID", passengerBookingModel.getBookingID());
-
-					// Add the FLAG_ACTIVITY_NEW_TASK flag
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-					// Check if context is an instance of Activity before starting the activity
-					if (context instanceof Activity) {
-						((Activity) context).startActivity(intent);
-					} else {
-						// If context is not an Activity, use the application context
-						context.getApplicationContext().startActivity(intent);
-					}
-				}
+				intent = new Intent(context, ChatPassengerActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra("chatUserID", passengerBookingModel.getPassengerUserID());
+				intent.putExtra("bookingID", passengerBookingModel.getBookingID());
+				intent.putExtra("firstname", passengerBookingModel.getPassengerFirstname());
+				intent.putExtra("lastname", passengerBookingModel.getPassengerLastname());
+				intent.putExtra("profilePicture", passengerBookingModel.getPassengerProfilePicture());
+				intent.putExtra("fcmToken", passengerBookingModel.getFcmToken());
+				context.startActivity(intent);
 			});
 		}
 
 		holder.binding.viewBtn.setOnClickListener(view -> {
-			if (itemPassengerClickListener != null) {
-				itemPassengerClickListener.onPassengerItemClick(passengerBookingModelList.get(position));
+			if (passengerBookingsOverviewActivity != null) {
+				intent = new Intent(context, MapDriverActivity.class);
+				context.startActivity(intent);
+				passengerBookingsOverviewActivity.finish();
 			}
 		});
 	}

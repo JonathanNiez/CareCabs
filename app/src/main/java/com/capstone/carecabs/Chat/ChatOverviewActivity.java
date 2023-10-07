@@ -1,4 +1,4 @@
-package com.capstone.carecabs;
+package com.capstone.carecabs.Chat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +38,8 @@ public class ChatOverviewActivity extends AppCompatActivity {
 	private final String TAG = "ChatOverviewActivity";
 	private List<String> stringUsersList;
 	private ActivityChatOverviewBinding binding;
+	private boolean hasAvailableChats = false;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,18 +86,29 @@ public class ChatOverviewActivity extends AppCompatActivity {
 							String chatStatus = chatModel.getChatStatus();
 
 							if (chatStatus.equals("available")) {
-
 								if (senderID.equals(currentUserID)) {
 									stringUsersList.add(receiverID);
+									hasAvailableChats = true;
 
 								}
 								if (receiverID.equals(currentUserID)) {
 									stringUsersList.add(senderID);
+									hasAvailableChats = true;
+
 								}
 							}
 						}
 					}
-					showRecentChats();
+					if (hasAvailableChats) {
+						binding.noAvailableChatsTextView.setVisibility(View.GONE);
+						showRecentChats();
+					} else {
+						binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
+						binding.loadingLayout.setVisibility(View.GONE);
+					}
+				}else {
+					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
+					binding.loadingLayout.setVisibility(View.GONE);
 				}
 			}
 
@@ -114,17 +127,17 @@ public class ChatOverviewActivity extends AppCompatActivity {
 		CollectionReference collectionReference = FirebaseMain
 				.getFireStoreInstance().collection(FirebaseMain.userCollection);
 
-		ChatOverviewAdapter chatOverviewAdapter = new ChatOverviewAdapter(this, chatOverviewModelList, chatOverviewModel -> {
-
-		});
-
+		ChatOverviewAdapter chatOverviewAdapter = new ChatOverviewAdapter(
+				this,
+				chatOverviewModelList,
+				chatOverviewModel -> {
+				});
 		binding.chatOverviewRecyclerView.setAdapter(chatOverviewAdapter);
 
 		collectionReference.addSnapshotListener((value, error) -> {
 			if (value != null) {
 				chatOverviewModelList.clear();
 				binding.loadingLayout.setVisibility(View.GONE);
-				boolean hasAvailableChats = false;
 
 				for (QueryDocumentSnapshot recentChatSnapshot : value) {
 					ChatOverviewModel chatOverviewModel = recentChatSnapshot.toObject(ChatOverviewModel.class);
@@ -137,15 +150,14 @@ public class ChatOverviewActivity extends AppCompatActivity {
 						}
 					}
 				}
-
 				chatOverviewAdapter.notifyDataSetChanged();
 
 				if (hasAvailableChats) {
 					binding.noAvailableChatsTextView.setVisibility(View.GONE);
 				} else {
 					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
+					binding.loadingLayout.setVisibility(View.GONE);
 				}
-				Log.i(TAG, "Displaying Recent Chat");
 			} else {
 				Log.e(TAG, error.getMessage());
 			}

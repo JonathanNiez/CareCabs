@@ -3,6 +3,8 @@ package com.capstone.carecabs.Model
 data class CurrentBookingModel(
     val passengerUserID: String = "",
     val driverUserID: String = "",
+    val vehicleColor: String = "",
+    val vehiclePlateNumber: String = "",
     val bookingID: String = "",
     val tripID: String = "",
     val bookingStatus: String = "",

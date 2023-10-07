@@ -2,17 +2,12 @@ package com.capstone.carecabs.Fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -24,43 +19,32 @@ import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
-import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
-import com.capstone.carecabs.MapDriverActivity;
-import com.capstone.carecabs.MapPassengerActivity;
-import com.capstone.carecabs.PassengerBookingsOverview;
+import com.capstone.carecabs.Map.MapDriverActivity;
+import com.capstone.carecabs.Map.MapPassengerActivity;
+import com.capstone.carecabs.PassengerBookingsOverviewActivity;
 import com.capstone.carecabs.R;
-import com.capstone.carecabs.RegisterDriverActivity;
-import com.capstone.carecabs.RegisterPWDActivity;
-import com.capstone.carecabs.RegisterSeniorActivity;
+import com.capstone.carecabs.Register.RegisterDriverActivity;
+import com.capstone.carecabs.Register.RegisterPWDActivity;
+import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 	private final String TAG = "HomeFragment";
@@ -396,7 +380,7 @@ public class HomeFragment extends Fragment {
 
 									binding.bookingsTextView.setText("Passenger Bookings");
 									binding.bookingsBtn.setOnClickListener(v -> {
-										intent = new Intent(getActivity(), PassengerBookingsOverview.class);
+										intent = new Intent(getActivity(), PassengerBookingsOverviewActivity.class);
 										startActivity(intent);
 									});
 

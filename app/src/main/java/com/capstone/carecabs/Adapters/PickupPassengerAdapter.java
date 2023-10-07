@@ -9,13 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.capstone.carecabs.ChatPassengerActivity;
+import com.capstone.carecabs.Chat.ChatPassengerActivity;
 import com.capstone.carecabs.Model.PickupPassengerModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemPickupPassengerBinding;
@@ -58,6 +57,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 		return new PickupPassengerViewHolder(binding);
 	}
 
+	@SuppressLint("SetTextI18n")
 	@Override
 	public void onBindViewHolder(@NonNull PickupPassengerAdapter.PickupPassengerViewHolder holder, int position) {
 		PickupPassengerModel pickupPassengerModel = pickupPassengerModelList.get(position);
@@ -94,22 +94,29 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 				.build();
 
 		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("LongLogTag")
+			@SuppressLint({"LongLogTag", "SetTextI18n"})
 			@Override
 			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
+				if (response.isSuccessful()) {
+					if (response.body() != null && !response.body().features().isEmpty()) {
+						CarmenFeature feature = response.body().features().get(0);
+						String locationName = feature.placeName();
 
-					holder.binding.pickupLocationTextView.setText(locationName);
+						holder.binding.pickupLocationTextView.setText(locationName);
+					} else {
+
+						holder.binding.pickupLocationTextView.setText("Location not found");
+					}
 				} else {
 					Log.e(TAG, response.message());
 					holder.binding.pickupLocationTextView.setText("Location not found");
+
 				}
+
 			}
 
-			@SuppressLint("LongLogTag")
+			@SuppressLint({"LongLogTag", "SetTextI18n"})
 			@Override
 			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                      @androidx.annotation.NonNull Throwable t) {
@@ -127,7 +134,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
 				.build();
 		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("LongLogTag")
+			@SuppressLint({"LongLogTag", "SetTextI18n"})
 			@Override
 			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
@@ -143,7 +150,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 				}
 			}
 
-			@SuppressLint("LongLogTag")
+			@SuppressLint({"LongLogTag", "SetTextI18n"})
 			@Override
 			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
 			                      @androidx.annotation.NonNull Throwable t) {
@@ -164,35 +171,26 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 			holder.binding.renavigateBtn.setVisibility(View.VISIBLE);
 
 			holder.binding.renavigateBtn.setOnClickListener(v -> {
-				if (pickupPassengerClickListener != null){
+				if (pickupPassengerClickListener != null) {
 					pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
 				}
 			});
 
 			holder.binding.chatPassengerBtn.setOnClickListener(view -> {
-				if (pickupPassengerClickListener != null) {
-					pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
-
-					Intent intent = new Intent(context, ChatPassengerActivity.class);
-					intent.putExtra("passengerID", pickupPassengerModel.getPassengerUserID());
-					intent.putExtra("bookingID", pickupPassengerModel.getBookingID());
-
-					// Add the FLAG_ACTIVITY_NEW_TASK flag
-					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-					// Check if context is an instance of Activity before starting the activity
-					if (context instanceof Activity) {
-						((Activity) context).startActivity(intent);
-					} else {
-						// If context is not an Activity, use the application context
-						context.getApplicationContext().startActivity(intent);
-					}
-				}
+				Intent intent = new Intent(context, ChatPassengerActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra("chatUserID", pickupPassengerModel.getPassengerUserID());
+				intent.putExtra("bookingID", pickupPassengerModel.getBookingID());
+				intent.putExtra("firstname", pickupPassengerModel.getPassengerFirstname());
+				intent.putExtra("lastname", pickupPassengerModel.getPassengerLastname());
+				intent.putExtra("profilePicture", pickupPassengerModel.getPassengerProfilePicture());
+				intent.putExtra("fcmToken", pickupPassengerModel.getFcmToken());
+				context.startActivity(intent);
 			});
 		}
 
 		holder.binding.pickupBtn.setOnClickListener(v -> {
-			if (pickupPassengerClickListener != null){
+			if (pickupPassengerClickListener != null) {
 				pickupPassengerClickListener.onPickupPassengerItemClick(pickupPassengerModelList.get(position));
 			}
 		});

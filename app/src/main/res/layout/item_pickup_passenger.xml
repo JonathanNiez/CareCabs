@@ -184,7 +184,7 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/renavigateBtn"
-			android:layout_width="130dp"
+			android:layout_width="150dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"
@@ -196,7 +196,7 @@
 
 		<LinearLayout
 			android:id="@+id/chatPassengerBtn"
-			android:layout_width="220dp"
+			android:layout_width="230dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"

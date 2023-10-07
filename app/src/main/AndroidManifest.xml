@@ -31,10 +31,10 @@
         android:theme="@style/Theme.CareCabs"
         tools:targetApi="31" >
         <activity
-            android:name=".ChatPassengerActivity"
+            android:name=".Chat.ChatPassengerActivity"
             android:exported="false" />
         <activity
-            android:name=".ChatOverviewActivity"
+            android:name=".Chat.ChatOverviewActivity"
             android:exported="false" />
         <activity
             android:name=".TripFeedbackActivity"
@@ -46,7 +46,7 @@
             android:name=".TripActivity"
             android:exported="false" />
         <activity
-            android:name=".ChatDriverActivity"
+            android:name=".Chat.ChatDriverActivity"
             android:exported="false" />
         <activity
             android:name=".HelpActivity"
@@ -55,13 +55,13 @@
             android:name=".TripsActivity"
             android:exported="false" />
         <activity
-            android:name=".PassengerBookingsOverview"
+            android:name=".PassengerBookingsOverviewActivity"
             android:exported="false" />
         <activity
             android:name=".LoginOrRegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".MapPassengerActivity"
+            android:name=".Map.MapPassengerActivity"
             android:exported="false" />
         <activity
             android:name=".RequestLocationPermissionActivity"
@@ -82,25 +82,25 @@
             android:name=".LoggingOutActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterPWDActivity"
+            android:name=".Register.RegisterPWDActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterSeniorActivity"
+            android:name=".Register.RegisterSeniorActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".Register.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterDriverActivity"
+            android:name=".Register.RegisterDriverActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterUserTypeActivity"
+            android:name=".Register.RegisterUserTypeActivity"
             android:exported="false" />
         <activity
             android:name=".GetStartedActivity"
             android:exported="false" />
         <activity
-            android:name=".MapDriverActivity"
+            android:name=".Map.MapDriverActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"

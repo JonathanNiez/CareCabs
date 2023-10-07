@@ -22,6 +22,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.RequestManager;
+import com.capstone.carecabs.Register.RegisterDriverActivity;
+import com.capstone.carecabs.Register.RegisterPWDActivity;
+import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;

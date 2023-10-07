@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BookingHistoryFragment extends Fragment {
 	private final String TAG = "BookingHistoryFragment";
@@ -62,34 +64,38 @@ public class BookingHistoryFragment extends Fragment {
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
+			List<BookingsHistoryModel> bookingsHistoryModelList = new ArrayList<>();
+			BookingsHistoryAdapter bookingsHistoryAdapter =
+					new BookingsHistoryAdapter(
+							context,
+							bookingsHistoryModelList);
+			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+			binding.bookingHistoryRecyclerView.setAdapter(bookingsHistoryAdapter);
 			databaseReference.addValueEventListener(new ValueEventListener() {
+				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
-						List<BookingsHistoryModel> bookingsHistoryModelList = new ArrayList<>();
-
+						bookingsHistoryModelList.clear();
+						boolean hasBookingsHistory = false;
 						for (DataSnapshot bookingHistorySnapshot : snapshot.getChildren()) {
 							BookingsHistoryModel bookingsHistoryModel =
 									bookingHistorySnapshot.getValue(BookingsHistoryModel.class);
 							if (bookingsHistoryModel != null) {
-								if (bookingsHistoryModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
+								if (bookingsHistoryModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
+								&& !bookingsHistoryModel.getBookingStatus().equals("Driver on the way")) {
 									bookingsHistoryModelList.add(bookingsHistoryModel);
-
-									BookingsHistoryAdapter bookingsHistoryAdapter =
-											new BookingsHistoryAdapter(
-													context,
-													bookingsHistoryModelList);
-									binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
-									binding.bookingHistoryRecyclerView.setAdapter(bookingsHistoryAdapter);
-								} else {
-									binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
+									hasBookingsHistory = true;
 								}
-							} else {
-								binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
 							}
 						}
-					} else {
-						binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
+						bookingsHistoryAdapter.notifyDataSetChanged();
+						if (hasBookingsHistory) {
+							binding.noBookingsHistoryTextView.setVisibility(View.GONE);
+
+						} else {
+							binding.noBookingsHistoryTextView.setVisibility(View.VISIBLE);
+						}
 					}
 				}
 
@@ -102,7 +108,7 @@ public class BookingHistoryFragment extends Fragment {
 		} else {
 			Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 
@@ -124,7 +130,6 @@ public class BookingHistoryFragment extends Fragment {
 		binding.pickupBtn.setOnClickListener(view -> {
 
 		});
-
 
 		bookingInfoDialog = builder.create();
 		bookingInfoDialog.show();
