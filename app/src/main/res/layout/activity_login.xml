@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
@@ -48,7 +48,7 @@
 				app:cardCornerRadius="20dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -136,11 +136,11 @@
 						android:textColor="@color/white"
 						android:textSize="17sp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
@@ -170,9 +170,9 @@
 					android:textColor="@color/white"
 					android:textSize="17sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/progressBarLayout"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -194,24 +194,40 @@
 					android:layout_height="100dp"
 					android:src="@drawable/loading_gif" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<androidx.appcompat.widget.AppCompatButton
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/loginBtn"
-				android:layout_width="130dp"
+				android:layout_width="160dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:text="Login"
-				android:textColor="@color/white"
-				android:textSize="17sp" />
+				android:gravity="center"
+				android:orientation="horizontal">
 
-			<LinearLayout
+				<androidx.appcompat.widget.AppCompatTextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="LOGIN"
+					android:textAlignment="textStart"
+					android:textColor="@color/white"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:src="@drawable/login_32_white" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/googleLoginBtn"
-				android:layout_width="270dp"
+				android:layout_width="280dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="10dp"
 				android:background="@drawable/smooth_edge_button"
@@ -243,24 +259,42 @@
 					android:layout_marginBottom="5dp"
 					android:src="@drawable/google_64" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<androidx.appcompat.widget.AppCompatButton
+
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/backBtn"
-				android:layout_width="130dp"
+				android:layout_width="160dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="50dp"
 				android:layout_marginBottom="50dp"
 				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/platinum"
-				android:drawableStart="@drawable/back_50_2"
+				android:backgroundTint="@color/light_gray"
 				android:elevation="5dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:text="Back"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:gravity="center"
+				android:orientation="horizontal">
 
-		</LinearLayout>
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:src="@drawable/back_50_2" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="BACK"
+					android:textAlignment="textStart"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</ScrollView>
 

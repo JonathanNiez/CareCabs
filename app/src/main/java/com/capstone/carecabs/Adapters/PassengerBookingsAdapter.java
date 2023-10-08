@@ -178,7 +178,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 
 		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 			holder.binding.chatPassengerBtn.setVisibility(View.VISIBLE);
-			holder.binding.viewBtn.setVisibility(View.GONE);
+			holder.binding.viewOnMapBtn.setVisibility(View.GONE);
 
 			holder.binding.chatPassengerBtn.setOnClickListener(view -> {
 				intent = new Intent(context, ChatPassengerActivity.class);
@@ -193,7 +193,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 			});
 		}
 
-		holder.binding.viewBtn.setOnClickListener(view -> {
+		holder.binding.viewOnMapBtn.setOnClickListener(view -> {
 			if (passengerBookingsOverviewActivity != null) {
 				intent = new Intent(context, MapDriverActivity.class);
 				context.startActivity(intent);

@@ -7,41 +7,41 @@
 	android:background="@color/tomato"
 	tools:context=".LoginOrRegisterActivity">
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="350dp"
 		android:layout_height="350dp"
 		android:layout_alignParentTop="true"
 		android:layout_centerInParent="true"
-		android:src="@drawable/bg_1" />
+		app:srcCompat="@drawable/bg_1" />
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="350dp"
 		android:layout_height="350dp"
 		android:layout_alignParentBottom="true"
 		android:layout_centerInParent="true"
-		android:src="@drawable/bg_1" />
+		app:srcCompat="@drawable/bg_1" />
 
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
-		android:layout_margin="20dp"
+		android:layout_margin="10dp"
 		app:cardBackgroundColor="@color/vermillion"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<ImageView
+			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="300dp"
 				android:layout_height="100dp"
 				android:layout_margin="10dp"
-				android:src="@drawable/logo_2_transparent" />
+				app:srcCompat="@drawable/logo_2_transparent" />
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
@@ -50,14 +50,14 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
@@ -68,7 +68,7 @@
 						android:textColor="@color/black"
 						android:textSize="22sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
@@ -79,21 +79,21 @@
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
 						android:gravity="center"
 						android:orientation="horizontal">
 
-						<LinearLayout
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
 							android:gravity="center"
 							android:orientation="vertical">
 
-							<TextView
+							<androidx.appcompat.widget.AppCompatTextView
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
@@ -103,29 +103,44 @@
 								android:textColor="@color/black"
 								android:textSize="17sp" />
 
-							<androidx.appcompat.widget.AppCompatButton
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/loginBtn"
-								android:layout_width="130dp"
+								android:layout_width="160dp"
 								android:layout_height="50dp"
-								android:layout_margin="10dp"
+								android:layout_margin="5dp"
 								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/yinmn_blue"
-								android:elevation="5dp"
-								android:fontFamily="@font/gabarito_semibold"
-								android:text="Login"
-								android:textColor="@color/white"
-								android:textSize="17sp" />
+								android:gravity="center"
+								android:orientation="horizontal">
 
-						</LinearLayout>
+								<androidx.appcompat.widget.AppCompatTextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="LOGIN"
+									android:textAlignment="textStart"
+									android:textColor="@color/white"
+									android:textSize="17sp" />
 
-						<LinearLayout
+								<androidx.appcompat.widget.AppCompatImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/login_32_white" />
+
+							</androidx.appcompat.widget.LinearLayoutCompat>
+
+						</androidx.appcompat.widget.LinearLayoutCompat>
+
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
 							android:gravity="center"
 							android:orientation="vertical">
 
-							<TextView
+							<androidx.appcompat.widget.AppCompatTextView
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
@@ -135,29 +150,44 @@
 								android:textColor="@color/black"
 								android:textSize="17sp" />
 
-							<androidx.appcompat.widget.AppCompatButton
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/registerBtn"
-								android:layout_width="130dp"
+								android:layout_width="160dp"
 								android:layout_height="50dp"
-								android:layout_margin="10dp"
+								android:layout_margin="5dp"
 								android:background="@drawable/smooth_edge_button"
 								android:backgroundTint="@color/blue"
-								android:elevation="5dp"
-								android:fontFamily="@font/gabarito_semibold"
-								android:text="Register"
-								android:textColor="@color/white"
-								android:textSize="17sp" />
+								android:gravity="center"
+								android:orientation="horizontal">
 
-						</LinearLayout>
+								<androidx.appcompat.widget.AppCompatTextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="REGISTER"
+									android:textAlignment="textStart"
+									android:textColor="@color/white"
+									android:textSize="17sp" />
 
-					</LinearLayout>
+								<androidx.appcompat.widget.AppCompatImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:src="@drawable/login_32_white" />
+
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 
-				</LinearLayout>
+						</androidx.appcompat.widget.LinearLayoutCompat>
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 

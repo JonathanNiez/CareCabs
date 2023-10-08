@@ -8,7 +8,7 @@
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
@@ -27,14 +27,14 @@
 			android:textColor="@color/black"
 			android:textSize="20sp" />
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:gravity="center"
 			android:orientation="horizontal">
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2"
@@ -51,9 +51,9 @@
 					app:civ_border_color="@color/black"
 					app:civ_border_width="2dp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
 				android:layout_weight="2"
@@ -71,7 +71,7 @@
 					android:textColor="@color/black"
 					android:textSize="22sp" />
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
@@ -98,11 +98,11 @@
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingDate"
@@ -170,46 +170,67 @@
 			android:textColor="@color/black"
 			android:textSize="20sp" />
 
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/viewBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
-			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="View"
-			android:textColor="@color/white"
-			android:textSize="17sp" />
 
-		<LinearLayout
-			android:id="@+id/chatPassengerBtn"
-			android:layout_width="240dp"
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:id="@+id/viewOnMapBtn"
+			android:layout_width="230dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
 			android:gravity="center"
 			android:orientation="horizontal">
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:layout_gravity="start|center_vertical"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
-				android:text="CHAT PASSENGER"
-				android:textAlignment="textStart"
+				android:text="VIEW ON MAP"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
+				android:layout_margin="5dp"
+				android:src="@drawable/map_32_white" />
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:id="@+id/chatPassengerBtn"
+			android:layout_width="240dp"
+			android:layout_height="50dp"
+			android:layout_margin="10dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:gravity="center"
+			android:orientation="horizontal">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="start|center_vertical"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:text="CHAT PASSENGER"
+				android:textColor="@color/white"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|center_vertical"
 				android:layout_margin="5dp"
 				android:src="@drawable/chat_32_white" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>
