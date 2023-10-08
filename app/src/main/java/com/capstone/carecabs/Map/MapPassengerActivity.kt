@@ -292,7 +292,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.zoomOutImgBtn.visibility = View.VISIBLE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(8.0)
+                .zoom(12.0)
                 .center(coordinate)
                 .build()
         )
@@ -303,7 +303,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.zoomOutImgBtn.visibility = View.GONE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(6.0)
+                .zoom(4.0)
                 .center(coordinate)
                 .build()
         )

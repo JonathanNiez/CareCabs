@@ -11,7 +11,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
@@ -24,7 +24,7 @@
 				android:backgroundTint="@color/vermillion"
 				android:elevation="5dp">
 
-				<ImageButton
+				<androidx.appcompat.widget.AppCompatImageButton
 					android:id="@+id/imgBackBtn"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
 					android:background="@color/vermillion"
 					android:src="@drawable/back_50_2" />
 
-				<ImageView
+				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/logo"
 					android:layout_width="200dp"
 					android:layout_height="100dp"
@@ -44,9 +44,9 @@
 					android:layout_marginTop="20dp"
 					android:layout_marginEnd="20dp"
 					android:layout_marginBottom="20dp"
-					android:src="@drawable/logo_2_v2" />
+					app:srcCompat="@drawable/logo_2_v2" />
 
-				<ImageView
+				<androidx.appcompat.widget.AppCompatImageView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_alignParentTop="true"
@@ -56,9 +56,9 @@
 					android:layout_marginTop="20dp"
 					android:layout_marginEnd="20dp"
 					android:layout_marginBottom="20dp"
-					android:src="@drawable/senior_64_2" />
+					app:srcCompat="@drawable/senior_64_2" />
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/textView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -88,7 +88,7 @@
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
@@ -104,7 +104,7 @@
 							app:civ_border_color="@color/black"
 							app:civ_border_width="2dp" />
 
-						<TextView
+						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/textView4"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
 							android:textColor="@color/black"
 							android:textSize="17sp" />
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 				</androidx.cardview.widget.CardView>
 
@@ -129,7 +129,7 @@
 				app:cardCornerRadius="20dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -208,7 +208,7 @@
 
 					</com.google.android.material.textfield.TextInputLayout>
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="20dp"
@@ -263,7 +263,7 @@
 
 						</com.google.android.material.textfield.TextInputLayout>
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="wrap_content"
@@ -285,7 +285,7 @@
 
 					</com.google.android.material.textfield.TextInputLayout>
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -303,14 +303,14 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
@@ -320,7 +320,7 @@
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
@@ -331,11 +331,11 @@
 						android:textSize="17sp" />
 
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/progressBarLayout"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -343,7 +343,7 @@
 				android:gravity="center"
 				android:orientation="vertical">
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:fontFamily="@font/gabarito_bold"
@@ -356,9 +356,9 @@
 					android:layout_height="100dp"
 					android:src="@drawable/loading_gif" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/scanIDLayout"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -379,7 +379,7 @@
 					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-				<ImageButton
+				<androidx.appcompat.widget.AppCompatImageButton
 					android:id="@+id/helpImgBtn"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -390,8 +390,7 @@
 					android:src="@drawable/help_64"
 					android:textSize="20sp" />
 
-			</LinearLayout>
-
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"
@@ -407,9 +406,7 @@
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
-
-		</LinearLayout>
-
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</ScrollView>
 

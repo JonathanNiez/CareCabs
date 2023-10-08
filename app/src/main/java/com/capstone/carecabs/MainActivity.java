@@ -1,7 +1,10 @@
 package com.capstone.carecabs;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +35,7 @@ import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NotificationHelper;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
+import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,8 +48,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
 	private final String TAG = "MainActivity";
+	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private Intent intent;
-	private AlertDialog exitAppDialog;
+	private AlertDialog exitAppDialog, enableLocatonServiceDialog;
 	private AlertDialog.Builder builder;
 	private boolean shouldExit = false;
 	private BadgeDrawable badgeDrawable;
@@ -67,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		super.onDestroy();
 
 		closeExitConfirmationDialog();
+		closeEnableLocationServiceDialog();
 //		updateDriverStatus(false);
 	}
 
@@ -75,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		super.onPause();
 
 		closeExitConfirmationDialog();
+		closeEnableLocationServiceDialog();
 //		updateDriverStatus(false);
 	}
 
@@ -106,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			} else if (item.getItemId() == R.id.map) {
 
 				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
-					getUserTypeForMap();
+					checkLocationService();
 				} else {
 					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
 					startActivity(intent);
@@ -183,21 +190,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-//	void getToken() {
-//		FirebaseMessaging.getInstance().getToken().addOnSuccessListener(this::updateToken);
-//	}
-//
-//	void updateToken(String token) {
-//		FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-//		DocumentReference documentReference = firebaseFirestore.collection(FirebaseMain.userCollection)
-//				.document(FirebaseMain.getUser().getUid()
-//
-//
-//				);
-//		documentReference.update(BarterApp.KEY_USER_FCM_TOKEN, token)
-//				.addOnSuccessListener(unused -> Log.d("FCM", "Token updated successfully"))
-//				.addOnFailureListener(e -> BarterApp.showToast("Unable to update token"));
-//	}
+	private void checkLocationService() {
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+		if (!isGpsEnabled && !isNetworkEnabled) {
+
+			showEnableLocationServiceDialog();
+		} else {
+			getUserTypeForMap();
+		}
+
+	}
 
 	private void exitApp() {
 		shouldExit = true;
@@ -279,13 +284,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		}
 	}
 
-	private void checkWaitingPassengers() {
+	private void checkForWaitingPassengers() {
 		bookingReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
 		bookingReference.addValueEventListener(new ValueEventListener() {
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				if (snapshot != null && snapshot.exists()) {
+				if (snapshot.exists()) {
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingData =
 								bookingSnapshot.getValue(PassengerBookingModel.class);
@@ -360,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 					if (getUserType.equals("Senior Citizen") || getUserType.equals("Persons with Disability (PWD)")) {
 						checkIfBookingIsAccepted();
 					} else {
-						checkWaitingPassengers();
+						checkForWaitingPassengers();
 					}
 
 				}
@@ -387,6 +392,31 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		NotificationHelper notificationHelper = new NotificationHelper(this);
 		notificationHelper.showPassengersWaitingNotification("CareCabs",
 				"There are Passenger(s) waiting right now. Go to Map to check their location");
+	}
+
+	private void showEnableLocationServiceDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		DialogEnableLocationServiceBinding binding = DialogEnableLocationServiceBinding.inflate(getLayoutInflater());
+		View dialogView = binding.getRoot();
+
+		binding.enableLocationServiceBtn.setOnClickListener(v -> {
+			intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivityForResult(intent, REQUEST_ENABLE_LOCATION);
+
+			closeEnableLocationServiceDialog();
+		});
+
+		builder.setView(dialogView);
+
+		enableLocatonServiceDialog = builder.create();
+		enableLocatonServiceDialog.show();
+	}
+
+	private void closeEnableLocationServiceDialog() {
+		if (enableLocatonServiceDialog != null && enableLocatonServiceDialog.isShowing()) {
+			enableLocatonServiceDialog.dismiss();
+		}
 	}
 
 	private void showExitConfirmationDialog() {
@@ -426,6 +456,21 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+
+		if (requestCode == REQUEST_ENABLE_LOCATION) {
+			// Check if the user enabled location services after going to settings.
+			LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+			if (isGpsEnabled || isNetworkEnabled) {
+				// Location services are now enabled, open your desired activity.
+				getUserTypeForMap();
+			} else {
+				// Location services are still not enabled, you can show a message to the user.
+				Toast.makeText(this, "Location services are still disabled.", Toast.LENGTH_SHORT).show();
+			}
+		}
 
 		editAccountFragment = (EditAccountFragment) getSupportFragmentManager().findFragmentByTag("editAccountFragment");
 

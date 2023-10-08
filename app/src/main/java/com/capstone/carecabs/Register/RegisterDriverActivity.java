@@ -645,15 +645,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		View dialogView = binding.getRoot();
 
-//		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-//		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-//		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
-//		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
-//		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
-//		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
-//		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-//		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
-
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
 				R.array.month,
