@@ -12,7 +12,9 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -39,6 +41,7 @@ import com.capstone.carecabs.R
 import com.capstone.carecabs.TripsActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
+import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.capstone.carecabs.databinding.MapboxPassengerWaitingAnnotationBinding
 import com.google.android.gms.maps.model.LatLng
@@ -345,25 +348,40 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
     private val viewAnnotationMap = mutableMapOf<Point, View>()
 
-    private val TAG: String = "MapActivity"
-    private val LOCATION_PERMISSION_REQUEST_CODE = 123
 
     private companion object {
         private const val BUTTON_ANIMATION_DURATION = 1500L
     }
 
+    private val TAG: String = "MapDriverActivity"
+    private val LOCATION_PERMISSION_REQUEST_CODE = 123
+    private val REQUEST_ENABLE_LOCATION = 1
+
     private lateinit var documentReference: DocumentReference
     private lateinit var collectionReference: CollectionReference
-    private var themeMode: CurrentTheme? = null
-
-
-    //    private lateinit var intent: Intent
     private lateinit var builder: AlertDialog.Builder
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerLocationInfoDialog: AlertDialog
+    private lateinit var enableLocatonServiceDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private lateinit var cancelNavtigationDialog: AlertDialog
     private lateinit var binding: ActivityMapDriverBinding
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        mapboxReplayer.finish()
+        maneuverApi.cancel()
+        routeLineApi.cancel()
+        routeLineView.cancel()
+        speechApi.cancel()
+        voiceInstructionsPlayer.shutdown()
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        showExitMapDialog()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -375,7 +393,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.maneuverView.visibility = View.INVISIBLE
 
         checkIfUserIsVerified()
-        checkLocationPermission()
 
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
@@ -447,22 +464,15 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.soundBtn.unmute()
     }
 
-    data class CurrentTheme(val theme: Int)
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        mapboxReplayer.finish()
-        maneuverApi.cancel()
-        routeLineApi.cancel()
-        routeLineView.cancel()
-        speechApi.cancel()
-        voiceInstructionsPlayer.shutdown()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        showExitMapDialog()
+    private fun checkLocationService() {
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        if (!isGpsEnabled && !isNetworkEnabled) {
+            showEnableLocationServiceDialog()
+        } else {
+            onMapReady()
+        }
     }
 
     private fun onMapReady() {
@@ -473,6 +483,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 loadPassengerLocationToMapFromDatabase()
                 initializeLocationComponent()
                 initializeNavigationComponents()
+
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(
@@ -632,6 +643,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 //                .locationEngine(replayLocationEngine)
                 .build()
         )
+
         // initialize location puck
         binding.mapView.location.apply {
             setLocationProvider(navigationLocationProvider)
@@ -852,6 +864,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
+    //displays the the "you"
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
 
         binding.zoomInImgBtn.setOnClickListener {
@@ -978,6 +991,22 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
         binding.bottomNavigationView.visibility = View.VISIBLE
         binding.fullscreenImgBtn.visibility = View.VISIBLE
+
+    }
+
+    fun calculateTravelTime(distance: Double, averageSpeed: Double): Double {
+        // Distance is in kilometers, averageSpeed is in kilometers per hour
+        return distance / averageSpeed // Travel time in hours
+    }
+
+    fun calculateArrivalTime(travelTime: Double): Long {
+        val currentTimeMillis = System.currentTimeMillis()
+        val travelTimeMillis =
+            (travelTime * 60 * 60 * 1000).toLong() // Convert travel time to milliseconds
+        return currentTimeMillis + travelTimeMillis
+    }
+
+    private fun handleArrival() {
 
     }
 
@@ -1137,7 +1166,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             }
     }
 
-    //start the trip
+    //start the trip when the passenger is on board
     private fun storeTripToDatabase(
         generateTripID: String,
         bookingID: String,
@@ -1207,8 +1236,6 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             }
 
         } else {
-            FirebaseMain.signOutUser()
-
             intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
@@ -1269,6 +1296,29 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
+    private fun showEnableLocationServiceDialog() {
+        builder = AlertDialog.Builder(this)
+        val binding: DialogEnableLocationServiceBinding =
+            DialogEnableLocationServiceBinding.inflate(
+                layoutInflater
+            )
+        val dialogView: View = binding.getRoot()
+        binding.enableLocationServiceBtn.setOnClickListener { v ->
+            intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+            startActivityForResult(intent, REQUEST_ENABLE_LOCATION)
+            closeEnableLocationServiceDialog()
+        }
+        builder.setView(dialogView)
+        enableLocatonServiceDialog = builder.create()
+        enableLocatonServiceDialog.show()
+    }
+
+    private fun closeEnableLocationServiceDialog() {
+        if (enableLocatonServiceDialog.isShowing()) {
+            enableLocatonServiceDialog.dismiss()
+        }
+    }
+
     private fun showExitMapDialog() {
         builder = AlertDialog.Builder(this)
         val dialogView = layoutInflater.inflate(R.layout.dialog_exit_map, null)
@@ -1326,6 +1376,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
+    //passenger location pin onclick
     private fun showBottomSheetDialog(bookingID: String) {
         val data = bookingID
         val modalBottomSheet = ModalBottomSheet.newInstance(data)
@@ -1347,7 +1398,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            onMapReady()
+            checkLocationService()
         } else {
             // Request permission
             ActivityCompat.requestPermissions(
@@ -1355,6 +1406,27 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
             )
+        }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_ENABLE_LOCATION) {
+            // Check if the user enabled location services after going to settings.
+            val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val isNetworkEnabled =
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            if (isGpsEnabled || isNetworkEnabled) {
+                // Location services are now enabled, open your desired activity.
+                onMapReady()
+            } else {
+                // Location services are still not enabled, you can show a message to the user.
+                Toast.makeText(this, "Location services are still disabled.", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }
     }
 

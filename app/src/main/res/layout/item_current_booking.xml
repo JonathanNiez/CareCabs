@@ -16,14 +16,14 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -39,14 +39,14 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
@@ -57,7 +57,7 @@
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/pickupLocationTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
 						android:layout_height="50dp"
 						android:src="@drawable/loading_gif" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
@@ -86,7 +86,7 @@
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/destinationLocationTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -104,12 +104,12 @@
 						android:layout_height="50dp"
 						android:src="@drawable/loading_gif" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 
 			</androidx.cardview.widget.CardView>
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/bookingStatusTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -130,44 +130,57 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverOnTheWayTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Your Driver is on the way"
+						android:textColor="@color/blue"
+						android:textSize="25sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/driverArrivalTimeTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Arrival Time"
+						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/vehicleColorTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Vehicle Color"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/vehiclePlateNumberTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Vehicle Plate Number"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:id="@+id/chatDriverBtn"
 						android:layout_width="200dp"
 						android:layout_height="50dp"
@@ -192,10 +205,9 @@
 							android:layout_margin="5dp"
 							app:srcCompat="@drawable/chat_32_white" />
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
-
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -211,7 +223,7 @@
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 

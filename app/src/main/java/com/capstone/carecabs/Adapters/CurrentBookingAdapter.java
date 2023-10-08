@@ -148,9 +148,12 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
 
 		if (currentBookingModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.bookingStatusTextView.setVisibility(View.GONE);
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
 			holder.binding.driverDetailsLayout.setVisibility(View.VISIBLE);
 
+			holder.binding.driverArrivalTimeTextView.setText("Arrival time:\nEstimated "
+					+ currentBookingModel.getDriverArrivalTime() + " minute(s)");
 			holder.binding.vehicleColorTextView.setText("Vehicle Color: " + currentBookingModel.getVehicleColor());
 			holder.binding.vehiclePlateNumberTextView.setText("Vehicle plate number: " + currentBookingModel.getVehiclePlateNumber());
 			holder.binding.chatDriverBtn.setOnClickListener(v -> {

@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		} else {
 			getUserTypeForMap();
 		}
-
 	}
 
 	private void exitApp() {
@@ -454,6 +453,12 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		fragmentTransaction.commit();
 	}
 
+	@Override
+	public void onFragmentChange(int menuItemId) {
+		Toast.makeText(this, "Nigga", Toast.LENGTH_SHORT).show();
+		binding.bottomNavigationView.setSelectedItemId(menuItemId);
+	}
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -488,12 +493,5 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		if (editAccountFragment != null) {
 			editAccountFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
-	}
-
-	@Override
-	public void onFragmentChange(int menuItemId) {
-		Toast.makeText(this, "Nigga", Toast.LENGTH_SHORT).show();
-		binding.bottomNavigationView.setSelectedItemId(menuItemId);
-
 	}
 }

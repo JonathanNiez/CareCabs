@@ -18,6 +18,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.BottomSheetData;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.DistanceCalculator;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -150,15 +151,23 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 
 						pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
-							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null && !response.body().features().isEmpty()) {
-									CarmenFeature feature = response.body().features().get(0);
-									String locationName = feature.placeName();
+							public void onResponse(@NonNull Call<GeocodingResponse> call,
+							                       @NonNull Response<GeocodingResponse> response) {
+								if (response.isSuccessful()) {
+									if (response.body() != null && !response.body().features().isEmpty()) {
+										CarmenFeature feature = response.body().features().get(0);
+										String locationName = feature.placeName();
 
-									binding.pickupLocationTextView.setText(locationName);
+										binding.pickupLocationTextView.setText(locationName);
+									} else {
+										binding.pickupLocationTextView.setText("Location not found");
+									}
 								} else {
+									Log.e(TAG, "onResponse: " + response.message());
+
 									binding.pickupLocationTextView.setText("Location not found");
 								}
+
 							}
 
 							@Override
@@ -176,17 +185,23 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 								.build();
 						destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
 							@Override
-							public void onResponse(@NonNull Call<GeocodingResponse> call, @NonNull Response<GeocodingResponse> response) {
-								if (response.body() != null && !response.body().features().isEmpty()) {
-									CarmenFeature feature = response.body().features().get(0);
-									String locationName = feature.placeName();
+							public void onResponse(@NonNull Call<GeocodingResponse> call,
+							                       @NonNull Response<GeocodingResponse> response) {
+								if (response.isSuccessful()) {
+									if (response.body() != null && !response.body().features().isEmpty()) {
+										CarmenFeature feature = response.body().features().get(0);
+										String locationName = feature.placeName();
 
-									binding.destinationLocationTextView.setText(locationName);
+										binding.destinationLocationTextView.setText(locationName);
+									} else {
+										binding.destinationLocationTextView.setText("Location not found");
+									}
 								} else {
 									Log.e(TAG, response.message());
 
 									binding.destinationLocationTextView.setText("Location not found");
 								}
+
 							}
 
 							@Override
@@ -237,6 +252,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 							case "Driver on the way":
 								binding.pickupBtn.setVisibility(View.GONE);
 								binding.renavigateBtn.setOnClickListener(v -> {
+
 									//convert to point
 									LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
 									Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
@@ -329,6 +345,14 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		LatLng destinationLatLng = new LatLng(destinationLatitude, destinationLongitude);
 		Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
 
+		double distance = DistanceCalculator.calculateDistance(
+				pickupLatLng.latitude, pickupLatLng.longitude,
+				destinationLatLng.latitude, destinationLatLng.longitude
+		);
+
+		long estimatedArrivalTime = DistanceCalculator.calculateArrivalTime(distance);
+		long estimatedArrivalMinutes = estimatedArrivalTime / 60000;
+
 		//update booking from passenger
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
@@ -338,6 +362,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
+		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);
 
 		bookingReference.child(bookingID)
 				.updateChildren(updateBooking)

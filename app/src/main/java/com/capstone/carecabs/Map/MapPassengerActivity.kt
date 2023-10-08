@@ -105,7 +105,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private lateinit var passengerOwnBookingInfoDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
-    private lateinit var intent: Intent
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -376,6 +375,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
+
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
 
             createViewAnnotation(
@@ -985,13 +985,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun checkIfBookingIsAccepted() {
-
         val bookingReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
 
         bookingReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot != null && snapshot.exists()) {
+                if (snapshot.exists()) {
 
                     for (locationSnapshot in snapshot.children) {
                         val passengerBookingData =
@@ -1004,9 +1003,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                         }
                     }
                 }
-
             }
-
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, error.message)
             }
@@ -1079,7 +1076,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
     }
 
     private fun closePassengerOwnBookingInfoDialog() {
-        if (passengerOwnBookingInfoDialog != null && passengerOwnBookingInfoDialog.isShowing) {
+        if (passengerOwnBookingInfoDialog.isShowing) {
             passengerOwnBookingInfoDialog.dismiss()
         }
     }

@@ -25,7 +25,7 @@
 		android:textAlignment="center"
 		app:maneuverViewBackgroundColor="@color/vermillion" />
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -130,7 +130,7 @@
 			android:scaleType="centerCrop"
 			android:src="@drawable/calendar" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/tripProgressLayout"
@@ -144,13 +144,13 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="10dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:gravity="center"
@@ -163,7 +163,7 @@
 					android:layout_margin="10dp"
 					android:layout_weight="5" />
 
-				<ImageButton
+				<androidx.appcompat.widget.AppCompatImageButton
 					android:id="@+id/stopNavigationImgBtn"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
@@ -173,21 +173,21 @@
 					android:background="@color/white"
 					app:srcCompat="@android:drawable/ic_delete" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/passengerOnBoardBtn"
-				android:layout_width="270dp"
+				android:layout_width="300dp"
 				android:layout_height="50dp"
 				android:layout_margin="10dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="set passenger on board"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
@@ -198,7 +198,7 @@
 		android:layout_centerHorizontal="true"
 		android:layout_margin="10dp">
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/passengersInMapTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

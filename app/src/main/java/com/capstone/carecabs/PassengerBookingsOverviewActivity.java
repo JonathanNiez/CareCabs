@@ -6,10 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Adapters.PassengerBookingsAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Map.MapDriverActivity;
+import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -26,6 +30,7 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.ParcelablePoint;
 import com.capstone.carecabs.databinding.ActivityPassengerBookingsOverviewBinding;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
+import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -40,11 +45,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 	private final String TAG = "PassengerBookingsOverview";
-	private AlertDialog bookingInfoDialog, noInternetDialog;
+	private static final int REQUEST_ENABLE_LOCATION = 1;
+	private AlertDialog bookingInfoDialog, noInternetDialog, enableLocationServiceDialog;
+	private AlertDialog.Builder builder;
+	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityPassengerBookingsOverviewBinding binding;
 
@@ -267,6 +276,13 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 				});
 	}
 
+	private void goToMap() {
+		intent = new Intent(PassengerBookingsOverviewActivity.this, MapPassengerActivity.class);
+		startActivity(intent);
+		finish();
+
+	}
+
 	private void goToMapAndFindRoute(Point point) {
 		Intent intent = new Intent(
 				PassengerBookingsOverviewActivity.this, MapDriverActivity.class);
@@ -275,6 +291,7 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 		startActivity(intent);
 		finish();
 	}
+
 
 	@SuppressLint("SetTextI18n")
 	private void showBookingInfoDialog(
@@ -366,8 +383,46 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 		}
 	}
 
+	private void checkLocationService() {
+		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+		if (!isGpsEnabled && !isNetworkEnabled) {
+			showEnableLocationServiceDialog();
+		} else {
+			goToMap();
+		}
+
+	}
+
+	private void showEnableLocationServiceDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		DialogEnableLocationServiceBinding binding = DialogEnableLocationServiceBinding.inflate(getLayoutInflater());
+		View dialogView = binding.getRoot();
+
+		binding.enableLocationServiceBtn.setOnClickListener(v -> {
+			intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivityForResult(intent, REQUEST_ENABLE_LOCATION);
+
+			closeEnableLocationServiceDialog();
+		});
+
+		builder.setView(dialogView);
+
+		enableLocationServiceDialog = builder.create();
+		enableLocationServiceDialog.show();
+	}
+
+	private void closeEnableLocationServiceDialog() {
+		if (enableLocationServiceDialog != null && enableLocationServiceDialog.isShowing()) {
+			enableLocationServiceDialog.dismiss();
+		}
+	}
+
 	private void showNoInternetDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_no_internet, null);

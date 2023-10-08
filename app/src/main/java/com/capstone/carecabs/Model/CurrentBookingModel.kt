@@ -5,6 +5,7 @@ data class CurrentBookingModel(
     val driverUserID: String = "",
     val vehicleColor: String = "",
     val vehiclePlateNumber: String = "",
+    val driverArrivalTime: Long = 0L,
     val bookingID: String = "",
     val tripID: String = "",
     val bookingStatus: String = "",

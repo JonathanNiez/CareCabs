@@ -1,11 +1,12 @@
 package com.capstone.carecabs.Model
 
 data class PassengerBookingModel(
-    val fcmToken : String = "",
+    val fcmToken: String = "",
     val passengerUserID: String = "",
     val driverUserID: String = "",
     val vehicleColor: String = "",
     val vehiclePlateNumber: String = "",
+    val driverArrivalTime: Long = 0L,
     val bookingID: String = "",
     val tripID: String = "",
     val bookingStatus: String = "",
