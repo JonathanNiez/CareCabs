@@ -27,9 +27,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.capstone.carecabs.BottomSheetModal.ModalBottomSheet
+import com.capstone.carecabs.BottomSheetModal.PassengerBookingsBottomSheet
 import com.capstone.carecabs.Firebase.FirebaseMain
-import com.capstone.carecabs.Fragments.ModalBottomSheet
-import com.capstone.carecabs.Fragments.PassengerBookingsBottomSheet
 import com.capstone.carecabs.HelpActivity
 import com.capstone.carecabs.LoginActivity
 import com.capstone.carecabs.MainActivity
@@ -255,6 +255,16 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private val routeProgressObserver = RouteProgressObserver { routeProgress ->
+
+        val DISTANCE_THRESHOLD = 100.0
+
+        val remainingDistance = routeProgress.distanceRemaining
+
+        if (remainingDistance <= DISTANCE_THRESHOLD) {
+            // Driver has arrived at the destination
+            handleDriverArrival()
+        }
+
         // update the camera position to account for the progressed fragment of the route
         viewportDataSource.onRouteProgressChanged(routeProgress)
         viewportDataSource.evaluate()
@@ -356,7 +366,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     private val TAG: String = "MapDriverActivity"
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
     private val REQUEST_ENABLE_LOCATION = 1
-
+    private var isNavigatingToDestination = false
     private lateinit var documentReference: DocumentReference
     private lateinit var collectionReference: CollectionReference
     private lateinit var builder: AlertDialog.Builder
@@ -391,6 +401,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.tripProgressLayout.visibility = View.INVISIBLE
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
+        binding.arrivedAtDestinationBtn.visibility = View.GONE
 
         checkIfUserIsVerified()
 
@@ -475,15 +486,15 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun onMapReady() {
         binding.mapView.getMapboxMap().apply {
             loadStyleUri(Style.SATELLITE_STREETS) {
 
                 setupGesturesListener()
-                loadPassengerLocationToMapFromDatabase()
                 initializeLocationComponent()
                 initializeNavigationComponents()
-
+                checkIfCurrentlyNavigatingToDestination()
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(
@@ -767,9 +778,8 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-//                        showPassengerBookingLocationInfoDialog(bookingID)
-
                         showBottomSheetDialog(bookingID)
+
                         true
                     }
                 )
@@ -795,17 +805,18 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 .withIconImage(it)
             pointAnnotationManager.create(pointAnnotationOptions)
 
-            pointAnnotationManager.apply {
-                addClickListener(
-                    OnPointAnnotationClickListener {
+            if (isNavigatingToDestination) {
+                pointAnnotationManager.apply {
+                    addClickListener(
+                        OnPointAnnotationClickListener {
 
-//                        showPassengerBookingLocationInfoDialog(bookingID)
+                            findRoute(destinationCoordinate)
+                            true
+                        }
+                    )
+                }
 
-                        true
-                    }
-                )
             }
-
         }
     }
 
@@ -828,6 +839,64 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             drawable.draw(canvas)
             bitmap
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun checkIfCurrentlyNavigatingToDestination() {
+
+        val driverReference: DocumentReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(FirebaseMain.getUser().uid)
+
+        driverReference.get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    val getIsNavigatingToDestination: Boolean? =
+                        it.getBoolean("isNavigatingToDestination")
+
+                    val getTripID: String? = it.getString("tripID")
+
+                    if (getIsNavigatingToDestination == true && getTripID != "none") {
+
+                        val getDestinationLatitude: Double = it.getDouble("destinationLatitude")!!
+                        val getDestinationLongitude: Double = it.getDouble("destinationLongitude")!!
+
+                        //convert to point
+                        val destinationLatLng =
+                            LatLng(getDestinationLatitude, getDestinationLongitude)
+                        val destinationCoordinates =
+                            Point.fromLngLat(
+                                destinationLatLng.longitude,
+                                destinationLatLng.latitude
+                            )
+
+                        isNavigatingToDestination = true
+
+                        binding.passengersInMapTextView.text =
+                            "You are currently navigating to Passenger's destination"
+
+                        createDestinationAnnotationToMap(destinationCoordinates)
+
+                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
+                        binding.arrivedAtDestinationBtn.setOnClickListener {
+                            if (getTripID != null) {
+                                setTripAsComplete(getTripID)
+                            }
+                        }
+                    } else {
+                        isNavigatingToDestination = false
+
+                        binding.arrivedAtDestinationBtn.visibility = View.GONE
+
+                        loadPassengerLocationToMapFromDatabase()
+                    }
+                } else {
+                    loadPassengerLocationToMapFromDatabase()
+                }
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "onMapReady: " + it.message)
+            }
     }
 
     private fun onCameraTrackingDismissed() {
@@ -900,11 +969,19 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
     private fun findRoute(destination: Point) {
 
-        Toast.makeText(
-            this@MapDriverActivity,
-            "Navigating to Passenger",
-            Toast.LENGTH_LONG
-        ).show()
+        if (isNavigatingToDestination) {
+            Toast.makeText(
+                this@MapDriverActivity,
+                "Navigating to Destination",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            Toast.makeText(
+                this@MapDriverActivity,
+                "Navigating to Passenger",
+                Toast.LENGTH_LONG
+            ).show()
+        }
 
         val originLocation = navigationLocationProvider.lastLocation
         val originPoint = originLocation?.let {
@@ -972,6 +1049,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun clearRouteAndStopNavigation() {
+
         Toast.makeText(
             this@MapDriverActivity,
             "Cancelled Navigation",
@@ -1006,7 +1084,70 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         return currentTimeMillis + travelTimeMillis
     }
 
-    private fun handleArrival() {
+    //updates the trip
+    private fun handleDriverArrival() {
+
+        if (!isNavigatingToDestination) {
+//            val documentReference = FirebaseMain.getFireStoreInstance()
+//                .collection(FirebaseMain.tripCollection).document()
+
+            val sharedPreferences = getSharedPreferences("tripPreferences", Context.MODE_PRIVATE)
+            val tripIDPreference = sharedPreferences.getString("tripID", null)
+
+            val documentReference = FirebaseMain.getFireStoreInstance()
+                .collection(FirebaseMain.tripCollection)
+                .document(tripIDPreference.toString())
+
+            val updateTrip = HashMap<String, Any>()
+            updateTrip["tripStatus"] = "Passenger has transported to destination"
+            updateTrip["isComplete"] = true
+
+            documentReference.update(updateTrip)
+                .addOnSuccessListener {
+
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "handleDriverArrival: " + it.message)
+                }
+        } else {
+        }
+    }
+
+    private fun setTripAsComplete(tripID: String) {
+        val tripReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.tripCollection)
+            .document(tripID)
+
+        val updateTrip = HashMap<String, Any>()
+        updateTrip["tripStatus"] = "Passenger has transported to destination"
+        updateTrip["isComplete"] = true
+
+        tripReference.update(updateTrip)
+            .addOnSuccessListener {
+                clearRouteAndStopNavigation()
+            }.addOnFailureListener {
+                Log.e(TAG, "setTripAsComplete: " + it.message)
+            }
+
+        val driverReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(FirebaseMain.getUser().uid)
+
+        val updateDriverStatus = HashMap<String, Any>()
+        updateDriverStatus["isAvailable"] = true
+        updateDriverStatus["isNavigatingToDestination"] = false
+        updateDriverStatus["destinationLatitude"] = 0.0
+        updateDriverStatus["destinationLongitude"] = 0.0
+        updateDriverStatus["passengersTransported"] = +1
+        updateDriverStatus["trip"] = "none"
+
+        driverReference.update(updateDriverStatus)
+            .addOnSuccessListener {
+
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "setTripAsComplete: " + it.message)
+            }
 
     }
 
@@ -1174,7 +1315,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         pickupCoordinate: Point,
         destinationCoordinate: Point,
     ) {
-        val documentReference = FirebaseMain.getFireStoreInstance()
+        val tripReference = FirebaseMain.getFireStoreInstance()
             .collection(FirebaseMain.tripCollection)
             .document(generateTripID)
 
@@ -1192,18 +1333,39 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             destinationCoordinate.latitude()
         )
 
-        documentReference.set(tripModel)
+        tripReference.set(tripModel)
             .addOnSuccessListener {
 
-                createDestinationAnnotationToMap(destinationCoordinate)
-                findRoute(destinationCoordinate)
-                loadPassengerLocationToMapFromDatabase()
+                val driverReference = FirebaseMain.getFireStoreInstance()
+                    .collection(FirebaseMain.userCollection)
+                    .document(FirebaseMain.getUser().uid)
 
-                Toast.makeText(
-                    this@MapDriverActivity,
-                    "Navigating to destination",
-                    Toast.LENGTH_LONG
-                ).show()
+                val updateDriverTrip = HashMap<String, Any>()
+                updateDriverTrip["tripID"] = generateTripID
+                updateDriverTrip["isNavigatingToDestination"] = true
+
+                driverReference.update(updateDriverTrip)
+                    .addOnSuccessListener {
+
+                        isNavigatingToDestination = true
+
+                        createDestinationAnnotationToMap(destinationCoordinate)
+                        findRoute(pickupCoordinate)
+                        loadPassengerLocationToMapFromDatabase()
+
+                        binding.passengerOnBoardBtn.visibility = View.GONE
+                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
+
+                        Toast.makeText(
+                            this@MapDriverActivity,
+                            "Navigating to destination",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }.addOnFailureListener {
+                        Log.e(TAG, "storeTripToDatabase: " + it.message)
+                    }
+
+
             }
             .addOnFailureListener { e ->
                 Toast.makeText(
@@ -1314,7 +1476,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun closeEnableLocationServiceDialog() {
-        if (enableLocatonServiceDialog.isShowing()) {
+        if (enableLocatonServiceDialog.isShowing) {
             enableLocatonServiceDialog.dismiss()
         }
     }
@@ -1349,31 +1511,43 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
 
     //once the pickup button is clicked
     override fun onDataReceived(bottomSheetData: BottomSheetData) {
-        findRoute(bottomSheetData.destinationCoordinates)
 
-        binding.passengerOnBoardBtn.setOnClickListener {
-            storeTripToDatabase(
-                generateRandomTripID(),
-                bottomSheetData.bookingID,
-                bottomSheetData.passengerID,
-                bottomSheetData.pickupCoordinates,
-                bottomSheetData.destinationCoordinates
-            )
+        if (isNavigatingToDestination) {
+            binding.passengerOnBoardBtn.setOnClickListener {
+                storeTripToDatabase(
+                    generateRandomTripID(),
+                    bottomSheetData.bookingID,
+                    bottomSheetData.passengerID,
+                    bottomSheetData.pickupCoordinates,
+                    bottomSheetData.destinationCoordinates
+                )
+            }
+
+            findRoute(bottomSheetData.destinationCoordinates)
+        } else {
+            findRoute(bottomSheetData.pickupCoordinates)
         }
     }
 
+    //from bookings overview modal sheet
     override fun onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData: PickupPassengerBottomSheetData) {
-        findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
-        binding.passengerOnBoardBtn.setOnClickListener {
-            storeTripToDatabase(
-                generateRandomTripID(),
-                pickupPassengerBottomSheetData.bookingID,
-                pickupPassengerBottomSheetData.passengerID,
-                pickupPassengerBottomSheetData.pickupCoordinates,
-                pickupPassengerBottomSheetData.destinationCoordinates
-            )
+        if (isNavigatingToDestination) {
+            findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
+
+            binding.passengerOnBoardBtn.setOnClickListener {
+                storeTripToDatabase(
+                    generateRandomTripID(),
+                    pickupPassengerBottomSheetData.bookingID,
+                    pickupPassengerBottomSheetData.passengerID,
+                    pickupPassengerBottomSheetData.pickupCoordinates,
+                    pickupPassengerBottomSheetData.destinationCoordinates
+                )
+            }
+        } else {
+            findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
         }
+
     }
 
     //passenger location pin onclick

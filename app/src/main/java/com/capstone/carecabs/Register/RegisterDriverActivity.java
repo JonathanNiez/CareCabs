@@ -267,41 +267,47 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("vehicleColor", vehicleColor);
 			registerUser.put("vehiclePlateNumber", vehiclePlateNumber);
 			registerUser.put("vehiclePicture", StaticDataPasser.storeVehiclePictureURL);
+			registerUser.put("isNavigatingToDestination", false);
+			registerUser.put("destinationLatitude", 0.0);
+			registerUser.put("destinationLongitude", 0.0);
+			registerUser.put("tripID", "none");
 
-			documentReference.update(registerUser).addOnSuccessListener(unused -> {
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
+			documentReference.update(registerUser)
+					.addOnSuccessListener(unused -> {
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.doneBtn.setVisibility(View.VISIBLE);
+						binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-				showRegisterSuccessNotification();
+						showRegisterSuccessNotification();
 
-				firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-				storageReference = firebaseStorage.getReference("images/");
+						firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+						storageReference = firebaseStorage.getReference("images/");
 
-				if (StaticDataPasser.storeProfilePictureUri != null) {
-					uploadProfileImageToFirebaseStorage(
-							userID,
-							StaticDataPasser.storeProfilePictureUri
-					);
-				} else if (StaticDataPasser.storeVehiclePictureUri != null) {
-					uploadVehicleImageToFirebaseStorage(
-							userID,
-							StaticDataPasser.storeVehiclePictureUri);
-				}
+						if (StaticDataPasser.storeProfilePictureUri != null) {
+							uploadProfileImageToFirebaseStorage(
+									userID,
+									StaticDataPasser.storeProfilePictureUri
+							);
+						} else if (StaticDataPasser.storeVehiclePictureUri != null) {
+							uploadVehicleImageToFirebaseStorage(
+									userID,
+									StaticDataPasser.storeVehiclePictureUri);
+						}
 
-				intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
-				startActivity(intent);
-				finish();
+						intent = new Intent(RegisterDriverActivity.this, MainActivity.class);
+						startActivity(intent);
+						finish();
 
-			}).addOnFailureListener(e -> {
-				showRegisterFailedDialog();
+					})
+					.addOnFailureListener(e -> {
+						showRegisterFailedDialog();
 
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.doneBtn.setVisibility(View.VISIBLE);
+						binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, e.getMessage());
+					});
 		} else {
 			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
 			startActivity(intent);
@@ -316,24 +322,26 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
-		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+		documentReference.update(updateRegister)
+				.addOnSuccessListener(unused -> {
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
-			startActivity(intent);
-			finish();
+					intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
+					startActivity(intent);
+					finish();
 
-		}).addOnFailureListener(e -> {
+				})
+				.addOnFailureListener(e -> {
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-			Log.e(TAG, e.getMessage());
+					Log.e(TAG, e.getMessage());
 
-			intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
-			startActivity(intent);
-			finish();
-		});
+					intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
+					startActivity(intent);
+					finish();
+				});
 	}
 
 	private void updateInterruptedCancelledRegister(String userID) {
@@ -343,16 +351,18 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
-		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+		documentReference.update(updateRegister)
+				.addOnSuccessListener(unused -> {
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-		}).addOnFailureListener(e -> {
+				})
+				.addOnFailureListener(e -> {
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-			Log.e(TAG, e.getMessage());
-		});
+					Log.e(TAG, e.getMessage());
+				});
 	}
 
 	private void showIDNotScannedDialog(String firstname,

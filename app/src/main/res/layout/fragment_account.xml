@@ -19,7 +19,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<ImageButton
+			<androidx.appcompat.widget.AppCompatImageButton
 				android:id="@+id/imgBackBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
 				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -41,7 +41,6 @@
 				android:text="MY PROFILE"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
-
 
 		</RelativeLayout>
 
@@ -52,7 +51,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical">
@@ -74,13 +73,13 @@
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
 						android:orientation="vertical">
 
-						<LinearLayout
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:gravity="center"
@@ -98,7 +97,7 @@
 								app:civ_border_color="@color/black"
 								app:civ_border_width="2dp" />
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
 								android:layout_marginEnd="20dp"
@@ -160,10 +159,10 @@
 								</RelativeLayout>
 
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 
-						</LinearLayout>
+						</androidx.appcompat.widget.LinearLayoutCompat>
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/idScannedTextView"
@@ -180,14 +179,14 @@
 							android:textColor="@color/red"
 							android:textSize="17sp" />
 
-						<LinearLayout
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
+							android:baselineAligned="false"
 							android:gravity="center"
-							android:orientation="horizontal"
-							android:baselineAligned="false">
+							android:orientation="horizontal">
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
 								android:layout_weight="2"
@@ -253,9 +252,9 @@
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
@@ -280,12 +279,12 @@
 									android:textColor="@color/blue"
 									android:textSize="17sp" />
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 
-						</LinearLayout>
+						</androidx.appcompat.widget.LinearLayoutCompat>
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 				</androidx.cardview.widget.CardView>
 
@@ -297,8 +296,7 @@
 				android:layout_margin="10dp"
 				android:background="@color/dark_gray" />
 
-
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -463,11 +461,10 @@
 					android:textColor="@color/red"
 					android:textSize="20sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</ScrollView>
-
 
 </RelativeLayout>

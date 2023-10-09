@@ -1,4 +1,4 @@
-package com.capstone.carecabs.Fragments;
+package com.capstone.carecabs.BottomSheetModal;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,8 +21,6 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.DistanceCalculator;
 import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,7 +28,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
@@ -371,7 +368,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 					String notificationMessage = "Vehicle Color: " + vehicleColor
 							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
 
-					updateDriverStatus();
+					updateDriverStatus(destinationLatitude, destinationLongitude);
 					notificationData(fcmToken, notificationMessage);
 					sendDataToMap(bookingID,
 							passengerID,
@@ -391,11 +388,19 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 				});
 	}
 
-	private void updateDriverStatus() {
+	private void updateDriverStatus(Double destinationLatitude, Double destinationLongitude) {
 		if (FirebaseMain.getUser() != null) {
+
+			Map<String, Object> updateDriverStatus = new HashMap<>();
+			updateDriverStatus.put("isAvailable", false);
+			updateDriverStatus.put("destinationLatitude", destinationLatitude);
+			updateDriverStatus.put("destinationLongitude", destinationLongitude);
+			updateDriverStatus.put("isNavigatingToDestination", true);
+			updateDriverStatus.put("tripID", true);
+
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
-					.update("isAvailable", false);
+					.update(updateDriverStatus);
 		}
 	}
 

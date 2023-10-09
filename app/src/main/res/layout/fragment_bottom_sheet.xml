@@ -6,7 +6,7 @@
 	android:layout_height="match_parent"
 	android:background="@drawable/smooth_top_edge"
 	android:backgroundTint="@color/white"
-	tools:context=".Fragments.ModalBottomSheet">
+	tools:context=".BottomSheetModal.ModalBottomSheet">
 
 	<LinearLayout
 		android:layout_width="match_parent"

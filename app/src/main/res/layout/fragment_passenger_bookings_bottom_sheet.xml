@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@color/orange"
-	tools:context=".Fragments.PassengerBookingsBottomSheet">
+	tools:context=".BottomSheetModal.PassengerBookingsBottomSheet">
 
 	<RelativeLayout
 		android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
 		</androidx.cardview.widget.CardView>
 
 		<androidx.recyclerview.widget.RecyclerView
-			android:id="@+id/bookingHistoryRecyclerView"
+			android:id="@+id/passengerBookingRecyclerView"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/customActionBarLayout"

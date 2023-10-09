@@ -187,6 +187,18 @@
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/arrivedAtDestinationBtn"
+				android:layout_width="300dp"
+				android:layout_height="50dp"
+				android:layout_margin="10dp"
+				android:background="@drawable/smooth_edge_button"
+				android:backgroundTint="@color/yinmn_blue"
+				android:fontFamily="@font/gabarito_semibold"
+				android:text="Arrived at destination"
+				android:textColor="@color/white"
+				android:textSize="17sp" />
+
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>

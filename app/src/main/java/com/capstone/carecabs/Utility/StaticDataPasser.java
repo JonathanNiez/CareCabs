@@ -2,6 +2,8 @@ package com.capstone.carecabs.Utility;
 
 import android.net.Uri;
 
+import com.mapbox.geojson.Point;
+
 public class StaticDataPasser {
 	public static String storeFirstName = "";
 	public static String storeLastName = "";
@@ -23,9 +25,10 @@ public class StaticDataPasser {
 	public static String storeSelectedMonth = "";
 	public static String storeBirthdate = "";
 	public static String storePassengerID = "";
-	public static Double storePoint = 0.0;
 	public static Double storePickupLatitude = 0.0;
 	public static Double storePickupLongitude = 0.0;
 	public static Double storeDestinationLatitude = 0.0;
 	public static Double storeDestinationLongitude = 0.0;
+	public static String storeTripID = "";
+	public static Point storePoint = Point.fromLngLat(0.0, 0.0);
 }
