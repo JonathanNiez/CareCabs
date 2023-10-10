@@ -6,6 +6,7 @@ data class PassengerBookingModel(
     val driverUserID: String = "",
     val vehicleColor: String = "",
     val vehiclePlateNumber: String = "",
+    val driverName : String = "",
     val driverArrivalTime: Long = 0L,
     val bookingID: String = "",
     val tripID: String = "",

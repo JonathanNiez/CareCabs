@@ -50,12 +50,11 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
-						android:layout_margin="3dp"
-						android:fontFamily="@font/gabarito_bold"
-						android:padding="5dp"
-						android:text="From"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Pickup location:"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/pickupLocationTextView"
@@ -63,11 +62,10 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:padding="5dp"
 						android:text="Pickup Location"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="18sp" />
 
 					<pl.droidsonroids.gif.GifImageView
 						android:id="@+id/loadingPickupLocation"
@@ -79,12 +77,11 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
-						android:layout_margin="3dp"
-						android:fontFamily="@font/gabarito_bold"
-						android:padding="5dp"
-						android:text="To"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Destination:"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/destinationLocationTextView"
@@ -92,11 +89,10 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:padding="5dp"
 						android:text="Destination Location"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="18sp" />
 
 					<pl.droidsonroids.gif.GifImageView
 						android:id="@+id/loadingDestinationLocation"
@@ -142,6 +138,7 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
+						android:textAlignment="center"
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Your Driver is on the way"
 						android:textColor="@color/blue"
@@ -193,6 +190,7 @@
 						<androidx.appcompat.widget.AppCompatTextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
+							android:layout_gravity="start|center_vertical"
 							android:layout_margin="5dp"
 							android:fontFamily="@font/gabarito_semibold"
 							android:text="CHAT DRIVER"
@@ -202,6 +200,7 @@
 						<androidx.appcompat.widget.AppCompatImageView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
+							android:layout_gravity="end|center_vertical"
 							android:layout_margin="5dp"
 							app:srcCompat="@drawable/chat_32_white" />
 
@@ -215,13 +214,42 @@
 				android:id="@+id/cancelBookingBtn"
 				android:layout_width="200dp"
 				android:layout_height="50dp"
-				android:layout_marginBottom="20dp"
+				android:layout_margin="10dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/red"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Cancel Booking"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:id="@+id/rateDriverBtn"
+				android:layout_width="200dp"
+				android:layout_height="50dp"
+				android:layout_margin="10dp"
+				android:background="@drawable/smooth_edge_button"
+				android:backgroundTint="@color/yinmn_blue"
+				android:gravity="center"
+				android:orientation="horizontal">
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="start|center_vertical"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="RATE DRIVER"
+					android:textColor="@color/white"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end|center_vertical"
+					android:layout_margin="5dp"
+					app:srcCompat="@drawable/star_white_32" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -18,7 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
@@ -55,7 +55,7 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -121,9 +121,9 @@
 						android:textColor="@color/white"
 						android:textSize="20sp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/progressBarLayout1"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
 						android:layout_margin="20dp"
 						android:src="@drawable/loading_gif" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -150,7 +150,7 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -162,7 +162,114 @@
 						android:layout_margin="20dp"
 						android:src="@drawable/loading_gif" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+			</androidx.cardview.widget.CardView>
+
+			<androidx.cardview.widget.CardView
+				android:id="@+id/driverOnTheWayLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				app:cardBackgroundColor="@color/white"
+				app:cardCornerRadius="10dp"
+				app:cardElevation="5dp">
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<androidx.appcompat.widget.AppCompatImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						app:srcCompat="@drawable/driver_64" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_black"
+						android:text="Your Driver is on the way!"
+						android:textAlignment="center"
+						android:textColor="@color/blue"
+						android:textSize="25sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/arrivalTimeTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Arrival Time:\nEstimated 00 minute(s)"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
+
+					<androidx.cardview.widget.CardView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						app:cardBackgroundColor="@color/white"
+						app:cardCornerRadius="10dp"
+						app:cardElevation="5dp">
+
+						<androidx.appcompat.widget.LinearLayoutCompat
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:gravity="center"
+							android:orientation="vertical">
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/driverNameTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Driver Name"
+								android:textAlignment="center"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/vehicleColorTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="start"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Vehicle Color"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/vehiclePlateNumberTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="start"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Vehicle Plate Number"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+						</androidx.appcompat.widget.LinearLayoutCompat>
+
+					</androidx.cardview.widget.CardView>
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Hang in there and Stay safe"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -174,13 +281,13 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
 					android:orientation="vertical">
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
@@ -261,7 +368,7 @@
 
 						</androidx.cardview.widget.CardView>
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
@@ -285,7 +392,6 @@
 								android:layout_height="wrap_content"
 								android:gravity="center"
 								android:orientation="vertical">
-
 
 								<androidx.appcompat.widget.AppCompatImageView
 									android:layout_width="wrap_content"
@@ -344,7 +450,7 @@
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -357,7 +463,7 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -435,7 +541,7 @@
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
 								android:gravity="center"
@@ -458,7 +564,7 @@
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 						</androidx.cardview.widget.CardView>
 
@@ -471,7 +577,7 @@
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="match_parent"
 								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
@@ -494,13 +600,13 @@
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 						</androidx.cardview.widget.CardView>
 
 					</LinearLayout>
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -513,7 +619,7 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -541,7 +647,7 @@
 						android:textColor="@color/blue"
 						android:textSize="25sp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
@@ -553,7 +659,7 @@
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -565,13 +671,12 @@
 						android:layout_height="200dp"
 						android:layout_margin="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</ScrollView>
-
 
 </RelativeLayout>

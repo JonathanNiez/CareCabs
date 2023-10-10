@@ -19,7 +19,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<ImageButton
+			<androidx.appcompat.widget.AppCompatImageButton
 				android:id="@+id/imgBackBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
 				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -56,17 +56,17 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="@string/your_feedback_helps_us_improve"
 				android:textAlignment="center"
@@ -74,16 +74,16 @@
 				android:textSize="17sp"
 				android:textStyle="bold" />
 
-			<EditText
+			<androidx.appcompat.widget.AppCompatEditText
 				android:id="@+id/commentEditText"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:fontFamily="@font/gabarito_semibold"
 				android:hint="Type your feedback here"
 				android:textColor="@color/black"
-				android:textColorHint="@color/black" />
+				android:textColorHint="@color/dark_gray" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
@@ -97,14 +97,14 @@
 		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/yinmn_blue"
 		android:elevation="5dp"
-		android:fontFamily="@font/opensans_bold"
+		android:fontFamily="@font/gabarito_semibold"
 		android:text="Submit"
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 
-	<androidx.appcompat.widget.AppCompatButton
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/backBtn"
-		android:layout_width="130dp"
+		android:layout_width="150dp"
 		android:layout_height="50dp"
 		android:layout_below="@id/submitBtn"
 		android:layout_centerHorizontal="true"
@@ -112,11 +112,27 @@
 		android:layout_marginBottom="50dp"
 		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/platinum"
-		android:drawableStart="@drawable/back_50_2"
 		android:elevation="5dp"
-		android:fontFamily="@font/opensans_bold"
-		android:text="Back"
-		android:textColor="@color/black"
-		android:textSize="17sp" />
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<androidx.appcompat.widget.AppCompatImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="start|center_vertical"
+			android:layout_margin="5dp"
+			app:srcCompat="@drawable/back_50_2" />
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="end|center_vertical"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="BACK"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

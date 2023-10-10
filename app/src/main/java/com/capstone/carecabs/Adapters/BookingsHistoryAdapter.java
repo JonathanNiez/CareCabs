@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.carecabs.Model.BookingsHistoryModel;
@@ -135,8 +136,14 @@ public class BookingsHistoryAdapter extends RecyclerView.Adapter<BookingsHistory
 			}
 		});
 
-		holder.binding.bookingStatusTextView
-				.setText("Booking Status: " + bookingsHistoryModel.getBookingStatus());
+		if (bookingsHistoryModel.getBookingStatus().equals("Waiting")
+				|| bookingsHistoryModel.getBookingStatus().equals("Driver on the way")) {
+			holder.binding.bookingStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.light_blue));
+		} else if (bookingsHistoryModel.getBookingStatus().equals("Cancelled")){
+			holder.binding.bookingStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.light_red));
+		}
+
+		holder.binding.bookingStatusTextView.setText(bookingsHistoryModel.getBookingStatus());
 
 	}
 

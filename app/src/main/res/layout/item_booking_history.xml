@@ -4,19 +4,18 @@
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
-	android:layout_marginBottom="5dp"
 	app:cardBackgroundColor="@color/white"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:gravity="center"
 		android:orientation="vertical"
 		android:padding="5dp">
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingDateTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -27,7 +26,16 @@
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_bold"
+			android:text="Booking Status:"
+			android:textColor="@color/black"
+			android:textSize="20sp" />
+
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingStatusTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -37,56 +45,51 @@
 			android:textColor="@color/black"
 			android:textSize="20sp" />
 
-
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="3dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:padding="5dp"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_medium"
 			android:text="Pickup:"
-			android:textAlignment="center"
+			android:layout_gravity="start"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/pickupLocationTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="3dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:padding="5dp"
-			android:text="Current Location"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Pickup Location"
 			android:textAlignment="center"
 			android:textColor="@color/black"
-			android:textSize="17sp" />
+			android:textSize="18sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="3dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:padding="5dp"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_medium"
 			android:text="Destination:"
-			android:textAlignment="center"
+			android:layout_gravity="start"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/destinationLocationTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="3dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:padding="5dp"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location"
 			android:textAlignment="center"
 			android:textColor="@color/black"
-			android:textSize="17sp" />
+			android:textSize="18sp" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/progressBarLayout"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
@@ -99,6 +102,6 @@
 			android:layout_height="200dp"
 			android:src="@drawable/loading_gif" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

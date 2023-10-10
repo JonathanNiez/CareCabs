@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@drawable/smooth_top_edge"
+	android:backgroundTint="@color/orange"
+	tools:context=".BottomSheetModal.TripRatingsBottomSheet">
+
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:gravity="center"
+		android:orientation="vertical">
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			android:background="@drawable/custom_card_view_1"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_bold"
+			android:padding="10dp"
+			android:text="How was your ride?"
+			android:textColor="@color/black"
+			android:textSize="25sp" />
+
+		<androidx.cardview.widget.CardView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerInParent="true"
+			android:layout_margin="10dp"
+			app:cardBackgroundColor="@color/white"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:orientation="vertical">
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:id="@+id/ratingsLayout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical"
+					android:padding="5dp">
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Rate your driver"
+						android:textColor="@color/black"
+						android:textSize="17sp" />
+
+					<androidx.appcompat.widget.AppCompatRatingBar
+						android:id="@+id/tripRatingBar"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:numStars="5"
+						android:rating="0.0"
+						android:stepSize="0.1" />
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:id="@+id/ratingsSubmittedLayout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical"
+					android:padding="5dp">
+
+					<androidx.appcompat.widget.AppCompatImageView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:srcCompat="@drawable/check_48"/>
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Ratings submitted"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+
+		</androidx.cardview.widget.CardView>
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/rateBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Rate"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/laterBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_marginTop="50dp"
+			android:layout_marginBottom="20dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/light_gray"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Later"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

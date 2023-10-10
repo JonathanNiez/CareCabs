@@ -3,14 +3,17 @@ package com.capstone.carecabs.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.capstone.carecabs.BottomSheetModal.TripRatingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatDriverActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
@@ -33,6 +36,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 	private Context context;
 	private List<CurrentBookingModel> currentBookingModelList;
 	private ItemCurrentBookingClickListener itemCurrentBookingClickListener;
+	private FragmentActivity fragmentActivity;
 
 	public interface ItemCurrentBookingClickListener {
 		void onCurrentBookingClick(CurrentBookingModel currentBookingModel);
@@ -40,10 +44,12 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 	public CurrentBookingAdapter(Context context,
 	                             List<CurrentBookingModel> currentBookingModelList,
-	                             ItemCurrentBookingClickListener itemCurrentBookingClickListener) {
+	                             ItemCurrentBookingClickListener itemCurrentBookingClickListener,
+	                             FragmentActivity fragmentActivity) {
 		this.context = context;
 		this.currentBookingModelList = currentBookingModelList;
 		this.itemCurrentBookingClickListener = itemCurrentBookingClickListener;
+		this.fragmentActivity = fragmentActivity;
 	}
 
 	@NonNull
@@ -59,6 +65,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 	public void onBindViewHolder(@NonNull CurrentBookingViewHolder holder, int position) {
 		CurrentBookingModel currentBookingModel = currentBookingModelList.get(position);
 		holder.binding.driverDetailsLayout.setVisibility(View.GONE);
+		holder.binding.rateDriverBtn.setVisibility(View.GONE);
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -161,6 +168,16 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 				intent.putExtra("driverID", currentBookingModel.getDriverUserID());
 				context.startActivity(intent);
 			});
+		} else if (currentBookingModel.getBookingStatus().equals("Transported to destination")) {
+
+			holder.binding.rateDriverBtn.setOnClickListener(v -> {
+				Bundle bundle = new Bundle();
+				bundle.putString("driverID", currentBookingModel.getDriverUserID());
+
+				TripRatingsBottomSheet bottomSheetFragment = new TripRatingsBottomSheet();
+				bottomSheetFragment.show(fragmentActivity.getSupportFragmentManager(), bottomSheetFragment.getTag());
+			});
+
 		}
 
 		holder.binding.cancelBookingBtn.setOnClickListener(v -> {
@@ -169,9 +186,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 						.onCurrentBookingClick(currentBookingModelList.get(position));
 			}
 		});
-
 	}
-
 
 	@Override
 	public int getItemCount() {

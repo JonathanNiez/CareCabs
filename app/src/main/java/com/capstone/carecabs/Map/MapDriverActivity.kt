@@ -27,7 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.capstone.carecabs.BottomSheetModal.ModalBottomSheet
+import com.capstone.carecabs.BottomSheetModal.PickupPassengerBottomSheet
 import com.capstone.carecabs.BottomSheetModal.PassengerBookingsBottomSheet
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.HelpActivity
@@ -121,7 +121,7 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.UUID
 
-class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListener,
+class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.BottomSheetListener,
     PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener {
 
     //navigation
@@ -538,7 +538,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.zoomOutImgBtn.visibility = View.VISIBLE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(12.0)
+                .zoom(13.0)
                 .center(coordinate)
                 .build()
         )
@@ -549,7 +549,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         binding.zoomOutImgBtn.visibility = View.GONE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(8.0)
+                .zoom(9.0)
                 .center(coordinate)
                 .build()
         )
@@ -1125,7 +1125,8 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         tripReference.update(updateTrip)
             .addOnSuccessListener {
                 clearRouteAndStopNavigation()
-            }.addOnFailureListener {
+            }
+            .addOnFailureListener {
                 Log.e(TAG, "setTripAsComplete: " + it.message)
             }
 
@@ -1140,6 +1141,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         updateDriverStatus["destinationLongitude"] = 0.0
         updateDriverStatus["passengersTransported"] = +1
         updateDriverStatus["trip"] = "none"
+        updateDriverStatus["driverRatings"] = 3.0
 
         driverReference.update(updateDriverStatus)
             .addOnSuccessListener {
@@ -1152,6 +1154,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     private fun loadPassengerLocationToMapFromDatabase() {
+
         var waitingPassengerCount = 0
         val locationReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
@@ -1234,11 +1237,10 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
+                Log.e(TAG, "onCancelled: " + error.message)
             }
 
         })
-
     }
 
     private fun getCurrentTimeAndDate(): String {
@@ -1361,7 +1363,8 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                             "Navigating to destination",
                             Toast.LENGTH_LONG
                         ).show()
-                    }.addOnFailureListener {
+                    }
+                    .addOnFailureListener {
                         Log.e(TAG, "storeTripToDatabase: " + it.message)
                     }
 
@@ -1373,7 +1376,7 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                     "Failed to navigate to destination",
                     Toast.LENGTH_LONG
                 ).show()
-                Log.e(TAG, e.message.toString())
+                Log.e(TAG, "storeTripToDatabase: " + e.message)
             }
     }
 
@@ -1383,19 +1386,21 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
                 .collection(FirebaseMain.userCollection)
                 .document(FirebaseMain.getUser().uid)
 
-            documentReference.get().addOnSuccessListener {
-                if (it != null && it.exists()) {
-                    val getVerificationStatus = it.getBoolean("isVerified")
+            documentReference.get()
+                .addOnSuccessListener {
+                    if (it != null && it.exists()) {
+                        val getVerificationStatus = it.getBoolean("isVerified")
 
-                    if (!getVerificationStatus!!) {
-                        showUserNotVerifiedDialog()
-                    } else {
-                        checkLocationPermission()
+                        if (!getVerificationStatus!!) {
+                            showUserNotVerifiedDialog()
+                        } else {
+                            checkLocationPermission()
+                        }
                     }
                 }
-            }.addOnFailureListener {
-                Log.e(TAG, it.message.toString())
-            }
+                .addOnFailureListener {
+                    Log.e(TAG, it.message.toString())
+                }
 
         } else {
             intent = Intent(this, LoginActivity::class.java)
@@ -1530,7 +1535,9 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
     }
 
     //from bookings overview modal sheet
-    override fun onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData: PickupPassengerBottomSheetData) {
+    override fun onDataReceivedFromPassengerBookingsBottomSheet(
+        pickupPassengerBottomSheetData: PickupPassengerBottomSheetData
+    ) {
 
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
@@ -1547,15 +1554,14 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         } else {
             findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
         }
-
     }
 
     //passenger location pin onclick
     private fun showBottomSheetDialog(bookingID: String) {
         val data = bookingID
-        val modalBottomSheet = ModalBottomSheet.newInstance(data)
-        modalBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
-        modalBottomSheet.show(supportFragmentManager, ModalBottomSheet.TAG)
+        val pickupPassengerBottomSheet = PickupPassengerBottomSheet.newInstance(data)
+        pickupPassengerBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
+        pickupPassengerBottomSheet.show(supportFragmentManager, PickupPassengerBottomSheet.TAG)
     }
 
     private fun showPassengerBookingsBottomSheetDialog(bookingID: String) {
@@ -1619,6 +1625,3 @@ class MapDriverActivity : AppCompatActivity(), ModalBottomSheet.BottomSheetListe
         }
     }
 }
-
-
-

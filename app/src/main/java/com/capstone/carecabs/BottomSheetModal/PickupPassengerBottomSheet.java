@@ -48,7 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ModalBottomSheet extends BottomSheetDialogFragment {
+public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 	public static final String TAG = "ModalBottomSheet";
 	private static final String ARG_DATA = "data";
@@ -89,8 +89,8 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	//show the bottom sheet
-	public static ModalBottomSheet newInstance(String data) {
-		ModalBottomSheet fragment = new ModalBottomSheet();
+	public static PickupPassengerBottomSheet newInstance(String data) {
+		PickupPassengerBottomSheet fragment = new PickupPassengerBottomSheet();
 		Bundle args = new Bundle();
 		args.putString(ARG_DATA, data);
 		fragment.setArguments(args);
@@ -307,6 +307,9 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 					if (documentSnapshot.exists()) {
 						String getVehicleColor = documentSnapshot.getString("vehicleColor");
 						String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+						String getFirstname = documentSnapshot.getString("firstname");
+						String getLastname = documentSnapshot.getString("lastname");
+						String fullName = getFirstname + " " + getLastname;
 
 						updatePassengerBooking(
 								fcmToken,
@@ -316,6 +319,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 								pickupLongitude,
 								destinationLatitude,
 								destinationLongitude,
+								fullName,
 								getVehicleColor,
 								getVehiclePlateNumber
 						);
@@ -331,6 +335,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 	                                    Double pickupLongitude,
 	                                    Double destinationLatitude,
 	                                    Double destinationLongitude,
+	                                    String fullName,
 	                                    String vehicleColor,
 	                                    String vehiclePlateNumber) {
 
@@ -357,6 +362,7 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 		Map<String, Object> updateBooking = new HashMap<>();
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
+		updateBooking.put("driverName", fullName);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);
@@ -396,7 +402,6 @@ public class ModalBottomSheet extends BottomSheetDialogFragment {
 			updateDriverStatus.put("destinationLatitude", destinationLatitude);
 			updateDriverStatus.put("destinationLongitude", destinationLongitude);
 			updateDriverStatus.put("isNavigatingToDestination", true);
-			updateDriverStatus.put("tripID", true);
 
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())

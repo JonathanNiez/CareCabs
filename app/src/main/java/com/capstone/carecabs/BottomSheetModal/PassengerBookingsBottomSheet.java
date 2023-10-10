@@ -196,6 +196,9 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 					if (documentSnapshot.exists()) {
 						String getVehicleColor = documentSnapshot.getString("vehicleColor");
 						String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+						String getFirstname = documentSnapshot.getString("firstname");
+						String getLastname = documentSnapshot.getString("lastname");
+						String fullName = getFirstname + " " + getLastname;
 
 						updatePassengerBooking(
 								fcmToken,
@@ -205,6 +208,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 								pickupLongitude,
 								destinationLatitude,
 								destinationLongitude,
+								fullName,
 								getVehicleColor,
 								getVehiclePlateNumber
 						);
@@ -221,6 +225,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	                                    Double pickupLongitude,
 	                                    Double destinationLatitude,
 	                                    Double destinationLongitude,
+	                                    String fullName,
 	                                    String vehicleColor,
 	                                    String vehiclePlateNumber) {
 
@@ -246,6 +251,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 		Map<String, Object> updateBooking = new HashMap<>();
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
+		updateBooking.put("driverName", fullName);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);

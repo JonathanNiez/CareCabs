@@ -103,7 +103,8 @@ public class CurrentBookingFragment extends Fragment {
 					currentBookingModel ->
 							showCancelBookingDialog(
 									currentBookingModel.getBookingID()
-							));
+							),
+					getActivity());
 			binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
 

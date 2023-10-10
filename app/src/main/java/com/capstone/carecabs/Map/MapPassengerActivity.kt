@@ -65,8 +65,10 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
+import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapClickListener
+import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
@@ -95,7 +97,7 @@ import java.util.Calendar
 import java.util.UUID
 
 
-class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
+class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongClickListener {
 
     private val TAG: String = "MapPassengerActivity"
     private lateinit var documentReference: DocumentReference
@@ -291,7 +293,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.zoomOutImgBtn.visibility = View.VISIBLE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(12.0)
+                .zoom(13.0)
                 .center(coordinate)
                 .build()
         )
@@ -302,7 +304,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.zoomOutImgBtn.visibility = View.GONE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(4.0)
+                .zoom(9.0)
                 .center(coordinate)
                 .build()
         )
@@ -656,7 +658,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
-            addOnMapClickListener(this@MapPassengerActivity)
+            addOnMapLongClickListener(this@MapPassengerActivity)
         }
 
 //        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
@@ -699,6 +701,17 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
 
         return true
     }
+
+    override fun onMapLongClick(point: Point): Boolean {
+
+        StaticDataPasser.storeDestinationLongitude = point.longitude()
+        StaticDataPasser.storeDestinationLatitude = point.latitude()
+
+        retrieveAndStoreFCMToken(point)
+
+        return true
+    }
+
 
     private fun onCameraTrackingDismissed() {
         binding.mapView.location
@@ -762,8 +775,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             })
 
         } else {
-            FirebaseMain.signOutUser()
-
             intent = Intent(this@MapPassengerActivity, LoginOrRegisterActivity::class.java)
             startActivity(intent)
             finish()
@@ -811,8 +822,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             }
 
         } else {
-            FirebaseMain.signOutUser()
-
             intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
@@ -1004,6 +1013,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
                     }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, error.message)
             }
@@ -1259,4 +1269,5 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener {
             PlaceAutocompleteType.AdministrativeUnit.Address,
         )
     }
+
 }

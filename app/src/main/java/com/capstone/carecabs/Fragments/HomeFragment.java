@@ -29,6 +29,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
+import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.PassengerBookingsOverviewActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Register.RegisterDriverActivity;
@@ -39,6 +40,11 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.time.LocalDateTime;
@@ -62,6 +68,7 @@ public class HomeFragment extends Fragment {
 	private DocumentReference documentReference;
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
+
 	public interface OnFragmentInteractionListener {
 		void onFragmentChange(int menuItemId);
 	}
@@ -97,13 +104,14 @@ public class HomeFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
 		binding.driverStatsLayout.setVisibility(View.GONE);
 		binding.passengerStatsLayout.setVisibility(View.GONE);
+		binding.driverOnTheWayLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
@@ -411,6 +419,8 @@ public class HomeFragment extends Fragment {
 								case "Persons with Disability (PWD)":
 								case "Senior Citizen":
 
+									checkBookingStatus();
+
 									binding.bookingsTextView.setText("My Bookings");
 									binding.bookingsBtn.setOnClickListener(v -> {
 										intent = new Intent(getActivity(), BookingsActivity.class);
@@ -444,6 +454,47 @@ public class HomeFragment extends Fragment {
 			Objects.requireNonNull(getActivity()).finish();
 		}
 
+	}
+
+	private void checkBookingStatus() {
+		DatabaseReference databaseReference = FirebaseDatabase
+				.getInstance().getReference(FirebaseMain.bookingCollection);
+
+		List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
+		databaseReference.addValueEventListener(new ValueEventListener() {
+			@SuppressLint("SetTextI18n")
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					passengerBookingModelList.clear();
+
+					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
+						if (passengerBookingModel != null) {
+							if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
+								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
+								binding.bookARideBtn.setVisibility(View.GONE);
+
+								binding.arrivalTimeTextView.setText("Arrival Time:\n" + "Estimated " +
+										passengerBookingModel.getDriverArrivalTime() + " minute(s)");
+
+								binding.driverNameTextView
+										.setText("Driver name: " + passengerBookingModel.getDriverUserID());
+								binding.vehicleColorTextView
+										.setText("Vehicle color: " + passengerBookingModel.getVehicleColor());
+								binding.vehiclePlateNumberTextView
+										.setText("Vehicle plate number: " + passengerBookingModel.getVehiclePlateNumber());
+							}
+						}
+					}
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, "onCancelled: " + error.getMessage());
+			}
+		});
 	}
 
 	private void showRegisterNotCompleteDialog(String userType) {
