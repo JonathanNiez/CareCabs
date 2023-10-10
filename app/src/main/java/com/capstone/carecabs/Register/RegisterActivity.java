@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Register;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -115,43 +116,94 @@ public class RegisterActivity extends AppCompatActivity {
 		GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-		intent = getIntent();
-		String getRegisterUserType = intent.getStringExtra("registerUserType");
-		String getRegisterType = intent.getStringExtra("registerType");
-		StaticDataPasser.storeRegisterType = getRegisterType;
-		StaticDataPasser.storeRegisterUserType = getRegisterUserType;
 
-		if (getRegisterType != null && getRegisterUserType != null) {
+		if (getIntent() != null &&
+				getIntent().hasExtra("registerUserType") &&
+				getIntent().hasExtra("registerType")) {
 
-			switch (getRegisterUserType) {
-				case "Driver":
-					binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
-					break;
+			intent = getIntent();
+			String getRegisterUserType = intent.getStringExtra("registerUserType");
+			String getRegisterType = intent.getStringExtra("registerType");
+			StaticDataPasser.storeRegisterType = getRegisterType;
+			StaticDataPasser.storeRegisterUserType = getRegisterUserType;
 
-				case "Persons with Disability (PWD)":
-					binding.userTypeImageBtn.setImageResource(R.drawable.pwd_64);
-					break;
+			if (getRegisterType != null && getRegisterUserType != null) {
 
-				case "Senior Citizen":
-					binding.userTypeImageBtn.setImageResource(R.drawable.senior_64_2);
-					break;
-			}
+				switch (getRegisterUserType) {
+					case "Driver":
+						binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
+						break;
 
-			if (getRegisterType.equals("googleRegister")) {
-				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, RC_SIGN_IN);
+					case "Persons with Disability (PWD)":
+						binding.userTypeImageBtn.setImageResource(R.drawable.pwd_64);
+						break;
 
-				showPleaseWaitDialog();
+					case "Senior Citizen":
+						binding.userTypeImageBtn.setImageResource(R.drawable.senior_64_2);
+						break;
+				}
 
-			} else if (getRegisterUserType.equals("Senior Citizen")) {
-				showAgeInfoDialog();
+				if (getRegisterType.equals("googleRegister")) {
+					intent = googleSignInClient.getSignInIntent();
+					startActivityForResult(intent, RC_SIGN_IN);
 
-			} else if (getRegisterType.equals("googleRegister") &&
-					getRegisterUserType.equals("Senior Citizen")) {
-				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, RC_SIGN_IN);
+					showPleaseWaitDialog();
 
-				showAgeInfoDialog();
+				} else if (getRegisterUserType.equals("Senior Citizen")) {
+					showAgeInfoDialog();
+
+				} else if (getRegisterType.equals("googleRegister") &&
+						getRegisterUserType.equals("Senior Citizen")) {
+					intent = googleSignInClient.getSignInIntent();
+					startActivityForResult(intent, RC_SIGN_IN);
+
+					showAgeInfoDialog();
+				}
+
+				binding.nextBtn.setOnClickListener(v -> {
+					binding.progressBarLayout.setVisibility(View.VISIBLE);
+					binding.nextBtn.setVisibility(View.GONE);
+
+					String stringEmail = binding.email.getText().toString().trim();
+					String stringPassword = binding.password.getText().toString();
+					String stringConfirmPassword = binding.confirmPassword.getText().toString();
+					String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
+					String prefixPhoneNumber = "+63" + stringPhoneNumber;
+					StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
+
+					if (stringEmail.isEmpty() || stringPassword.isEmpty()
+							|| stringPhoneNumber.isEmpty()) {
+						binding.email.setError("Please enter your Email");
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} else if (!stringConfirmPassword.equals(stringPassword)) {
+						binding.confirmPassword.setError("Password did not matched");
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} else {
+						showPleaseWaitDialog();
+
+						switch (getRegisterUserType) {
+							case "Driver":
+
+								registerDriver(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
+								break;
+
+							case "Persons with Disability (PWD)":
+								registerPWD(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
+
+								break;
+
+							case "Senior Citizen":
+								registerSenior(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
+
+								break;
+						}
+					}
+				});
+
 			}
 		} else {
 			return;
@@ -165,60 +217,11 @@ public class RegisterActivity extends AppCompatActivity {
 			showCancelRegisterDialog();
 		});
 
-		binding.nextBtn.setOnClickListener(v -> {
-			binding.progressBarLayout.setVisibility(View.VISIBLE);
-			binding.nextBtn.setVisibility(View.GONE);
-
-			String stringEmail = binding.email.getText().toString().trim();
-			String stringPassword = binding.password.getText().toString();
-			String stringConfirmPassword = binding.confirmPassword.getText().toString();
-			String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
-			String prefixPhoneNumber = "+63" + stringPhoneNumber;
-			StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
-
-			if (stringEmail.isEmpty() || stringPassword.isEmpty()
-					|| stringPhoneNumber.isEmpty()) {
-				binding.email.setError("Please enter your Email");
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.nextBtn.setVisibility(View.VISIBLE);
-
-			} else if (!stringConfirmPassword.equals(stringPassword)) {
-				binding.confirmPassword.setError("Password did not matched");
-				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.nextBtn.setVisibility(View.VISIBLE);
-
-			} else {
-				showPleaseWaitDialog();
-
-				switch (getRegisterUserType) {
-					case "Driver":
-
-						registerDriver(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-						break;
-
-					case "Persons with Disability (PWD)":
-						registerPWD(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-
-						break;
-
-					case "Senior Citizen":
-						registerSenior(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-
-						break;
-				}
-			}
-		});
 	}
 
 	@Override
 	public void onBackPressed() {
-		boolean shouldExit = false;
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
+		showCancelRegisterDialog();
 	}
 
 	private void registerDriver(String email, String password, String userType, String phoneNumber) {
@@ -239,7 +242,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showEmailIsAlreadyUsedDialog();
 
-						Log.e(TAG, collisionException.getMessage());
+						Log.e(TAG, "registerDriver: " + collisionException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -248,7 +251,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showRegisterFailedDialog();
 
-						Log.e(TAG, otherException.getMessage());
+						Log.e(TAG, "registerDriver: " + otherException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -274,7 +277,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showEmailIsAlreadyUsedDialog();
 
-						Log.e(TAG, collisionException.getMessage());
+						Log.e(TAG, "registerSenior: " + collisionException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -283,7 +286,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showRegisterFailedDialog();
 
-						Log.e(TAG, otherException.getMessage());
+						Log.e(TAG, "registerSenior: " + otherException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -310,7 +313,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showEmailIsAlreadyUsedDialog();
 
-						Log.e(TAG, collisionException.getMessage());
+						Log.e(TAG, "registerPWD: " + collisionException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -319,7 +322,7 @@ public class RegisterActivity extends AppCompatActivity {
 						closePleaseWaitDialog();
 						showRegisterFailedDialog();
 
-						Log.e(TAG, otherException.getMessage());
+						Log.e(TAG, "registerPWD: " + otherException.getMessage());
 
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
@@ -330,7 +333,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 	private void storeUserDataToFireStore(String userID, String email,
 	                                      String userType, String phoneNumber) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		String formattedDate = dateFormat.format(date);
 
 		Map<String, Object> registerUser = new HashMap<>();
@@ -365,7 +368,7 @@ public class RegisterActivity extends AppCompatActivity {
 			finish();
 
 		}).addOnFailureListener(e -> {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "storeUserDataToFireStore: " + e.getMessage());
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
@@ -608,7 +611,7 @@ public class RegisterActivity extends AppCompatActivity {
 				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
 				fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
 			} catch (Exception e) {
-				Log.e(TAG, e.getMessage());
+				Log.e(TAG, "onActivityResult: " + e.getMessage());
 			}
 		}
 
@@ -623,7 +626,7 @@ public class RegisterActivity extends AppCompatActivity {
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "googleRegisterDriver: " + e.getMessage());
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
@@ -642,7 +645,7 @@ public class RegisterActivity extends AppCompatActivity {
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "googleRegisterSenior: " + e.getMessage());
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
@@ -662,7 +665,7 @@ public class RegisterActivity extends AppCompatActivity {
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "googleRegisterPWD: " + e.getMessage());
 
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
@@ -674,7 +677,7 @@ public class RegisterActivity extends AppCompatActivity {
 	}
 
 	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		String formattedDate = dateFormat.format(date);
 
 		Map<String, Object> registerUser = new HashMap<>();
@@ -688,36 +691,38 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("registerType", "Google");
 		registerUser.put("isVerified", false);
 
-		documentReference.set(registerUser).addOnSuccessListener(unused -> {
-			switch (StaticDataPasser.storeRegisterUserType) {
-				case "Driver":
-					intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
-					break;
+		documentReference.set(registerUser)
+				.addOnSuccessListener(unused -> {
+					switch (StaticDataPasser.storeRegisterUserType) {
+						case "Driver":
+							intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
+							break;
 
-				case "Senior Citizen":
-					intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
+						case "Senior Citizen":
+							intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
 
-					break;
+							break;
 
-				case "PWD":
-					intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
+						case "PWD":
+							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
-					break;
-			}
-			StaticDataPasser.storePhoneNumber = null;
+							break;
+					}
+					StaticDataPasser.storePhoneNumber = null;
 
-			startActivity(intent);
-			finish();
-		}).addOnFailureListener(e -> {
+					startActivity(intent);
+					finish();
+				})
+				.addOnFailureListener(e -> {
 
-			Log.e(TAG, e.getMessage());
+					Log.e(TAG, "storeGoogleUserDataToFireStore: " + e.getMessage());
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-			FirebaseMain.signOutUser();
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+					FirebaseMain.signOutUser();
 
-			showRegisterFailedDialog();
-		});
+					showRegisterFailedDialog();
+				});
 	}
 
 	//register using google

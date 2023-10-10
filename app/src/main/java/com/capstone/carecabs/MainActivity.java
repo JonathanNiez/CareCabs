@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	private DatabaseReference bookingReference;
 	private ActivityMainBinding binding;
 
-
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -124,7 +123,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			return true;
 		});
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -485,7 +483,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		editAccountFragment = (EditAccountFragment) getSupportFragmentManager().findFragmentByTag("editAccountFragment");

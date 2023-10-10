@@ -30,7 +30,7 @@ public class FeedbackActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		binding.imgBackBtn.setOnClickListener(v -> {
-			backToMainActivity();
+			finish();
 		});
 
 		binding.submitBtn.setOnClickListener(v -> {
@@ -45,7 +45,7 @@ public class FeedbackActivity extends AppCompatActivity {
 		});
 
 		binding.backBtn.setOnClickListener(v -> {
-			backToMainActivity();
+			finish();
 		});
 
 	}
@@ -69,7 +69,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
 	private void submitFeedback(String feedbackID,
 	                            String comment) {
-		if (FirebaseMain.getUser() != null){
+		if (FirebaseMain.getUser() != null) {
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.feedbackCollection)
 					.document(feedbackID);
@@ -95,12 +95,7 @@ public class FeedbackActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		backToMainActivity();
-	}
-
-	private void backToMainActivity() {
-		intent = new Intent(FeedbackActivity.this, MainActivity.class);
-		startActivity(intent);
 		finish();
 	}
+
 }

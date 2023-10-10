@@ -68,7 +68,7 @@ public class AccountFragment extends Fragment {
 		super.onDestroy();
 
 		if (networkChangeReceiver != null) {
-			getContext().unregisterReceiver(networkChangeReceiver);
+			Objects.requireNonNull(getContext()).unregisterReceiver(networkChangeReceiver);
 		}
 
 		closeSignOutDialog();
@@ -76,7 +76,6 @@ public class AccountFragment extends Fragment {
 		closeRegisterNotCompleteDialog();
 		closeNoInternetDialog();
 	}
-
 
 	@Override
 	public void onPause() {
@@ -105,7 +104,7 @@ public class AccountFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentAccountBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();

@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -33,8 +34,6 @@ import com.google.firebase.firestore.DocumentReference;
 
 public class PersonalInfoFragment extends Fragment {
 	private final String TAG = "FragmentPersonalInfo";
-	private DocumentReference documentReference;
-	private String userID;
 	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
@@ -80,7 +79,7 @@ public class PersonalInfoFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentPersonalInfoBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -97,7 +96,6 @@ public class PersonalInfoFragment extends Fragment {
 
 		return view;
 	}
-
 
 	public void onBackPressed() {
 		backToAccountFragment();
@@ -187,8 +185,8 @@ public class PersonalInfoFragment extends Fragment {
 		if (FirebaseMain.getUser() != null) {
 			getCurrentFontSizeFromUserSetting();
 
-			userID = FirebaseMain.getUser().getUid();
-			documentReference = FirebaseMain.getFireStoreInstance()
+			String userID = FirebaseMain.getUser().getUid();
+			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
 			documentReference.get().addOnSuccessListener(documentSnapshot -> {
@@ -206,10 +204,19 @@ public class PersonalInfoFragment extends Fragment {
 					String getBirthdate = documentSnapshot.getString("birthdate");
 					String getAccountCreationDate = documentSnapshot.getString("accountCreationDate");
 					String getRegisterType = documentSnapshot.getString("registerType");
+					String getIDPicture = documentSnapshot.getString("idPicture");
+
+					if (!getIDPicture.equals("none")) {
+						Glide.with(context)
+								.load(getIDPicture)
+								.placeholder(R.drawable.loading_gif)
+								.into(binding.idImageView);
+					}
 
 					switch (getUserType) {
 						case "Driver":
 							binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+							binding.idTypeTextView.setText("Driver's License");
 
 							String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
 							String getVehicleColor = documentSnapshot.getString("vehicleColor");
@@ -228,6 +235,8 @@ public class PersonalInfoFragment extends Fragment {
 							break;
 
 						case "Persons with Disabilities (PWD)":
+							binding.idTypeTextView.setText("PWD ID");
+
 							String getDisability = documentSnapshot.getString("disability");
 
 							binding.disabilityTextView.setVisibility(View.VISIBLE);
@@ -237,6 +246,8 @@ public class PersonalInfoFragment extends Fragment {
 							break;
 
 						case "Senior Citizen":
+							binding.idTypeTextView.setText("Senior Citizen ID");
+
 							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
 							binding.medConTextView.setVisibility(View.VISIBLE);
@@ -258,7 +269,6 @@ public class PersonalInfoFragment extends Fragment {
 
 				} else {
 					closePleaseWaitDialog();
-
 				}
 			}).addOnFailureListener(e -> {
 				closePleaseWaitDialog();

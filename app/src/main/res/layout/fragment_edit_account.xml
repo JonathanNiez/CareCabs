@@ -19,7 +19,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<ImageButton
+			<androidx.appcompat.widget.AppCompatImageButton
 				android:id="@+id/imgBackBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
 				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
@@ -45,12 +45,12 @@
 
 	</androidx.cardview.widget.CardView>
 
-	<ScrollView
+	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
@@ -73,13 +73,13 @@
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
 						android:orientation="vertical">
 
-						<LinearLayout
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:gravity="center"
@@ -98,7 +98,7 @@
 								app:civ_border_width="2dp" />
 
 
-							<LinearLayout
+							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"
 								android:layout_height="wrap_content"
 								android:layout_marginEnd="20dp"
@@ -106,7 +106,7 @@
 								android:gravity="center"
 								android:orientation="vertical">
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/firstnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
@@ -118,7 +118,7 @@
 									android:textSize="22sp" />
 
 
-								<TextView
+								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/lastnameTextView"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
@@ -129,11 +129,11 @@
 									android:textColor="@color/black"
 									android:textSize="22sp" />
 
-							</LinearLayout>
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
-						</LinearLayout>
+						</androidx.appcompat.widget.LinearLayoutCompat>
 
-						<TextView
+						<androidx.appcompat.widget.AppCompatTextView
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
@@ -143,14 +143,14 @@
 							android:textColor="@color/black"
 							android:textSize="17sp" />
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 
 				</androidx.cardview.widget.CardView>
 
 			</RelativeLayout>
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/idScannedTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -164,7 +164,7 @@
 				android:textColor="@color/light_red"
 				android:textSize="17sp" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
@@ -176,14 +176,14 @@
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:gravity="center"
 				android:orientation="vertical">
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
@@ -224,10 +224,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
@@ -268,9 +267,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
@@ -313,9 +312,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
@@ -346,9 +345,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/sexTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -361,8 +360,7 @@
 					android:textColor="@color/black"
 					android:textSize="20sp" />
 
-
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
@@ -400,9 +398,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/disabilityTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -415,7 +413,7 @@
 					android:textColor="@color/black"
 					android:textSize="20sp" />
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/editDisabilityLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -455,9 +453,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/medicalConditionTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -470,8 +468,7 @@
 					android:textColor="@color/black"
 					android:textSize="20sp" />
 
-
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/editMedicalConditionLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -511,9 +508,9 @@
 						android:checked="false"
 						android:padding="10dp" />
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/vehicleInfoLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -526,7 +523,7 @@
 						android:layout_margin="10dp"
 						android:background="@color/dark_gray" />
 
-					<TextView
+					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
@@ -538,7 +535,7 @@
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<ImageView
+					<androidx.appcompat.widget.AppCompatImageView
 						android:id="@+id/vehicleImageView"
 						android:layout_width="150dp"
 						android:layout_height="150dp"
@@ -546,7 +543,7 @@
 						android:background="@drawable/custom_card_view_1"
 						android:src="@drawable/car_100" />
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -563,8 +560,6 @@
 							android:enabled="false"
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="Vehicle color"
-							android:inputType="number"
-							android:maxLength="2"
 							android:padding="10dp"
 							android:textAlignment="center"
 							android:textColor="@color/black"
@@ -589,9 +584,9 @@
 							android:checked="false"
 							android:padding="10dp" />
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -608,8 +603,6 @@
 							android:enabled="false"
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="Vehicle plate number"
-							android:inputType="number"
-							android:maxLength="2"
 							android:padding="10dp"
 							android:textAlignment="center"
 							android:textColor="@color/black"
@@ -634,11 +627,11 @@
 							android:checked="false"
 							android:padding="10dp" />
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"
@@ -653,8 +646,8 @@
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</ScrollView>
+	</androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

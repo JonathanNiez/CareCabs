@@ -27,6 +27,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -36,7 +37,6 @@ import androidx.core.content.ContextCompat;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
-import com.capstone.carecabs.MainActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -58,17 +58,16 @@ import java.util.Objects;
 
 public class RegisterPWDActivity extends AppCompatActivity {
 	private final String TAG = "RegisterPWDActivity";
+	private final String userID = FirebaseMain.getUser().getUid();
+	private final String userType = "Persons with Disabilities (PWD)";
+	private String profilePictureURL = "default";
+	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
 	private DocumentReference documentReference;
-	private StorageReference storageReference, imageRef;
-	private FirebaseStorage firebaseStorage;
-	private Uri imageUri;
+	private StorageReference imageReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
-	private String userID;
-	private boolean verificationStatus = false;
-	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
@@ -77,6 +76,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			birthdateInputChoiceDialog, cameraGalleryOptionsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterPwdBinding binding;
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -116,8 +116,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		StaticDataPasser.storeRegisterUserType = "Persons with Disabilities (PWD)";
-
 		binding.imgBtnProfilePic.setOnClickListener(view -> {
 			ImagePicker.with(RegisterPWDActivity.this)
 					.crop()                    //Crop image(Optional), Check Customization for more option
@@ -128,17 +126,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		binding.imgBackBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
-		});
-
-		binding.helpImgBtn.setOnClickListener(v -> {
-			showIDScanInfoDialog();
-		});
-
-		binding.scanIDBtn.setOnClickListener(view -> {
-			intent = new Intent(this, ScanIDActivity.class);
-			intent.putExtra("userType", StaticDataPasser.storeRegisterUserType);
-			startActivity(intent);
-			finish();
 		});
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -196,10 +183,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			showEnterBirthdateDialog();
 		});
 
-		binding.doneBtn.setOnClickListener(v -> {
+		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
-			binding.doneBtn.setVisibility(View.GONE);
-			binding.scanIDLayout.setVisibility(View.GONE);
 
 			String stringFirstname = binding.firstname.getText().toString().trim();
 			String stringLastname = binding.lastname.getText().toString().trim();
@@ -209,22 +194,14 @@ public class RegisterPWDActivity extends AppCompatActivity {
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
 					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")
-					|| imageUri == null) {
+			) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
 			} else {
-				if (!isIDScanned) {
-					showIDNotScannedDialog(stringFirstname, stringLastname);
-				} else {
-					verificationStatus = true;
-					updateUserRegisterToFireStore(stringFirstname, stringLastname, verificationStatus);
-				}
-
+				updateUserRegisterToFireStore(stringFirstname, stringLastname);
 			}
 		});
 	}
@@ -263,9 +240,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 	}
 
-	private void updateUserRegisterToFireStore(String firstname, String lastname,
-	                                           boolean verificationStatus) {
-		userID = FirebaseMain.getUser().getUid();
+	private void updateUserRegisterToFireStore(String firstname, String lastname) {
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -276,20 +251,17 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
-		registerUser.put("isVerified", verificationStatus);
+		registerUser.put("userType", userType);
 		registerUser.put("isRegisterComplete", true);
 		registerUser.put("totalTrips", 0);
 
 		documentReference.update(registerUser).addOnSuccessListener(unused -> {
 			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			uploadImageToFirebaseStorage(StaticDataPasser.storeUri);
-			showRegisterSuccessNotification();
+			uploadImageToFirebaseStorage(profilePictureUri);
 
-			intent = new Intent(RegisterPWDActivity.this, MainActivity.class);
+			intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
+			intent.putExtra("userType", userType);
 			startActivity(intent);
 			finish();
 
@@ -298,11 +270,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			showRegisterFailedDialog();
 
 			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			Log.e(TAG, e.getMessage());
-
+			Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
 		});
 	}
 
@@ -351,7 +320,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			Log.e(TAG, e.getMessage());
 		});
 	}
-
 
 	private void checkPermission() {
 		// Check for camera permission
@@ -409,49 +377,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 		String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null);
 		return Uri.parse(path);
-	}
-
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
-
-		userID = FirebaseMain.getUser().getUid();
-
-		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
-
-		UploadTask uploadTask = imageRef.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-				.addOnSuccessListener(uri -> {
-					String imageUrl = uri.toString();
-
-					storeImageUrlInFireStore(imageUrl);
-
-				}).addOnFailureListener(e -> {
-					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-
-				})).addOnFailureListener(e -> {
-			Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-			Log.e(TAG, e.getMessage());
-
-		});
-	}
-
-	private void storeImageUrlInFireStore(String imageUrl) {
-		userID = FirebaseMain.getUser().getUid();
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
-
-		Map<String, Object> profilePicture = new HashMap<>();
-		profilePicture.put("profilePicture", imageUrl);
-
-		documentReference.update(profilePicture)
-				.addOnSuccessListener(unused ->
-						Toast.makeText(RegisterPWDActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
-				.addOnFailureListener(e -> {
-					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-				});
 	}
 
 	private void showCameraOrGalleryOptionsDialog() {
@@ -611,7 +536,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 	}
 
-
 	private void showIDNotScannedDialog(String firstname, String lastname) {
 		builder = new AlertDialog.Builder(this);
 
@@ -621,8 +545,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			verificationStatus = false;
-			updateUserRegisterToFireStore(firstname, lastname, verificationStatus);
+			updateUserRegisterToFireStore(firstname, lastname);
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -701,7 +624,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-				.setSmallIcon(R.drawable.logo)
+				.setSmallIcon(R.drawable.logo_2_v2)
 				.setContentTitle("Registration Successful")
 				.setContentText("You have successfully registered as a PWD");
 
@@ -788,18 +711,54 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 	}
 
+	private void uploadImageToFirebaseStorage(Uri imageUri) {
+		FirebaseStorage firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		StorageReference storageReference = firebaseStorage.getReference();
+
+		imageReference = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		UploadTask uploadTask = imageReference.putFile(imageUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl()
+				.addOnSuccessListener(uri -> {
+					profilePictureURL = uri.toString();
+
+					storeImageUrlInFireStore(profilePictureURL);
+
+				}).addOnFailureListener(e -> {
+					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
+
+				})).addOnFailureListener(e -> {
+			Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+			Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
+
+		});
+	}
+
+	private void storeImageUrlInFireStore(String profilePictureURL) {
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection).document(userID);
+
+		Map<String, Object> profilePicture = new HashMap<>();
+		profilePicture.put("profilePicture", profilePictureURL);
+
+		documentReference.update(profilePicture)
+				.addOnSuccessListener(unused ->
+						Toast.makeText(RegisterPWDActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+				.addOnFailureListener(e -> {
+					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "storeImageUrlInFireStore: " + e.getMessage());
+				});
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (resultCode == Activity.RESULT_OK) {
+		if (resultCode == Activity.RESULT_OK && data != null) {
 
-			if (data != null) {
+			profilePictureUri = data.getData();
+			binding.imgBtnProfilePic.setImageURI(profilePictureUri);
 
-				imageUri = data.getData();
-				StaticDataPasser.storeUri = imageUri;
-				binding.imgBtnProfilePic.setImageURI(imageUri);
-
-			}
 
 //			if (requestCode == CAMERA_REQUEST_CODE) {
 //				if (data != null) {
@@ -837,7 +796,9 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (requestCode == CAMERA_PERMISSION_REQUEST) {

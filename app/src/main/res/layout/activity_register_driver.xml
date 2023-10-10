@@ -7,7 +7,7 @@
 	android:background="@color/orange"
 	tools:context=".Register.RegisterDriverActivity">
 
-	<ScrollView
+	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
@@ -192,7 +192,7 @@
 
 					</com.google.android.material.textfield.TextInputLayout>
 
-					<LinearLayout
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -247,7 +247,7 @@
 
 						</com.google.android.material.textfield.TextInputLayout>
 
-					</LinearLayout>
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="wrap_content"
@@ -301,7 +301,10 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
+						android:background="@drawable/custom_card_view_1"
+						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
+						android:padding="10dp"
 						android:text="Vehicle Info"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
@@ -344,7 +347,10 @@
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
+						android:background="@drawable/custom_card_view_1"
+						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_medium"
+						android:padding="10dp"
 						android:text="Fill up the vehicle info below so that passengers can easily spot you"
 						android:textAlignment="center"
 						android:textColor="@color/black"
@@ -399,54 +405,6 @@
 
 			</androidx.cardview.widget.CardView>
 
-			<View
-				android:layout_width="match_parent"
-				android:layout_height="5dp"
-				android:layout_margin="10dp"
-				android:background="@color/dark_gray"
-				android:elevation="5dp" />
-
-			<androidx.cardview.widget.CardView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				app:cardCornerRadius="10dp"
-				app:cardElevation="5dp">
-
-				<androidx.appcompat.widget.LinearLayoutCompat
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:gravity="center"
-					android:orientation="vertical"
-					android:padding="5dp">
-
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/textView3"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:fontFamily="@font/gabarito_medium"
-						android:text="@string/string_driver_license_scan"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="15sp" />
-
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/textView2"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:fontFamily="@font/gabarito_medium"
-						android:text="@string/string_tap_the_id_scan_below"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="15sp" />
-
-
-				</androidx.appcompat.widget.LinearLayoutCompat>
-
-			</androidx.cardview.widget.CardView>
-
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/progressBarLayout"
 				android:layout_width="wrap_content"
@@ -470,57 +428,38 @@
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
-
 			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/scanIDLayout"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
+				android:id="@+id/nextBtn"
+				android:layout_width="150dp"
+				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
+				android:layout_marginBottom="50dp"
+				android:background="@drawable/circular_button"
+				android:backgroundTint="@color/yinmn_blue"
 				android:gravity="center"
 				android:orientation="horizontal">
 
-				<androidx.appcompat.widget.AppCompatButton
-					android:id="@+id/scanIDBtn"
-					android:layout_width="160dp"
-					android:layout_height="60dp"
-					android:layout_marginStart="5dp"
-					android:background="@drawable/custom_button"
-					android:backgroundTint="@color/wisteria"
-					android:drawableStart="@drawable/scan_id_64"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="Scan ID"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-				<androidx.appcompat.widget.AppCompatImageButton
-					android:id="@+id/helpImgBtn"
+				<androidx.appcompat.widget.AppCompatTextView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_marginStart="5dp"
-					android:background="@drawable/circular_button"
-					android:backgroundTint="@color/white"
-					android:elevation="5dp"
-					android:src="@drawable/help_64"
-					android:textSize="20sp" />
+					android:layout_gravity="start|center_vertical"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="NEXT"
+					android:textColor="@color/white"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="end|center_vertical"
+					android:layout_margin="5dp"
+					android:src="@drawable/next_32_white" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/doneBtn"
-				android:layout_width="130dp"
-				android:layout_height="50dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginBottom="50dp"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/yinmn_blue"
-				android:elevation="5dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:text="Done"
-				android:textColor="@color/white"
-				android:textSize="17sp" />
-
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</ScrollView>
+	</androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

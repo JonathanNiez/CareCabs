@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Register;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -36,7 +37,6 @@ import android.widget.Toast;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
-import com.capstone.carecabs.MainActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -58,16 +58,16 @@ import java.util.Objects;
 
 public class RegisterSeniorActivity extends AppCompatActivity {
 	private final String TAG = "RegisterSeniorActivity";
+	private final String userID = FirebaseMain.getUser().getUid();
+	private final String userType = "Senior Citizen";
+	private String profilePictureURL = "default";
+	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
 	private DocumentReference documentReference;
-	private StorageReference storageReference, imageRef;
-	private FirebaseStorage firebaseStorage;
-	private Uri imageUri;
+	private StorageReference imageReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
-	private String userID;
-	private boolean isIDScanned = false;
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
@@ -114,8 +114,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		checkPermission();
 
 		FirebaseApp.initializeApp(this);
-
-		StaticDataPasser.storeRegisterUserType = "Senior Citizen";
 
 		binding.imgBtnProfilePic.setOnClickListener(v -> {
 			ImagePicker.with(RegisterSeniorActivity.this)
@@ -183,17 +181,8 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			showEnterBirthdateDialog();
 		});
 
-		binding.scanIDBtn.setOnClickListener(view -> {
-			intent = new Intent(this, ScanIDActivity.class);
-			intent.putExtra("userType", StaticDataPasser.storeRegisterUserType);
-			startActivity(intent);
-			finish();
-		});
-
-		binding.doneBtn.setOnClickListener(v -> {
+		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
-			binding.doneBtn.setVisibility(View.GONE);
-			binding.scanIDLayout.setVisibility(View.GONE);
 
 			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
 			String stringLastname = binding.lastnameEditText.getText().toString().trim();
@@ -203,13 +192,11 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 					|| StaticDataPasser.storeCurrentAge == 0
 					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
 					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")
-					|| imageUri == null) {
+			) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
 			} else if (StaticDataPasser.storeCurrentAge <= 60) {
 				intent = new Intent(this, LoginActivity.class);
@@ -221,18 +208,9 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 				updateCancelledRegister(FirebaseMain.getUser().getUid());
 
 				binding.progressBarLayout.setVisibility(View.GONE);
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.scanIDLayout.setVisibility(View.VISIBLE);
 
 			} else {
-				StaticDataPasser.storeFirstName = stringFirstname;
-				StaticDataPasser.storeLastName = stringLastname;
-
-				if (!isIDScanned) {
-					showIDNotScannedDialog(stringFirstname, stringLastname);
-				} else {
-					updateUserRegisterToFireStore(stringFirstname, stringLastname, true);
-				}
+				updateUserRegisterToFireStore(stringFirstname, stringLastname);
 			}
 		});
 	}
@@ -242,9 +220,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		showCancelRegisterDialog();
 	}
 
-	private void updateUserRegisterToFireStore(String firstname, String lastname,
-	                                           boolean verificationStatus) {
-		userID = FirebaseMain.getUser().getUid();
+	private void updateUserRegisterToFireStore(String firstname, String lastname) {
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -254,33 +230,27 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		registerUser.put("age", StaticDataPasser.storeCurrentAge);
 		registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
 		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
+		registerUser.put("userType", userType);
 		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
-		registerUser.put("isVerified", verificationStatus);
 		registerUser.put("isRegisterComplete", true);
 		registerUser.put("totalTrips", 0);
 
 		documentReference.update(registerUser).addOnSuccessListener(unused -> {
 			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
 
-			uploadImageToFirebaseStorage(StaticDataPasser.storeUri);
+			uploadImageToFirebaseStorage(profilePictureUri);
 
-			showRegisterSuccessNotification();
-
-			intent = new Intent(RegisterSeniorActivity.this, MainActivity.class);
+			intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
+			intent.putExtra("userType", userType);
 			startActivity(intent);
 			finish();
 
 		}).addOnFailureListener(e -> {
 			showRegisterFailedDialog();
 
-			Log.e(TAG, e.getMessage());
-
 			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.doneBtn.setVisibility(View.VISIBLE);
-			binding.scanIDLayout.setVisibility(View.VISIBLE);
+
+			Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
 
 		});
 	}
@@ -304,7 +274,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 			FirebaseMain.signOutUser();
 
-			Log.e(TAG, e.getMessage());
+			Log.e(TAG, "updateCancelledRegister: " + e.getMessage());
 
 			intent = new Intent(RegisterSeniorActivity.this, LoginActivity.class);
 			startActivity(intent);
@@ -368,49 +338,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 		String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null);
 		return Uri.parse(path);
-	}
-
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
-
-		userID = FirebaseMain.getUser().getUid();
-
-		imageRef = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
-
-		UploadTask uploadTask = imageRef.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
-				.addOnSuccessListener(uri -> {
-					String imageUrl = uri.toString();
-
-					storeImageUrlInFireStore(imageUrl);
-
-				}).addOnFailureListener(e -> {
-					Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-
-				})).addOnFailureListener(e -> {
-			Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-			Log.e(TAG, e.getMessage());
-
-		});
-	}
-
-	private void storeImageUrlInFireStore(String imageUrl) {
-		userID = FirebaseMain.getUser().getUid();
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
-
-		Map<String, Object> profilePicture = new HashMap<>();
-		profilePicture.put("profilePicture", imageUrl);
-
-		documentReference.update(profilePicture)
-				.addOnSuccessListener(unused ->
-						Toast.makeText(RegisterSeniorActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
-				.addOnFailureListener(e -> {
-					Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
-				});
 	}
 
 	private void showCameraOrGalleryOptionsDialog() {
@@ -571,7 +498,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
-
 	private void showIDNotScannedDialog(String firstname, String lastname) {
 		builder = new AlertDialog.Builder(this);
 
@@ -581,7 +507,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			updateUserRegisterToFireStore(firstname, lastname, false);
+			updateUserRegisterToFireStore(firstname, lastname);
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -631,7 +557,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
-
 	private void showAgeReqDialog() {
 		builder = new AlertDialog.Builder(this);
 
@@ -650,7 +575,6 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		ageReqDialog = builder.create();
 		ageReqDialog.show();
 	}
-
 
 	private void showRegisterSuccessNotification() {
 		String channelId = "registration_channel_id"; // Change this to your desired channel ID
@@ -748,6 +672,46 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
+	private void uploadImageToFirebaseStorage(Uri imageUri) {
+		FirebaseStorage firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
+		StorageReference storageReference = firebaseStorage.getReference();
+
+		imageReference = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		UploadTask uploadTask = imageReference.putFile(imageUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl()
+				.addOnSuccessListener(uri -> {
+					profilePictureURL = uri.toString();
+
+					storeImageUrlInFireStore(profilePictureURL);
+
+				}).addOnFailureListener(e -> {
+					Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
+
+				})).addOnFailureListener(e -> {
+			Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+			Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
+
+		});
+	}
+
+	private void storeImageUrlInFireStore(String profilePictureURL) {
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection).document(userID);
+
+		Map<String, Object> profilePicture = new HashMap<>();
+		profilePicture.put("profilePicture", profilePictureURL);
+
+		documentReference.update(profilePicture)
+				.addOnSuccessListener(unused ->
+						Toast.makeText(RegisterSeniorActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+				.addOnFailureListener(e -> {
+					Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "storeImageUrlInFireStore: " + e.getMessage());
+				});
+	}
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -755,12 +719,9 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 			if (data != null) {
 
-				imageUri = data.getData();
-				StaticDataPasser.storeUri = imageUri;
-				binding.imgBtnProfilePic.setImageURI(imageUri);
-
+				profilePictureUri = data.getData();
+				binding.imgBtnProfilePic.setImageURI(profilePictureUri);
 			}
-
 
 //			if (requestCode == CAMERA_REQUEST_CODE) {
 //				if (data != null) {
@@ -792,13 +753,13 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 //				}
 //			}
 
-		} else {
-			Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (requestCode == CAMERA_PERMISSION_REQUEST) {

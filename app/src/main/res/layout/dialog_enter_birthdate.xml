@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -10,28 +10,28 @@
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
-		app:cardBackgroundColor="@color/platinum"
+		android:layout_margin="10dp"
+		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Enter your Date of Birth"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -45,7 +45,7 @@
 					android:theme="@style/SpinnerTextStyle" />
 
 
-				<LinearLayout
+				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginTop="10dp"
@@ -59,7 +59,7 @@
 						android:layout_marginEnd="5dp"
 						android:layout_weight="1"
 						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Day"
 						android:inputType="number"
 						android:maxLength="2"
@@ -76,7 +76,7 @@
 						android:layout_marginStart="5dp"
 						android:layout_weight="1"
 						android:background="@drawable/edit_text"
-						android:fontFamily="@font/opensans_bold"
+						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Year"
 						android:inputType="number"
 						android:maxLength="4"
@@ -86,12 +86,12 @@
 						android:textSize="17sp" />
 
 
-				</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginStart="20dp"
@@ -100,46 +100,46 @@
 				android:gravity="center"
 				android:orientation="horizontal">
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/monthTextView"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="2"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="Month"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/dayTextView"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="Day"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/yearTextView"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:fontFamily="@font/opensans_bold"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="Year"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
@@ -150,10 +150,11 @@
 			android:id="@+id/doneBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
-			android:layout_marginEnd="5dp"
+			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
-			android:fontFamily="@font/opensans_bold"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Done"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
@@ -162,15 +163,16 @@
 			android:id="@+id/cancelBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
-			android:layout_marginStart="5dp"
+			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/red"
-			android:fontFamily="@font/opensans_bold"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
 			android:text="Cancel"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

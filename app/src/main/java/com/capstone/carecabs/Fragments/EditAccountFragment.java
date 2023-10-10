@@ -151,7 +151,7 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentEditAccountBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -550,7 +550,7 @@ public class EditAccountFragment extends Fragment {
 								.addOnFailureListener(e -> {
 									Toast.makeText(context, "Vehicle plate number failed to update", Toast.LENGTH_LONG).show();
 
-									Log.e(TAG, e.getMessage());
+									Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 								});
 					}
 				});
@@ -560,7 +560,6 @@ public class EditAccountFragment extends Fragment {
 				binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
 			}
 		});
-
 
 	}
 

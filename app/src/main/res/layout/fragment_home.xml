@@ -36,7 +36,7 @@
 
 	</androidx.cardview.widget.CardView>
 
-	<ScrollView
+	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
@@ -677,6 +677,6 @@
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</ScrollView>
+	</androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>
