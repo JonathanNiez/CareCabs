@@ -167,6 +167,131 @@
 			</androidx.cardview.widget.CardView>
 
 			<androidx.cardview.widget.CardView
+				android:id="@+id/currentPassengerLayout"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				app:cardBackgroundColor="@color/white"
+				app:cardCornerRadius="10dp"
+				app:cardElevation="5dp">
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/navigationStatusTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_black"
+						android:text="You are currently picking-up a Passenger"
+						android:textAlignment="center"
+						android:textColor="@color/blue"
+						android:textSize="25sp" />
+
+					<androidx.appcompat.widget.LinearLayoutCompat
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:orientation="horizontal"
+						android:gravity="center">
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/currentPassengerTypeImageView"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							app:srcCompat="@drawable/senior_64_2" />
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							app:srcCompat="@drawable/pickup_point_100" />
+
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
+
+					<androidx.cardview.widget.CardView
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						app:cardBackgroundColor="@color/white"
+						app:cardCornerRadius="10dp"
+						app:cardElevation="5dp">
+
+						<androidx.appcompat.widget.LinearLayoutCompat
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:gravity="center"
+							android:orientation="vertical">
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/passengerNameTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_bold"
+								android:text="Passenger Name"
+								android:textAlignment="center"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/passengerTypeTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Passenger Type"
+								android:textAlignment="center"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/passenger_disability_text_view"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="start"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Disability"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/passengerMedicalConditionTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="start"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_semibold"
+								android:text="Medical Condition"
+								android:textColor="@color/black"
+								android:textSize="18sp" />
+
+						</androidx.appcompat.widget.LinearLayoutCompat>
+
+					</androidx.cardview.widget.CardView>
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Stay safe on the road"
+						android:textAlignment="center"
+						android:textColor="@color/black"
+						android:textSize="20sp" />
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+			</androidx.cardview.widget.CardView>
+
+
+			<androidx.cardview.widget.CardView
 				android:id="@+id/driverOnTheWayLayout"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"

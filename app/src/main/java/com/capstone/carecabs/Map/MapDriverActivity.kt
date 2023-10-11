@@ -375,6 +375,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
     private lateinit var enableLocatonServiceDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private lateinit var cancelNavtigationDialog: AlertDialog
+    private lateinit var passengerOnBoardDialog: AlertDialog
     private lateinit var binding: ActivityMapDriverBinding
 
     override fun onDestroy() {
@@ -853,11 +854,10 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 if (it.exists()) {
                     val getIsNavigatingToDestination: Boolean? =
                         it.getBoolean("isNavigatingToDestination")
+                    val getNavigationStatus : String? = it.getString("navigationStatus")
 
-                    val getTripID: String? = it.getString("tripID")
-
-                    if (getIsNavigatingToDestination == true && getTripID != "none") {
-
+                    if (getIsNavigatingToDestination == true && getNavigationStatus == "Navigating to destination") {
+                        val getTripID: String? = it.getString("tripID")
                         val getDestinationLatitude: Double = it.getDouble("destinationLatitude")!!
                         val getDestinationLongitude: Double = it.getDouble("destinationLongitude")!!
 
@@ -883,11 +883,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                                 setTripAsComplete(getTripID)
                             }
                         }
-                    } else {
-                        isNavigatingToDestination = false
-
+                    } else if (getNavigationStatus == "Navigating to pickup location"){
                         binding.arrivedAtDestinationBtn.visibility = View.GONE
 
+                        loadPassengerLocationToMapFromDatabase()
+                    }else{
                         loadPassengerLocationToMapFromDatabase()
                     }
                 } else {
@@ -1159,7 +1159,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         val locationReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
 
-        locationReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        locationReference.addValueEventListener(object : ValueEventListener {
             @SuppressLint("SetTextI18n")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -1179,7 +1179,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
                                 waitingPassengerCount++
                                 hasPassengersWaiting = true
-                                when (locationData.passengerUserType) {
+                                when (locationData.passengerType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
                                             locationData.pickupLongitude,
@@ -1206,7 +1206,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
                                 initializeBottomNavButtons(locationData.bookingID)
 
-                                when (locationData.passengerUserType) {
+                                when (locationData.passengerType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
                                             locationData.pickupLongitude,
@@ -1416,8 +1416,8 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         val dialogView = layoutInflater.inflate(R.layout.dialog_user_not_verified, null)
         val okBtn = dialogView.findViewById<Button>(R.id.okBtn)
 
-        okBtn.setOnClickListener { v: View? ->
-            intent = Intent(this, MainActivity::class.java)
+        okBtn.setOnClickListener {
+            intent = Intent(this@MapDriverActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
 
@@ -1434,6 +1434,46 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
             userNotVerifiedDialog.dismiss()
         }
     }
+
+    private fun showPassengerOnBoardDialog(
+        generateTripID: String,
+        bookingID: String,
+        passengerID: String,
+        pickupCoordinates: Point,
+        destinationCoordinates: Point,
+    ) {
+        builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_passenger_on_board, null)
+        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
+        val confirmBtn = dialogView.findViewById<Button>(R.id.confirmBtn)
+
+        confirmBtn.setOnClickListener {
+            storeTripToDatabase(
+                generateTripID,
+                bookingID,
+                passengerID,
+                pickupCoordinates,
+                destinationCoordinates
+            )
+        }
+
+        closeBtn.setOnClickListener {
+            closePassengerOnBoardDialog()
+        }
+
+        builder.setView(dialogView)
+        passengerOnBoardDialog = builder.create()
+        passengerOnBoardDialog.show()
+    }
+
+    private fun closePassengerOnBoardDialog() {
+        if (passengerOnBoardDialog.isShowing) {
+            passengerOnBoardDialog.dismiss()
+        }
+    }
+
 
     private fun showCancelNavigationDialog() {
         builder = AlertDialog.Builder(this)
@@ -1515,11 +1555,20 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
     }
 
     //once the pickup button is clicked
+    @SuppressLint("SetTextI18n")
     override fun onDataReceived(bottomSheetData: BottomSheetData) {
 
         if (isNavigatingToDestination) {
+            findRoute(bottomSheetData.pickupCoordinates)
+
+            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
+
+        } else {
+            findRoute(bottomSheetData.destinationCoordinates)
+
+            binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
             binding.passengerOnBoardBtn.setOnClickListener {
-                storeTripToDatabase(
+                showPassengerOnBoardDialog(
                     generateRandomTripID(),
                     bottomSheetData.bookingID,
                     bottomSheetData.passengerID,
@@ -1527,23 +1576,28 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     bottomSheetData.destinationCoordinates
                 )
             }
-
-            findRoute(bottomSheetData.destinationCoordinates)
-        } else {
-            findRoute(bottomSheetData.pickupCoordinates)
         }
     }
 
     //from bookings overview modal sheet
+    @SuppressLint("SetTextI18n")
     override fun onDataReceivedFromPassengerBookingsBottomSheet(
         pickupPassengerBottomSheetData: PickupPassengerBottomSheetData
     ) {
 
         if (isNavigatingToDestination) {
+
+            findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
+
+            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
+
+        } else {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
+            binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
             binding.passengerOnBoardBtn.setOnClickListener {
-                storeTripToDatabase(
+
+                showPassengerOnBoardDialog(
                     generateRandomTripID(),
                     pickupPassengerBottomSheetData.bookingID,
                     pickupPassengerBottomSheetData.passengerID,
@@ -1551,8 +1605,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     pickupPassengerBottomSheetData.destinationCoordinates
                 )
             }
-        } else {
-            findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
         }
     }
 

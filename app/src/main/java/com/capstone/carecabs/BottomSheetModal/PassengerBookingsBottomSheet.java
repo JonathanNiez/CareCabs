@@ -113,7 +113,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 			PickupPassengerAdapter pickupPassengerAdapter = new PickupPassengerAdapter(
 					context,
 					pickupPassengerModelList,
-					pickupPassengerModel -> getVehicleInfo(
+					pickupPassengerModel -> getDriverAndVehicleInfo(
 							pickupPassengerModel.getFcmToken(),
 							pickupPassengerModel.getPassengerUserID(),
 							pickupPassengerModel.getBookingID(),
@@ -179,13 +179,13 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@SuppressLint("LongLogTag")
-	private void getVehicleInfo(String fcmToken,
-	                            String passengerID,
-	                            String bookingID,
-	                            Double pickupLatitude,
-	                            Double pickupLongitude,
-	                            Double destinationLatitude,
-	                            Double destinationLongitude) {
+	private void getDriverAndVehicleInfo(String fcmToken,
+	                                     String passengerID,
+	                                     String bookingID,
+	                                     Double pickupLatitude,
+	                                     Double pickupLongitude,
+	                                     Double destinationLatitude,
+	                                     Double destinationLongitude) {
 
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
@@ -198,6 +198,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 						String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 						String getFirstname = documentSnapshot.getString("firstname");
 						String getLastname = documentSnapshot.getString("lastname");
+						String getProfilePicture = documentSnapshot.getString("profilePicture");
 						String fullName = getFirstname + " " + getLastname;
 
 						updatePassengerBooking(
@@ -209,6 +210,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 								destinationLatitude,
 								destinationLongitude,
 								fullName,
+								getProfilePicture,
 								getVehicleColor,
 								getVehiclePlateNumber
 						);
@@ -226,6 +228,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	                                    Double destinationLatitude,
 	                                    Double destinationLongitude,
 	                                    String fullName,
+										String profilePicture,
 	                                    String vehicleColor,
 	                                    String vehiclePlateNumber) {
 
@@ -252,6 +255,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
 		updateBooking.put("driverName", fullName);
+		updateBooking.put("driverProfilePicture", profilePicture);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);
@@ -262,7 +266,6 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 
 					String notificationMessage = "Vehicle Color: " + vehicleColor
 							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
-
 
 					updateDriverStatus(destinationLatitude, destinationLongitude);
 					notificationData(fcmToken, notificationMessage);
@@ -291,7 +294,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 			updateDriverStatus.put("isAvailable", false);
 			updateDriverStatus.put("destinationLatitude", destinationLatitude);
 			updateDriverStatus.put("destinationLongitude", destinationLongitude);
-			updateDriverStatus.put("isNavigatingToDestination", true);
+			updateDriverStatus.put("navigationStatus", "Navigating to pickup location");
 
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())

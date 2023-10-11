@@ -236,6 +236,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("vehiclePlateNumber", vehiclePlateNumber);
 			registerUser.put("vehiclePicture", StaticDataPasser.storeVehiclePictureURL);
 			registerUser.put("isNavigatingToDestination", false);
+			registerUser.put("navigationStatus", "idle");
 			registerUser.put("destinationLatitude", 0.0);
 			registerUser.put("destinationLongitude", 0.0);
 			registerUser.put("tripID", "none");

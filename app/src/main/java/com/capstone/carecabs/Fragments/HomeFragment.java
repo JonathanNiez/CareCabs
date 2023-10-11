@@ -66,6 +66,7 @@ public class HomeFragment extends Fragment {
 	private NetworkChangeReceiver networkChangeReceiver;
 	private FragmentHomeBinding binding;
 	private DocumentReference documentReference;
+	private DatabaseReference databaseReference;
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
 
@@ -112,6 +113,7 @@ public class HomeFragment extends Fragment {
 		binding.driverStatsLayout.setVisibility(View.GONE);
 		binding.passengerStatsLayout.setVisibility(View.GONE);
 		binding.driverOnTheWayLayout.setVisibility(View.GONE);
+		binding.currentPassengerLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		initializeNetworkChecker();
@@ -384,7 +386,17 @@ public class HomeFragment extends Fragment {
 									Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
 									int getDriverRatings = getDriverRatingsLong.intValue();
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
-									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
+									boolean isNavigatingToDestination = documentSnapshot.getBoolean("isNavigatingToDestination");
+									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
+
+									if (isNavigatingToDestination && getNavigationStatus.equals("Navigating to destination")) {
+										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+										showNavigationStatusLayout();
+									} else if (getNavigationStatus.equals("Navigating to pickup location")) {
+										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+										showNavigationStatusLayout();
+									}
 
 									binding.bookingsTextView.setText("Passenger Bookings");
 									binding.bookingsBtn.setOnClickListener(v -> {
@@ -404,7 +416,7 @@ public class HomeFragment extends Fragment {
 										Objects.requireNonNull(getActivity()).finish();
 									});
 
-									if (getDriverStatus) {
+									if (isAvailable) {
 										binding.driverStatusTextView.setTextColor(Color.BLUE);
 										binding.driverStatusTextView.setText("Driver Availability: Available");
 										binding.driverStatusSwitch.setChecked(true);
@@ -445,7 +457,7 @@ public class HomeFragment extends Fragment {
 						binding.progressBarLayout1.setVisibility(View.GONE);
 						binding.progressBarLayout2.setVisibility(View.GONE);
 
-						Log.e(TAG, Objects.requireNonNull(e.getMessage()));
+						Log.e(TAG, "getUserTypeAndLoadProfileInfo: " + e.getMessage());
 					});
 
 		} else {
@@ -456,8 +468,8 @@ public class HomeFragment extends Fragment {
 
 	}
 
-	private void checkBookingStatus() {
-		DatabaseReference databaseReference = FirebaseDatabase
+	private void showNavigationStatusLayout() {
+		databaseReference = FirebaseDatabase
 				.getInstance().getReference(FirebaseMain.bookingCollection);
 
 		List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
@@ -471,7 +483,51 @@ public class HomeFragment extends Fragment {
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
-							if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
+							if (passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
+
+								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
+								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
+
+								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
+									binding.passengerDisabilityTextView.setVisibility(View.GONE);
+									binding.passengerMedicalConditionTextView
+											.setText("Medical condition: " + passengerBookingModel.getPassengerMedicalCondition());
+								} else {
+									binding.passengerMedicalConditionTextView.setVisibility(View.GONE);
+									binding.passengerDisabilityTextView
+											.setText("Disability: " + passengerBookingModel.getPassengerDisability());
+								}
+							}
+						}
+					}
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, "onCancelled: " + error.getMessage());
+			}
+		});
+
+	}
+
+	private void checkBookingStatus() {
+		 databaseReference = FirebaseDatabase
+				.getInstance().getReference(FirebaseMain.bookingCollection);
+
+		List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
+		databaseReference.addValueEventListener(new ValueEventListener() {
+			@SuppressLint("SetTextI18n")
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					passengerBookingModelList.clear();
+
+					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
+						if (passengerBookingModel != null) {
+							if (passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) &&
+									passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
 								binding.bookARideBtn.setVisibility(View.GONE);
 
@@ -479,7 +535,7 @@ public class HomeFragment extends Fragment {
 										passengerBookingModel.getDriverArrivalTime() + " minute(s)");
 
 								binding.driverNameTextView
-										.setText("Driver name: " + passengerBookingModel.getDriverUserID());
+										.setText("Driver name: " + passengerBookingModel.getDriverName());
 								binding.vehicleColorTextView
 										.setText("Vehicle color: " + passengerBookingModel.getVehicleColor());
 								binding.vehiclePlateNumberTextView

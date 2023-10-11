@@ -26,16 +26,16 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				app:srcCompat="@drawable/id_not_verified_96" />
+				app:srcCompat="@drawable/ride_100" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="ACCOUNT NOT VERIFIED"
+				android:text="NAVIGATION"
 				android:textAlignment="center"
-				android:textColor="@color/red"
+				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -43,7 +43,7 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="@string/about_id_scan"
+				android:text="Confirm that Passenger is onboard"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
@@ -53,7 +53,7 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
-				android:text="Please scan your ID to use this Services"
+				android:text="Is the Passenger onboard?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
@@ -62,17 +62,41 @@
 
 	</androidx.cardview.widget.CardView>
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/okBtn"
-		android:layout_width="130dp"
-		android:layout_height="50dp"
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
-		android:elevation="5dp"
-		android:fontFamily="@font/gabarito_semibold"
-		android:text="Ok"
-		android:textColor="@color/white"
-		android:textSize="20sp" />
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/confirmBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Confirm"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/closeBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/light_gray"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Close"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </androidx.appcompat.widget.LinearLayoutCompat>

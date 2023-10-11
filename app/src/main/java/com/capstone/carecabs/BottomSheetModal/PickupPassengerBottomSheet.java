@@ -130,9 +130,8 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
 						String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
-						String getPassengerUserType = snapshot.child("passengerUserType").getValue(String.class);
-						String getPassengerFirstname = snapshot.child("passengerFirstname").getValue(String.class);
-						String getPassengerLastname = snapshot.child("passengerLastname").getValue(String.class);
+						String getPassengerType = snapshot.child("passengerType").getValue(String.class);
+						String getPassengerName = snapshot.child("passengername").getValue(String.class);
 
 						Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
 						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
@@ -210,7 +209,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						});
 
 
-						switch (getPassengerUserType) {
+						switch (getPassengerType) {
 							case "Senior Citizen":
 								binding.medicalConditionTextView.setVisibility(View.VISIBLE);
 								binding.userTypeImageView.setImageResource(R.drawable.senior_32);
@@ -276,9 +275,8 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						}
 
 
-						binding.fullNameTextView.setText(getPassengerFirstname + " " +
-								getPassengerLastname);
-						binding.userTypeTextView.setText(getPassengerUserType);
+						binding.fullNameTextView.setText(getPassengerName);
+						binding.userTypeTextView.setText(getPassengerType);
 					}
 				}
 
@@ -309,6 +307,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 						String getFirstname = documentSnapshot.getString("firstname");
 						String getLastname = documentSnapshot.getString("lastname");
+						String getProfilePicture = documentSnapshot.getString("profilePicture");
 						String fullName = getFirstname + " " + getLastname;
 
 						updatePassengerBooking(
@@ -320,6 +319,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 								destinationLatitude,
 								destinationLongitude,
 								fullName,
+								getProfilePicture,
 								getVehicleColor,
 								getVehiclePlateNumber
 						);
@@ -336,6 +336,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	                                    Double destinationLatitude,
 	                                    Double destinationLongitude,
 	                                    String fullName,
+	                                    String profilePicture,
 	                                    String vehicleColor,
 	                                    String vehiclePlateNumber) {
 
@@ -363,6 +364,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
 		updateBooking.put("driverName", fullName);
+		updateBooking.put("driverProfilePicture", profilePicture);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);
@@ -401,7 +403,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 			updateDriverStatus.put("isAvailable", false);
 			updateDriverStatus.put("destinationLatitude", destinationLatitude);
 			updateDriverStatus.put("destinationLongitude", destinationLongitude);
-			updateDriverStatus.put("isNavigatingToDestination", true);
+			updateDriverStatus.put("navigationStatus", "Navigating to pickup location");
 
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())

@@ -61,7 +61,7 @@
 				android:orientation="vertical">
 
 				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/passengerName"
+					android:id="@+id/passengerNameTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_horizontal"
@@ -82,14 +82,14 @@
 					android:padding="10dp">
 
 					<androidx.appcompat.widget.AppCompatImageView
-						android:id="@+id/passengerTypeImage"
+						android:id="@+id/passengerTypeImageView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginEnd="5dp"
 						android:src="@drawable/senior_32" />
 
 					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/passengerType"
+						android:id="@+id/passengerTypeTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:fontFamily="@font/gabarito_bold"
@@ -105,7 +105,7 @@
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/bookingDate"
+			android:id="@+id/bookingDateTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
@@ -158,7 +158,7 @@
 			android:textSize="18sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/bookingStatus"
+			android:id="@+id/bookingStatusTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"

@@ -1,7 +1,6 @@
 package com.capstone.carecabs.Adapters;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -69,9 +68,9 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 	public void onBindViewHolder(@NonNull PassengerViewHolder holder, int position) {
 		PassengerBookingModel passengerBookingModel = passengerBookingModelList.get(position);
 		holder.binding.chatPassengerBtn.setVisibility(View.GONE);
-		String fullName = passengerBookingModel.getPassengerFirstname() + " " + passengerBookingModel.getPassengerLastname();
+		String passengerName = passengerBookingModel.getPassengerName();
 
-		holder.binding.passengerName.setText(fullName);
+		holder.binding.passengerNameTextView.setText(passengerName);
 		if (!passengerBookingModel.getPassengerProfilePicture().equals("default")) {
 			Glide.with(context)
 					.load(passengerBookingModel.getPassengerProfilePicture())
@@ -79,17 +78,17 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 					.into(holder.binding.passengerImage);
 		}
 
-		switch (passengerBookingModel.getPassengerUserType()) {
+		switch (passengerBookingModel.getPassengerType()) {
 			case "Senior Citizen":
-				holder.binding.passengerTypeImage.setImageResource(R.drawable.senior_32);
+				holder.binding.passengerTypeImageView.setImageResource(R.drawable.senior_32);
 				break;
 
 			case "Persons with Disability (PWD)":
-				holder.binding.passengerTypeImage.setImageResource(R.drawable.pwd_32);
+				holder.binding.passengerTypeImageView.setImageResource(R.drawable.pwd_32);
 				break;
 		}
-		holder.binding.passengerType.setText(passengerBookingModel.getPassengerUserType());
-		holder.binding.bookingDate.setText("Booking Date: " + passengerBookingModel.getBookingDate());
+		holder.binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
+		holder.binding.bookingDateTextView.setText("Booking Date: " + passengerBookingModel.getBookingDate());
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -172,9 +171,9 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 		});
 
 		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
-			holder.binding.bookingStatus.setTextColor(Color.BLUE);
+			holder.binding.bookingStatusTextView.setTextColor(Color.BLUE);
 		}
-		holder.binding.bookingStatus.setText(passengerBookingModel.getBookingStatus());
+		holder.binding.bookingStatusTextView.setText(passengerBookingModel.getBookingStatus());
 
 		if (passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 			holder.binding.chatPassengerBtn.setVisibility(View.VISIBLE);
@@ -185,8 +184,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.putExtra("chatUserID", passengerBookingModel.getPassengerUserID());
 				intent.putExtra("bookingID", passengerBookingModel.getBookingID());
-				intent.putExtra("firstname", passengerBookingModel.getPassengerFirstname());
-				intent.putExtra("lastname", passengerBookingModel.getPassengerLastname());
+				intent.putExtra("fullName", passengerBookingModel.getPassengerName());
 				intent.putExtra("profilePicture", passengerBookingModel.getPassengerProfilePicture());
 				intent.putExtra("fcmToken", passengerBookingModel.getFcmToken());
 				context.startActivity(intent);

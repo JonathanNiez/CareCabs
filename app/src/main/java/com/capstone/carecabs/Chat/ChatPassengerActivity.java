@@ -51,12 +51,11 @@ public class ChatPassengerActivity extends AppCompatActivity {
 		if (getIntent().hasExtra("chatUserID")) {
 			Intent intent = getIntent();
 			String getPassengerID = intent.getStringExtra("chatUserID");
-			String getFirstname = intent.getStringExtra("firstname");
-			String getLastname = intent.getStringExtra("lastname");
+			String getFullName = intent.getStringExtra("fullName");
 			String getProfilePicture = intent.getStringExtra("profilePicture");
 			String getFCMToken = intent.getStringExtra("fcmToken");
 
-			binding.passengerNameTextView.setText(getFirstname + " " + getLastname);
+			binding.passengerNameTextView.setText(getFullName);
 
 			readMessage(FirebaseMain.getUser().getUid(), getPassengerID, getProfilePicture);
 

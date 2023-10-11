@@ -43,7 +43,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.Utils.dpToPx
@@ -67,7 +66,6 @@ import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMapClickListener
 import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
-import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
@@ -794,7 +792,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         return "$month-$day-$year $hour:$minute:$second"
     }
 
-    private fun generateRandomLocationID(): String {
+    private fun generateRandomBookingID(): String {
         val uuid = UUID.randomUUID()
         return uuid.toString()
     }
@@ -856,6 +854,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                         val getProfilePicture = it.getString("profilePicture")!!
                         val getFirstName = it.getString("firstname")!!
                         val getLastName = it.getString("lastname")!!
+                        val fullName = "$getFirstName $getLastName"
 
                         when (getUserType) {
                             "Senior Citizen" -> {
@@ -865,12 +864,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 storeSeniorLocationInfoToDatabase(
                                     fcmToken,
                                     point,
-                                    getFirstName,
-                                    getLastName,
+                                    fullName,
                                     getUserType,
                                     getProfilePicture,
                                     getMedicalCondition,
-                                    generateRandomLocationID()
+                                    generateRandomBookingID()
                                 )
                             }
 
@@ -880,12 +878,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 storePWDLocationInfoToDatabase(
                                     fcmToken,
                                     point,
-                                    getFirstName,
-                                    getLastName,
+                                    fullName,
                                     getUserType,
                                     getProfilePicture,
                                     getDisability,
-                                    generateRandomLocationID()
+                                    generateRandomBookingID()
                                 )
                             }
                         }
@@ -906,31 +903,29 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun storePWDLocationInfoToDatabase(
         fcmToken: String,
         point: Point,
-        firstname: String,
-        lastname: String,
+        fullName: String,
         userType: String,
         profilePicture: String,
         disability: String,
-        generateLocationID: String
+        generateBookingID: String
     ) {
         val database = FirebaseDatabase.getInstance()
         val locationReference = database.getReference(FirebaseMain.tripCollection)
-            .child(generateLocationID)
+            .child(generateBookingID)
 
         val passengerBookingModel = PassengerBookingModel(
             fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
-            bookingID = generateLocationID,
+            bookingID = generateBookingID,
             bookingStatus = "Waiting",
             pickupLongitude = StaticDataPasser.storePickupLongitude,
             pickupLatitude = StaticDataPasser.storePickupLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
             bookingDate = getCurrentTimeAndDate(),
-            passengerFirstname = firstname,
-            passengerLastname = lastname,
+            passengerName = fullName,
             passengerProfilePicture = profilePicture,
-            passengerUserType = userType,
+            passengerType = userType,
             passengerDisability = disability
         )
         locationReference.setValue(passengerBookingModel)
@@ -951,32 +946,30 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun storeSeniorLocationInfoToDatabase(
         fcmToken: String,
         point: Point,
-        firstname: String,
-        lastname: String,
+        fullName: String,
         userType: String,
         profilePicture: String,
         medicalCondition: String,
-        generateLocationID: String
+        generateBookingID: String
     ) {
 
         val database = FirebaseDatabase.getInstance()
         val locationReference = database.getReference(FirebaseMain.bookingCollection)
-            .child(generateLocationID)
+            .child(generateBookingID)
 
         val passengerBookingModel = PassengerBookingModel(
             fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
-            bookingID = generateLocationID,
+            bookingID = generateBookingID,
             bookingStatus = "Waiting",
             pickupLongitude = StaticDataPasser.storePickupLongitude,
             pickupLatitude = StaticDataPasser.storePickupLatitude,
             destinationLongitude = point.longitude(),
             destinationLatitude = point.latitude(),
             bookingDate = getCurrentTimeAndDate(),
-            passengerFirstname = firstname,
-            passengerLastname = lastname,
+            passengerName = fullName,
             passengerProfilePicture = profilePicture,
-            passengerUserType = userType,
+            passengerType = userType,
             passengerMedicalCondition = medicalCondition
         )
 

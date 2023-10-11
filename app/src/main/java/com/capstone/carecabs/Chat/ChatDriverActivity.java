@@ -52,12 +52,11 @@ public class ChatDriverActivity extends AppCompatActivity {
 		if (getIntent().hasExtra("chatUserID")) {
 			intent = getIntent();
 			String getDriverID = intent.getStringExtra("chatUserID");
-			String getFirstname = intent.getStringExtra("firstname");
-			String getLastname = intent.getStringExtra("lastname");
+			String getFullName = intent.getStringExtra("fullName");
 			String getProfilePicture = intent.getStringExtra("profilePicture");
 			String getFCMToken = intent.getStringExtra("fcmToken");
 
-			binding.driverFullNameTextView.setText(getFirstname + " " + getLastname);
+			binding.driverFullNameTextView.setText(getFullName);
 
 			readMessage(FirebaseMain.getUser().getUid(), getDriverID, getProfilePicture);
 
