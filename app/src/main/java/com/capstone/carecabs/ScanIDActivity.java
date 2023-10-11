@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,13 +32,20 @@ import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
+import com.capstone.carecabs.ml.IdScanner;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.mlkit.vision.text.TextRecognizer;
 
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -49,10 +57,11 @@ public class ScanIDActivity extends AppCompatActivity {
 	private String idPictureURL = "none";
 	private Uri idPictureUri;
 	private String getUserType;
+	private final int imageSize = 224;
 	private boolean isUserVerified = false;
 	private AlertDialog.Builder builder;
-	private AlertDialog optionsDialog, cancelScanIDDialog,
-			noInternetDialog, idNotScannedDialog;
+	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
+			noInternetDialog, idNotScannedDialog, uploadClearIDPictureDialog;
 	private TextRecognizer textRecognizer;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -90,6 +99,13 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeIDNotScannedDialog();
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
+		initializeNetworkChecker();
+
+	}
+
 	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +117,7 @@ public class ScanIDActivity extends AppCompatActivity {
 		binding.backBtn.setVisibility(View.GONE);
 		binding.doneBtn.setVisibility(View.GONE);
 
-		initializeNetworkChecker();
-		checkPermission();
+		checkCameraAndStoragePermission();
 		checkIfUserIsVerified();
 
 		if (getIntent() != null && getIntent().hasExtra("userType")) {
@@ -176,6 +191,129 @@ public class ScanIDActivity extends AppCompatActivity {
 		}
 	}
 
+	@SuppressLint("DefaultLocale")
+	private void classifyID(Bitmap bitmap) {
+		try {
+			IdScanner model = IdScanner.newInstance(ScanIDActivity.this);
+
+			// Creates inputs for reference.
+			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
+			byteBuffer.order(ByteOrder.nativeOrder());
+
+			int[] intValues = new int[imageSize * imageSize];
+			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+			int pixel = 0;
+			for (int n = 0; n < imageSize; n++) {
+				for (int i = 0; i < imageSize; i++) {
+					int val = intValues[pixel++];
+					byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
+					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
+					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
+				}
+			}
+			inputFeature0.loadBuffer(byteBuffer);
+
+			// Runs model inference and gets result.
+			IdScanner.Outputs outputs = model.process(inputFeature0);
+			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+			float[] confidences = outputFeature0.getFloatArray();
+			int maxPos = 0;
+			float maxConfidence = 0;
+			float confidenceThreshold = 0.8F;
+
+			for (int i = 0; i < confidences.length; i++) {
+				if (confidences[i] > maxConfidence) {
+					maxConfidence = confidences[i];
+					maxPos = i;
+				}
+			}
+
+			String[] classes = {"Driver's License", "Senior Citizen ID", "PWD ID", "Not an ID"};
+
+			binding.resultTextView.setText(classes[maxPos]);
+
+			if (maxConfidence > confidenceThreshold) {
+				String predictedClass = classes[maxPos];
+
+				switch (getUserType) {
+					case "Driver":
+						handleDriverLicense(predictedClass);
+
+						break;
+
+					case "Senior Citizen":
+						handleSeniorCitizenID(predictedClass);
+
+						break;
+
+					case "Persons with Disability (PWD)":
+						handlePWDID(predictedClass);
+
+						break;
+				}
+			} else {
+				showUploadClearIDPictureDialog();
+			}
+
+			StringBuilder s = new StringBuilder();
+			for (int i = 0; i < classes.length; i++) {
+				s.append(String.format("%s: %.1f%%\n", classes[i], confidences[i] * 100));
+			}
+
+			binding.confidenceTextView.setText(s.toString());
+
+			// Releases model resources if no longer used.
+			model.close();
+		} catch (IOException e) {
+			Log.e(TAG, "classifyID: " + e.getMessage());
+		}
+	}
+
+	private void handleDriverLicense(String predictedClass) {
+		switch (predictedClass) {
+			case "Driver's License":
+				// Do something for Driver's License
+				break;
+			case "Senior Citizen ID":
+			case "PWD ID":
+			case "Not an ID":
+				resetImageViewAndShowDialog();
+				break;
+		}
+	}
+
+	private void handleSeniorCitizenID(String predictedClass) {
+		switch (predictedClass) {
+			case "Driver's License":
+			case "PWD ID":
+			case "Not an ID":
+				resetImageViewAndShowDialog();
+				break;
+			case "Senior Citizen ID":
+				// Do something for Senior Citizen ID
+				break;
+		}
+	}
+
+	private void handlePWDID(String predictedClass) {
+		switch (predictedClass) {
+			case "Driver's License":
+			case "Senior Citizen ID":
+			case "Not an ID":
+				resetImageViewAndShowDialog();
+				break;
+			case "PWD ID":
+				// Do something for PWD ID
+				break;
+		}
+	}
+
+	private void resetImageViewAndShowDialog() {
+		binding.idImageView.setImageURI(null);
+		showNotAnIDDialog();
+	}
+
 	private void checkIfUserIsVerified() {
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
@@ -203,6 +341,25 @@ public class ScanIDActivity extends AppCompatActivity {
 					}
 				})
 				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+	}
+
+	private void checkCameraAndStoragePermission() {
+		// Check for camera permission
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.CAMERA},
+					CAMERA_PERMISSION_REQUEST);
+		}
+
+		// Check for storage permission
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+				!= PackageManager.PERMISSION_GRANTED) {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+							Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					STORAGE_PERMISSION_REQUEST);
+		}
 	}
 
 	private void goToMainActivity() {
@@ -266,22 +423,49 @@ public class ScanIDActivity extends AppCompatActivity {
 		}
 	}
 
-	private void checkPermission() {
-		// Check for camera permission
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-				!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this,
-					new String[]{Manifest.permission.CAMERA},
-					CAMERA_PERMISSION_REQUEST);
-		}
+	private void showNotAnIDDialog() {
+		builder = new AlertDialog.Builder(this);
 
-		// Check for storage permission
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-				!= PackageManager.PERMISSION_GRANTED) {
-			ActivityCompat.requestPermissions(this,
-					new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-							Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					STORAGE_PERMISSION_REQUEST);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_not_an_id, null);
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			closeNotAnIDDialog();
+		});
+
+		builder.setView(dialogView);
+
+		notAnIDDialog = builder.create();
+		notAnIDDialog.show();
+	}
+
+	private void closeNotAnIDDialog() {
+		if (notAnIDDialog != null && notAnIDDialog.isShowing()) {
+			notAnIDDialog.dismiss();
+		}
+	}
+
+	private void showUploadClearIDPictureDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_upload_clear_id_picture, null);
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			closeUploadClearIDPictureDialog();
+		});
+
+		builder.setView(dialogView);
+
+		uploadClearIDPictureDialog = builder.create();
+		uploadClearIDPictureDialog.show();
+	}
+
+	private void closeUploadClearIDPictureDialog() {
+		if (uploadClearIDPictureDialog != null && uploadClearIDPictureDialog.isShowing()) {
+			uploadClearIDPictureDialog.dismiss();
 		}
 	}
 
@@ -491,6 +675,18 @@ public class ScanIDActivity extends AppCompatActivity {
 
 				idPictureUri = data.getData();
 				binding.idImageView.setImageURI(idPictureUri);
+
+				Bitmap bitmap = null;
+				try {
+					bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), idPictureUri);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+				int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
+				bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
+				bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
+
+				classifyID(bitmap);
 
 				if (isUserVerified) {
 					binding.idScanLayout.setVisibility(View.VISIBLE);

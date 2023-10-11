@@ -103,12 +103,6 @@
 							app:civ_border_color="@color/black"
 							app:civ_border_width="2dp" />
 
-						<androidx.appcompat.widget.AppCompatImageView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:scaleType="centerCrop"
-							app:srcCompat="@drawable/upload_24" />
-
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/textView4"
 							android:layout_width="wrap_content"

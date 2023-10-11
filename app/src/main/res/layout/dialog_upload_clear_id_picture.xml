@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/orange"
+	android:gravity="center"
+	android:orientation="vertical">
+
+	<androidx.cardview.widget.CardView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="20dp"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="5dp">
+
+			<androidx.appcompat.widget.AppCompatImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				app:srcCompat="@drawable/photo_gallery_96" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="ID SCANNING"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Please upload a clearer photo of your ID to try again"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
+
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+	</androidx.cardview.widget.CardView>
+
+	<androidx.appcompat.widget.AppCompatButton
+		android:id="@+id/okayBtn"
+		android:layout_width="130dp"
+		android:layout_height="50dp"
+		android:layout_marginBottom="20dp"
+		android:background="@drawable/smooth_edge_button"
+		android:backgroundTint="@color/yinmn_blue"
+		android:elevation="5dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="Okay"
+		android:textColor="@color/white"
+		android:textSize="17sp" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>

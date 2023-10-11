@@ -42,9 +42,7 @@
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
-
 		</RelativeLayout>
-
 
 	</androidx.cardview.widget.CardView>
 
@@ -159,6 +157,32 @@
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/resultTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:background="@drawable/custom_card_view_1"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
+				android:text="Result"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/confidenceTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:background="@drawable/custom_card_view_1"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
+				android:text="Confidence"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"

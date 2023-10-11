@@ -22,13 +22,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -50,10 +48,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
-import com.capstone.carecabs.ml.ModelUnquant;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
@@ -1479,54 +1474,54 @@ public class EditAccountFragment extends Fragment {
 //			}
 
 	private void identifyCar(Bitmap bitmap) {
-		try {
-			ModelUnquant model = ModelUnquant.newInstance(context);
-
-			// Creates inputs for reference.
-			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
-			int imageSize = 224;
-			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
-			byteBuffer.order(ByteOrder.nativeOrder());
-
-			//TODO
-			int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
-			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-			for (int pixelValue : intValues) {
-				byteBuffer.putFloat(((pixelValue >> 16) & 0xFF) * (1.f / 255.f));
-				byteBuffer.putFloat(((pixelValue >> 8) & 0xFF) * (1.f / 255.f));
-				byteBuffer.putFloat((pixelValue & 0xFF) * (1.f / 255.f));
-			}
-			byteBuffer.rewind(); // Set the position back to 0
-			inputFeature0.loadBuffer(byteBuffer);
-
-			// Runs model inference and gets result.
-			ModelUnquant.Outputs outputs = model.process(inputFeature0);
-			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-			float[] confidences = outputFeature0.getFloatArray();
-			int maxPos = 0;
-			float maxConfidence = 0;
-			for (int i = 0; i < confidences.length; i++) {
-				if (confidences[i] > maxConfidence) {
-					maxConfidence = confidences[i];
-					maxPos = i;
-				}
-			}
-
-			String[] classes = {"Car", "Not Car"};
-			String predictedClass;
-			if (maxPos == 0) {
-				binding.vehicleImageView.setImageBitmap(bitmap);
-				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), bitmap);
-			} else {
-				showUploadYourVehiclePictureDialog();
-			}
-
-			// Releases model resources if no longer used.
-			model.close();
-
-		} catch (IOException e) {
-			Log.e(TAG, e.getMessage());
-		}
+//		try {
+//			ModelUnquant model = ModelUnquant.newInstance(context);
+//
+//			// Creates inputs for reference.
+//			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+//			int imageSize = 224;
+//			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
+//			byteBuffer.order(ByteOrder.nativeOrder());
+//
+//			//TODO
+//			int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
+//			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+//			for (int pixelValue : intValues) {
+//				byteBuffer.putFloat(((pixelValue >> 16) & 0xFF) * (1.f / 255.f));
+//				byteBuffer.putFloat(((pixelValue >> 8) & 0xFF) * (1.f / 255.f));
+//				byteBuffer.putFloat((pixelValue & 0xFF) * (1.f / 255.f));
+//			}
+//			byteBuffer.rewind(); // Set the position back to 0
+//			inputFeature0.loadBuffer(byteBuffer);
+//
+//			// Runs model inference and gets result.
+//			ModelUnquant.Outputs outputs = model.process(inputFeature0);
+//			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+//			float[] confidences = outputFeature0.getFloatArray();
+//			int maxPos = 0;
+//			float maxConfidence = 0;
+//			for (int i = 0; i < confidences.length; i++) {
+//				if (confidences[i] > maxConfidence) {
+//					maxConfidence = confidences[i];
+//					maxPos = i;
+//				}
+//			}
+//
+//			String[] classes = {"Car", "Not Car"};
+//			String predictedClass;
+//			if (maxPos == 0) {
+//				binding.vehicleImageView.setImageBitmap(bitmap);
+//				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), bitmap);
+//			} else {
+//				showUploadYourVehiclePictureDialog();
+//			}
+//
+//			// Releases model resources if no longer used.
+//			model.close();
+//
+//		} catch (IOException e) {
+//			Log.e(TAG, e.getMessage());
+//		}
 	}
 
 	public Bitmap uriToBitmap(Context context, Uri uri) throws IOException {
