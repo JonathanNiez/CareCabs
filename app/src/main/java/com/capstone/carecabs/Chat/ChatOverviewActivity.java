@@ -106,7 +106,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 						binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
 						binding.loadingLayout.setVisibility(View.GONE);
 					}
-				}else {
+				} else {
 					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
 					binding.loadingLayout.setVisibility(View.GONE);
 				}
@@ -128,7 +128,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 				.getFireStoreInstance().collection(FirebaseMain.userCollection);
 
 		ChatOverviewAdapter chatOverviewAdapter = new ChatOverviewAdapter(
-				this,
+				ChatOverviewActivity.this,
 				chatOverviewModelList,
 				chatOverviewModel -> {
 				});
@@ -159,7 +159,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 					binding.loadingLayout.setVisibility(View.GONE);
 				}
 			} else {
-				Log.e(TAG, error.getMessage());
+				Log.e(TAG, "showRecentChats: " + error);
 			}
 		});
 	}

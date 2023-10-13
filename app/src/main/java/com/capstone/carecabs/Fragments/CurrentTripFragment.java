@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CurrentTripFragment extends Fragment {
 	private final String TAG = "CurrentTripFragment";
@@ -37,11 +40,12 @@ public class CurrentTripFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentCurrentTripBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		binding.loadingLayout.setVisibility(View.GONE);
 		binding.noCurrentTripsTextView.setVisibility(View.GONE);
 
 		context = getContext();
@@ -63,11 +67,16 @@ public class CurrentTripFragment extends Fragment {
 			binding.currentTripRecyclerView.setAdapter(currentTripAdapter);
 
 			collectionReference.addSnapshotListener((value, error) -> {
+				if (error != null){
+					Log.e(TAG, "loadCurrentTripFromFireStore: " + error.getMessage());
+
+					return;
+				}
+
 				if (value != null) {
 					binding.loadingLayout.setVisibility(View.GONE);
 					currentTripModelList.clear();
-
-					boolean hasCurrentTrips = false;
+					boolean hasCurrentTrip = false;
 
 					for (QueryDocumentSnapshot tripSnapshot : value) {
 						CurrentTripModel currentTripModel = tripSnapshot.toObject(CurrentTripModel.class);
@@ -75,23 +84,25 @@ public class CurrentTripFragment extends Fragment {
 						if (currentTripModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())
 								|| currentTripModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
 							currentTripModelList.add(currentTripModel);
-							hasCurrentTrips = true; // Set the flag to true if there are current bookings
+							hasCurrentTrip = true;
 						}
 					}
 
-					if (hasCurrentTrips){
+					if (hasCurrentTrip){
 						binding.noCurrentTripsTextView.setVisibility(View.GONE);
 					}else {
 						binding.noCurrentTripsTextView.setVisibility(View.VISIBLE);
 					}
 					currentTripAdapter.notifyDataSetChanged();
+				}else {
+					Log.e(TAG, "loadCurrentTripFromFireStore: addSnapshotListener is null");
 				}
 			});
 
 		} else {
 			Intent intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 

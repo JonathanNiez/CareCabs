@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -10,5 +11,48 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		tools:listitem="@layout/item_trips" />
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/loadingLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		app:cardBackgroundColor="@color/white"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
+
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical">
+
+			<pl.droidsonroids.gif.GifImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/loading_gif" />
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+	</androidx.cardview.widget.CardView>
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/noTripHistoryTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/custom_card_view_1"
+		android:elevation="5dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:padding="10dp"
+		android:text="Trip history will be shown here"
+		android:textAlignment="center"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 </RelativeLayout>

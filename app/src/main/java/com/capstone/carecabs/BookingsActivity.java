@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 public class BookingsActivity extends AppCompatActivity {
 	private ActivityBookingsBinding binding;
-	private Intent intent;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,18 +25,9 @@ public class BookingsActivity extends AppCompatActivity {
 		binding = ActivityBookingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		if (getIntent().hasExtra("dataSent")) {
-			binding.imgBackBtn.setOnClickListener(v -> {
-				finish();
-			});
-		} else {
-			binding.imgBackBtn.setOnClickListener(v -> {
-				intent = new Intent(BookingsActivity.this, MainActivity.class);
-				startActivity(intent);
-				finish();
-			});
-		}
-
+		binding.imgBackBtn.setOnClickListener(v -> {
+			finish();
+		});
 
 		ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 		viewPagerAdapter.addFragment(new CurrentBookingFragment(), "Current");
@@ -49,18 +39,14 @@ public class BookingsActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		checkIntent();
-	}
-
-	public void checkIntent() {
-		if (getIntent().hasExtra("dataSent")) {
-			finish();
-		} else {
-			intent = new Intent(BookingsActivity.this, MainActivity.class);
-			startActivity(intent);
+		boolean shouldExit = false;
+		if (shouldExit){
+			super.onBackPressed();
+		}else {
 			finish();
 		}
 	}
+
 
 	public class ViewPagerAdapter extends FragmentPagerAdapter {
 		private final ArrayList<Fragment> fragmentArrayList;

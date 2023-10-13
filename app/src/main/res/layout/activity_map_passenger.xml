@@ -13,30 +13,38 @@
 		android:layout_above="@id/bottomNavigationView" />
 
 	<FrameLayout
-		android:id="@+id/whereToLayout"
-		android:layout_width="wrap_content"
+		android:id="@+id/searchDestinationLayout"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true">
+		android:layout_centerHorizontal="true"
+		android:layout_margin="10dp">
 
-		<TextView
-			android:layout_width="wrap_content"
+		<com.google.android.material.textfield.TextInputLayout
+			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:layout_margin="10dp"
-			android:background="@drawable/custom_card_view_1"
-			android:backgroundTint="@color/orange"
+			android:background="@drawable/smooth_edit_text"
 			android:elevation="5dp"
-			android:fontFamily="@font/opensans_bold"
-			android:padding="10dp"
-			android:text="Where are you going?"
-			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="20sp" />
+			android:padding="5dp"
+			app:endIconMode="clear_text"
+			app:startIconDrawable="@drawable/baseline_search_24">
+
+			<com.google.android.material.textfield.TextInputEditText
+				android:id="@+id/searchDestinationEditText"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@drawable/smooth_edit_text_2"
+				android:fontFamily="@font/gabarito_semibold"
+				android:hint="Search destination"
+				android:textColor="@color/black"
+				android:textColorHint="@color/black"
+				android:textSize="17sp" />
+
+		</com.google.android.material.textfield.TextInputLayout>
 
 	</FrameLayout>
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -115,77 +123,7 @@
 			android:scaleType="centerCrop"
 			android:src="@drawable/calendar" />
 
-	</LinearLayout>
-
-	<FrameLayout
-		android:id="@+id/setLocationLayout"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_above="@id/bottomNavigationView"
-		android:layout_alignParentBottom="true"
-		android:layout_centerHorizontal="true"
-		android:layout_marginBottom="10dp"
-		android:background="@color/white"
-		android:elevation="5dp"
-		android:padding="5dp">
-
-		<androidx.appcompat.widget.LinearLayoutCompat
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:gravity="center"
-			android:orientation="vertical">
-
-			<com.google.android.material.textfield.TextInputLayout
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
-				android:background="@drawable/smooth_edit_text"
-				android:elevation="5dp"
-				android:padding="5dp"
-				app:endIconMode="clear_text"
-				app:startIconDrawable="@drawable/baseline_search_24">
-
-				<com.google.android.material.textfield.TextInputEditText
-					android:id="@+id/searchDestinationEditText"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:background="@drawable/smooth_edit_text_2"
-					android:fontFamily="@font/opensans_bold"
-					android:hint="Search destination"
-					android:textColor="@color/black"
-					android:textColorHint="@color/black"
-					android:textSize="17sp" />
-
-			</com.google.android.material.textfield.TextInputLayout>
-
-			<TextView
-				android:id="@+id/currentCoordinatesTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:text="Current Location"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="16sp" />
-
-<!--			<androidx.appcompat.widget.AppCompatButton-->
-<!--				android:id="@+id/setLocationBtn"-->
-<!--				android:layout_width="280dp"-->
-<!--				android:layout_height="60dp"-->
-<!--				android:layout_gravity="center"-->
-<!--				android:background="@drawable/smooth_edge_button"-->
-<!--				android:backgroundTint="@color/light_blue"-->
-<!--				android:drawableStart="@drawable/location"-->
-<!--				android:fontFamily="@font/opensans_bold"-->
-<!--				android:padding="10dp"-->
-<!--				android:text="Set Location on Map"-->
-<!--				android:textColor="@color/white"-->
-<!--				android:textSize="17sp" />-->
-
-		</androidx.appcompat.widget.LinearLayoutCompat>
-
-	</FrameLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 	<com.mapbox.search.ui.view.SearchResultsView
 		android:id="@+id/searchResultsView"
@@ -201,13 +139,16 @@
 		android:id="@+id/searchContainerView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_marginTop="?actionBarSize">
+		android:layout_above="@id/bottomNavigationView"
+		android:layout_below="@id/searchDestinationLayout"
+		android:visibility="gone">
 
 		<com.mapbox.search.ui.view.place.SearchPlaceBottomSheetView
 			android:id="@+id/search_place_view"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_gravity="center_horizontal"
+			android:background="@color/white"
 			android:elevation="10dp" />
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>

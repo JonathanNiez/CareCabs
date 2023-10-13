@@ -131,7 +131,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
 						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
 						String getPassengerType = snapshot.child("passengerType").getValue(String.class);
-						String getPassengerName = snapshot.child("passengername").getValue(String.class);
+						String getPassengerName = snapshot.child("passengerName").getValue(String.class);
 
 						Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
 						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
@@ -514,14 +514,14 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		documentReference.set(tripModel)
 				.addOnSuccessListener(unused -> {
 					Toast.makeText(context,
-							"Booking Accepted", Toast.LENGTH_LONG).show();
+							"Booking accepted", Toast.LENGTH_LONG).show();
 
 				})
 				.addOnFailureListener(e -> {
 					Toast.makeText(context,
-							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
+							"Booking failed to accept", Toast.LENGTH_LONG).show();
 
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, "storeTripToDatabase: " + e.getMessage());
 				});
 	}
 }

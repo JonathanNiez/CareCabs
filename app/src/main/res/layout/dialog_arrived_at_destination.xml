@@ -3,8 +3,8 @@
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white"
 	android:gravity="center"
+
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
@@ -43,10 +43,10 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
-				android:text="Is the Passenger onboard?"
+				android:text="Arrived at destination?"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="18sp" />
+				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -87,6 +87,5 @@
 
 
 	</androidx.appcompat.widget.LinearLayoutCompat>
-
 
 </androidx.appcompat.widget.LinearLayoutCompat>

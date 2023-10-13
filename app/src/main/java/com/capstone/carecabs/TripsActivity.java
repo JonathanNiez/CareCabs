@@ -3,6 +3,7 @@ package com.capstone.carecabs;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -101,6 +102,8 @@ public class TripsActivity extends AppCompatActivity {
 		public void addFragment(Fragment fragment, String title) {
 			fragmentArrayList.add(fragment);
 			stringArrayList.add(title);
+			notifyDataSetChanged();
+			Log.d(TAG, "addFragment: " + stringArrayList);
 		}
 
 		@Nullable

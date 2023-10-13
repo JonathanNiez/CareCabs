@@ -1,4 +1,5 @@
 <resources>
+
 	<string name="app_name">CareCabs</string>
 
 	<string name="hello_blank_fragment">Hello blank fragment</string>
@@ -49,8 +50,13 @@
 	<string name="string_driver_license_scan">Driver\'s License is Required to be scanned for Verification</string>
 
 	<string name="driver_availability_info">Your availability will automatically updated once you\'re transporting a passenger</string>
+
 	<string name="never_share_your_password_to_anyone">Never share your Password to anyone</string>
+
 	<string name="app_description">"A Ride Sharing for Senior Citizens\nand Persons with Disabilities"</string>
+
 	<string name="change_password_warning">Once you reset your password\nYou won\'t be able to change it in 30 days</string>
+
 	<string name="tap_to_upload_profile_picture">Tap/Click on the picture icon to upload your profile picture</string>
+
 </resources>

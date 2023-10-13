@@ -7,14 +7,14 @@
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerVertical="true"
 		android:orientation="vertical"
 		android:padding="5dp">
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/tripDateTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -25,17 +25,17 @@
 			android:textColor="@color/black"
 			android:textSize="20sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/passengerNameTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_regular"
+			android:fontFamily="@font/gabarito_bold"
 			android:text="Passenger Name"
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/passengerTypeTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/pickupLocationNameTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-		<TextView
+		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/locationNameTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
@@ -65,6 +65,6 @@
 			android:textColor="@color/black"
 			android:textSize="17sp" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

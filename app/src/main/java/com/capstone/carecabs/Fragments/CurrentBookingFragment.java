@@ -32,6 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,6 +99,7 @@ public class CurrentBookingFragment extends Fragment {
 					.getReference(FirebaseMain.bookingCollection);
 
 			List<CurrentBookingModel> currentBookingModelList = new ArrayList<>();
+
 			currentBookingAdapter = new CurrentBookingAdapter(
 					context,
 					currentBookingModelList,
@@ -107,7 +110,6 @@ public class CurrentBookingFragment extends Fragment {
 					getActivity());
 			binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
-
 			databaseReference.addValueEventListener(new ValueEventListener() {
 				@SuppressLint("NotifyDataSetChanged")
 				@Override
@@ -159,7 +161,6 @@ public class CurrentBookingFragment extends Fragment {
 		intent = new Intent(context, MapPassengerActivity.class);
 		startActivity(intent);
 		Objects.requireNonNull(getActivity()).finish();
-
 	}
 
 	private void checkLocationService() {
@@ -233,6 +234,7 @@ public class CurrentBookingFragment extends Fragment {
 
 					})
 					.addOnFailureListener(e -> {
+
 						closeCancelBookingDialog();
 
 						Toast.makeText(context,

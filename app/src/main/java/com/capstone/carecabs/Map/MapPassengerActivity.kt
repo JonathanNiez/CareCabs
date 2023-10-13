@@ -25,6 +25,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.BookingsActivity
+import com.capstone.carecabs.BottomSheetModal.ConfirmBookingBottomSheet
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.HelpActivity
 import com.capstone.carecabs.LoginActivity
@@ -35,6 +36,7 @@ import com.capstone.carecabs.R
 import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.capstone.carecabs.databinding.DialogHasActiveBookingBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.google.firebase.database.DataSnapshot
@@ -46,6 +48,9 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.messaging.FirebaseMessaging
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.android.gestures.Utils.dpToPx
+import com.mapbox.api.geocoding.v5.GeocodingCriteria
+import com.mapbox.api.geocoding.v5.MapboxGeocoding
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.EdgeInsets
@@ -68,10 +73,12 @@ import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.gestures.removeOnMapLongClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
+import com.mapbox.search.ResponseInfo
 import com.mapbox.search.SearchEngine
 import com.mapbox.search.SearchEngineSettings
 import com.mapbox.search.ServiceProvider
@@ -80,9 +87,13 @@ import com.mapbox.search.autocomplete.PlaceAutocompleteOptions
 import com.mapbox.search.autocomplete.PlaceAutocompleteSuggestion
 import com.mapbox.search.autocomplete.PlaceAutocompleteType
 import com.mapbox.search.common.CompletionCallback
+import com.mapbox.search.offline.OfflineResponseInfo
 import com.mapbox.search.offline.OfflineSearchEngine
 import com.mapbox.search.offline.OfflineSearchEngineSettings
+import com.mapbox.search.offline.OfflineSearchResult
 import com.mapbox.search.record.HistoryRecord
+import com.mapbox.search.result.SearchResult
+import com.mapbox.search.result.SearchSuggestion
 import com.mapbox.search.ui.adapter.autocomplete.PlaceAutocompleteUiAdapter
 import com.mapbox.search.ui.adapter.engines.SearchEngineUiAdapter
 import com.mapbox.search.ui.view.CommonSearchViewConfiguration
@@ -91,6 +102,9 @@ import com.mapbox.search.ui.view.SearchResultAdapterItem
 import com.mapbox.search.ui.view.SearchResultsView
 import com.mapbox.search.ui.view.UiError
 import com.mapbox.search.ui.view.place.SearchPlace
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.Calendar
 import java.util.UUID
 
@@ -103,8 +117,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerOwnBookingInfoDialog: AlertDialog
+    private lateinit var hasActiveBookingDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private lateinit var builder: AlertDialog.Builder
+    private var hasActiveBooking = false
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -153,7 +169,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
         placeAutocomplete = PlaceAutocomplete.create(getString(R.string.mapbox_access_token))
 
-        checkIfBookingIsAccepted()
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
@@ -161,33 +176,20 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             if (b) {
                 binding.mapView.getMapboxMap().apply {
                     loadStyleUri(Style.MAPBOX_STREETS) {
-                        Toast.makeText(
-                            this@MapPassengerActivity,
-                            "Changed Map style to Streets",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
+                        showToast("Changed Map style to Streets")
                     }
                 }
             } else {
                 binding.mapView.getMapboxMap().apply {
                     loadStyleUri(Style.SATELLITE_STREETS) {
-                        Toast.makeText(
-                            this@MapPassengerActivity,
-                            "Changed Map style to Satellite",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
+                        showToast("Changed Map style to Satellite")
                     }
                 }
             }
         }
 
         binding.fullscreenImgBtn.setOnClickListener {
-            Toast.makeText(
-                this@MapPassengerActivity,
-                "Entered Fullscreen", Toast.LENGTH_SHORT
-            ).show()
+            showToast("Entered Fullscreen")
 
             binding.fullscreenImgBtn.visibility = View.GONE
             binding.minimizeScreenImgBtn.visibility = View.VISIBLE
@@ -196,10 +198,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
 
         binding.minimizeScreenImgBtn.setOnClickListener {
-            Toast.makeText(
-                this@MapPassengerActivity,
-                "Exited Fullscreen", Toast.LENGTH_SHORT
-            ).show()
+            showToast("Exited Fullscreen")
 
             binding.minimizeScreenImgBtn.visibility = View.GONE
             binding.fullscreenImgBtn.visibility = View.VISIBLE
@@ -207,40 +206,17 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             binding.bottomNavigationView.visibility = View.VISIBLE
         }
 
-        binding.searchResultsView.initialize(
-            SearchResultsView.Configuration(
-                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
-            )
-        )
-        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
-            SearchEngineSettings(getString(R.string.mapbox_access_token))
-        )
-
-        val offlineSearchEngine = OfflineSearchEngine.create(
-            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
-        )
-
-        val searchEngineUiAdapter = SearchEngineUiAdapter(
-            view = binding.searchResultsView,
-            searchEngine = searchEngine,
-            offlineSearchEngine = offlineSearchEngine,
-        )
-
-//        val apiType = if (BuildConfig.ENABLE_SBS) {
-//            ApiType.SBS
-//        } else {
-//            ApiType.GEOCODING
-//        }
-
-
-        binding.searchDestinationEditText.setOnClickListener {
-
-        }
     }
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        showExitMapDialog()
+        val shouldExit = false
+
+        if (shouldExit) {
+            super.onBackPressed()
+        } else {
+            showExitMapDialog()
+        }
     }
 
     private fun onMapReady() {
@@ -248,9 +224,36 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         mapboxMap = binding.mapView.getMapboxMap().apply {
             loadStyleUri(Style.SATELLITE_STREETS) {
 
-                setupGesturesListener()
                 initializeLocationComponent()
+                initializeSearchEngine()
                 loadCurrentCoordinatesToMapFromDatabase()
+
+//                binding.searchDestinationEditText.addTextChangedListener(object : TextWatcher {
+//                    override fun beforeTextChanged(
+//                        s: CharSequence?,
+//                        start: Int,
+//                        count: Int,
+//                        after: Int
+//                    ) {
+//                    }
+//
+//                    override fun onTextChanged(
+//                        s: CharSequence?,
+//                        start: Int,
+//                        before: Int,
+//                        count: Int
+//                    ) {
+//                    }
+//
+//                    override fun afterTextChanged(s: Editable?) {
+//                        if (s.isNullOrEmpty()) {
+//                            binding.searchContainerView.visibility = View.GONE
+//                        } else {
+//                            binding.searchContainerView.visibility = View.VISIBLE
+//                        }
+//                    }
+//
+//                })
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -279,11 +282,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
             }
         }
-//        binding.mapView.getMapboxMap().setCamera(
-//            CameraOptions.Builder()
-//                .zoom(14.0)
-//                .build()
-//        )
     }
 
     private fun zoomInCamera(coordinate: Point) {
@@ -357,6 +355,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
+    @SuppressLint("DiscouragedApi")
     private fun drawableToIntResource(drawable: Drawable): Int {
         val resources = resources
 
@@ -375,17 +374,20 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun initializeLocationComponent() {
 
         val locationComponentPlugin = binding.mapView.location
-
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
-
-            createViewAnnotation(
-                binding.mapView,
-                Point.fromLngLat(it.longitude(), it.latitude())
-            )
 
             //store the current location
             StaticDataPasser.storePickupLatitude = it.latitude()
             StaticDataPasser.storePickupLongitude = it.longitude()
+
+
+            createViewAnnotation(
+                binding.mapView,
+                Point.fromLngLat(
+                    StaticDataPasser.storePickupLongitude,
+                    StaticDataPasser.storePickupLatitude
+                )
+            )
 
             val passengerBookingModel = PassengerBookingModel(
                 pickupLatitude = it.latitude(),
@@ -476,24 +478,105 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.setLocation -> {
-                    binding.setLocationLayout.visibility = View.VISIBLE
                 }
 
                 R.id.bookings -> {
-                    binding.setLocationLayout.visibility = View.GONE
                     intent = Intent(this, BookingsActivity::class.java)
                     intent.putExtra("dataSent", true)
                     startActivity(intent)
                 }
 
                 R.id.help -> {
-                    binding.setLocationLayout.visibility = View.GONE
                     intent = Intent(this, HelpActivity::class.java)
                     startActivity(intent)
                 }
             }
             true
         }
+    }
+
+    private fun initializeSearchEngine() {
+        binding.searchResultsView.initialize(
+            SearchResultsView.Configuration(
+                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
+            )
+        )
+        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
+            SearchEngineSettings(getString(R.string.mapbox_access_token))
+        )
+
+        val offlineSearchEngine = OfflineSearchEngine.create(
+            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
+        )
+
+        val searchEngineUiAdapter = SearchEngineUiAdapter(
+            view = binding.searchResultsView,
+            searchEngine = searchEngine,
+            offlineSearchEngine = offlineSearchEngine,
+        )
+
+        searchEngineUiAdapter.addSearchListener(object : SearchEngineUiAdapter.SearchListener {
+            override fun onError(e: Exception) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFeedbackItemClick(responseInfo: ResponseInfo) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onHistoryItemClick(historyRecord: HistoryRecord) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onOfflineSearchResultSelected(
+                searchResult: OfflineSearchResult,
+                responseInfo: OfflineResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onOfflineSearchResultsShown(
+                results: List<OfflineSearchResult>,
+                responseInfo: OfflineResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onPopulateQueryClick(
+                suggestion: SearchSuggestion,
+                responseInfo: ResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSearchResultSelected(
+                searchResult: SearchResult,
+                responseInfo: ResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSearchResultsShown(
+                suggestion: SearchSuggestion,
+                results: List<SearchResult>,
+                responseInfo: ResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSuggestionSelected(searchSuggestion: SearchSuggestion): Boolean {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSuggestionsShown(
+                suggestions: List<SearchSuggestion>,
+                responseInfo: ResponseInfo
+            ) {
+                TODO("Not yet implemented")
+            }
+        })
+
+        showSearchHistory()
     }
 
     private fun showSearchHistory() {
@@ -564,9 +647,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
-    private fun addAnnotationToMap(
-        longitude: Double,
-        latitude: Double,
+    //destination marker
+    private fun addDestinationAnnotationToMap(
+        destinationLongitude: Double,
+        destinationLatitude: Double,
         bookingID: String
     ) {
         bitmapFromDrawableRes(
@@ -576,8 +660,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             val annotationApi = binding.mapView.annotations
             val pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-                .withPoint(Point.fromLngLat(longitude, latitude))
+                .withPoint(Point.fromLngLat(destinationLongitude, destinationLatitude))
                 .withIconImage(it)
+
             pointAnnotationManager.create(pointAnnotationOptions)
 
             pointAnnotationManager.apply {
@@ -586,7 +671,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
                         showPassengerOwnBookingInfoDialog(bookingID)
 
-                        false
+                        true
                     }
                 )
             }
@@ -655,9 +740,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
-        mapboxMap = binding.mapView.getMapboxMap().apply {
-            addOnMapLongClickListener(this@MapPassengerActivity)
-        }
+//        if (hasActiveBooking) {
+//            mapboxMap = binding.mapView.getMapboxMap().apply {
+//                removeOnMapLongClickListener(this@MapPassengerActivity)
+//            }
+//
+//        } else {
+//            mapboxMap = binding.mapView.getMapboxMap().apply {
+//                addOnMapLongClickListener(this@MapPassengerActivity)
+//            }
+//        }
 
 //        binding.switchDemo.setOnCheckedChangeListener { compoundButton, b ->
 //            if (b) {
@@ -689,27 +781,20 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     @SuppressLint("SetTextI18n")
     override fun onMapClick(point: Point): Boolean {
 
-        StaticDataPasser.storeDestinationLongitude = point.longitude()
-        StaticDataPasser.storeDestinationLatitude = point.latitude()
-
-        retrieveAndStoreFCMToken(point)
-
-//        binding.desiredDestinationTextView.text =
-//            point.latitude().toString() + "\n" + point.longitude().toString()
-
-        return true
+        return false
     }
 
     override fun onMapLongClick(point: Point): Boolean {
 
-        StaticDataPasser.storeDestinationLongitude = point.longitude()
-        StaticDataPasser.storeDestinationLatitude = point.latitude()
+        return if (hasActiveBooking) {
+            showHasActiveBookingDialog()
 
-        retrieveAndStoreFCMToken(point)
-
-        return true
+            true
+        } else {
+            showConfirmBookingBottomSheet(point)
+            false
+        }
     }
-
 
     private fun onCameraTrackingDismissed() {
         binding.mapView.location
@@ -722,10 +807,13 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun loadCurrentCoordinatesToMapFromDatabase() {
         if (FirebaseMain.getUser() != null) {
 
-            val locationReference = FirebaseDatabase.getInstance()
+            setupGesturesListener()
+            checkBookingStatus()
+
+            val bookingReference = FirebaseDatabase.getInstance()
                 .getReference(FirebaseMain.bookingCollection)
 
-            locationReference.addValueEventListener(object : ValueEventListener {
+            bookingReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
 
@@ -734,41 +822,32 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                             if (passengerBookingData != null) {
-                                if (passengerBookingData.bookingStatus.equals("Waiting")) {
+                                if (passengerBookingData.bookingStatus == "Waiting" &&
+                                    passengerBookingData.passengerUserID == FirebaseMain.getUser().uid) {
+
                                     val getDestinationLatitude =
                                         passengerBookingData.destinationLatitude
                                     val getDestinationLongitude =
                                         passengerBookingData.destinationLongitude
                                     val getBookingID = passengerBookingData.bookingID
 
-                                    if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid) {
-                                        addAnnotationToMap(
-                                            getDestinationLongitude,
-                                            getDestinationLatitude,
-                                            getBookingID
-                                        )
-                                    } else {
-                                        Toast.makeText(
-                                            this@MapPassengerActivity,
-                                            "passengerBookingModel.passengerUserID",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-
+                                    addDestinationAnnotationToMap(
+                                        getDestinationLongitude,
+                                        getDestinationLatitude,
+                                        getBookingID
+                                    )
                                 }
-                            } else {
-                                Toast.makeText(
-                                    this@MapPassengerActivity,
-                                    "passengerBookingModel.passengerUserID",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
                         }
+                    } else {
+                        Log.e(
+                            TAG,
+                            "loadCurrentCoordinatesToMapFromDatabase: addValueEventListener is null"
+                        )
                     }
                 }
-
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e(TAG, error.message)
+                    Log.e(TAG, "loadCurrentCoordinatesToMapFromDatabase: " + error.message)
                 }
             })
 
@@ -856,12 +935,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                         val getLastName = it.getString("lastname")!!
                         val fullName = "$getFirstName $getLastName"
 
+                        intent = Intent(this@MapPassengerActivity, BookingsActivity::class.java)
+                        intent.putExtra("dataSent", "dummy")
+                        startActivity(intent)
+
                         when (getUserType) {
                             "Senior Citizen" -> {
                                 val getMedicalCondition =
                                     it.getString("medicalCondition")!!
 
-                                storeSeniorLocationInfoToDatabase(
+                                storeSeniorCitizenBookingToDatabase(
                                     fcmToken,
                                     point,
                                     fullName,
@@ -875,7 +958,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                             "Persons with Disability (PWD)" -> {
                                 val getDisability = it.getString("disability")!!
 
-                                storePWDLocationInfoToDatabase(
+                                storePWDBookingToDatabase(
                                     fcmToken,
                                     point,
                                     fullName,
@@ -886,11 +969,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 )
                             }
                         }
-
                     }
-
-                }.addOnFailureListener {
-                    Log.e(TAG, it.message.toString())
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "storeCoordinatesInFireStore: " + it.message)
                 }
 
         } else {
@@ -900,7 +982,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
-    private fun storePWDLocationInfoToDatabase(
+    private fun storePWDBookingToDatabase(
         fcmToken: String,
         point: Point,
         fullName: String,
@@ -931,19 +1013,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         locationReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
 
-                Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
-
+                showToast("Booking success")
                 loadCurrentCoordinatesToMapFromDatabase()
 
             }.addOnFailureListener {
-                Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
-
-                Log.e(TAG, it.message.toString())
+                showToast("Booking failed")
+                Log.e(TAG, "storePWDBookingToDatabase: " + it.message)
             }
-
     }
 
-    private fun storeSeniorLocationInfoToDatabase(
+    private fun storeSeniorCitizenBookingToDatabase(
         fcmToken: String,
         point: Point,
         fullName: String,
@@ -976,17 +1055,18 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         locationReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
 
-                Toast.makeText(this, "Coordinates Uploaded Success", Toast.LENGTH_LONG).show()
+//                showToast("Booking success")
                 loadCurrentCoordinatesToMapFromDatabase()
 
             }.addOnFailureListener {
-                Toast.makeText(this, "Coordinates Failed to Upload", Toast.LENGTH_LONG).show()
 
-                Log.e(TAG, it.message.toString())
+                showToast("Booking failed")
+                Log.e(TAG, "storeSeniorCitizenBookingToDatabase: " + it.message)
+
             }
     }
 
-    private fun checkIfBookingIsAccepted() {
+    private fun checkBookingStatus() {
         val bookingReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
 
@@ -999,16 +1079,38 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                             locationSnapshot.getValue(PassengerBookingModel::class.java)
                         if (passengerBookingData != null) {
 
-                            if (passengerBookingData.bookingStatus == "???") {
-                                showBookingIsAcceptedNotification()
+                            if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid &&
+                                passengerBookingData.bookingStatus == "Waiting" ||
+                                passengerBookingData.passengerUserID == FirebaseMain.getUser().uid &&
+                                passengerBookingData.bookingStatus == "Driver on the way"
+                            ) {
+
+                                hasActiveBooking = true
+
                             }
                         }
                     }
+
+                    if (hasActiveBooking) {
+                        mapboxMap = binding.mapView.getMapboxMap().apply {
+                            removeOnMapLongClickListener(this@MapPassengerActivity)
+                        }
+                    } else {
+                        mapboxMap = binding.mapView.getMapboxMap().apply {
+                            addOnMapLongClickListener(this@MapPassengerActivity)
+                        }
+                    }
+                } else {
+                    mapboxMap = binding.mapView.getMapboxMap().apply {
+                        addOnMapLongClickListener(this@MapPassengerActivity)
+                    }
+
+                    Log.e(TAG, "checkBookingStatus: addValueEventListener is null")
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
+                Log.e(TAG, "checkBookingStatus: " + error.message)
             }
         }
         )
@@ -1020,6 +1122,27 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             "CareCabs",
             "A Driver has accepted your Booking and is on the way to your location"
         )
+    }
+
+    private fun showHasActiveBookingDialog() {
+        val binding: DialogHasActiveBookingBinding =
+            DialogHasActiveBookingBinding.inflate(layoutInflater)
+        builder = AlertDialog.Builder(this)
+        val dialogView = binding.root
+
+        binding.okayBtn.setOnClickListener {
+            closeHasActiveBookingDialog()
+        }
+
+        builder.setView(dialogView)
+        hasActiveBookingDialog = builder.create()
+        hasActiveBookingDialog.show()
+    }
+
+    private fun closeHasActiveBookingDialog() {
+        if (hasActiveBookingDialog.isShowing) {
+            hasActiveBookingDialog.dismiss()
+        }
     }
 
     private fun showPassengerOwnBookingInfoDialog(bookingID: String) {
@@ -1042,11 +1165,118 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
                         if (passengerBookingModel != null) {
                             if (passengerBookingModel.bookingID == bookingID) {
-                                binding.currentLocationTextView.text =
-                                    "${passengerBookingModel.pickupLatitude}\n${passengerBookingModel.pickupLongitude}"
 
-                                binding.destinationLocationTextView.text =
-                                    "${passengerBookingModel.destinationLatitude}\n${passengerBookingModel.destinationLongitude}"
+                                //geocode
+                                val pickupLocationGeocode = MapboxGeocoding.builder()
+                                    .accessToken(getString(R.string.mapbox_access_token))
+                                    .query(
+                                        Point.fromLngLat(
+                                            passengerBookingModel.pickupLongitude,
+                                            passengerBookingModel.pickupLatitude
+                                        )
+                                    )
+                                    .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                                    .build()
+
+                                pickupLocationGeocode.enqueueCall(object :
+                                    Callback<GeocodingResponse?> {
+                                    @SuppressLint("SetTextI18n")
+                                    override fun onResponse(
+                                        call: Call<GeocodingResponse?>,
+                                        response: Response<GeocodingResponse?>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            if (response.body() != null && response.body()!!
+                                                    .features().isNotEmpty()
+                                            ) {
+                                                val feature = response.body()!!.features()[0]
+                                                val locationName = feature.placeName()
+
+                                                binding.loading1.visibility = View.GONE
+                                                binding.pickupLocationTextView.text = locationName
+                                            } else {
+                                                binding.loading1.visibility = View.GONE
+                                                binding.pickupLocationTextView.text =
+                                                    "Location not found"
+
+                                            }
+                                        } else {
+                                            binding.loading1.visibility = View.GONE
+                                            binding.pickupLocationTextView.text =
+                                                "Location not found"
+                                            Log.e(TAG, "Geocode error" + response.message())
+
+                                        }
+                                    }
+
+                                    @SuppressLint("SetTextI18n")
+                                    override fun onFailure(
+                                        call: Call<GeocodingResponse?>, t: Throwable
+                                    ) {
+                                        binding.loading1.visibility = View.GONE
+                                        binding.pickupLocationTextView.text = "Location not found"
+
+                                        Log.e(TAG, "onFailure: " + t.message)
+                                    }
+                                })
+
+                                val destinationLocationGeocode = MapboxGeocoding.builder()
+                                    .accessToken(getString(R.string.mapbox_access_token))
+                                    .query(
+                                        Point.fromLngLat(
+                                            passengerBookingModel.destinationLongitude,
+                                            passengerBookingModel.destinationLatitude
+                                        )
+                                    )
+                                    .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                                    .build()
+
+                                destinationLocationGeocode.enqueueCall(object :
+                                    Callback<GeocodingResponse?> {
+                                    @SuppressLint("SetTextI18n")
+                                    override fun onResponse(
+                                        call: Call<GeocodingResponse?>,
+                                        response: Response<GeocodingResponse?>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            if (response.body() != null && response.body()!!
+                                                    .features().isNotEmpty()
+                                            ) {
+                                                val feature = response.body()!!.features()[0]
+                                                val locationName = feature.placeName()
+
+                                                binding.loading2.visibility = View.GONE
+                                                binding.destinationLocationTextView.text =
+                                                    locationName
+
+                                            } else {
+                                                binding.loading2.visibility = View.GONE
+
+                                                binding.destinationLocationTextView.text =
+                                                    "Location not found"
+                                            }
+                                        } else {
+                                            binding.loading2.visibility = View.GONE
+
+                                            binding.destinationLocationTextView.text =
+                                                "Location not found"
+
+                                            Log.e(TAG, "Geocode error" + response.message())
+                                        }
+                                    }
+
+                                    @SuppressLint("SetTextI18n")
+                                    override fun onFailure(
+                                        call: Call<GeocodingResponse?>, t: Throwable
+                                    ) {
+                                        binding.loading2.visibility = View.GONE
+
+                                        binding.destinationLocationTextView.text =
+                                            "Location not found"
+
+                                        Log.e(TAG, "onFailure: " + t.message)
+                                    }
+                                })
                             }
                         }
                     }
@@ -1054,7 +1284,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, error.message)
+                Log.e(TAG, "onCancelled: " + error.message)
             }
 
         })
@@ -1063,9 +1293,15 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
             locationReference.child(bookingID).updateChildren(updateBookingStatus)
                 .addOnSuccessListener {
+                    showToast("Booking cancelled")
+
                     closePassengerOwnBookingInfoDialog()
-                }.addOnFailureListener {
-                    Log.e(TAG, it.message.toString())
+                    loadCurrentCoordinatesToMapFromDatabase()
+                }
+                .addOnFailureListener {
+                    showToast("Booking failed to cancel")
+
+                    Log.e(TAG, "showPassengerOwnBookingInfoDialog: " + it.message)
                 }
         }
 
@@ -1138,6 +1374,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
+    private fun showConfirmBookingBottomSheet(destination: Point) {
+        val destinationJson = destination.toJson()
+        val confirmBookingBottomSheet = ConfirmBookingBottomSheet.newInstance(destinationJson)
+        confirmBookingBottomSheet.show(supportFragmentManager, confirmBookingBottomSheet.tag)
+    }
 
     private fun reverseGeocoding(point: Point) {
         val types: List<PlaceAutocompleteType> = when (mapboxMap.cameraState.zoom) {
@@ -1218,6 +1459,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                     mapboxMap.setCamera(it)
                 }
         }
+    }
+
+    private fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(this, message, duration).show()
     }
 
     private companion object {

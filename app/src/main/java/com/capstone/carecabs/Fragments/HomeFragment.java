@@ -335,27 +335,29 @@ public class HomeFragment extends Fragment {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(getUserID);
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
-					String getRegisterUserType = documentSnapshot.getString("userType");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+							String getRegisterUserType = documentSnapshot.getString("userType");
 
-					if (getUserRegisterStatus) {
+							if (getUserRegisterStatus) {
 
-						getUserTypeAndLoadProfileInfo();
+								getUserTypeAndLoadProfileInfo();
 
-					} else {
+							} else {
 
-						showRegisterNotCompleteDialog(getRegisterUserType);
+								showRegisterNotCompleteDialog(getRegisterUserType);
 
-					}
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+							}
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfRegisterComplete: " + e.getMessage()));
 
 		} else {
 			Intent intent = new Intent(context, LoginActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		}
 	}
 
@@ -512,7 +514,7 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void checkBookingStatus() {
-		 databaseReference = FirebaseDatabase
+		databaseReference = FirebaseDatabase
 				.getInstance().getReference(FirebaseMain.bookingCollection);
 
 		List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();

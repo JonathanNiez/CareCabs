@@ -391,7 +391,14 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        showExitMapDialog()
+
+        val shouldExit = false
+        if (shouldExit) {
+            super.onBackPressed()
+
+        } else {
+            showExitMapDialog()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -713,6 +720,166 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 //        }
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun checkIfCurrentlyNavigatingToDestination() {
+
+        val driverReference: DocumentReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(FirebaseMain.getUser().uid)
+
+        driverReference.get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+                    val getIsNavigatingToDestination: Boolean? =
+                        it.getBoolean("isNavigatingToDestination")
+                    val getNavigationStatus: String? = it.getString("navigationStatus")
+
+                    if (getIsNavigatingToDestination == true && getNavigationStatus == "Navigating to destination") {
+                        isNavigatingToDestination = true
+
+                        binding.passengersInMapTextView.text =
+                            "You are currently navigating to Passenger's destination"
+
+                        val getTripID: String? = it.getString("tripID")
+                        val getDestinationLatitude: Double = it.getDouble("destinationLatitude")!!
+                        val getDestinationLongitude: Double = it.getDouble("destinationLongitude")!!
+
+                        //convert to point
+                        val destinationLatLng =
+                            LatLng(getDestinationLatitude, getDestinationLongitude)
+                        val destinationCoordinates =
+                            Point.fromLngLat(
+                                destinationLatLng.longitude,
+                                destinationLatLng.latitude
+                            )
+
+                        createDestinationAnnotationToMap(destinationCoordinates)
+
+                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
+                        binding.arrivedAtDestinationBtn.setOnClickListener {
+                            if (getTripID != null) {
+                                setTripAsComplete(getTripID)
+                            }
+                        }
+                    } else if (getNavigationStatus == "Navigating to pickup location") {
+                        binding.arrivedAtDestinationBtn.visibility = View.GONE
+
+                        binding.passengersInMapTextView.text =
+                            "You are currently navigating to Passenger's pickup location"
+
+//                        loadPassengerLocationToMapFromDatabase()
+
+                    } else {
+                        loadPassengerLocationToMapFromDatabase()
+                    }
+                } else {
+                    loadPassengerLocationToMapFromDatabase()
+
+                    Log.e(TAG, "checkIfCurrentlyNavigatingToDestination: driverReference is null")
+                }
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "checkIfCurrentlyNavigatingToDestination: " + it.message)
+            }
+    }
+
+    private fun loadPassengerLocationToMapFromDatabase() {
+
+        var waitingPassengerCount = 0
+        val locationReference = FirebaseDatabase.getInstance()
+            .getReference(FirebaseMain.bookingCollection)
+
+        locationReference.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("SetTextI18n")
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    var hasPassengersWaiting = false
+                    for (locationSnapshot in snapshot.children) {
+                        val locationData =
+                            locationSnapshot.getValue(PassengerBookingModel::class.java)
+
+                        if (locationData != null) {
+                            if (locationData.bookingStatus == "Waiting") {
+
+                                binding.bookingsImgBtn.setOnClickListener {
+                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                }
+
+                                initializeBottomNavButtons(locationData.bookingID)
+
+                                waitingPassengerCount++
+                                hasPassengersWaiting = true
+
+                                when (locationData.passengerType) {
+                                    "Senior Citizen" -> {
+                                        addSeniorAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+
+                                    "Persons with Disability (PWD)" -> {
+                                        addPWDAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+                                }
+
+                            } else if (locationData.bookingStatus == "Driver on the way"
+                                && locationData.driverUserID == FirebaseMain.getUser().uid
+                            ) {
+                                binding.bookingsImgBtn.setOnClickListener {
+                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                }
+
+                                initializeBottomNavButtons(locationData.bookingID)
+
+                                when (locationData.passengerType) {
+                                    "Senior Citizen" -> {
+                                        addSeniorAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+
+                                    "Persons with Disability (PWD)" -> {
+                                        addPWDAnnotationToMap(
+                                            locationData.pickupLongitude,
+                                            locationData.pickupLatitude,
+                                            locationData.bookingID
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (isNavigatingToDestination) {
+                        binding.passengersInMapTextView.text =
+                            "You are currently navigating to Passenger's destination"
+                    } else {
+                        if (hasPassengersWaiting) {
+                            binding.passengersInMapTextView.text =
+                                "There are $waitingPassengerCount Passenger(s) waiting right now"
+                        } else {
+                            binding.passengersInMapTextView.text =
+                                "There are no Passengers right now"
+                        }
+                    }
+                } else {
+                    binding.passengersInMapTextView.text = "There are no Passengers right now"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "loadPassengerLocationToMapFromDatabase: " + error.message)
+            }
+        })
+    }
+
     private fun addSeniorAnnotationToMap(
         longitude: Double,
         latitude: Double,
@@ -812,11 +979,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                         OnPointAnnotationClickListener {
 
                             findRoute(destinationCoordinate)
+
                             true
                         }
                     )
                 }
-
             }
         }
     }
@@ -840,63 +1007,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
             drawable.draw(canvas)
             bitmap
         }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun checkIfCurrentlyNavigatingToDestination() {
-
-        val driverReference: DocumentReference = FirebaseMain.getFireStoreInstance()
-            .collection(FirebaseMain.userCollection)
-            .document(FirebaseMain.getUser().uid)
-
-        driverReference.get()
-            .addOnSuccessListener {
-                if (it.exists()) {
-                    val getIsNavigatingToDestination: Boolean? =
-                        it.getBoolean("isNavigatingToDestination")
-                    val getNavigationStatus : String? = it.getString("navigationStatus")
-
-                    if (getIsNavigatingToDestination == true && getNavigationStatus == "Navigating to destination") {
-                        val getTripID: String? = it.getString("tripID")
-                        val getDestinationLatitude: Double = it.getDouble("destinationLatitude")!!
-                        val getDestinationLongitude: Double = it.getDouble("destinationLongitude")!!
-
-                        //convert to point
-                        val destinationLatLng =
-                            LatLng(getDestinationLatitude, getDestinationLongitude)
-                        val destinationCoordinates =
-                            Point.fromLngLat(
-                                destinationLatLng.longitude,
-                                destinationLatLng.latitude
-                            )
-
-                        isNavigatingToDestination = true
-
-                        binding.passengersInMapTextView.text =
-                            "You are currently navigating to Passenger's destination"
-
-                        createDestinationAnnotationToMap(destinationCoordinates)
-
-                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
-                        binding.arrivedAtDestinationBtn.setOnClickListener {
-                            if (getTripID != null) {
-                                setTripAsComplete(getTripID)
-                            }
-                        }
-                    } else if (getNavigationStatus == "Navigating to pickup location"){
-                        binding.arrivedAtDestinationBtn.visibility = View.GONE
-
-                        loadPassengerLocationToMapFromDatabase()
-                    }else{
-                        loadPassengerLocationToMapFromDatabase()
-                    }
-                } else {
-                    loadPassengerLocationToMapFromDatabase()
-                }
-            }
-            .addOnFailureListener {
-                Log.e(TAG, "onMapReady: " + it.message)
-            }
     }
 
     private fun onCameraTrackingDismissed() {
@@ -969,6 +1079,10 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
     private fun findRoute(destination: Point) {
 
+        binding.mapView.getMapboxMap().apply {
+            loadStyleUri(Style.TRAFFIC_DAY) {
+            }
+        }
         if (isNavigatingToDestination) {
             Toast.makeText(
                 this@MapDriverActivity,
@@ -1058,6 +1172,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         // clear
         mapboxNavigation.setNavigationRoutes(listOf())
 
+        binding.mapView.getMapboxMap().apply {
+            loadStyleUri(Style.SATELLITE_STREETS) {
+            }
+        }
+
         // stop simulation
         mapboxReplayer.stop()
 
@@ -1069,7 +1188,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
         binding.bottomNavigationView.visibility = View.VISIBLE
         binding.fullscreenImgBtn.visibility = View.VISIBLE
-
     }
 
     fun calculateTravelTime(distance: Double, averageSpeed: Double): Double {
@@ -1137,10 +1255,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         val updateDriverStatus = HashMap<String, Any>()
         updateDriverStatus["isAvailable"] = true
         updateDriverStatus["isNavigatingToDestination"] = false
+        updateDriverStatus["navigationStatus"] = "idle"
         updateDriverStatus["destinationLatitude"] = 0.0
         updateDriverStatus["destinationLongitude"] = 0.0
         updateDriverStatus["passengersTransported"] = +1
-        updateDriverStatus["trip"] = "none"
+        updateDriverStatus["tripID"] = "none"
         updateDriverStatus["driverRatings"] = 3.0
 
         driverReference.update(updateDriverStatus)
@@ -1153,95 +1272,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
     }
 
-    private fun loadPassengerLocationToMapFromDatabase() {
-
-        var waitingPassengerCount = 0
-        val locationReference = FirebaseDatabase.getInstance()
-            .getReference(FirebaseMain.bookingCollection)
-
-        locationReference.addValueEventListener(object : ValueEventListener {
-            @SuppressLint("SetTextI18n")
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    var hasPassengersWaiting = false
-                    for (locationSnapshot in snapshot.children) {
-                        val locationData =
-                            locationSnapshot.getValue(PassengerBookingModel::class.java)
-
-                        if (locationData != null) {
-                            if (locationData.bookingStatus == "Waiting") {
-
-                                binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
-                                }
-
-                                initializeBottomNavButtons(locationData.bookingID)
-
-                                waitingPassengerCount++
-                                hasPassengersWaiting = true
-                                when (locationData.passengerType) {
-                                    "Senior Citizen" -> {
-                                        addSeniorAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
-                                        )
-                                    }
-
-                                    "Persons with Disability (PWD)" -> {
-                                        addPWDAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
-                                        )
-                                    }
-                                }
-                            } else if (locationData.bookingStatus == "Driver on the way"
-                                && locationData.driverUserID == FirebaseMain.getUser().uid
-                            ) {
-
-                                binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
-                                }
-
-                                initializeBottomNavButtons(locationData.bookingID)
-
-                                when (locationData.passengerType) {
-                                    "Senior Citizen" -> {
-                                        addSeniorAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
-                                        )
-                                    }
-
-                                    "Persons with Disability (PWD)" -> {
-                                        addPWDAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (hasPassengersWaiting) {
-                        binding.passengersInMapTextView.text =
-                            "There are $waitingPassengerCount Passenger(s) waiting right now"
-                    } else {
-                        binding.passengersInMapTextView.text = "There are no Passengers right now"
-
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "onCancelled: " + error.message)
-            }
-
-        })
-    }
 
     private fun getCurrentTimeAndDate(): String {
         val calendar = Calendar.getInstance() // Get a Calendar instance
@@ -1272,7 +1302,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
     private fun updatePassengerBooking(
         bookingID: String
     ) {
-
         //convert to point
         val latLng = LatLng(
             StaticDataPasser.storeDestinationLatitude,
@@ -1352,8 +1381,8 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                         isNavigatingToDestination = true
 
                         createDestinationAnnotationToMap(destinationCoordinate)
-                        findRoute(pickupCoordinate)
-                        loadPassengerLocationToMapFromDatabase()
+                        findRoute(destinationCoordinate)
+                        checkIfCurrentlyNavigatingToDestination()
 
                         binding.passengerOnBoardBtn.visibility = View.GONE
                         binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
@@ -1367,8 +1396,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     .addOnFailureListener {
                         Log.e(TAG, "storeTripToDatabase: " + it.message)
                     }
-
-
             }
             .addOnFailureListener { e ->
                 Toast.makeText(
@@ -1450,6 +1477,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         val confirmBtn = dialogView.findViewById<Button>(R.id.confirmBtn)
 
         confirmBtn.setOnClickListener {
+
             storeTripToDatabase(
                 generateTripID,
                 bookingID,
@@ -1457,6 +1485,8 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 pickupCoordinates,
                 destinationCoordinates
             )
+
+            closePassengerOnBoardDialog()
         }
 
         closeBtn.setOnClickListener {
@@ -1559,12 +1589,12 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
     override fun onDataReceived(bottomSheetData: BottomSheetData) {
 
         if (isNavigatingToDestination) {
-            findRoute(bottomSheetData.pickupCoordinates)
+            findRoute(bottomSheetData.destinationCoordinates)
 
             binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
 
         } else {
-            findRoute(bottomSheetData.destinationCoordinates)
+            findRoute(bottomSheetData.pickupCoordinates)
 
             binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
             binding.passengerOnBoardBtn.setOnClickListener {
@@ -1587,12 +1617,12 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
         if (isNavigatingToDestination) {
 
-            findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
+            findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
             binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
 
         } else {
-            findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
+            findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
 
             binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
             binding.passengerOnBoardBtn.setOnClickListener {

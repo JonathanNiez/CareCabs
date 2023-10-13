@@ -62,7 +62,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 	public void onBindViewHolder(@NonNull PickupPassengerAdapter.PickupPassengerViewHolder holder, int position) {
 		PickupPassengerModel pickupPassengerModel = pickupPassengerModelList.get(position);
 		holder.binding.renavigateBtn.setVisibility(View.GONE);
-		String fullName = pickupPassengerModel.getPassengerFirstname() + " " + pickupPassengerModel.getPassengerLastname();
+		String fullName = pickupPassengerModel.getPassengerName();
 
 		holder.binding.passengerName.setText(fullName);
 		if (!pickupPassengerModel.getPassengerProfilePicture().equals("default")) {
@@ -181,8 +181,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.putExtra("chatUserID", pickupPassengerModel.getPassengerUserID());
 				intent.putExtra("bookingID", pickupPassengerModel.getBookingID());
-				intent.putExtra("firstname", pickupPassengerModel.getPassengerFirstname());
-				intent.putExtra("lastname", pickupPassengerModel.getPassengerLastname());
+				intent.putExtra("fullName", pickupPassengerModel.getPassengerName());
 				intent.putExtra("profilePicture", pickupPassengerModel.getPassengerProfilePicture());
 				intent.putExtra("fcmToken", pickupPassengerModel.getFcmToken());
 				context.startActivity(intent);
