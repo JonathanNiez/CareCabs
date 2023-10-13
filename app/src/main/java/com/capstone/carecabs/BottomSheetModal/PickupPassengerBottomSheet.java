@@ -376,8 +376,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
 		updateBooking.put("driverArrivalTime", estimatedArrivalMinutes);
 
-		bookingReference.child(bookingID)
-				.updateChildren(updateBooking)
+		bookingReference.child(bookingID).updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> {
 
 					String notificationMessage = "Vehicle Color: " + vehicleColor

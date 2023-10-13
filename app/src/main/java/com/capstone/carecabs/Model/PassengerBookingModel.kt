@@ -3,6 +3,7 @@ package com.capstone.carecabs.Model
 data class PassengerBookingModel(
     val bookingID: String = "",
     val bookingStatus: String = "",
+    val isDriverRated : Boolean = false,
     val bookingDate: String = "",
     val fcmToken: String = "",
     val tripID: String = "",

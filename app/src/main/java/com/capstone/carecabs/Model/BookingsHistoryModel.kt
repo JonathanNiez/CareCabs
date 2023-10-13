@@ -4,6 +4,7 @@ data class BookingsHistoryModel(
     val passengerUserID: String = "",
     val bookingID: String = "",
     val bookingStatus: String = "",
+    val isDriverRated : Boolean = false,
     val pickupLongitude: Double = 0.0,
     val pickupLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,

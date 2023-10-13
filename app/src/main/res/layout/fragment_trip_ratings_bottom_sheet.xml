@@ -53,11 +53,11 @@
 					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:fontFamily="@font/gabarito_medium"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_semibold"
 						android:text="Rate your driver"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatRatingBar
 						android:id="@+id/tripRatingBar"
@@ -65,7 +65,7 @@
 						android:layout_height="wrap_content"
 						android:numStars="5"
 						android:rating="0.0"
-						android:stepSize="0.1" />
+						android:stepSize="1" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -80,14 +80,15 @@
 					<androidx.appcompat.widget.AppCompatImageView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						app:srcCompat="@drawable/check_48"/>
+						android:layout_margin="5dp"
+						app:srcCompat="@drawable/check_48" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
-						android:text="Ratings submitted"
+						android:text="Driver Ratings submitted"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
 
@@ -95,18 +96,17 @@
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
-
 		</androidx.cardview.widget.CardView>
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/rateBtn"
-			android:layout_width="130dp"
+			android:id="@+id/rateDriverBtn"
+			android:layout_width="150dp"
 			android:layout_height="50dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Rate"
+			android:text="Rate Driver"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 

@@ -20,7 +20,6 @@ import java.util.UUID;
 
 public class FeedbackActivity extends AppCompatActivity {
 	private final String TAG = "FeedbackActivity";
-	private Intent intent;
 	private ActivityFeedbackBinding binding;
 
 	@Override
@@ -67,8 +66,11 @@ public class FeedbackActivity extends AppCompatActivity {
 		return month + "-" + day + "-" + year + " " + hour + ":" + minute + ":" + second;
 	}
 
-	private void submitFeedback(String feedbackID,
-	                            String comment) {
+	private void submitFeedback
+			(
+					String feedbackID,
+					String comment
+			) {
 		if (FirebaseMain.getUser() != null) {
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.feedbackCollection)
@@ -80,22 +82,28 @@ public class FeedbackActivity extends AppCompatActivity {
 					comment,
 					getCurrentTimeAndDate()
 			);
-			documentReference.set(feedbackModel).addOnSuccessListener(unused -> {
+			documentReference.set(feedbackModel)
+					.addOnSuccessListener(unused -> {
 
-				binding.commentEditText.setText("");
-				Toast.makeText(FeedbackActivity.this, "Feedback submitted", Toast.LENGTH_SHORT).show();
+						binding.commentEditText.setText("");
+						Toast.makeText(FeedbackActivity.this, "Feedback submitted", Toast.LENGTH_SHORT).show();
 
-			}).addOnFailureListener(e -> {
-				Toast.makeText(FeedbackActivity.this, "Feedback failed to submit", Toast.LENGTH_LONG).show();
+					})
+					.addOnFailureListener(e -> {
+						Toast.makeText(FeedbackActivity.this, "Feedback failed to submit", Toast.LENGTH_LONG).show();
 
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, "submitFeedback: " + e.getMessage());
+					});
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		finish();
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed();
+		} else {
+			finish();
+		}
 	}
-
 }

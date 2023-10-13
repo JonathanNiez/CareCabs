@@ -118,17 +118,27 @@ public class CurrentBookingFragment extends Fragment {
 						binding.loadingLayout.setVisibility(View.GONE);
 						currentBookingModelList.clear();
 						boolean hasCurrentBookings = false;
+						final String userID = FirebaseMain.getUser().getUid();
 
 						for (DataSnapshot currentBookingSnapshot : snapshot.getChildren()) {
-							CurrentBookingModel currentBookingModel = currentBookingSnapshot.getValue(CurrentBookingModel.class);
-							if (currentBookingModel != null &&
-									(currentBookingModel.getBookingStatus().equals("Waiting") &&
-											currentBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) ||
-											currentBookingModel.getBookingStatus().equals("Driver on the way")) &&
-									currentBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())) {
+							CurrentBookingModel currentBookingModel =
+									currentBookingSnapshot.getValue(CurrentBookingModel.class);
+							if (currentBookingModel != null) {
 
-								currentBookingModelList.add(currentBookingModel);
-								hasCurrentBookings = true;
+								if (
+										currentBookingModel.getPassengerUserID().equals(userID)
+												&& currentBookingModel.getBookingStatus().equals("Waiting")
+												|| currentBookingModel.getPassengerUserID().equals(userID)
+												&& currentBookingModel.getBookingStatus().equals("Driver on the way")
+										|| currentBookingModel.getPassengerUserID().equals(userID)
+										&& currentBookingModel.getBookingStatus().equals("Transported to destination")
+										&& !currentBookingModel.isDriverRated()
+								) {
+
+									currentBookingModelList.add(currentBookingModel);
+									hasCurrentBookings = true;
+
+								}
 							}
 						}
 						currentBookingAdapter.notifyDataSetChanged();
@@ -146,7 +156,7 @@ public class CurrentBookingFragment extends Fragment {
 
 				@Override
 				public void onCancelled(@NonNull DatabaseError error) {
-					Log.e(TAG, error.getMessage());
+					Log.e(TAG, "loadCurrentBookingFromDatabase: onCancelled " + error.getMessage());
 				}
 			});
 

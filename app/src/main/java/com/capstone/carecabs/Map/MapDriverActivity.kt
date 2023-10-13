@@ -1279,6 +1279,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
         val updateBooking = HashMap<String, Any>()
         updateBooking["bookingStatus"] = "Transported to destination"
+        updateBooking["isDriverRated"] = false
 
         bookingReference.child(bookingID).updateChildren(updateBooking)
             .addOnSuccessListener {

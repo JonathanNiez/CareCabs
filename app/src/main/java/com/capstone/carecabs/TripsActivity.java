@@ -75,7 +75,12 @@ public class TripsActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		finish();
+		boolean shouldExit = false;
+		if (shouldExit){
+			super.onBackPressed();
+		}else {
+			finish();
+		}
 	}
 
 	public class ViewPagerAdapter extends FragmentPagerAdapter {

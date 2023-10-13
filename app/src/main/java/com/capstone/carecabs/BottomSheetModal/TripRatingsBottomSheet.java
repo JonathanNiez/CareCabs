@@ -19,13 +19,15 @@ import com.capstone.carecabs.databinding.FragmentTripRatingsBottomSheetBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
-	private final String TAG = "TripRatingsBottomSheet";
+	private static final String TAG = "TripRatingsBottomSheet";
 	private FragmentTripRatingsBottomSheetBinding binding;
 	private Context context;
 
@@ -48,12 +50,13 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 		Bundle bundle = getArguments();
 		if (bundle != null) {
 			String driverID = bundle.getString("driverID");
+			String bookingID = bundle.getString("bookingID");
 
-			binding.rateBtn.setOnClickListener(v -> {
+			binding.rateDriverBtn.setOnClickListener(v -> {
 				if (binding.tripRatingBar.getRating() == 0) {
 					return;
 				} else {
-					rateDriver(driverID);
+					rateDriver(driverID, bookingID);
 				}
 			});
 		} else {
@@ -72,7 +75,20 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 		super.onViewCreated(view, savedInstanceState);
 	}
 
-	private void rateDriver(String driverID) {
+	private void rateDriver(String driverID, String bookingID) {
+
+		//update current booking
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+				.getReference(FirebaseMain.bookingCollection);
+
+		Map<String, Object> updateBooking = new HashMap<>();
+		updateBooking.put("isDriverRated", true);
+
+		bookingReference.child(bookingID).updateChildren(updateBooking)
+				.addOnSuccessListener(unused -> Log.i(TAG, "rateDriver: onSuccess booking updated successfully"))
+				.addOnFailureListener(e -> Log.e(TAG, "rateDriver: onFailure " + e.getMessage()));
+
+		//update driver ratings
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(driverID);
@@ -90,7 +106,7 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 				.addOnFailureListener(e -> {
 					Toast.makeText(context, "Failed to rate Driver", Toast.LENGTH_SHORT).show();
 
-					Log.e(TAG, "onFailure: " + e.getMessage());
+					Log.e(TAG, "rateDriver: " + e.getMessage());
 				});
 	}
 }

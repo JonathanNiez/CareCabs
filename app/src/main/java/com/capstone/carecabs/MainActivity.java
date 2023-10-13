@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	private void retrieveAndStoreFCMToken() {
 		FirebaseMessaging.getInstance().getToken()
 				.addOnSuccessListener(this::updateFCMTokenInFireStore)
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> Log.e(TAG, "retrieveAndStoreFCMToken: " + e.getMessage()));
 	}
 
 	private void updateFCMTokenInFireStore(String token) {
@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 		documentReference.update("fcmToken", token)
 				.addOnSuccessListener(aVoid -> Log.i(TAG, "Device token stored: " + token))
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 
 	private void checkLocationService() {
@@ -325,27 +325,31 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					String getUserType = documentSnapshot.getString("userType");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							String getUserType = documentSnapshot.getString("userType");
 
-					switch (getUserType) {
-						case "Driver":
-							intent = new Intent(MainActivity.this, MapDriverActivity.class);
-							break;
+							if (getUserType != null) {
+								switch (getUserType) {
+									case "Driver":
+										intent = new Intent(MainActivity.this, MapDriverActivity.class);
+										break;
 
-						case "Senior Citizen":
-						case "Persons with Disability (PWD)":
+									case "Senior Citizen":
+									case "Persons with Disability (PWD)":
 
-							intent = new Intent(MainActivity.this, MapPassengerActivity.class);
+										intent = new Intent(MainActivity.this, MapPassengerActivity.class);
 
-							break;
+										break;
 
-					}
-					startActivity(intent);
-					finish();
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+								}
+							}
+							startActivity(intent);
+							finish();
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "getUserTypeForMap: " + e.getMessage()));
 		}
 	}
 
@@ -355,18 +359,22 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					String getUserType = documentSnapshot.getString("userType");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							String getUserType = documentSnapshot.getString("userType");
 
-					if (getUserType.equals("Senior Citizen") || getUserType.equals("Persons with Disability (PWD)")) {
-						checkIfBookingIsAccepted();
-					} else {
-						checkForWaitingPassengers();
-					}
+							if (getUserType.equals("Senior Citizen") ||
+									getUserType.equals("Persons with Disability (PWD)")) {
 
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+								checkIfBookingIsAccepted();
+							} else {
+								checkForWaitingPassengers();
+							}
+
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 		}
 	}
 

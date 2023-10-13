@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.carecabs.BottomSheetModal.TripRatingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatDriverActivity;
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemCurrentBookingBinding;
@@ -66,6 +67,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		CurrentBookingModel currentBookingModel = currentBookingModelList.get(position);
 		holder.binding.driverDetailsLayout.setVisibility(View.GONE);
 		holder.binding.rateDriverBtn.setVisibility(View.GONE);
+		holder.binding.rateYourDriverTextView.setVisibility(View.GONE);
 
 		//geocode
 		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
@@ -108,7 +110,6 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 			}
 		});
 
-		//TODO:geocode
 		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
 				.accessToken(context.getString(R.string.mapbox_access_token))
 				.query(Point.fromLngLat(
@@ -151,33 +152,52 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 		holder.binding.loadingDestinationLocation.setVisibility(View.GONE);
 		holder.binding.loadingPickupLocation.setVisibility(View.GONE);
-
 		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
 
-		if (currentBookingModel.getBookingStatus().equals("Driver on the way")) {
+		final String userID = FirebaseMain.getUser().getUid();
+
+		if (
+				currentBookingModel.getPassengerUserID().equals(userID) &&
+						currentBookingModel.getBookingStatus().equals("Driver on the way")
+		) {
+
 			holder.binding.bookingStatusTextView.setVisibility(View.GONE);
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
 			holder.binding.driverDetailsLayout.setVisibility(View.VISIBLE);
 
 			holder.binding.driverArrivalTimeTextView.setText("Arrival time:\nEstimated "
 					+ currentBookingModel.getDriverArrivalTime() + " minute(s)");
-			holder.binding.vehicleColorTextView.setText("Vehicle Color: " + currentBookingModel.getVehicleColor());
-			holder.binding.vehiclePlateNumberTextView.setText("Vehicle plate number: " + currentBookingModel.getVehiclePlateNumber());
+			holder.binding.vehicleColorTextView
+					.setText("Vehicle Color: " + currentBookingModel.getVehicleColor());
+			holder.binding.vehiclePlateNumberTextView
+					.setText("Vehicle plate number: " + currentBookingModel.getVehiclePlateNumber());
+
 			holder.binding.chatDriverBtn.setOnClickListener(v -> {
 				Intent intent = new Intent(context, ChatDriverActivity.class);
 				intent.putExtra("driverID", currentBookingModel.getDriverUserID());
 				context.startActivity(intent);
 			});
-		} else if (currentBookingModel.getBookingStatus().equals("Transported to destination")) {
+
+		} else if (
+				currentBookingModel.getPassengerUserID().equals(userID) &&
+						currentBookingModel.getBookingStatus().equals("Transported to destination") &&
+						!currentBookingModel.isDriverRated()
+		) {
+
+			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
+			holder.binding.rateYourDriverTextView.setVisibility(View.VISIBLE);
+			holder.binding.rateDriverBtn.setVisibility(View.VISIBLE);
 
 			holder.binding.rateDriverBtn.setOnClickListener(v -> {
 				Bundle bundle = new Bundle();
 				bundle.putString("driverID", currentBookingModel.getDriverUserID());
+				bundle.putString("bookingID", currentBookingModel.getBookingID());
 
-				TripRatingsBottomSheet bottomSheetFragment = new TripRatingsBottomSheet();
-				bottomSheetFragment.show(fragmentActivity.getSupportFragmentManager(), bottomSheetFragment.getTag());
+				TripRatingsBottomSheet tripRatingsBottomSheet = new TripRatingsBottomSheet();
+				tripRatingsBottomSheet.setArguments(bundle);
+				tripRatingsBottomSheet.show(fragmentActivity.getSupportFragmentManager(),
+						tripRatingsBottomSheet.getTag());
 			});
-
 		}
 
 		holder.binding.cancelBookingBtn.setOnClickListener(v -> {
@@ -193,9 +213,9 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		return currentBookingModelList.size();
 	}
 
-	public class CurrentBookingViewHolder extends RecyclerView.ViewHolder {
+	public static class CurrentBookingViewHolder extends RecyclerView.ViewHolder {
 
-		private ItemCurrentBookingBinding binding;
+		private final ItemCurrentBookingBinding binding;
 
 		public CurrentBookingViewHolder(@NonNull ItemCurrentBookingBinding binding) {
 			super(binding.getRoot());

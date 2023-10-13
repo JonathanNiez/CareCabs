@@ -16,5 +16,7 @@ public class TripFeedbackActivity extends AppCompatActivity {
 		binding = ActivityTripFeedbackBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+
+
 	}
 }

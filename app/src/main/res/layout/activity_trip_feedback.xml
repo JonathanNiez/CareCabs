@@ -18,7 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<ImageButton
+			<androidx.appcompat.widget.AppCompatImageButton
 				android:id="@+id/imgBackBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
 				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
