@@ -78,9 +78,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		binding.medicalConditionTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 
-		binding.closeBtn.setOnClickListener(v -> {
-			dismiss();
-		});
+		binding.closeBtn.setOnClickListener(v -> dismiss());
 
 		loadPassengerBooking();
 
@@ -234,8 +232,10 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 								binding.renavigateBtn.setVisibility(View.GONE);
 								binding.pickupBtn.setOnClickListener(v -> {
 
-									getVehicleInfo(getFCMToken,
+									getDriverAndVehicleInfo(
+											getFCMToken,
 											getPassengerID,
+											getPassengerType,
 											bookingID,
 											getPickupLatitude,
 											getPickupLongitude,
@@ -274,7 +274,6 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 									.into(binding.passengerProfilePic);
 						}
 
-
 						binding.fullNameTextView.setText(getPassengerName);
 						binding.userTypeTextView.setText(getPassengerType);
 					}
@@ -283,19 +282,23 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 				@SuppressLint("LongLogTag")
 				@Override
 				public void onCancelled(@NonNull DatabaseError error) {
-					Log.e(TAG, error.getMessage());
+					Log.e(TAG, "loadPassengerBooking: " + error.getMessage());
 				}
 			});
 		}
 	}
 
-	private void getVehicleInfo(String fcmToken,
-	                            String passengerID,
-	                            String bookingID,
-	                            Double pickupLatitude,
-	                            Double pickupLongitude,
-	                            Double destinationLatitude,
-	                            Double destinationLongitude) {
+	private void getDriverAndVehicleInfo
+			(
+					String fcmToken,
+					String passengerID,
+					String passengerType,
+					String bookingID,
+					Double pickupLatitude,
+					Double pickupLongitude,
+					Double destinationLatitude,
+					Double destinationLongitude
+			) {
 		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(FirebaseMain.getUser().getUid());
@@ -313,6 +316,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						updatePassengerBooking(
 								fcmToken,
 								passengerID,
+								passengerType,
 								bookingID,
 								pickupLatitude,
 								pickupLongitude,
@@ -328,18 +332,21 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
 	}
 
-	private void updatePassengerBooking(String fcmToken,
-	                                    String passengerID,
-	                                    String bookingID,
-	                                    Double pickupLatitude,
-	                                    Double pickupLongitude,
-	                                    Double destinationLatitude,
-	                                    Double destinationLongitude,
-	                                    String fullName,
-	                                    String profilePicture,
-	                                    String vehicleColor,
-	                                    String vehiclePlateNumber) {
-
+	private void updatePassengerBooking
+			(
+					String fcmToken,
+					String passengerID,
+					String passengerType,
+					String bookingID,
+					Double pickupLatitude,
+					Double pickupLongitude,
+					Double destinationLatitude,
+					Double destinationLongitude,
+					String fullName,
+					String profilePicture,
+					String vehicleColor,
+					String vehiclePlateNumber
+			) {
 
 		//convert to point
 		LatLng pickupLatLng = new LatLng(pickupLatitude, pickupLongitude);
@@ -376,8 +383,16 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 					String notificationMessage = "Vehicle Color: " + vehicleColor
 							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
 
-					updateDriverStatus(destinationLatitude, destinationLongitude);
+					updateDriverStatus
+							(
+									passengerType,
+									bookingID,
+									pickupLatitude,
+									pickupLongitude
+							);
+
 					notificationData(fcmToken, notificationMessage);
+
 					sendDataToMap(bookingID,
 							passengerID,
 							pickupCoordinates,
@@ -388,22 +403,26 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 				})
 				.addOnFailureListener(e -> {
 
-					Log.e(TAG, Objects.requireNonNull(e.getMessage()));
-
 					Toast.makeText(context,
 							"Booking Failed to Accept", Toast.LENGTH_LONG).show();
 
+					Log.e(TAG, "updatePassengerBooking: " + e.getMessage());
 				});
 	}
 
-	private void updateDriverStatus(Double destinationLatitude, Double destinationLongitude) {
+	private void updateDriverStatus(String passengerType,
+	                                String bookingID,
+	                                Double pickupLatitude,
+	                                Double pickupLongitude) {
 		if (FirebaseMain.getUser() != null) {
 
 			Map<String, Object> updateDriverStatus = new HashMap<>();
 			updateDriverStatus.put("isAvailable", false);
-			updateDriverStatus.put("destinationLatitude", destinationLatitude);
-			updateDriverStatus.put("destinationLongitude", destinationLongitude);
+			updateDriverStatus.put("pickupLatitude", pickupLatitude);
+			updateDriverStatus.put("pickupLongitude", pickupLongitude);
 			updateDriverStatus.put("navigationStatus", "Navigating to pickup location");
+			updateDriverStatus.put("passengerType", passengerType);
+			updateDriverStatus.put("bookingID", bookingID);
 
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())

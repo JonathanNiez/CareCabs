@@ -11,7 +11,6 @@
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_marginBottom="50dp"
 		android:gravity="center"
 		android:orientation="vertical">
 
@@ -122,7 +121,7 @@
 				android:text="Medical Condition"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="18sp" />
 
 			<TextView
 				android:id="@+id/disabilityTextView"
@@ -134,7 +133,7 @@
 				android:text="Disability"
 				android:textAlignment="center"
 				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="18sp" />
 
 			<androidx.cardview.widget.CardView
 				android:layout_width="match_parent"
@@ -152,13 +151,13 @@
 					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="3dp"
-						android:fontFamily="@font/gabarito_bold"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
 						android:padding="5dp"
 						android:text="Pickup Location:"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/pickupLocationTextView"
@@ -171,31 +170,31 @@
 						android:text="Pickup Location"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="18sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="3dp"
-						android:fontFamily="@font/gabarito_bold"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_medium"
 						android:padding="5dp"
 						android:text="Destination:"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/destinationLocationTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
-						android:layout_margin="3dp"
+						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="5dp"
 						android:text="Destination"
 						android:textAlignment="center"
 						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:textSize="18sp" />
 
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
@@ -206,6 +205,7 @@
 				android:id="@+id/renavigateBtn"
 				android:layout_width="190dp"
 				android:layout_height="50dp"
+				android:layout_margin="10dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:gravity="center"
@@ -231,7 +231,6 @@
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="wrap_content"
 				android:layout_height="60dp"
-				android:layout_margin="10dp"
 				android:layout_marginBottom="20dp"
 				android:gravity="center">
 

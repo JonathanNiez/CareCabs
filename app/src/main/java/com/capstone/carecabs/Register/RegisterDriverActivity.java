@@ -229,7 +229,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
 			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
 			registerUser.put("userType", userType);
-			registerUser.put("driverRating", 0.0);
+			registerUser.put("driverRatings", 0.0);
 			registerUser.put("passengersTransported", 0);
 			registerUser.put("isRegisterComplete", true);
 			registerUser.put("vehicleColor", vehicleColor);

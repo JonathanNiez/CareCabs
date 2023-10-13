@@ -385,8 +385,7 @@ public class HomeFragment extends Fragment {
 
 							switch (getUserType) {
 								case "Driver":
-									Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
-									int getDriverRatings = getDriverRatingsLong.intValue();
+									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
 									boolean isNavigatingToDestination = documentSnapshot.getBoolean("isNavigatingToDestination");

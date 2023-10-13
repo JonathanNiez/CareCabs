@@ -195,8 +195,8 @@
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:orientation="horizontal"
-						android:gravity="center">
+						android:gravity="center"
+						android:orientation="horizontal">
 
 						<androidx.appcompat.widget.AppCompatImageView
 							android:id="@+id/currentPassengerTypeImageView"
@@ -254,10 +254,10 @@
 								android:id="@+id/passenger_disability_text_view"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:layout_gravity="start"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Disability"
+								android:textAlignment="center"
 								android:textColor="@color/black"
 								android:textSize="18sp" />
 
@@ -265,10 +265,10 @@
 								android:id="@+id/passengerMedicalConditionTextView"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:layout_gravity="start"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Medical Condition"
+								android:textAlignment="center"
 								android:textColor="@color/black"
 								android:textSize="18sp" />
 

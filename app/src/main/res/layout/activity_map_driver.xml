@@ -170,6 +170,7 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
+					app:tripProgressTextColor="@color/black"
 					android:layout_weight="5" />
 
 				<androidx.appcompat.widget.AppCompatImageButton
@@ -185,7 +186,7 @@
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/passengerOnBoardBtn"
+				android:id="@+id/pickupBtn"
 				android:layout_width="250dp"
 				android:layout_height="50dp"
 				android:layout_margin="10dp"
