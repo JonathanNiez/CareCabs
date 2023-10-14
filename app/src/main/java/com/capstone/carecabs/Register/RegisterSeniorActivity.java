@@ -58,12 +58,10 @@ import java.util.Objects;
 
 public class RegisterSeniorActivity extends AppCompatActivity {
 	private final String TAG = "RegisterSeniorActivity";
-	private final String userID = FirebaseMain.getUser().getUid();
 	private final String userType = "Senior Citizen";
 	private String profilePictureURL = "default";
 	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
 	private DocumentReference documentReference;
-	private StorageReference imageReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
@@ -221,38 +219,49 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname) {
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
+		if (FirebaseMain.getUser() != null) {
+			String userID = FirebaseMain.getUser().getUid();
 
-		Map<String, Object> registerUser = new HashMap<>();
-		registerUser.put("firstname", firstname);
-		registerUser.put("lastname", lastname);
-		registerUser.put("age", StaticDataPasser.storeCurrentAge);
-		registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
-		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", userType);
-		registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
-		registerUser.put("isRegisterComplete", true);
-		registerUser.put("totalTrips", 0);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(userID);
 
-		documentReference.update(registerUser).addOnSuccessListener(unused -> {
-			binding.progressBarLayout.setVisibility(View.GONE);
+			Map<String, Object> registerUser = new HashMap<>();
+			registerUser.put("firstname", firstname);
+			registerUser.put("lastname", lastname);
+			registerUser.put("age", StaticDataPasser.storeCurrentAge);
+			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
+			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("userType", userType);
+			registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
+			registerUser.put("isRegisterComplete", true);
+			registerUser.put("totalTrips", 0);
 
-			uploadImageToFirebaseStorage(profilePictureUri);
+			documentReference.update(registerUser).addOnSuccessListener(unused -> {
+				binding.progressBarLayout.setVisibility(View.GONE);
 
-			intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
-			intent.putExtra("userType", userType);
+				uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+
+				intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
+				intent.putExtra("userType", userType);
+				startActivity(intent);
+				finish();
+
+			}).addOnFailureListener(e -> {
+				showRegisterFailedDialog();
+
+				binding.progressBarLayout.setVisibility(View.GONE);
+
+				Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
+
+			});
+		}else {
+			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
+
+			intent = new Intent(RegisterSeniorActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 
-		}).addOnFailureListener(e -> {
-			showRegisterFailedDialog();
-
-			binding.progressBarLayout.setVisibility(View.GONE);
-
-			Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
-
-		});
+		}
 	}
 
 	private void updateCancelledRegister(String userID) {
@@ -672,18 +681,17 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		FirebaseStorage firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		StorageReference storageReference = firebaseStorage.getReference();
+	private void uploadProfilePictureToFirebaseStorage(String userID, Uri profilePictureUri) {
 
-		imageReference = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		StorageReference storageReference = FirebaseMain.getFirebaseStorageInstance().getReference();
+		StorageReference profilePicturePath = storageReference.child("images/profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		UploadTask uploadTask = imageReference.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl()
+		UploadTask uploadTask = profilePicturePath.putFile(profilePictureUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> profilePicturePath.getDownloadUrl()
 				.addOnSuccessListener(uri -> {
-					profilePictureURL = uri.toString();
 
-					storeImageUrlInFireStore(profilePictureURL);
+					profilePictureURL = uri.toString();
+					storeProfilePictureUrlInFireStore(userID, profilePictureURL);
 
 				}).addOnFailureListener(e -> {
 					Toast.makeText(RegisterSeniorActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
@@ -696,7 +704,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		});
 	}
 
-	private void storeImageUrlInFireStore(String profilePictureURL) {
+	private void storeProfilePictureUrlInFireStore(String userID, String profilePictureURL) {
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	private final String TAG = "MainActivity";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private Intent intent;
-	private AlertDialog exitAppDialog, enableLocatonServiceDialog;
+	private AlertDialog exitAppDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
 	private boolean shouldExit = false;
 	private BadgeDrawable badgeDrawable;
@@ -414,13 +414,13 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 		builder.setView(dialogView);
 
-		enableLocatonServiceDialog = builder.create();
-		enableLocatonServiceDialog.show();
+		enableLocationServiceDialog = builder.create();
+		enableLocationServiceDialog.show();
 	}
 
 	private void closeEnableLocationServiceDialog() {
-		if (enableLocatonServiceDialog != null && enableLocatonServiceDialog.isShowing()) {
-			enableLocatonServiceDialog.dismiss();
+		if (enableLocationServiceDialog != null && enableLocationServiceDialog.isShowing()) {
+			enableLocationServiceDialog.dismiss();
 		}
 	}
 

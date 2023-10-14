@@ -187,7 +187,7 @@ public class AccountFragment extends Fragment {
 							}
 						}
 					})
-					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfRegisterComplete: " + e.getMessage()));
 
 		} else {
 			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
@@ -310,107 +310,108 @@ public class AccountFragment extends Fragment {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
 
-					closePleaseWaitDialog();
+							closePleaseWaitDialog();
 
-					String getProfilePicture = documentSnapshot.getString("profilePicture");
-					String getUserType = documentSnapshot.getString("userType");
-					String getFirstName = documentSnapshot.getString("firstname");
-					String getLastName = documentSnapshot.getString("lastname");
-					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+							String getProfilePicture = documentSnapshot.getString("profilePicture");
+							String getUserType = documentSnapshot.getString("userType");
+							String getFirstName = documentSnapshot.getString("firstname");
+							String getLastName = documentSnapshot.getString("lastname");
+							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
-					switch (getUserType) {
-						case "Driver":
-							boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
-							Long getDriverRatingsLong = documentSnapshot.getLong("driverRating");
-							int getDriverRatings = getDriverRatingsLong.intValue();
-							Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
+							switch (getUserType) {
+								case "Driver":
+									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
+									Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
 
-							binding.driverStatusTextView1.setVisibility(View.VISIBLE);
-							binding.driverStatusTextView2.setVisibility(View.VISIBLE);
-							binding.driverRatingTextView.setVisibility(View.VISIBLE);
-							binding.userTypeImageView.setImageResource(R.drawable.driver_64);
+									binding.driverStatusTextView1.setVisibility(View.VISIBLE);
+									binding.driverStatusTextView2.setVisibility(View.VISIBLE);
+									binding.driverRatingTextView.setVisibility(View.VISIBLE);
+									binding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
-							if (getDriverStatus) {
-								binding.driverStatusTextView2.setTextColor(Color.BLUE);
-								binding.driverStatusTextView2.setText("Available");
+									if (getDriverStatus) {
+										binding.driverStatusTextView2.setTextColor(Color.BLUE);
+										binding.driverStatusTextView2.setText("Available");
 
-							} else {
-								binding.driverStatusTextView2.setTextColor(Color.RED);
-								binding.driverStatusTextView2.setText("Busy");
+									} else {
+										binding.driverStatusTextView2.setTextColor(Color.RED);
+										binding.driverStatusTextView2.setText("Busy");
 
+									}
+
+									binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
+									break;
+
+								case "Persons with Disabilities (PWD)":
+									String getDisability = documentSnapshot.getString("disability");
+
+									binding.disabilityTextView.setVisibility(View.VISIBLE);
+									binding.disabilityTextView.setText("Disability:\n" + getDisability);
+									binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+
+
+									break;
+
+								case "Senior Citizen":
+									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+
+									binding.medConTextView.setVisibility(View.VISIBLE);
+									binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
+									binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+
+									break;
 							}
 
-							binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
-							break;
+							if (getProfilePicture != null && !getProfilePicture.equals("default")) {
+								Glide.with(context)
+										.load(getProfilePicture)
+										.centerCrop()
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.profilePic);
+							}
 
-						case "Persons with Disabilities (PWD)":
-							String getDisability = documentSnapshot.getString("disability");
+							if (!getVerificationStatus) {
+								binding.imageViewVerificationMark.setImageResource(R.drawable.x_24);
 
-							binding.disabilityTextView.setVisibility(View.VISIBLE);
-							binding.disabilityTextView.setText("Disability:\n" + getDisability);
-							binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+								binding.verificationStatusTextView.setTextColor(
+										getResources().getColor(R.color.light_red)
+								);
+								binding.verificationStatusTextView.setText("Not Verified");
 
+								binding.idScannedTextView.setVisibility(View.VISIBLE);
 
-							break;
+								Typeface typeface = ResourcesCompat.getFont(context, R.font.opensans_bold);
 
-						case "Senior Citizen":
-							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+								binding.scanIDBtn.setText("Scan ID (Scan your ID here)");
+								binding.scanIDBtn.setTypeface(typeface);
+								binding.scanIDBtn.setTextColor(getResources().getColor(R.color.red));
+							} else {
+								binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
 
-							binding.medConTextView.setVisibility(View.VISIBLE);
-							binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
-							binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+								binding.verificationStatusTextView.setTextColor(
+										getResources().getColor(R.color.green)
+								);
+								binding.verificationStatusTextView.setText("Verified");
+							}
 
-							break;
-					}
+							binding.firstnameTextView.setText(getFirstName);
+							binding.lastnameTextView.setText(getLastName);
+							binding.userTypeTextView.setText(getUserType);
 
-					if (getProfilePicture != null && !getProfilePicture.equals("default")) {
-						Glide.with(context)
-								.load(getProfilePicture)
-								.centerCrop()
-								.placeholder(R.drawable.loading_gif)
-								.into(binding.profilePic);
-					}
+						} else {
+							closePleaseWaitDialog();
 
-					if (!getVerificationStatus) {
-						binding.imageViewVerificationMark.setImageResource(R.drawable.x_24);
+						}
+					})
+					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 
-						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.light_red)
-						);
-						binding.verificationStatusTextView.setText("Not Verified");
-
-						binding.idScannedTextView.setVisibility(View.VISIBLE);
-
-						Typeface typeface = ResourcesCompat.getFont(context, R.font.opensans_bold);
-
-						binding.scanIDBtn.setText("Scan ID (Scan your ID here)");
-						binding.scanIDBtn.setTypeface(typeface);
-						binding.scanIDBtn.setTextColor(getResources().getColor(R.color.red));
-					} else {
-						binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
-
-						binding.verificationStatusTextView.setTextColor(
-								getResources().getColor(R.color.green)
-						);
-						binding.verificationStatusTextView.setText("Verified");
-					}
-
-					binding.firstnameTextView.setText(getFirstName);
-					binding.lastnameTextView.setText(getLastName);
-					binding.userTypeTextView.setText(getUserType);
-
-				} else {
-					closePleaseWaitDialog();
-
-				}
-			}).addOnFailureListener(e -> {
-				closePleaseWaitDialog();
-
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, "loadUserProfileInfo: " + e.getMessage());
+					});
 		} else {
 			closePleaseWaitDialog();
 		}

@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
 		slideFragments.add(new CarouselFragment1());
 		slideFragments.add(new CarouselFragment2());
 		slideFragments.add(new CarouselFragment3());
-		slideFragments.add(new CarouselFragment4());
+//		slideFragments.add(new CarouselFragment4());
 
 		binding.myProfileBtn.setOnClickListener(v -> {
 			goToAccountFragment();

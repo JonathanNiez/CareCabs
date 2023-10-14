@@ -75,7 +75,6 @@ public class FirebaseMain {
 		if (auth == null) {
 			auth = FirebaseAuth.getInstance();
 		}
-
 		return auth;
 	}
 
@@ -84,6 +83,6 @@ public class FirebaseMain {
 	}
 
 	public static void signOutUser() {
-		auth.signOut();
+		getAuth().signOut();
 	}
 }

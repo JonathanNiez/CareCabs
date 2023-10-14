@@ -22,6 +22,7 @@ public class LoggingOutActivity extends AppCompatActivity {
 
 			if (FirebaseMain.getUser() == null) {
 				Intent intent = new Intent(LoggingOutActivity.this, LoginOrRegisterActivity.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 				startActivity(intent);
 				finish();
 			}

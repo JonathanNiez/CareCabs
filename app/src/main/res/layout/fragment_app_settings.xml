@@ -18,7 +18,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<ImageButton
+			<androidx.appcompat.widget.AppCompatImageButton
 				android:id="@+id/imgBackBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
 				android:background="@color/vermillion"
 				android:src="@drawable/back_50_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -41,26 +41,22 @@
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
-
 		</RelativeLayout>
-
 
 	</androidx.cardview.widget.CardView>
 
-
-	<ScrollView
+	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
 
-
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -72,11 +68,12 @@
 					android:layout_height="60dp"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
+					android:backgroundTint="@color/white"
 					android:drawableStart="@drawable/font_adjustment_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:elevation="5dp"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Change Font Size"
 					android:textAlignment="textStart"
@@ -88,21 +85,22 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:background="@drawable/custom_card_view_1"
-					android:backgroundTint="@color/platinum"
+					android:backgroundTint="@color/white"
 					android:drawableStart="@drawable/language_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
-					android:fontFamily="@font/opensans_semibold"
+					android:elevation="5dp"
+					android:fontFamily="@font/gabarito_semibold"
 					android:padding="10dp"
 					android:text="Language"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
-	</ScrollView>
+	</androidx.core.widget.NestedScrollView>
 
 </RelativeLayout>

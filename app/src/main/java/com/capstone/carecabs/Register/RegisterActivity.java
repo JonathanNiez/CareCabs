@@ -116,7 +116,6 @@ public class RegisterActivity extends AppCompatActivity {
 		GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
-
 		if (getIntent() != null &&
 				getIntent().hasExtra("registerUserType") &&
 				getIntent().hasExtra("registerType")) {
@@ -228,7 +227,6 @@ public class RegisterActivity extends AppCompatActivity {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
 					getUserID = authResult.getUser().getUid();
-
 					documentReference = FirebaseMain.getFireStoreInstance()
 							.collection(FirebaseMain.userCollection).document(getUserID);
 					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);

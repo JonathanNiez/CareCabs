@@ -34,7 +34,13 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.capstone.carecabs.ml.IdScanner;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.ktx.Firebase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.mlkit.vision.text.TextRecognizer;
@@ -53,15 +59,15 @@ import java.util.regex.Pattern;
 
 public class ScanIDActivity extends AppCompatActivity {
 	private final String TAG = "ScanID";
-	private final String userID = FirebaseMain.getUser().getUid();
 	private String idPictureURL = "none";
-	private Uri idPictureUri;
+	private Uri idPictureUri = null;
 	private String getUserType;
 	private final int imageSize = 224;
 	private boolean isUserVerified = false;
 	private AlertDialog.Builder builder;
 	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
-			noInternetDialog, idNotScannedDialog, uploadClearIDPictureDialog;
+			noInternetDialog, idNotScannedDialog, uploadClearIDPictureDialog,
+			pleaseWaitDialog;
 	private TextRecognizer textRecognizer;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -73,6 +79,7 @@ public class ScanIDActivity extends AppCompatActivity {
 	private StorageReference imagesRef;
 	private StorageReference fileRef;
 	private RequestManager requestManager;
+	private DocumentReference documentReference;
 	private ActivityScanIdBinding binding;
 
 	@Override
@@ -83,6 +90,7 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeNoInternetDialog();
 		closeOptionsDialog();
 		closeIDNotScannedDialog();
+		closePleaseWaitDialog();
 	}
 
 	@Override
@@ -97,6 +105,7 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeNoInternetDialog();
 		closeOptionsDialog();
 		closeIDNotScannedDialog();
+		closePleaseWaitDialog();
 	}
 
 	@Override
@@ -116,6 +125,9 @@ public class ScanIDActivity extends AppCompatActivity {
 		binding.idAlreadyScannedLayout.setVisibility(View.GONE);
 		binding.backBtn.setVisibility(View.GONE);
 		binding.doneBtn.setVisibility(View.GONE);
+		binding.verifiedText.setVisibility(View.GONE);
+
+		FirebaseApp.initializeApp(this);
 
 		checkCameraAndStoragePermission();
 		checkIfUserIsVerified();
@@ -124,38 +136,16 @@ public class ScanIDActivity extends AppCompatActivity {
 			intent = getIntent();
 			getUserType = intent.getStringExtra("userType");
 
-			if (getUserType.equals("From Main")) {
-				binding.imgBackBtn.setOnClickListener(view -> {
-					goToMainActivity();
-				});
-
-			} else {
-				binding.imgBackBtn.setOnClickListener(view -> {
-					showCancelScanIDDialog();
-				});
-
-				switch (getUserType) {
-					case "Driver":
-						binding.scanYourIDTypeTextView.setText("Scan your Driver's License");
-
-						break;
-
-					case "Senior Citizen":
-						binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is valid by OSCA");
-
-						break;
-
-					case "Persons with Disability (PWD)":
-						binding.scanYourIDTypeTextView.setText("Scan your valid PWD ID");
-
-						break;
-				}
+			if (getUserType != null && getUserType.equals("From Main")) {
+				binding.imgBackBtn.setOnClickListener(view -> goToMainActivity());
+				binding.backBtn.setOnClickListener(v -> goToMainActivity());
 			}
 		}
 
 		binding.doneBtn.setOnClickListener(v -> {
 			if (idPictureUri != null) {
-				uploadIDPictureToFirebaseStorage(idPictureUri);
+				showPleaseWaitDialog();
+				updateVerificationStatus(idPictureUri);
 
 			} else {
 				showIDNotScannedDialog();
@@ -171,7 +161,6 @@ public class ScanIDActivity extends AppCompatActivity {
 					.start();
 		});
 
-		binding.backBtn.setOnClickListener(v -> goToMainActivity());
 
 		binding.idAlreadyScannedLayout.setOnClickListener(v -> {
 			ImagePicker.with(ScanIDActivity.this)
@@ -231,7 +220,7 @@ public class ScanIDActivity extends AppCompatActivity {
 
 			String[] classes = {"Driver's License", "Senior Citizen ID", "PWD ID", "Not an ID"};
 
-			binding.resultTextView.setText(classes[maxPos]);
+//			binding.resultTextView.setText(classes[maxPos]);
 
 			if (maxConfidence > confidenceThreshold) {
 				String predictedClass = classes[maxPos];
@@ -261,7 +250,7 @@ public class ScanIDActivity extends AppCompatActivity {
 				s.append(String.format("%s: %.1f%%\n", classes[i], confidences[i] * 100));
 			}
 
-			binding.confidenceTextView.setText(s.toString());
+//			binding.confidenceTextView.setText(s.toString());
 
 			// Releases model resources if no longer used.
 			model.close();
@@ -273,12 +262,17 @@ public class ScanIDActivity extends AppCompatActivity {
 	private void handleDriverLicense(String predictedClass) {
 		switch (predictedClass) {
 			case "Driver's License":
-				// Do something for Driver's License
+
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.verifiedText.setVisibility(View.VISIBLE);
+
 				break;
 			case "Senior Citizen ID":
 			case "PWD ID":
 			case "Not an ID":
+
 				resetImageViewAndShowDialog();
+
 				break;
 		}
 	}
@@ -288,10 +282,16 @@ public class ScanIDActivity extends AppCompatActivity {
 			case "Driver's License":
 			case "PWD ID":
 			case "Not an ID":
+
 				resetImageViewAndShowDialog();
+
 				break;
+
 			case "Senior Citizen ID":
-				// Do something for Senior Citizen ID
+
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.verifiedText.setVisibility(View.VISIBLE);
+
 				break;
 		}
 	}
@@ -301,46 +301,84 @@ public class ScanIDActivity extends AppCompatActivity {
 			case "Driver's License":
 			case "Senior Citizen ID":
 			case "Not an ID":
+
 				resetImageViewAndShowDialog();
+
 				break;
+
 			case "PWD ID":
-				// Do something for PWD ID
+
+				binding.doneBtn.setVisibility(View.VISIBLE);
+				binding.verifiedText.setVisibility(View.VISIBLE);
+
 				break;
 		}
 	}
 
+	private void updateVerificationStatus(Uri idPictureUri) {
+		if (FirebaseMain.getUser() != null) {
+			String userID = FirebaseMain.getUser().getUid();
+
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(userID);
+
+			Map<String, Object> updateUser = new HashMap<>();
+			updateUser.put("isVerified", true);
+
+			documentReference.update(updateUser)
+					.addOnSuccessListener(unused -> uploadIDPictureToFirebaseStorage(userID, idPictureUri))
+					.addOnFailureListener(e -> {
+
+						closePleaseWaitDialog();
+
+						Log.e(TAG, "updateVerificationStatus: onFailure " + e.getMessage());
+
+					});
+		} else {
+			Log.e(TAG, "updateVerificationStatus: current user is null");
+
+			intent = new Intent(ScanIDActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
+
 	private void resetImageViewAndShowDialog() {
-		binding.idImageView.setImageURI(null);
+		binding.idImageView.setImageResource(R.drawable.face_id_100);
+		idPictureUri = null;
 		showNotAnIDDialog();
 	}
 
 	private void checkIfUserIsVerified() {
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection)
-				.document(FirebaseMain.getUser().getUid());
+		if (FirebaseMain.getUser() != null) {
+			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
-		documentReference.get()
-				.addOnSuccessListener(documentSnapshot -> {
-					if (documentSnapshot.exists()) {
-						Boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot.exists()) {
+							Boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
-						getUserType = documentSnapshot.getString("userType");
+							getUserType = documentSnapshot.getString("userType");
 
-						if (getVerificationStatus) {
-							isUserVerified = true;
+							if (getVerificationStatus) {
+								isUserVerified = true;
 
-							binding.idAlreadyScannedLayout.setVisibility(View.VISIBLE);
-							binding.backBtn.setVisibility(View.VISIBLE);
-							binding.idScanLayout.setVisibility(View.GONE);
-							binding.scanYourIDTypeTextView.setVisibility(View.GONE);
+								binding.idAlreadyScannedLayout.setVisibility(View.VISIBLE);
+								binding.backBtn.setVisibility(View.VISIBLE);
+								binding.idScanLayout.setVisibility(View.GONE);
+								binding.scanYourIDTypeTextView.setVisibility(View.GONE);
 
-							binding.imgBackBtn.setOnClickListener(view -> {
-								goToMainActivity();
-							});
+								binding.imgBackBtn.setOnClickListener(view -> {
+									goToMainActivity();
+								});
+							}
 						}
-					}
-				})
-				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+		}
+
 	}
 
 	private void checkCameraAndStoragePermission() {
@@ -529,41 +567,34 @@ public class ScanIDActivity extends AppCompatActivity {
 		}
 	}
 
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+
+		builder.setView(dialogView);
+
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
+
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
+	}
+
 	private boolean matchesPattern(String text, String pattern) {
 		Pattern p = Pattern.compile(pattern);
 		Matcher m = p.matcher(text);
 		return m.find();
 	}
 
-	private Uri getImageUri(Context context, Bitmap bitmap) {
-		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-		String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), bitmap, "Title", null);
-		return Uri.parse(path);
-	}
+	private void uploadIDPictureToFirebaseStorage(String userID, Uri idPictureUri) {
 
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		fileRef = imagesRef.child(imageUri.getLastPathSegment());
-		fileRef.putFile(imageUri).addOnCompleteListener(task -> {
-			if (task.isSuccessful()) {
-				fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
-
-					// Save the download URL in Firestore
-					Map<String, Object> data = new HashMap<>();
-					data.put("profilePicUrl", uri.toString());
-					binding.idImageView.setImageURI(imageUri);
-
-				}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-			} else {
-				Log.e(TAG, String.valueOf(task.getException()));
-			}
-		});
-	}
-
-	private void uploadIDPictureToFirebaseStorage(Uri idPictureUri) {
-		FirebaseStorage firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		StorageReference idPictureReference = firebaseStorage.getReference("images/idPictures");
-		StorageReference idPicturePath = idPictureReference.child("idPictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		StorageReference idPictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
+		StorageReference idPicturePath = idPictureReference.child("images/idPictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
 		idPicturePath.putFile(idPictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
@@ -571,26 +602,39 @@ public class ScanIDActivity extends AppCompatActivity {
 					idPicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
 
+								closePleaseWaitDialog();
+
 								idPictureURL = uri.toString();
-								storeIDPictureURLInFireStore(idPictureURL);
+								storeIDPictureURLInFireStore(userID, idPictureURL);
+
+								intent = new Intent(ScanIDActivity.this, MainActivity.class);
+								startActivity(intent);
+								finish();
+
 							})
 							.addOnFailureListener(e -> {
+								closePleaseWaitDialog();
+
 								Toast.makeText(ScanIDActivity.this, "ID failed to add", Toast.LENGTH_SHORT).show();
 
 								Log.e(TAG, "uploadIDPictureToFirebaseStorage: " + e.getMessage());
 							});
 				})
 				.addOnFailureListener(e -> {
+					closePleaseWaitDialog();
+
 					Toast.makeText(ScanIDActivity.this, "ID failed to add", Toast.LENGTH_SHORT).show();
 
 					Log.e(TAG, "uploadIDPictureToFirebaseStorage: " + e.getMessage());
 				});
+
 	}
 
-	private void storeIDPictureURLInFireStore(String idPictureURL) {
+	private void storeIDPictureURLInFireStore(String userID, String idPictureURL) {
 
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(userID);
 
 		Map<String, Object> idPicture = new HashMap<>();
 		idPicture.put("idPicture", idPictureURL);
@@ -598,9 +642,10 @@ public class ScanIDActivity extends AppCompatActivity {
 		documentReference.update(idPicture)
 				.addOnSuccessListener(unused ->
 
-						Toast.makeText(ScanIDActivity.this, "ID added successfully", Toast.LENGTH_SHORT).show())
+						Log.d(TAG, "storeIDPictureURLInFireStore: addOnSuccessListener"))
 
 				.addOnFailureListener(e -> {
+					closePleaseWaitDialog();
 
 					Toast.makeText(ScanIDActivity.this, "ID failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "storeIDPictureURLInFireStore: " + e.getMessage());
@@ -616,8 +661,6 @@ public class ScanIDActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			uploadIDPictureToFirebaseStorage(idPictureUri);
-
 			closeIDNotScannedDialog();
 		});
 

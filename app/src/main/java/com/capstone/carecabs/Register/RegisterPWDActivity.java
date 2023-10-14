@@ -46,7 +46,6 @@ import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -58,12 +57,10 @@ import java.util.Objects;
 
 public class RegisterPWDActivity extends AppCompatActivity {
 	private final String TAG = "RegisterPWDActivity";
-	private final String userID = FirebaseMain.getUser().getUid();
 	private final String userType = "Persons with Disabilities (PWD)";
 	private String profilePictureURL = "default";
 	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
 	private DocumentReference documentReference;
-	private StorageReference imageReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
@@ -73,7 +70,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerFailedDialog,
 			cancelRegisterDialog, idNotScannedDialog, idScanInfoDialog,
-			birthdateInputChoiceDialog, cameraGalleryOptionsDialog;
+			birthdateInputChoiceDialog, cameraGalleryOptionsDialog,
+			pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterPwdBinding binding;
 
@@ -83,9 +81,9 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
 		closeNoInternetDialog();
 		closeEnterBirthdateDialog();
+		closePleaseWaitDialog();
 	}
 
 	protected void onDestroy() {
@@ -94,13 +92,11 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
-		updateInterruptedCancelledRegister(FirebaseMain.getUser().getUid());
-
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
-		closeIDScanInfoDialog();
 		closeNoInternetDialog();
 		closeEnterBirthdateDialog();
+		closePleaseWaitDialog();
 	}
 
 	@Override
@@ -185,6 +181,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
+			showPleaseWaitDialog();
 
 			String stringFirstname = binding.firstname.getText().toString().trim();
 			String stringLastname = binding.lastname.getText().toString().trim();
@@ -241,38 +238,51 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname) {
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
+		if (FirebaseMain.getUser() != null) {
 
-		Map<String, Object> registerUser = new HashMap<>();
-		registerUser.put("firstname", firstname);
-		registerUser.put("lastname", lastname);
-		registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
-		registerUser.put("age", StaticDataPasser.storeCurrentAge);
-		registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
-		registerUser.put("sex", StaticDataPasser.storeSelectedSex);
-		registerUser.put("userType", userType);
-		registerUser.put("isRegisterComplete", true);
-		registerUser.put("totalTrips", 0);
+			String userID = FirebaseMain.getUser().getUid();
 
-		documentReference.update(registerUser).addOnSuccessListener(unused -> {
-			binding.progressBarLayout.setVisibility(View.GONE);
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(userID);
 
-			uploadImageToFirebaseStorage(profilePictureUri);
+			Map<String, Object> registerUser = new HashMap<>();
+			registerUser.put("firstname", firstname);
+			registerUser.put("lastname", lastname);
+			registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
+			registerUser.put("age", StaticDataPasser.storeCurrentAge);
+			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
+			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("userType", userType);
+			registerUser.put("isRegisterComplete", true);
+			registerUser.put("totalTrips", 0);
 
-			intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
-			intent.putExtra("userType", userType);
+			documentReference.update(registerUser).addOnSuccessListener(unused -> {
+				binding.progressBarLayout.setVisibility(View.GONE);
+
+				closePleaseWaitDialog();
+				uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+
+				intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
+				intent.putExtra("userType", userType);
+				startActivity(intent);
+				finish();
+
+			}).addOnFailureListener(e -> {
+				closePleaseWaitDialog();
+				showRegisterFailedDialog();
+
+				binding.progressBarLayout.setVisibility(View.GONE);
+
+				Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
+			});
+
+		} else {
+			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
+
+			intent = new Intent(RegisterPWDActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
-
-		}).addOnFailureListener(e -> {
-
-			showRegisterFailedDialog();
-
-			binding.progressBarLayout.setVisibility(View.GONE);
-
-			Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
-		});
+		}
 	}
 
 	private void updateCancelledRegister(String userID) {
@@ -632,6 +642,25 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		notificationManager.notify(notificationId, notification);
 	}
 
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+
+		builder.setView(dialogView);
+
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
+
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
+	}
+
+
 	private void showNoInternetDialog() {
 		builder = new AlertDialog.Builder(this);
 
@@ -711,31 +740,34 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 	}
 
-	private void uploadImageToFirebaseStorage(Uri imageUri) {
-		FirebaseStorage firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		StorageReference storageReference = firebaseStorage.getReference();
+	private void uploadProfilePictureToFirebaseStorage(String userID, Uri profilePictureUri) {
 
-		imageReference = storageReference.child("images/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		StorageReference storageReference = FirebaseMain.getFirebaseStorageInstance().getReference();
+		StorageReference profilePicturePath = storageReference.child("images/profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		UploadTask uploadTask = imageReference.putFile(imageUri);
-		uploadTask.addOnSuccessListener(taskSnapshot -> imageReference.getDownloadUrl()
+		UploadTask uploadTask = profilePicturePath.putFile(profilePictureUri);
+		uploadTask.addOnSuccessListener(taskSnapshot -> profilePicturePath.getDownloadUrl()
 				.addOnSuccessListener(uri -> {
-					profilePictureURL = uri.toString();
 
-					storeImageUrlInFireStore(profilePictureURL);
+					profilePictureURL = uri.toString();
+					storeImageUrlInFireStore(userID, profilePictureURL);
 
 				}).addOnFailureListener(e -> {
+					closePleaseWaitDialog();
+
 					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
 
 				})).addOnFailureListener(e -> {
+			closePleaseWaitDialog();
+
 			Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
 
 		});
 	}
 
-	private void storeImageUrlInFireStore(String profilePictureURL) {
+	private void storeImageUrlInFireStore(String userID, String profilePictureURL) {
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -791,7 +823,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 //			}
 
 		} else {
-			Toast.makeText(this, "Image is not Selected", Toast.LENGTH_LONG).show();
+			Log.d(TAG, "onActivityResult: image is not selected");
 		}
 	}
 

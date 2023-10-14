@@ -88,9 +88,9 @@ public class EditAccountFragment extends Fragment {
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private DocumentReference documentReference;
-	private StorageReference storageReference, profilePictureReference,
-			vehiclePictureReference, profilePicturePath, vehiclePicturePath;
-	private FirebaseStorage firebaseStorage;
+	private StorageReference storageReference;
+	private StorageReference profilePicturePath;
+	private StorageReference vehiclePicturePath;
 	private RequestManager requestManager;
 	private FragmentEditAccountBinding binding;
 
@@ -160,14 +160,10 @@ public class EditAccountFragment extends Fragment {
 
 		context = getContext();
 		checkPermission();
+		loadUserProfileInfo();
 
 		requestManager = Glide.with(context);
 		FirebaseApp.initializeApp(context);
-
-		loadUserProfileInfo();
-
-		firebaseStorage = FirebaseMain.getFirebaseStorageInstance();
-		storageReference = firebaseStorage.getReference();
 
 		binding.profilePicture.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
@@ -1268,26 +1264,28 @@ public class EditAccountFragment extends Fragment {
 		return Uri.parse(path);
 	}
 
-	private void uploadProfileImageToFirebaseStorage(String userID, Uri imageUri) {
-		profilePictureReference = storageReference.child("images/profilePictures");
-		profilePicturePath = profilePictureReference.child("profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+	private void uploadProfileImageToFirebaseStorage(String userID, Uri profilePictureUri) {
 
-		profilePicturePath.putFile(imageUri)
+		StorageReference profilePictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
+		profilePicturePath = profilePictureReference.child("images/profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+
+		profilePicturePath.putFile(profilePictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
 
 					profilePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
 
-								String imageUrl = uri.toString();
-								storeProfileImageURLInFireStore(imageUrl, userID);
+								binding.profilePicture.setImageURI(profilePictureUri);
+								String profilePictureURL = uri.toString();
+								storeProfileImageURLInFireStore(userID, profilePictureURL);
 							})
 							.addOnFailureListener(e -> {
 								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 
-								Log.e(TAG, e.getMessage());
+								Log.e(TAG, "uploadProfileImageToFirebaseStorage: " + e.getMessage());
 							});
 				})
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> Log.e(TAG, "uploadProfileImageToFirebaseStorage: addOnFailureListener " + e.getMessage()));
 	}
 
 	private void uploadVehicleImageToFirebaseStorage(String userID, Bitmap bitmap) {
@@ -1296,8 +1294,8 @@ public class EditAccountFragment extends Fragment {
 		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 		byte[] data = baos.toByteArray();
 
-		vehiclePictureReference = storageReference.child("images/vehiclePictures");
-		vehiclePicturePath = vehiclePictureReference.child(System.currentTimeMillis() + "_" + userID + ".jpg");
+		StorageReference vehiclePictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
+		vehiclePicturePath = vehiclePictureReference.child("images/vehiclePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
 
 		vehiclePicturePath.putBytes(data)
 				.addOnSuccessListener(taskSnapshot -> {
@@ -1317,20 +1315,20 @@ public class EditAccountFragment extends Fragment {
 				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
 	}
 
-	private void storeProfileImageURLInFireStore(String imageUrl, String userID) {
+	private void storeProfileImageURLInFireStore(String userID, String profilePictureURL) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> profilePicture = new HashMap<>();
-		profilePicture.put("profilePicture", imageUrl);
+		profilePicture.put("profilePicture", profilePictureURL);
 
 		documentReference.update(profilePicture)
 				.addOnSuccessListener(unused ->
 						Toast.makeText(context, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
 				.addOnFailureListener(e -> {
 					Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, "storeProfileImageURLInFireStore: addOnFailureListener " + e.getMessage());
 				});
 	}
 
@@ -1550,10 +1548,11 @@ public class EditAccountFragment extends Fragment {
 			int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
 			bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
 
+
 			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
 
-				binding.profilePicture.setImageBitmap(bitmap);
-//				uploadProfileImageToFirebaseStorage(FirebaseMain.getUser().getUid(), imageUri);
+				Uri profilePictureUri = data.getData();
+				uploadProfileImageToFirebaseStorage(FirebaseMain.getUser().getUid(), profilePictureUri);
 
 			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
 
@@ -1564,7 +1563,9 @@ public class EditAccountFragment extends Fragment {
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode,
+	                                       @NonNull String[] permissions,
+	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (requestCode == CAMERA_PERMISSION_REQUEST) {

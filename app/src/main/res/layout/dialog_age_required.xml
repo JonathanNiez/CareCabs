@@ -7,12 +7,6 @@
 	android:gravity="center"
 	android:orientation="vertical">
 
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
-		android:src="@drawable/senior_128_2" />
-
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
@@ -20,34 +14,40 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<TextView
-				android:layout_width="match_parent"
+			<androidx.appcompat.widget.AppCompatImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="20dp"
+				android:src="@drawable/senior_128_2" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="REGISTER"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
-			<TextView
-				android:layout_width="match_parent"
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/gabarito_medium"
 				android:text="Senior Citizens must be 60 Years old and above"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 

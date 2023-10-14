@@ -1268,6 +1268,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     Log.e(TAG, "handleDriverArrival: " + it.message)
                 }
         } else {
+
         }
     }
 
