@@ -29,6 +29,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.capstone.carecabs.BottomSheetModal.PassengerBookingsBottomSheet
 import com.capstone.carecabs.BottomSheetModal.PickupPassengerBottomSheet
+import com.capstone.carecabs.Chat.ChatOverviewActivity
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.HelpActivity
 import com.capstone.carecabs.LoginActivity
@@ -416,6 +417,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
         checkIfUserIsVerified()
 
+        binding.chatImgBtn.setOnClickListener {
+            intent = Intent(this@MapDriverActivity, ChatOverviewActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 binding.mapView.getMapboxMap().apply {
@@ -798,8 +804,8 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                                 )
                             }
 
-                            "Persons with Disability (PWD)" -> {
-                                addSeniorAnnotationToMap(
+                            "Person with Disabilities (PWD)" -> {
+                                addPWDAnnotationToMap(
                                     getPickupLongitude,
                                     getPickupLatitude,
                                     getBookingID
@@ -858,7 +864,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                                         )
                                     }
 
-                                    "Persons with Disability (PWD)" -> {
+                                    "Person with Disabilities (PWD)" -> {
                                         addPWDAnnotationToMap(
                                             locationData.pickupLongitude,
                                             locationData.pickupLatitude,
@@ -885,7 +891,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                                         )
                                     }
 
-                                    "Persons with Disability (PWD)" -> {
+                                    "Person with Disabilities (PWD)" -> {
                                         addPWDAnnotationToMap(
                                             locationData.pickupLongitude,
                                             locationData.pickupLatitude,
@@ -1318,10 +1324,11 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         updateDriverStatus["navigationStatus"] = "idle"
         updateDriverStatus["destinationLatitude"] = 0.0
         updateDriverStatus["destinationLongitude"] = 0.0
-        updateDriverStatus["passengersTransported"] = +1
+        (updateDriverStatus["passengersTransported"] as? Int ?: 0) + 1
         updateDriverStatus["tripID"] = "none"
         updateDriverStatus["bookingID"] = "none"
-        updateDriverStatus["driverRatings"] = +3.0
+        updateDriverStatus["driverRatings"] =
+            (updateDriverStatus["driverRatings"] as? Double ?: 0.0) + 3.0
 
         driverReference.update(updateDriverStatus)
             .addOnSuccessListener {
@@ -1430,17 +1437,16 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
             .document(generateTripID)
 
         val tripModel = TripModel(
-            generateTripID,
-            false,
-            bookingID,
-            "Passenger on board",
-            FirebaseMain.getUser().uid,
-            passengerID,
-            getCurrentTimeAndDate(),
-            pickupCoordinate.longitude(),
-            pickupCoordinate.latitude(),
-            destinationCoordinate.longitude(),
-            destinationCoordinate.latitude()
+            tripID = generateTripID,
+            bookingID = bookingID,
+            tripStatus = "Passenger on board",
+            driverUserID = FirebaseMain.getUser().uid,
+            passengerUserID = passengerID,
+            tripDate = getCurrentTimeAndDate(),
+            pickupLongitude = pickupCoordinate.longitude(),
+            pickupLatitude = pickupCoordinate.latitude(),
+            destinationLongitude = destinationCoordinate.longitude(),
+            destinationLatitude = destinationCoordinate.latitude()
         )
 
         tripReference.set(tripModel)

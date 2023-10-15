@@ -162,14 +162,19 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			return;
 		}
 
-
 		if (shouldExit) {
 			super.onBackPressed(); // Exit the app
 		} else {
 			// Show an exit confirmation dialog
 			showExitConfirmationDialog();
 		}
+	}
 
+	private void exitApp() {
+		shouldExit = true;
+		super.onBackPressed();
+
+		finishAffinity();
 	}
 
 	private void retrieveAndStoreFCMToken() {
@@ -199,13 +204,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		} else {
 			getUserTypeForMap();
 		}
-	}
-
-	private void exitApp() {
-		shouldExit = true;
-		onBackPressed();
-
-		finish();
 	}
 
 	private void checkIfBookingIsAccepted() {
@@ -250,31 +248,31 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
-					badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
+							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
 
-					if (!getVerificationStatus) {
-						if (badgeDrawable != null) {
-							badgeDrawable.setVisible(true);
-							badgeDrawable.setNumber(1);
+							if (!getVerificationStatus) {
+								if (badgeDrawable != null) {
+									badgeDrawable.setVisible(true);
+									badgeDrawable.setNumber(1);
+								}
+
+								showProfileNotVerifiedNotification();
+
+							} else {
+								binding.bottomNavigationView.removeBadge(R.id.myProfile);
+								getUserTypeToCheckIfBookingIsAccepted();
+								retrieveAndStoreFCMToken();
+							}
+
 						}
-
-						showProfileNotVerifiedNotification();
-
-					} else {
-						binding.bottomNavigationView.removeBadge(R.id.myProfile);
-						getUserTypeToCheckIfBookingIsAccepted();
-						retrieveAndStoreFCMToken();
-					}
-
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfVerified: " + e.getMessage()));
 		} else {
-			FirebaseMain.signOutUser();
-
 			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
@@ -288,20 +286,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
 				if (snapshot.exists()) {
+					int waitingPassengersCount = 0;
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingData =
 								bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingData != null) {
 
-							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.map);
-
 							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
 								showPassengersWaitingNotification();
+								waitingPassengersCount++;
+								badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.map);
 
-								if (badgeDrawable != null) {
-									badgeDrawable.setVisible(true);
-									badgeDrawable.setNumber(1);
-								}
+								badgeDrawable.setVisible(true);
+								badgeDrawable.setNumber(waitingPassengersCount);
+
 							} else {
 								if (badgeDrawable != null) {
 									binding.bottomNavigationView.removeBadge(R.id.map);
@@ -314,7 +312,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, error.getMessage());
+				Log.e(TAG, "checkForWaitingPassengers: onCancelled " + error.getMessage());
 			}
 		});
 	}
@@ -337,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 										break;
 
 									case "Senior Citizen":
-									case "Persons with Disability (PWD)":
+									case "Person with Disabilities (PWD)":
 
 										intent = new Intent(MainActivity.this, MapPassengerActivity.class);
 
@@ -365,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 							String getUserType = documentSnapshot.getString("userType");
 
 							if (getUserType.equals("Senior Citizen") ||
-									getUserType.equals("Persons with Disability (PWD)")) {
+									getUserType.equals("Person with Disabilities (PWD)")) {
 
 								checkIfBookingIsAccepted();
 							} else {
@@ -434,6 +432,8 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 
 		exitBtn.setOnClickListener(v -> {
 			exitApp();
+
+			closeExitConfirmationDialog();
 		});
 
 		cancelBtn.setOnClickListener(v -> {

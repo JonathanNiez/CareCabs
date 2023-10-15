@@ -232,7 +232,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 										getMedicalCondition,
 										generateRandomBookingID()
 								);
-							} else if ("Persons with Disability (PWD)".equals(getUserType)) {
+							} else if ("Person with Disabilities (PWD)".equals(getUserType)) {
 								String getDisability = documentSnapshot.getString("disability");
 
 								storePWDBookingToDatabase(

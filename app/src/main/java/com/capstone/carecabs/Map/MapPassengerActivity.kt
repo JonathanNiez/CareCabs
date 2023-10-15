@@ -389,10 +389,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                 )
             )
 
-            val passengerBookingModel = PassengerBookingModel(
-                pickupLatitude = it.latitude(),
-                pickupLongitude = it.longitude()
-            )
+//            val passengerBookingModel = PassengerBookingModel(
+//                pickupLatitude = it.latitude(),
+//                pickupLongitude = it.longitude()
+//            )
 
 //            val pickupLocationGeocode = MapboxGeocoding.builder()
 //                .accessToken(getString(R.string.mapbox_access_token))
@@ -473,16 +473,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     }
 
     private fun initializeBottomNavButtons() {
-        binding.bottomNavigationView.selectedItemId = R.id.setLocation
-
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.setLocation -> {
-                }
 
                 R.id.bookings -> {
                     intent = Intent(this, BookingsActivity::class.java)
-                    intent.putExtra("dataSent", true)
                     startActivity(intent)
                 }
 
@@ -955,7 +950,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 )
                             }
 
-                            "Persons with Disability (PWD)" -> {
+                            "Person with Disabilities (PWD)" -> {
                                 val getDisability = it.getString("disability")!!
 
                                 storePWDBookingToDatabase(
@@ -1008,7 +1003,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             passengerName = fullName,
             passengerProfilePicture = profilePicture,
             passengerType = userType,
-            passengerDisability = disability
+            passengerDisability = disability,
         )
         locationReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
@@ -1049,7 +1044,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             passengerName = fullName,
             passengerProfilePicture = profilePicture,
             passengerType = userType,
-            passengerMedicalCondition = medicalCondition
+            passengerMedicalCondition = medicalCondition,
         )
 
         locationReference.setValue(passengerBookingModel)
@@ -1406,7 +1401,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
     private fun openPlaceCard(suggestion: PlaceAutocompleteSuggestion) {
         ignoreNextQueryUpdate = true
-        binding.searchDestinationEditText.setText("")
+//        binding.searchDestinationEditText.setText("")
 
         lifecycleScope.launchWhenStarted {
             placeAutocomplete.select(suggestion).onValue { result ->

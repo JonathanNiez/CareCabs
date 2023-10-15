@@ -7,15 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +30,8 @@ import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.LoginOrRegisterActivity;
+import com.capstone.carecabs.MainActivity;
 import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
@@ -35,9 +40,13 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Register.RegisterDriverActivity;
 import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
+import com.capstone.carecabs.RequestLocationPermissionActivity;
+import com.capstone.carecabs.TripsActivity;
+import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -49,17 +58,20 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 	private final String TAG = "HomeFragment";
+	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private int currentPage = 0;
 	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
 	private Handler handler;
 	private Runnable runnable;
 	private List<Fragment> slideFragments = new ArrayList<>();
-	private AlertDialog noInternetDialog, registerNotCompleteDialog;
+	private AlertDialog noInternetDialog, registerNotCompleteDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
 	private Context context;
 	private Intent intent;
@@ -81,6 +93,7 @@ public class HomeFragment extends Fragment {
 		stopAutoSlide();
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
+		closeEnableLocationServiceDialog();
 	}
 
 	@Override
@@ -90,12 +103,14 @@ public class HomeFragment extends Fragment {
 		stopAutoSlide();
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
+		closeEnableLocationServiceDialog();
 	}
 
 	@Override
 	public void onStart() {
 		super.onStart();
 
+		initializeNetworkChecker();
 		startAutoSlide();
 	}
 
@@ -114,9 +129,9 @@ public class HomeFragment extends Fragment {
 		binding.passengerStatsLayout.setVisibility(View.GONE);
 		binding.driverOnTheWayLayout.setVisibility(View.GONE);
 		binding.currentPassengerLayout.setVisibility(View.GONE);
+		binding.transportedToDestinationLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		initializeNetworkChecker();
 
 //		FirebaseMain.signOutUser();
 
@@ -135,8 +150,9 @@ public class HomeFragment extends Fragment {
 				updateDriverStatus(b)
 		);
 
-		binding.tripHistoryBtn.setOnClickListener(view1 -> {
-
+		binding.tripHistoryBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), TripsActivity.class);
+			startActivity(intent);
 		});
 
 		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
@@ -265,8 +281,6 @@ public class HomeFragment extends Fragment {
 								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 
@@ -276,8 +290,6 @@ public class HomeFragment extends Fragment {
 								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 								break;
@@ -286,8 +298,6 @@ public class HomeFragment extends Fragment {
 								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 								break;
@@ -296,8 +306,6 @@ public class HomeFragment extends Fragment {
 								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.totalDistanceTravelledTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 
@@ -309,7 +317,7 @@ public class HomeFragment extends Fragment {
 
 					}
 				})
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> Log.e(TAG, "getCurrentFontSizeFromUserSetting: " + e.getMessage()));
 	}
 
 	private void goToEditAccountFragment(Context context) {
@@ -361,7 +369,6 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
-
 	@SuppressLint("SetTextI18n")
 	private void getUserTypeAndLoadProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
@@ -383,74 +390,75 @@ public class HomeFragment extends Fragment {
 
 							binding.firstnameTextView.setText(getFirstName);
 
-							switch (getUserType) {
-								case "Driver":
-									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
-									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
-									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
-									boolean isNavigatingToDestination = documentSnapshot.getBoolean("isNavigatingToDestination");
-									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
+							if (getUserType != null) {
+								switch (getUserType) {
+									case "Driver":
+										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
+										Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
+										boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
+										boolean isNavigatingToDestination = documentSnapshot.getBoolean("isNavigatingToDestination");
+										String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 
-									if (isNavigatingToDestination && getNavigationStatus.equals("Navigating to destination")) {
-										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
-										showNavigationStatusLayout();
-									} else if (getNavigationStatus.equals("Navigating to pickup location")) {
-										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
-										showNavigationStatusLayout();
-									}
+										if (isNavigatingToDestination && getNavigationStatus.equals("Navigating to destination")) {
+											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+											binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
+											showNavigationStatusLayout();
+										} else if (getNavigationStatus.equals("Navigating to pickup location")) {
+											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+											showNavigationStatusLayout();
+										}
 
-									binding.bookingsTextView.setText("Passenger Bookings");
-									binding.bookingsBtn.setOnClickListener(v -> {
-										intent = new Intent(getActivity(), PassengerBookingsOverviewActivity.class);
-										startActivity(intent);
-									});
+										binding.bookingsTextView.setText("Passenger Bookings");
+										binding.bookingsBtn.setOnClickListener(v -> {
+											intent = new Intent(getActivity(), PassengerBookingsOverviewActivity.class);
+											startActivity(intent);
+										});
 
-									binding.bookARideTextView.setText("Pickup Passengers");
-									binding.driverStatsLayout.setVisibility(View.VISIBLE);
-									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
-									binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
-									binding.driverStatusTextView.setVisibility(View.VISIBLE);
+										binding.bookARideTextView.setText("Pickup Passengers");
+										binding.driverStatsLayout.setVisibility(View.VISIBLE);
+										binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
+										binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
+										binding.driverStatusTextView.setVisibility(View.VISIBLE);
 
-									binding.bookARideBtn.setOnClickListener(v -> {
-										intent = new Intent(getActivity(), MapDriverActivity.class);
-										startActivity(intent);
-										Objects.requireNonNull(getActivity()).finish();
-									});
+										if (isAvailable) {
+											binding.driverStatusTextView.setTextColor(Color.BLUE);
+											binding.driverStatusTextView.setText("Driver Availability: Available");
+											binding.driverStatusSwitch.setChecked(true);
 
-									if (isAvailable) {
-										binding.driverStatusTextView.setTextColor(Color.BLUE);
-										binding.driverStatusTextView.setText("Driver Availability: Available");
-										binding.driverStatusSwitch.setChecked(true);
+										} else {
+											binding.driverStatusTextView.setTextColor(Color.RED);
+											binding.driverStatusTextView.setText("Driver Availability: Busy");
+										}
 
+										break;
+
+									case "Person with Disabilities (PWD)":
+									case "Senior Citizen":
+
+										checkBookingStatus();
+
+										binding.bookingsTextView.setText("My Bookings");
+										binding.bookingsBtn.setOnClickListener(v -> {
+											intent = new Intent(getActivity(), BookingsActivity.class);
+											startActivity(intent);
+										});
+
+										Long getTotalTrips = documentSnapshot.getLong("totalTrips");
+										binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+										binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
+
+										break;
+								}
+
+								binding.bookARideBtn.setOnClickListener(v -> {
+									if (LocationPermissionChecker.isLocationPermissionGranted(context)) {
+										checkLocationService(getUserType);
 									} else {
-										binding.driverStatusTextView.setTextColor(Color.RED);
-										binding.driverStatusTextView.setText("Driver Availability: Busy");
-									}
-
-									break;
-
-								case "Persons with Disability (PWD)":
-								case "Senior Citizen":
-
-									checkBookingStatus();
-
-									binding.bookingsTextView.setText("My Bookings");
-									binding.bookingsBtn.setOnClickListener(v -> {
-										intent = new Intent(getActivity(), BookingsActivity.class);
-										startActivity(intent);
-									});
-
-									binding.bookARideBtn.setOnClickListener(v -> {
-										intent = new Intent(getActivity(), MapPassengerActivity.class);
+										intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
 										startActivity(intent);
 										Objects.requireNonNull(getActivity()).finish();
-									});
-
-									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
-									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
-									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
-
-									break;
+									}
+								});
 							}
 						}
 					})
@@ -462,11 +470,21 @@ public class HomeFragment extends Fragment {
 					});
 
 		} else {
-			Intent intent = new Intent(context, LoginActivity.class);
+			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		}
 
+	}
+
+	private void getUserTypeForMap(String userType) {
+		if (userType.equals("Driver")) {
+			intent = new Intent(getActivity(), MapDriverActivity.class);
+		} else {
+			intent = new Intent(getActivity(), MapPassengerActivity.class);
+		}
+		startActivity(intent);
+		Objects.requireNonNull(getActivity()).finish();
 	}
 
 	private void showNavigationStatusLayout() {
@@ -513,8 +531,8 @@ public class HomeFragment extends Fragment {
 	}
 
 	private void checkBookingStatus() {
-		databaseReference = FirebaseDatabase
-				.getInstance().getReference(FirebaseMain.bookingCollection);
+		databaseReference = FirebaseDatabase.getInstance()
+				.getReference(FirebaseMain.bookingCollection);
 
 		List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
 		databaseReference.addValueEventListener(new ValueEventListener() {
@@ -527,8 +545,12 @@ public class HomeFragment extends Fragment {
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
-							if (passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) &&
-									passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
+
+							if (
+									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) &&
+											passengerBookingModel.getBookingStatus().equals("Driver on the way")
+							) {
+
 								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
 								binding.bookARideBtn.setVisibility(View.GONE);
 
@@ -541,6 +563,39 @@ public class HomeFragment extends Fragment {
 										.setText("Vehicle color: " + passengerBookingModel.getVehicleColor());
 								binding.vehiclePlateNumberTextView
 										.setText("Vehicle plate number: " + passengerBookingModel.getVehiclePlateNumber());
+							} else if (
+									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
+											&& passengerBookingModel.getBookingStatus().equals("On board")
+							) {
+
+								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
+								binding.tripStatusTextView.setText("You are currently Onboard to your destination");
+								binding.rateDriverLayout.setVisibility(View.GONE);
+								binding.driverRatedLayout.setVisibility(View.GONE);
+
+							} else if
+							(
+									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
+											&& !passengerBookingModel.isDriverRated() //TODO:always false
+											&& passengerBookingModel.getBookingStatus().equals("Transported to destination")
+							) {
+
+								Log.d("DebugTag", "PassengerUserID: " + passengerBookingModel.getPassengerUserID());
+								Log.d("DebugTag", "isDriverRated: " + passengerBookingModel.isDriverRated());
+								Log.d("DebugTag", "BookingStatus: " + passengerBookingModel.getBookingStatus());
+
+								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
+								binding.driverRatedLayout.setVisibility(View.GONE);
+
+								binding.rateDriverBtn.setOnClickListener(v -> {
+									if (binding.driverRatingBar.getRating() == 0) {
+										return;
+									} else {
+										rateDriver(passengerBookingModel.getDriverUserID(),
+												passengerBookingModel.getBookingID());
+									}
+								});
+
 							}
 						}
 					}
@@ -549,9 +604,66 @@ public class HomeFragment extends Fragment {
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, "onCancelled: " + error.getMessage());
+				Log.e(TAG, "checkBookingStatus: onCancelled " + error.getMessage());
 			}
 		});
+	}
+
+	private void rateDriver(String driverID, String bookingID) {
+
+		//update current booking
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+				.getReference(FirebaseMain.bookingCollection);
+
+		Map<String, Object> updateBooking = new HashMap<>();
+		updateBooking.put("isDriverRated", true);
+
+		bookingReference.child(bookingID).updateChildren(updateBooking)
+				.addOnSuccessListener(unused -> Log.i(TAG, "rateDriver: onSuccess booking updated successfully"))
+				.addOnFailureListener(e -> Log.e(TAG, "rateDriver: onFailure " + e.getMessage()));
+
+		//update driver ratings
+		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(driverID);
+
+		documentReference.get()
+				.addOnSuccessListener(documentSnapshot -> {
+					if (documentSnapshot.exists()) {
+						double currentRatings = documentSnapshot.getDouble("driverRatings");
+						float newRating = binding.driverRatingBar.getRating();
+						double totalRatings = currentRatings + newRating;
+
+						Map<String, Object> updatedData = new HashMap<>();
+						updatedData.put("driverRatings", totalRatings);
+
+						documentReference.update(updatedData)
+								.addOnSuccessListener(unused -> {
+									binding.driverRatedLayout.setVisibility(View.VISIBLE);
+									binding.rateDriverLayout.setVisibility(View.GONE);
+
+									Handler handler = new Handler();
+									Runnable dismissRunnable = new Runnable() {
+										@Override
+										public void run() {
+
+											binding.transportedToDestinationLayout.setVisibility(View.GONE);
+										}
+									};
+
+									handler.postDelayed(dismissRunnable, 2000);
+								})
+								.addOnFailureListener(e -> {
+									Toast.makeText(context, "Failed to rate Driver", Toast.LENGTH_SHORT).show();
+									Log.e(TAG, "rateDriver: " + e.getMessage());
+								});
+					} else {
+						Toast.makeText(context, "Driver document does not exist", Toast.LENGTH_SHORT).show();
+					}
+				}).addOnFailureListener(e -> {
+					Toast.makeText(context, "Failed to fetch driver ratings", Toast.LENGTH_SHORT).show();
+					Log.e(TAG, "getDriverRatings: " + e.getMessage());
+				});
 	}
 
 	private void showRegisterNotCompleteDialog(String userType) {
@@ -621,6 +733,44 @@ public class HomeFragment extends Fragment {
 
 			boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(context);
 			updateConnectionStatus(isConnected);
+		}
+	}
+
+	private void showEnableLocationServiceDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		DialogEnableLocationServiceBinding binding =
+				DialogEnableLocationServiceBinding.inflate(getLayoutInflater());
+		View dialogView = binding.getRoot();
+
+		binding.enableLocationServiceBtn.setOnClickListener(v -> {
+			intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			startActivityForResult(intent, REQUEST_ENABLE_LOCATION);
+
+			closeEnableLocationServiceDialog();
+		});
+
+		builder.setView(dialogView);
+
+		enableLocationServiceDialog = builder.create();
+		enableLocationServiceDialog.show();
+	}
+
+	private void closeEnableLocationServiceDialog() {
+		if (enableLocationServiceDialog != null && enableLocationServiceDialog.isShowing()) {
+			enableLocationServiceDialog.dismiss();
+		}
+	}
+
+	private void checkLocationService(String userType) {
+		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+		if (!isGpsEnabled && !isNetworkEnabled) {
+			showEnableLocationServiceDialog();
+		} else {
+			getUserTypeForMap(userType);
 		}
 	}
 

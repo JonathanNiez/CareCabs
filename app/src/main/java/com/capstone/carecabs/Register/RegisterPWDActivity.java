@@ -1,6 +1,7 @@
 package com.capstone.carecabs.Register;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -57,9 +58,9 @@ import java.util.Objects;
 
 public class RegisterPWDActivity extends AppCompatActivity {
 	private final String TAG = "RegisterPWDActivity";
-	private final String userType = "Persons with Disabilities (PWD)";
+	private final String userType = "Person with Disabilities (PWD)";
 	private String profilePictureURL = "default";
-	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
+	private Uri profilePictureUri = null;
 	private DocumentReference documentReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -205,7 +206,12 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
+	boolean shouldExit = false;
+	if (shouldExit){
+		super.onBackPressed();
+	}else {
 		showCancelRegisterDialog();
+	}
 	}
 
 	private void showIDScanInfoDialog() {
@@ -260,7 +266,9 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 				closePleaseWaitDialog();
-				uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+				if (profilePictureUri != null){
+					uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+				}
 
 				intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
 				intent.putExtra("userType", userType);
@@ -604,6 +612,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void calculateAge() {
 		if (selectedDate != null) {
 			// Calculate the age based on the selected birthdate
@@ -750,24 +759,22 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				.addOnSuccessListener(uri -> {
 
 					profilePictureURL = uri.toString();
-					storeImageUrlInFireStore(userID, profilePictureURL);
+					storeProfilePictureUrlInFireStore(userID, profilePictureURL);
 
 				}).addOnFailureListener(e -> {
 					closePleaseWaitDialog();
 
-					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
 
 				})).addOnFailureListener(e -> {
 			closePleaseWaitDialog();
 
-			Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 			Log.e(TAG, "uploadImageToFirebaseStorage: " + e.getMessage());
 
 		});
 	}
 
-	private void storeImageUrlInFireStore(String userID, String profilePictureURL) {
+	private void storeProfilePictureUrlInFireStore(String userID, String profilePictureURL) {
 		documentReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
@@ -776,9 +783,8 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 		documentReference.update(profilePicture)
 				.addOnSuccessListener(unused ->
-						Toast.makeText(RegisterPWDActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
+						Log.i(TAG, "storeProfilePictureUrlInFireStore: addOnSuccessListener"))
 				.addOnFailureListener(e -> {
-					Toast.makeText(RegisterPWDActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "storeImageUrlInFireStore: " + e.getMessage());
 				});
 	}

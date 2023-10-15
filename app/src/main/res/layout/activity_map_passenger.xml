@@ -20,27 +20,40 @@
 		android:layout_centerHorizontal="true"
 		android:layout_margin="10dp">
 
-		<com.google.android.material.textfield.TextInputLayout
-			android:layout_width="match_parent"
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:background="@drawable/smooth_edit_text"
+			android:layout_gravity="center"
+			android:layout_margin="5dp"
+			android:background="@drawable/custom_card_view_1"
 			android:elevation="5dp"
-			android:padding="5dp"
-			app:endIconMode="clear_text"
-			app:startIconDrawable="@drawable/baseline_search_24">
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="Where are you going?"
+			android:textColor="@color/black"
+			android:textSize="18sp" />
 
-			<com.google.android.material.textfield.TextInputEditText
-				android:id="@+id/searchDestinationEditText"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:background="@drawable/smooth_edit_text_2"
-				android:fontFamily="@font/gabarito_semibold"
-				android:hint="Search destination"
-				android:textColor="@color/black"
-				android:textColorHint="@color/black"
-				android:textSize="17sp" />
+		<!--		<com.google.android.material.textfield.TextInputLayout-->
+		<!--			android:layout_width="match_parent"-->
+		<!--			android:layout_height="wrap_content"-->
+		<!--			android:background="@drawable/smooth_edit_text"-->
+		<!--			android:elevation="5dp"-->
+		<!--			android:padding="5dp"-->
+		<!--			app:endIconMode="clear_text"-->
+		<!--			app:startIconDrawable="@drawable/baseline_search_24">-->
 
-		</com.google.android.material.textfield.TextInputLayout>
+		<!--			<com.google.android.material.textfield.TextInputEditText-->
+		<!--				android:id="@+id/searchDestinationEditText"-->
+		<!--				android:layout_width="match_parent"-->
+		<!--				android:layout_height="wrap_content"-->
+		<!--				android:background="@drawable/smooth_edit_text_2"-->
+		<!--				android:fontFamily="@font/gabarito_semibold"-->
+		<!--				android:hint="Search destination"-->
+		<!--				android:textColor="@color/black"-->
+		<!--				android:textColorHint="@color/black"-->
+		<!--				android:textSize="17sp" />-->
+
+		<!--		</com.google.android.material.textfield.TextInputLayout>-->
 
 	</FrameLayout>
 
@@ -153,13 +166,35 @@
 
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/bottomNavigationView"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="10dp">
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			android:layout_margin="5dp"
+			android:background="@drawable/custom_card_view_1"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="Long tap/click on the location you want to go"
+			android:textAlignment="center"
+			android:textColor="@color/black"
+			android:textSize="18sp" />
+
+	</FrameLayout>
+
 	<com.google.android.material.bottomnavigation.BottomNavigationView
 		android:id="@+id/bottomNavigationView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/cinnabar"
-		app:itemBackground="@color/tomato"
+		android:background="@color/tomato"
 		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"

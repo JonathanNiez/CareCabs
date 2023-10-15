@@ -60,7 +60,7 @@
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatRatingBar
-						android:id="@+id/tripRatingBar"
+						android:id="@+id/driverRatingBar"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:numStars="5"
@@ -70,7 +70,7 @@
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 				<androidx.appcompat.widget.LinearLayoutCompat
-					android:id="@+id/ratingsSubmittedLayout"
+					android:id="@+id/driverRatedLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
@@ -88,9 +88,9 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
-						android:text="Driver Ratings submitted"
+						android:text="Thank you for rating our Driver"
 						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:textSize="18sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 

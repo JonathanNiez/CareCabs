@@ -46,6 +46,7 @@ import java.util.Objects;
 public class AccountFragment extends Fragment {
 	private final String TAG = "AccountFragment";
 	private DocumentReference documentReference;
+	private String userType;
 	private Intent intent;
 	private AlertDialog signOutDialog, pleaseWaitDialog,
 			noInternetDialog, registerNotCompleteDialog;
@@ -147,7 +148,7 @@ public class AccountFragment extends Fragment {
 
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), ScanIDActivity.class);
-			intent.putExtra("userType", "From Main");
+			intent.putExtra("userType", userType);
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		});
@@ -322,48 +323,51 @@ public class AccountFragment extends Fragment {
 							String getLastName = documentSnapshot.getString("lastname");
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 
-							switch (getUserType) {
-								case "Driver":
-									boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
-									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
-									Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
+							if (getUserType != null) {
+								userType = getUserType;
 
-									binding.driverStatusTextView1.setVisibility(View.VISIBLE);
-									binding.driverStatusTextView2.setVisibility(View.VISIBLE);
-									binding.driverRatingTextView.setVisibility(View.VISIBLE);
-									binding.userTypeImageView.setImageResource(R.drawable.driver_64);
+								switch (userType) {
+									case "Driver":
+										boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
+										Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
 
-									if (getDriverStatus) {
-										binding.driverStatusTextView2.setTextColor(Color.BLUE);
-										binding.driverStatusTextView2.setText("Available");
+										binding.driverStatusTextView1.setVisibility(View.VISIBLE);
+										binding.driverStatusTextView2.setVisibility(View.VISIBLE);
+										binding.driverRatingTextView.setVisibility(View.VISIBLE);
+										binding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
-									} else {
-										binding.driverStatusTextView2.setTextColor(Color.RED);
-										binding.driverStatusTextView2.setText("Busy");
+										if (getDriverStatus) {
+											binding.driverStatusTextView2.setTextColor(Color.BLUE);
+											binding.driverStatusTextView2.setText("Available");
 
-									}
+										} else {
+											binding.driverStatusTextView2.setTextColor(Color.RED);
+											binding.driverStatusTextView2.setText("Busy");
 
-									binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
-									break;
+										}
 
-								case "Persons with Disabilities (PWD)":
-									String getDisability = documentSnapshot.getString("disability");
+										binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
+										break;
 
-									binding.disabilityTextView.setVisibility(View.VISIBLE);
-									binding.disabilityTextView.setText("Disability:\n" + getDisability);
-									binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+									case "Person with Disabilities (PWD)":
+										String getDisability = documentSnapshot.getString("disability");
 
+										binding.disabilityTextView.setVisibility(View.VISIBLE);
+										binding.disabilityTextView.setText("Disability:\n" + getDisability);
+										binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
 
-									break;
+										break;
 
-								case "Senior Citizen":
-									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+									case "Senior Citizen":
+										String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-									binding.medConTextView.setVisibility(View.VISIBLE);
-									binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
-									binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+										binding.medConTextView.setVisibility(View.VISIBLE);
+										binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
+										binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
-									break;
+										break;
+								}
 							}
 
 							if (getProfilePicture != null && !getProfilePicture.equals("default")) {
@@ -384,11 +388,12 @@ public class AccountFragment extends Fragment {
 
 								binding.idScannedTextView.setVisibility(View.VISIBLE);
 
-								Typeface typeface = ResourcesCompat.getFont(context, R.font.opensans_bold);
+								Typeface typeface = ResourcesCompat.getFont(context, R.font.gabarito_bold);
 
 								binding.scanIDBtn.setText("Scan ID (Scan your ID here)");
 								binding.scanIDBtn.setTypeface(typeface);
 								binding.scanIDBtn.setTextColor(getResources().getColor(R.color.red));
+
 							} else {
 								binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
 

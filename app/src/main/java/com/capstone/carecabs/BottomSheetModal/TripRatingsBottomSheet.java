@@ -46,7 +46,7 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 		binding = FragmentTripRatingsBottomSheetBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		binding.ratingsSubmittedLayout.setVisibility(View.GONE);
+		binding.driverRatedLayout.setVisibility(View.GONE);
 
 		context = getContext();
 
@@ -56,23 +56,13 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 			String bookingID = bundle.getString("bookingID");
 
 			binding.rateDriverBtn.setOnClickListener(v -> {
-				if (binding.tripRatingBar.getRating() == 0) {
+				if (binding.driverRatingBar.getRating() == 0) {
 					return;
 				} else {
 					rateDriver(driverID, bookingID);
 				}
 			});
 
-			binding.tripRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-				@Override
-				public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-					if (rating >= 2){
-						binding.ratingsLayout.setBackgroundColor(ContextCompat.getColor(context, R.color.red));
-					}else {
-
-					}
-				}
-			});
 		} else {
 			dismiss();
 		}
@@ -99,7 +89,7 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 		updateBooking.put("isDriverRated", true);
 
 		bookingReference.child(bookingID).updateChildren(updateBooking)
-				.addOnSuccessListener(unused -> Log.i(TAG, "rateDriver: onSuccess booking updated successfully"))
+				.addOnSuccessListener(unused -> Log.d(TAG, "rateDriver: onSuccess booking updated successfully"))
 				.addOnFailureListener(e -> Log.e(TAG, "rateDriver: onFailure " + e.getMessage()));
 
 		//update driver ratings
@@ -107,20 +97,32 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 				.collection(FirebaseMain.userCollection)
 				.document(driverID);
 
-		Map<String, Object> rateDriver = new HashMap<>();
-		rateDriver.put("driverRatings", + binding.tripRatingBar.getRating());
+		documentReference.get().addOnSuccessListener(documentSnapshot -> {
+			if (documentSnapshot.exists()) {
+				double currentRatings = documentSnapshot.getDouble("driverRatings");
+				float newRating = binding.driverRatingBar.getRating();
+				double totalRatings = currentRatings + newRating;
 
-		documentReference.update(rateDriver)
-				.addOnSuccessListener(unused -> {
-					binding.ratingsLayout.setVisibility(View.GONE);
-					binding.ratingsSubmittedLayout.setVisibility(View.VISIBLE);
+				Map<String, Object> updatedData = new HashMap<>();
+				updatedData.put("driverRatings", totalRatings);
 
-					new Handler().postDelayed(this::dismiss, 2000);
-				})
-				.addOnFailureListener(e -> {
-					Toast.makeText(context, "Failed to rate Driver", Toast.LENGTH_SHORT).show();
+				documentReference.update(updatedData)
+						.addOnSuccessListener(unused -> {
+							// Ratings updated successfully
+							binding.ratingsLayout.setVisibility(View.GONE);
+							binding.driverRatedLayout.setVisibility(View.VISIBLE);
 
-					Log.e(TAG, "rateDriver: " + e.getMessage());
-				});
+							new Handler().postDelayed(this::dismiss, 2000);
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Failed to rate Driver", Toast.LENGTH_SHORT).show();
+							Log.e(TAG, "rateDriver: " + e.getMessage());
+						});
+			} else {
+				Log.e(TAG, "rateDriver: document not exist");
+			}
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, "rateDriver: " + e.getMessage());
+		});
 	}
 }

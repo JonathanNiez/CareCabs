@@ -9,6 +9,7 @@
 
     <string-array name="disability_type">
         <item>Select your Disability</item>
+        <item>Communication Disability</item>
         <item>Vision Impairment</item>
         <item>Deaf or hard of hearing</item>
         <item>Mental health conditions</item>

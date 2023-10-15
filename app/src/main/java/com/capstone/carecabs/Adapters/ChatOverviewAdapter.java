@@ -83,9 +83,9 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 				} else {
 					intent = new Intent(context, ChatPassengerActivity.class);
 				}
+				String fullName = chatOverviewModel.getFirstname() + " " + chatOverviewModel.getLastname();
 				intent.putExtra("chatUserID", chatOverviewModel.getUserID());
-				intent.putExtra("firstname", chatOverviewModel.getFirstname());
-				intent.putExtra("lastname", chatOverviewModel.getLastname());
+				intent.putExtra("fullName", fullName);
 				intent.putExtra("profilePicture", chatOverviewModel.getProfilePicture());
 				intent.putExtra("fcmToken", chatOverviewModel.getFcmToken());
 				context.startActivity(intent);
@@ -117,17 +117,10 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 						}
 					}
 
-					switch (recentMessage){
-						case "default":
-							recentMessageTextView.setText("No message");
-
-							break;
-
-						default:
-							recentMessageTextView.setText(recentMessage);
-
-
-							break;
+					if (recentMessage.equals("default")) {
+						recentMessageTextView.setText("No message");
+					} else {
+						recentMessageTextView.setText(recentMessage);
 					}
 					recentMessage = "default";
 				}

@@ -7,21 +7,21 @@
 	android:background="@color/cinnabar"
 	tools:context=".GetStartedActivity">
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_centerInParent="true"
-		android:src="@drawable/bg_1" />
+		app:srcCompat="@drawable/bg_1" />
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:id="@+id/logo"
 		android:layout_width="300dp"
 		android:layout_height="200dp"
 		android:layout_centerHorizontal="true"
 		android:layout_margin="20dp"
-		android:src="@drawable/logo_2_v2" />
+		app:srcCompat="@drawable/logo_2_v2" />
 
-	<TextView
+	<androidx.appcompat.widget.AppCompatTextView
 		android:id="@+id/appDescriptionTextView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -40,7 +40,6 @@
 		android:textColor="@color/white"
 		android:textSize="25sp" />
 
-
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/getStartedBtn"
 		android:layout_width="200dp"
@@ -55,6 +54,5 @@
 		android:text="Get Started"
 		android:textColor="@color/white"
 		android:textSize="17sp" />
-
 
 </RelativeLayout>

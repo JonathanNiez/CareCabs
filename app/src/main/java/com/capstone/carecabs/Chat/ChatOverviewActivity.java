@@ -40,7 +40,6 @@ public class ChatOverviewActivity extends AppCompatActivity {
 	private ActivityChatOverviewBinding binding;
 	private boolean hasAvailableChats = false;
 
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,6 +59,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		finish();
+		super.onBackPressed();
 	}
 
 	//TODO:recent chat
@@ -114,7 +114,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, error.getMessage());
+				Log.e(TAG, "loadAvailableChats: onCancelled " + error.getMessage());
 			}
 		});
 	}
@@ -135,6 +135,12 @@ public class ChatOverviewActivity extends AppCompatActivity {
 		binding.chatOverviewRecyclerView.setAdapter(chatOverviewAdapter);
 
 		collectionReference.addSnapshotListener((value, error) -> {
+			if (error != null) {
+				Log.e(TAG, "showRecentChats: " + error.getMessage());
+
+				return;
+			}
+
 			if (value != null) {
 				chatOverviewModelList.clear();
 				binding.loadingLayout.setVisibility(View.GONE);
@@ -158,8 +164,6 @@ public class ChatOverviewActivity extends AppCompatActivity {
 					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
 					binding.loadingLayout.setVisibility(View.GONE);
 				}
-			} else {
-				Log.e(TAG, "showRecentChats: " + error);
 			}
 		});
 	}

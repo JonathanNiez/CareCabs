@@ -24,6 +24,7 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 	private Context context;
 	private List<ChatDriverModel> chatDriverModelList;
 	private String profilePicture;
+
 	public ChatDriverAdapter(Context context,
 	                         List<ChatDriverModel> chatDriverModelList,
 	                         String profilePicture) {
@@ -56,7 +57,7 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 
 		holder.messageTextView.setText(chatDriverModel.getMessage());
 
-		if (!profilePicture.equals("default")){
+		if (!profilePicture.equals("default")) {
 			Glide.with(context)
 					.load(profilePicture)
 					.placeholder(R.drawable.loading_gif)
@@ -67,7 +68,7 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 
 	@Override
 	public int getItemCount() {
-		return chatDriverModelList.size();
+		return chatDriverModelList == null ? 0 : chatDriverModelList.size();
 	}
 
 	@Override

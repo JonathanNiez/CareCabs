@@ -23,4 +23,7 @@ data class PassengerBookingModel(
     val pickupLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,
     val destinationLatitude: Double = 0.0,
-)
+){
+    constructor(): this(isDriverRated = false)
+}
+

@@ -66,13 +66,15 @@ public class ChatPassengerActivity extends AppCompatActivity {
 				} else {
 					String message = binding.messageEditText.getText().toString();
 					binding.messageEditText.setText("");
-					sendMessage(
-							getFCMToken,
-							getCurrentTimeAndDate(),
-							FirebaseMain.getUser().getUid(),
-							getPassengerID,
-							message
-					);
+
+					sendMessage
+							(
+									getFCMToken,
+									getCurrentTimeAndDate(),
+									FirebaseMain.getUser().getUid(),
+									getPassengerID,
+									message
+							);
 				}
 			});
 		}
@@ -81,6 +83,7 @@ public class ChatPassengerActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		finish();
+		super.onBackPressed();
 	}
 
 	private String generateRandomChatID() {
@@ -152,13 +155,17 @@ public class ChatPassengerActivity extends AppCompatActivity {
 						}
 					}
 					chatPassengerAdapter.notifyDataSetChanged();
-					binding.chatRecyclerView.smoothScrollToPosition(chatPassengerAdapter.getItemCount() - 1);
+
+					if (chatPassengerAdapter.getItemCount() >= 4) {
+						binding.chatRecyclerView.smoothScrollToPosition(chatPassengerAdapter.getItemCount() - 1);
+					}
+
 				}
 			}
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, error.getMessage());
+				Log.e(TAG, "readMessage: onCancelled " + error.getMessage());
 			}
 		});
 	}
@@ -168,7 +175,7 @@ public class ChatPassengerActivity extends AppCompatActivity {
 			JSONArray tokens = new JSONArray();
 			tokens.put(fcmToken);
 
-			Log.e(TAG, "notificationData: " + fcmToken);
+			Log.d(TAG, "notificationData: " + fcmToken);
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("chat", message);
@@ -198,17 +205,19 @@ public class ChatPassengerActivity extends AppCompatActivity {
 							JSONArray results = responseJSON.getJSONArray("results");
 							if (responseJSON.getInt("failure") == 1) {
 								JSONObject error = (JSONObject) results.get(0);
-								//   showToast(error.getString("error"));
+
+								Log.d(TAG, "sendNotification: onResponse " + error.toString());
+
 								return;
 							}
 
-							Log.e(TAG, "onResponse: " + response.body());
+							Log.d(TAG, "sendNotification: onResponse " + response.body());
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 				} else {
-					Log.e(TAG, "onResponse: " + response.body());
+					Log.e(TAG, "sendNotification: onResponse " + response.body());
 				}
 			}
 

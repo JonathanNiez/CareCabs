@@ -32,7 +32,8 @@
 		android:layout_centerVertical="true"
 		android:layout_marginEnd="10dp"
 		android:gravity="center"
-		android:orientation="vertical">
+		android:orientation="vertical"
+		tools:ignore="RelativeOverlap">
 
 		<com.mapbox.navigation.ui.voice.view.MapboxSoundButton
 			android:id="@+id/soundBtn"
@@ -105,6 +106,18 @@
 			android:src="@drawable/zoom_out_32"
 			android:visibility="gone" />
 
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentStart="true"
+		android:layout_centerVertical="true"
+		android:layout_marginStart="10dp"
+		android:gravity="center"
+		android:orientation="vertical"
+		tools:ignore="RelativeOverlap">
+
 		<androidx.appcompat.widget.SwitchCompat
 			android:id="@+id/mapStyleSwitch"
 			android:layout_width="wrap_content"
@@ -129,6 +142,18 @@
 			android:padding="10dp"
 			android:scaleType="centerCrop"
 			android:src="@drawable/calendar" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/chatImgBtn"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:background="@drawable/floating_button_background"
+			android:backgroundTint="@color/white"
+			android:elevation="10dp"
+			android:padding="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/chat_32" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>
 

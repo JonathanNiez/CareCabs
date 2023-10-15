@@ -193,9 +193,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				Toast.makeText(this, "Please enter your vehicle info", Toast.LENGTH_LONG).show();
 			} else {
 				showPleaseWaitDialog();
+
 				updateUserRegisterToFireStore(
 						stringFirstname,
-						stringFirstname,
+						stringLastname,
 						vehicleColor,
 						plateNumber
 				);
@@ -206,6 +207,8 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		showCancelRegisterDialog();
+
+		super.onBackPressed();
 	}
 
 	private void updateUserRegisterToFireStore(String firstname,

@@ -3,6 +3,7 @@ package com.capstone.carecabs.Chat;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,6 @@ public class ChatDriverActivity extends AppCompatActivity {
 	private final String TAG = "ChatDriverActivity";
 	private DatabaseReference databaseReference;
 	private List<ChatDriverModel> chatDriverModelList = new ArrayList<>();
-	private Intent intent;
 	private ActivityChatDriverBinding binding;
 
 	@SuppressLint("SetTextI18n")
@@ -49,6 +49,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 		binding = ActivityChatDriverBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		Intent intent;
 		if (getIntent().hasExtra("chatUserID")) {
 			intent = getIntent();
 			String getDriverID = intent.getStringExtra("chatUserID");
@@ -85,21 +86,21 @@ public class ChatDriverActivity extends AppCompatActivity {
 			loadDriverInfo(getDriverID);
 
 			binding.sendMessageBtn.setOnClickListener(v -> {
-				binding.chatRecyclerView.smoothScrollToPosition(chatDriverModelList.size() - 1);
-
-				String message = binding.messageEditText.getText().toString();
-				if (message.isEmpty()) {
+				if (TextUtils.isEmpty(binding.messageEditText.getText().toString())) {
 					binding.messageEditText.setText("");
 					return;
 				} else {
+					String message = binding.messageEditText.getText().toString();
 					binding.messageEditText.setText("");
-					sendMessage(
-							getFCMToken,
-							getCurrentTimeAndDate(),
-							FirebaseMain.getUser().getUid(),
-							getDriverID,
-							message
-					);
+
+					sendMessage
+							(
+									getFCMToken,
+									getCurrentTimeAndDate(),
+									FirebaseMain.getUser().getUid(),
+									getDriverID,
+									message
+							);
 				}
 			});
 		}
@@ -108,6 +109,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		finish();
+		super.onBackPressed();
 	}
 
 	private String generateRandomChatID() {
@@ -149,7 +151,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 	}
 
 	private void sendMessage(
-			String fckToken,
+			String fcmToken,
 			String chatDate,
 			String sender,
 			String receiver,
@@ -164,7 +166,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 				"available"
 		);
 		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatDriverModel);
-		notificationData(fckToken, message);
+		notificationData(fcmToken, message);
 	}
 
 	private void readMessage(String senderID, String receiverID, String profilePicture) {
@@ -182,7 +184,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 			@SuppressLint("NotifyDataSetChanged")
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				if (snapshot.exists()){
+				if (snapshot.exists()) {
 					chatDriverModelList.clear();
 
 					for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -197,7 +199,10 @@ public class ChatDriverActivity extends AppCompatActivity {
 						}
 					}
 					chatDriverAdapter.notifyDataSetChanged();
-					binding.chatRecyclerView.smoothScrollToPosition(chatDriverAdapter.getItemCount() - 1);
+
+					if (chatDriverAdapter.getItemCount() >= 4){
+						binding.chatRecyclerView.smoothScrollToPosition(chatDriverAdapter.getItemCount() - 1);
+					}
 				}
 			}
 
@@ -213,7 +218,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 			JSONArray tokens = new JSONArray();
 			tokens.put(fcmToken);
 
-			Log.e(TAG, "notificationData: " + fcmToken);
+			Log.d(TAG, "notificationData: " + fcmToken);
 
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("chat", message);
@@ -243,17 +248,18 @@ public class ChatDriverActivity extends AppCompatActivity {
 							JSONArray results = responseJSON.getJSONArray("results");
 							if (responseJSON.getInt("failure") == 1) {
 								JSONObject error = (JSONObject) results.get(0);
-								//   showToast(error.getString("error"));
+
+								Log.e(TAG, "sendNotification: onResponse " + error.toString());
 								return;
 							}
 
-							Log.e(TAG, "onResponse: " + response.body());
+							Log.d(TAG, "sendNotification: onResponse " + response.body());
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
 				} else {
-					Log.e(TAG, "onResponse: " + response.body());
+					Log.e(TAG, "sendNotification: onResponse " + response.body());
 				}
 			}
 

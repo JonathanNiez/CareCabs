@@ -32,6 +32,7 @@ import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
+import com.capstone.carecabs.ml.IdScanV2;
 import com.capstone.carecabs.ml.IdScanner;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -66,8 +67,7 @@ public class ScanIDActivity extends AppCompatActivity {
 	private boolean isUserVerified = false;
 	private AlertDialog.Builder builder;
 	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
-			noInternetDialog, idNotScannedDialog, uploadClearIDPictureDialog,
-			pleaseWaitDialog;
+			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog;
 	private TextRecognizer textRecognizer;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -75,10 +75,6 @@ public class ScanIDActivity extends AppCompatActivity {
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private StorageReference storageRef;
-	private StorageReference imagesRef;
-	private StorageReference fileRef;
-	private RequestManager requestManager;
 	private DocumentReference documentReference;
 	private ActivityScanIdBinding binding;
 
@@ -89,7 +85,6 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
 		closeOptionsDialog();
-		closeIDNotScannedDialog();
 		closePleaseWaitDialog();
 	}
 
@@ -104,7 +99,6 @@ public class ScanIDActivity extends AppCompatActivity {
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
 		closeOptionsDialog();
-		closeIDNotScannedDialog();
 		closePleaseWaitDialog();
 	}
 
@@ -129,29 +123,59 @@ public class ScanIDActivity extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		checkCameraAndStoragePermission();
 		checkIfUserIsVerified();
+		checkCameraAndStoragePermission();
 
-		if (getIntent() != null && getIntent().hasExtra("userType")) {
-			intent = getIntent();
-			getUserType = intent.getStringExtra("userType");
+		if (getIntent() != null) {
+			if (getIntent().hasExtra("userType")) {
+				intent = getIntent();
+				getUserType = intent.getStringExtra("userType");
 
-			if (getUserType != null && getUserType.equals("From Main")) {
-				binding.imgBackBtn.setOnClickListener(view -> goToMainActivity());
-				binding.backBtn.setOnClickListener(v -> goToMainActivity());
+				if (getUserType != null) {
+
+					binding.imgBackBtn.setOnClickListener(v -> {
+						if (isUserVerified) {
+							goToMainActivity();
+						} else {
+							showCancelScanIDDialog();
+						}
+					});
+
+					binding.backBtn.setOnClickListener(v -> {
+						if (isUserVerified) {
+							goToMainActivity();
+						} else {
+							showCancelScanIDDialog();
+						}
+					});
+
+					switch (getUserType) {
+						case "Driver":
+							binding.scanYourIDTypeTextView.setText("Scan your Driver's license");
+
+							break;
+
+						case "Senior Citizen":
+							binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
+
+							break;
+
+						case "Person with Disabilities (PWD)":
+							binding.scanYourIDTypeTextView.setText("Scan your PWD ID");
+
+							break;
+					}
+
+				}
 			}
 		}
 
 		binding.doneBtn.setOnClickListener(v -> {
 			if (idPictureUri != null) {
-				showPleaseWaitDialog();
 				updateVerificationStatus(idPictureUri);
-
-			} else {
-				showIDNotScannedDialog();
 			}
-
 		});
+
 
 		binding.idScanLayout.setOnClickListener(v -> {
 			ImagePicker.with(ScanIDActivity.this)
@@ -160,7 +184,6 @@ public class ScanIDActivity extends AppCompatActivity {
 					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
 					.start();
 		});
-
 
 		binding.idAlreadyScannedLayout.setOnClickListener(v -> {
 			ImagePicker.with(ScanIDActivity.this)
@@ -175,6 +198,8 @@ public class ScanIDActivity extends AppCompatActivity {
 	public void onBackPressed() {
 		if (isUserVerified) {
 			goToMainActivity();
+			super.onBackPressed();
+
 		} else {
 			showCancelScanIDDialog();
 		}
@@ -183,7 +208,7 @@ public class ScanIDActivity extends AppCompatActivity {
 	@SuppressLint("DefaultLocale")
 	private void classifyID(Bitmap bitmap) {
 		try {
-			IdScanner model = IdScanner.newInstance(ScanIDActivity.this);
+			IdScanV2 model = IdScanV2.newInstance(ScanIDActivity.this);
 
 			// Creates inputs for reference.
 			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
@@ -204,7 +229,7 @@ public class ScanIDActivity extends AppCompatActivity {
 			inputFeature0.loadBuffer(byteBuffer);
 
 			// Runs model inference and gets result.
-			IdScanner.Outputs outputs = model.process(inputFeature0);
+			IdScanV2.Outputs outputs = model.process(inputFeature0);
 			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
 			float[] confidences = outputFeature0.getFloatArray();
 			int maxPos = 0;
@@ -236,7 +261,7 @@ public class ScanIDActivity extends AppCompatActivity {
 
 						break;
 
-					case "Persons with Disability (PWD)":
+					case "Person with Disabilities (PWD)":
 						handlePWDID(predictedClass);
 
 						break;
@@ -254,6 +279,7 @@ public class ScanIDActivity extends AppCompatActivity {
 
 			// Releases model resources if no longer used.
 			model.close();
+
 		} catch (IOException e) {
 			Log.e(TAG, "classifyID: " + e.getMessage());
 		}
@@ -317,6 +343,8 @@ public class ScanIDActivity extends AppCompatActivity {
 
 	private void updateVerificationStatus(Uri idPictureUri) {
 		if (FirebaseMain.getUser() != null) {
+			showPleaseWaitDialog();
+
 			String userID = FirebaseMain.getUser().getUid();
 
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -343,17 +371,56 @@ public class ScanIDActivity extends AppCompatActivity {
 		}
 	}
 
+	private void updateUserToNotVerified() {
+		if (FirebaseMain.getUser() != null) {
+			String userID = FirebaseMain.getUser().getUid();
+
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(userID);
+
+			Map<String, Object> updateUser = new HashMap<>();
+			updateUser.put("isVerified", false);
+			updateUser.put("idPicture", idPictureURL);
+
+			documentReference.update(updateUser)
+					.addOnSuccessListener(unused -> {
+
+						goToMainActivity();
+
+					})
+					.addOnFailureListener(e -> {
+
+						closePleaseWaitDialog();
+
+						Log.e(TAG, "updateVerificationStatus: onFailure " + e.getMessage());
+
+					});
+		} else {
+			Log.e(TAG, "updateVerificationStatus: current user is null");
+
+			intent = new Intent(ScanIDActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+		}
+
+	}
+
 	private void resetImageViewAndShowDialog() {
 		binding.idImageView.setImageResource(R.drawable.face_id_100);
+		binding.doneBtn.setVisibility(View.GONE);
+		binding.verifiedText.setVisibility(View.GONE);
+
 		idPictureUri = null;
 		showNotAnIDDialog();
 	}
 
 	private void checkIfUserIsVerified() {
 		if (FirebaseMain.getUser() != null) {
+			String userID = FirebaseMain.getUser().getUid();
+
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid());
+					.document(userID);
 
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
@@ -376,9 +443,8 @@ public class ScanIDActivity extends AppCompatActivity {
 							}
 						}
 					})
-					.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+					.addOnFailureListener(e -> Log.e(TAG, "checkIfUserIsVerified: onFailure " + e.getMessage()));
 		}
-
 	}
 
 	private void checkCameraAndStoragePermission() {
@@ -415,44 +481,16 @@ public class ScanIDActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			switch (getUserType) {
-				case "Driver":
-					intent = new Intent(ScanIDActivity.this, RegisterDriverActivity.class);
-
-					break;
-
-				case "Persons with Disabilities (PWD)":
-					intent = new Intent(ScanIDActivity.this, RegisterPWDActivity.class);
-
-					break;
-
-				case "Senior Citizen":
-					intent = new Intent(ScanIDActivity.this, RegisterSeniorActivity.class);
-
-					break;
-
-				case "From Main":
-					intent = new Intent(ScanIDActivity.this, MainActivity.class);
-
-					break;
-
-			}
-			startActivity(intent);
-			finish();
-
-			closeCancelScanIDDialog();
-
+			updateUserToNotVerified();
 		});
 
-		noBtn.setOnClickListener(v -> {
-			closeCancelScanIDDialog();
-		});
-
+		noBtn.setOnClickListener(v -> closeCancelScanIDDialog());
 
 		builder.setView(dialogView);
-
 		cancelScanIDDialog = builder.create();
-		cancelScanIDDialog.show();
+		if (!isFinishing() && !isDestroyed()) {
+			cancelScanIDDialog.show();
+		}
 	}
 
 	private void closeCancelScanIDDialog() {
@@ -652,35 +690,6 @@ public class ScanIDActivity extends AppCompatActivity {
 				});
 	}
 
-	private void showIDNotScannedDialog() {
-		builder = new AlertDialog.Builder(this);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_id_not_scanned, null);
-
-		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-		Button noBtn = dialogView.findViewById(R.id.noBtn);
-
-		yesBtn.setOnClickListener(v -> {
-			closeIDNotScannedDialog();
-		});
-
-		noBtn.setOnClickListener(v -> {
-			closeIDNotScannedDialog();
-		});
-
-		builder.setView(dialogView);
-
-		idNotScannedDialog = builder.create();
-		idNotScannedDialog.show();
-	}
-
-	private void closeIDNotScannedDialog() {
-		if (idNotScannedDialog != null && idNotScannedDialog.isShowing()) {
-			idNotScannedDialog.dismiss();
-		}
-	}
-
-
 	private void showNoInternetDialog() {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
@@ -719,7 +728,7 @@ public class ScanIDActivity extends AppCompatActivity {
 				idPictureUri = data.getData();
 				binding.idImageView.setImageURI(idPictureUri);
 
-				Bitmap bitmap = null;
+				Bitmap bitmap;
 				try {
 					bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), idPictureUri);
 				} catch (IOException e) {
@@ -745,7 +754,7 @@ public class ScanIDActivity extends AppCompatActivity {
 							break;
 
 						case "Senior Citizen":
-							binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is valid by OSCA");
+							binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
 
 							break;
 

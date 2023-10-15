@@ -662,104 +662,106 @@ public class EditAccountFragment extends Fragment {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					closePleaseWaitDialog();
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							closePleaseWaitDialog();
 
-					String getProfilePicture = documentSnapshot.getString("profilePicture");
-					String getUserType = documentSnapshot.getString("userType");
-					String getFirstName = documentSnapshot.getString("firstname");
-					String getLastName = documentSnapshot.getString("lastname");
-					Long getAgeLong = documentSnapshot.getLong("age");
-					int getAge = getAgeLong.intValue();
-					String getEmail = documentSnapshot.getString("email");
-					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
-					String getSex = documentSnapshot.getString("sex");
-					boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
-					String getBirthdate = documentSnapshot.getString("birthdate");
+							String getProfilePicture = documentSnapshot.getString("profilePicture");
+							String getUserType = documentSnapshot.getString("userType");
+							String getFirstName = documentSnapshot.getString("firstname");
+							String getLastName = documentSnapshot.getString("lastname");
+							Long getAgeLong = documentSnapshot.getLong("age");
+							int getAge = getAgeLong.intValue();
+							String getEmail = documentSnapshot.getString("email");
+							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
+							String getSex = documentSnapshot.getString("sex");
+							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+							String getBirthdate = documentSnapshot.getString("birthdate");
 
-					switch (getUserType) {
-						case "Driver":
-							binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+							switch (getUserType) {
+								case "Driver":
+									binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
 
-							String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
-							String getVehicleColor = documentSnapshot.getString("vehicleColor");
-							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+									String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+									String getVehicleColor = documentSnapshot.getString("vehicleColor");
+									String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-							if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
-								Glide.with(context)
-										.load(getVehiclePicture)
-										.placeholder(R.drawable.loading_gif)
-										.into(binding.vehicleImageView);
+									if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
+										Glide.with(context)
+												.load(getVehiclePicture)
+												.placeholder(R.drawable.loading_gif)
+												.into(binding.vehicleImageView);
+									}
+
+									binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
+									binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+
+									break;
+
+								case "Person with Disabilities (PWD)":
+									String getDisability = documentSnapshot.getString("disability");
+									binding.editDisabilityLayout.setVisibility(View.VISIBLE);
+									binding.disabilityTextView.setText("Disability: " + getDisability);
+
+									break;
+
+								case "Senior Citizen":
+									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+
+									binding.editMedicalConditionLayout.setVisibility(View.VISIBLE);
+									binding.medicalConditionTextView.setVisibility(View.VISIBLE);
+									binding.medicalConditionTextView.setText(getMedicalCondition);
+
+									break;
 							}
 
-							binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
-							binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+							switch (getSex) {
+								case "Male":
+									binding.editSexSpinner.setSelection(1);
+									break;
 
-							break;
+								case "Female":
+									binding.editSexSpinner.setSelection(2);
+									break;
+							}
 
-						case "Persons with Disabilities (PWD)":
-							String getDisability = documentSnapshot.getString("disability");
-							binding.editDisabilityLayout.setVisibility(View.VISIBLE);
-							binding.disabilityTextView.setText("Disability: " + getDisability);
+							if (getProfilePicture != null && !getProfilePicture.equals("default")) {
+								Glide.with(context)
+										.load(getProfilePicture)
+										.centerCrop()
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.profilePicture);
+							}
 
-							break;
+							if (!getVerificationStatus) {
+								binding.idScannedTextView.setVisibility(View.VISIBLE);
 
-						case "Senior Citizen":
-							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+							}
 
-							binding.editMedicalConditionLayout.setVisibility(View.VISIBLE);
-							binding.medicalConditionTextView.setVisibility(View.VISIBLE);
-							binding.medicalConditionTextView.setText(getMedicalCondition);
+							StaticDataPasser.storeFirstName = getFirstName;
+							StaticDataPasser.storeLastName = getLastName;
+							StaticDataPasser.storeCurrentAge = getAge;
+							StaticDataPasser.storeCurrentBirthDate = getBirthdate;
+							StaticDataPasser.storeSelectedSex = getSex;
 
-							break;
-					}
+							binding.firstnameTextView.setText(getFirstName);
+							binding.lastnameTextView.setText(getLastName);
+							binding.editFirstnameEditText.setText(getFirstName);
+							binding.editLastnameEditText.setText(getLastName);
+							binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+							binding.editAgeEditText.setText(String.valueOf(getAge));
+							binding.sexTextView.setText("Sex: " + getSex);
 
-					switch (getSex) {
-						case "Male":
-							binding.editSexSpinner.setSelection(1);
-							break;
+						} else {
+							closePleaseWaitDialog();
+						}
+					})
+					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 
-						case "Female":
-							binding.editSexSpinner.setSelection(2);
-							break;
-					}
-
-					if (!getProfilePicture.equals("default")) {
-						Glide.with(context)
-								.load(getProfilePicture)
-								.centerCrop()
-								.placeholder(R.drawable.loading_gif)
-								.into(binding.profilePicture);
-					}
-
-					if (!getVerificationStatus) {
-						binding.idScannedTextView.setVisibility(View.VISIBLE);
-
-					}
-
-					StaticDataPasser.storeFirstName = getFirstName;
-					StaticDataPasser.storeLastName = getLastName;
-					StaticDataPasser.storeCurrentAge = getAge;
-					StaticDataPasser.storeCurrentBirthDate = getBirthdate;
-					StaticDataPasser.storeSelectedSex = getSex;
-
-					binding.firstnameTextView.setText(getFirstName);
-					binding.lastnameTextView.setText(getLastName);
-					binding.editFirstnameEditText.setText(getFirstName);
-					binding.editLastnameEditText.setText(getLastName);
-					binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-					binding.editAgeEditText.setText(String.valueOf(getAge));
-					binding.sexTextView.setText("Sex: " + getSex);
-
-				} else {
-					closePleaseWaitDialog();
-				}
-			}).addOnFailureListener(e -> {
-				closePleaseWaitDialog();
-
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, "loadUserProfileInfo: " + e.getMessage());
+					});
 
 		} else {
 			intent = new Intent(getActivity(), LoginActivity.class);
