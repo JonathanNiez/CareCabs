@@ -8,6 +8,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatOverviewActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Fragments.AboutFragment;
@@ -90,9 +92,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.myProfile);
+//		checkUserIfVerified();
 
-		checkUserIfVerified();
+		retrieveAndStoreFCMToken();
 
 		showFragment(new HomeFragment());
 
@@ -102,25 +104,33 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			if (item.getItemId() == R.id.home) {
 				showFragment(new HomeFragment());
 
-			} else if (item.getItemId() == R.id.myProfile) {
-				showFragment(new AccountFragment());
-
-			} else if (item.getItemId() == R.id.chat) {
+			}
+//			else if (item.getItemId() == R.id.myProfile) {
+//				showFragment(new AccountFragment());
+//
+//			}
+			else if (item.getItemId() == R.id.chat) {
 				intent = new Intent(MainActivity.this, ChatOverviewActivity.class);
 				startActivity(intent);
 
-			} else if (item.getItemId() == R.id.map) {
-
-				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
-					checkLocationService();
-				} else {
-					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
-					startActivity(intent);
-					finish();
-				}
-
 			}
+//			else if (item.getItemId() == R.id.map) {
+//
+//				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
+//					checkLocationService();
+//				} else {
+//					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
+//					startActivity(intent);
+//					finish();
+//				}
+//
+//			}
 			return true;
+		});
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 		});
 	}
 
@@ -193,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 
+
 	private void checkLocationService() {
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -241,81 +252,81 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 				"A Driver has accepted your Booking and is on the way to pick up you");
 	}
 
-	private void checkUserIfVerified() {
-		if (FirebaseMain.getUser() != null) {
-
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid());
-
-			documentReference.get()
-					.addOnSuccessListener(documentSnapshot -> {
-						if (documentSnapshot != null && documentSnapshot.exists()) {
-							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
-
-							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
-
-							if (!getVerificationStatus) {
-								if (badgeDrawable != null) {
-									badgeDrawable.setVisible(true);
-									badgeDrawable.setNumber(1);
-								}
-
-								showProfileNotVerifiedNotification();
-
-							} else {
-								binding.bottomNavigationView.removeBadge(R.id.myProfile);
-								getUserTypeToCheckIfBookingIsAccepted();
-								retrieveAndStoreFCMToken();
-							}
-
-						}
-					})
-					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfVerified: " + e.getMessage()));
-		} else {
-			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
-			startActivity(intent);
-			finish();
-		}
-	}
-
-	private void checkForWaitingPassengers() {
-		bookingReference = FirebaseDatabase.getInstance()
-				.getReference(FirebaseMain.bookingCollection);
-		bookingReference.addValueEventListener(new ValueEventListener() {
-			@Override
-			public void onDataChange(@NonNull DataSnapshot snapshot) {
-				if (snapshot.exists()) {
-					int waitingPassengersCount = 0;
-					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
-						PassengerBookingModel passengerBookingData =
-								bookingSnapshot.getValue(PassengerBookingModel.class);
-						if (passengerBookingData != null) {
-
-							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
-								showPassengersWaitingNotification();
-								waitingPassengersCount++;
-								badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.map);
-
-								badgeDrawable.setVisible(true);
-								badgeDrawable.setNumber(waitingPassengersCount);
-
-							} else {
-								if (badgeDrawable != null) {
-									binding.bottomNavigationView.removeBadge(R.id.map);
-								}
-							}
-						}
-					}
-				}
-			}
-
-			@Override
-			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, "checkForWaitingPassengers: onCancelled " + error.getMessage());
-			}
-		});
-	}
+//	private void checkUserIfVerified() {
+//		if (FirebaseMain.getUser() != null) {
+//
+//			documentReference = FirebaseMain.getFireStoreInstance()
+//					.collection(FirebaseMain.userCollection)
+//					.document(FirebaseMain.getUser().getUid());
+//
+//			documentReference.get()
+//					.addOnSuccessListener(documentSnapshot -> {
+//						if (documentSnapshot != null && documentSnapshot.exists()) {
+//							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+//
+//							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
+//
+//							if (!getVerificationStatus) {
+//								if (badgeDrawable != null) {
+//									badgeDrawable.setVisible(true);
+//									badgeDrawable.setNumber(1);
+//								}
+//
+//								showProfileNotVerifiedNotification();
+//
+//							} else {
+//								binding.bottomNavigationView.removeBadge(R.id.myProfile);
+//								getUserTypeToCheckIfBookingIsAccepted();
+//								retrieveAndStoreFCMToken();
+//							}
+//
+//						}
+//					})
+//					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfVerified: " + e.getMessage()));
+//		} else {
+//			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
+//			startActivity(intent);
+//			finish();
+//		}
+//	}
+//
+//	private void checkForWaitingPassengers() {
+//		bookingReference = FirebaseDatabase.getInstance()
+//				.getReference(FirebaseMain.bookingCollection);
+//		bookingReference.addValueEventListener(new ValueEventListener() {
+//			@Override
+//			public void onDataChange(@NonNull DataSnapshot snapshot) {
+//				if (snapshot.exists()) {
+//					int waitingPassengersCount = 0;
+//					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+//						PassengerBookingModel passengerBookingData =
+//								bookingSnapshot.getValue(PassengerBookingModel.class);
+//						if (passengerBookingData != null) {
+//
+//							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
+//								showPassengersWaitingNotification();
+//								waitingPassengersCount++;
+//								badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.map);
+//
+//								badgeDrawable.setVisible(true);
+//								badgeDrawable.setNumber(waitingPassengersCount);
+//
+//							} else {
+//								if (badgeDrawable != null) {
+//									binding.bottomNavigationView.removeBadge(R.id.map);
+//								}
+//							}
+//						}
+//					}
+//				}
+//			}
+//
+//			@Override
+//			public void onCancelled(@NonNull DatabaseError error) {
+//				Log.e(TAG, "checkForWaitingPassengers: onCancelled " + error.getMessage());
+//			}
+//		});
+//	}
 
 	private void getUserTypeForMap() {
 		if (FirebaseMain.getUser() != null) {
@@ -351,30 +362,30 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		}
 	}
 
-	private void getUserTypeToCheckIfBookingIsAccepted() {
-		if (FirebaseMain.getUser() != null) {
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid());
-
-			documentReference.get()
-					.addOnSuccessListener(documentSnapshot -> {
-						if (documentSnapshot != null && documentSnapshot.exists()) {
-							String getUserType = documentSnapshot.getString("userType");
-
-							if (getUserType.equals("Senior Citizen") ||
-									getUserType.equals("Person with Disabilities (PWD)")) {
-
-								checkIfBookingIsAccepted();
-							} else {
-								checkForWaitingPassengers();
-							}
-
-						}
-					})
-					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-		}
-	}
+//	private void getUserTypeToCheckIfBookingIsAccepted() {
+//		if (FirebaseMain.getUser() != null) {
+//			documentReference = FirebaseMain.getFireStoreInstance()
+//					.collection(FirebaseMain.userCollection)
+//					.document(FirebaseMain.getUser().getUid());
+//
+//			documentReference.get()
+//					.addOnSuccessListener(documentSnapshot -> {
+//						if (documentSnapshot != null && documentSnapshot.exists()) {
+//							String getUserType = documentSnapshot.getString("userType");
+//
+//							if (getUserType.equals("Senior Citizen") ||
+//									getUserType.equals("Person with Disabilities (PWD)")) {
+//
+//								checkIfBookingIsAccepted();
+//							} else {
+//								checkForWaitingPassengers();
+//							}
+//
+//						}
+//					})
+//					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+//		}
+//	}
 
 
 	private void updateDriverStatus(boolean isAvailable) {

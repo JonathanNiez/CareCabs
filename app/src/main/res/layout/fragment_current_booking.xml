@@ -4,20 +4,20 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	tools:context=".Fragments.CurrentBookingFragment">
 
 	<RelativeLayout
 		android:id="@+id/upperLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="@color/vermillion"
-		android:padding="20dp">
+		android:background="@color/sky_blue">
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
+			android:layout_margin="10dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="CURRENT BOOKING"
 			android:textColor="@color/white"

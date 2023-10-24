@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -14,7 +14,7 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:gravity="center"
@@ -27,11 +27,11 @@
 				android:layout_height="150dp"
 				android:src="@drawable/loading_gif" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
-	<TextView
+	<androidx.appcompat.widget.AppCompatTextView
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
@@ -40,4 +40,4 @@
 		android:textColor="@color/black"
 		android:textSize="20sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	tools:context=".LoginActivity">
 
 	<androidx.core.widget.NestedScrollView
@@ -22,7 +22,7 @@
 				android:layout_height="wrap_content"
 				android:layout_gravity="top|center_horizontal"
 				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/vermillion"
+				android:backgroundTint="@color/dark_cyan"
 				android:elevation="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
@@ -43,7 +43,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				app:cardBackgroundColor="@color/tomato"
+				app:cardBackgroundColor="@color/sky_blue"
 				app:cardCornerRadius="20dp"
 				app:cardElevation="5dp">
 

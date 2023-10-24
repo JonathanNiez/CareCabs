@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -29,14 +30,14 @@ public class ContactUsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentContactUsBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
         context = getContext();
 
-        binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
+        binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
         binding.submitFeedBackBtn.setOnClickListener(v -> {
             Intent intent = new Intent(context, FeedbackActivity.class);

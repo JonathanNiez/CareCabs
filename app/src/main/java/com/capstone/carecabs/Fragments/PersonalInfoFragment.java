@@ -92,7 +92,7 @@ public class PersonalInfoFragment extends Fragment {
 		FirebaseApp.initializeApp(context);
 		loadUserProfileInfo();
 
-		binding.imgBackBtn.setOnClickListener(v -> backToAccountFragment());
+		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
 		return view;
 	}

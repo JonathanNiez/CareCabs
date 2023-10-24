@@ -245,8 +245,6 @@ public class ScanIDActivity extends AppCompatActivity {
 
 			String[] classes = {"Driver's License", "Senior Citizen ID", "PWD ID", "Not an ID"};
 
-//			binding.resultTextView.setText(classes[maxPos]);
-
 			if (maxConfidence > confidenceThreshold) {
 				String predictedClass = classes[maxPos];
 

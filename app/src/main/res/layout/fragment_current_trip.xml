@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:background="@color/white_blue"
 	tools:context=".Fragments.CurrentTripFragment">
 
 	<androidx.recyclerview.widget.RecyclerView
@@ -16,10 +17,10 @@
 		android:id="@+id/loadingLayout"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
 		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
-		app:cardElevation="5dp"
-		android:layout_centerInParent="true">
+		app:cardElevation="5dp">
 
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="wrap_content"

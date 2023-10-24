@@ -50,6 +50,8 @@ public class ChatOverviewActivity extends AppCompatActivity {
 
 		binding.noAvailableChatsTextView.setVisibility(View.GONE);
 
+		binding.backFloatingBtn.setOnClickListener(v -> finish());
+
 		binding.chatOverviewRecyclerView.setHasFixedSize(true);
 		binding.chatOverviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 

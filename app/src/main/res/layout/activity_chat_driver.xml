@@ -10,27 +10,23 @@
 		android:id="@+id/customActionBarLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardBackgroundColor="@color/vermillion"
+		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/driverFullNameTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_marginStart="20dp"
-				android:layout_marginTop="20dp"
-				android:layout_marginEnd="20dp"
-				android:layout_marginBottom="20dp"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="Driver Name"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
-
 
 		</RelativeLayout>
 
@@ -40,22 +36,22 @@
 		android:id="@+id/chatRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:background="@color/white"
 		android:layout_above="@id/messageInputLayout"
 		android:layout_below="@id/customActionBarLayout"
-		tools:listitem="@layout/item_chat_right"/>
+		android:background="@color/white"
+		tools:listitem="@layout/item_chat_right" />
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/messageInputLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/orange"
+		android:background="@color/white_blue"
 		android:gravity="center"
 		android:orientation="horizontal"
 		android:padding="5dp">
 
-		<EditText
+		<androidx.appcompat.widget.AppCompatEditText
 			android:id="@+id/messageEditText"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
@@ -64,21 +60,21 @@
 			android:layout_marginEnd="5dp"
 			android:layout_marginBottom="5dp"
 			android:layout_weight="8"
-			android:fontFamily="@font/opensans_semibold"
+			android:fontFamily="@font/opensans_medium"
 			android:hint="Type a message..."
 			android:inputType="text"
 			android:textColor="@color/black"
 			android:textColorHint="@color/black"
 			android:textSize="17sp" />
 
-		<ImageButton
+		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/sendMessageBtn"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="1"
-			android:background="@color/orange"
+			android:backgroundTint="@color/white_blue"
 			android:src="@drawable/send_32" />
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

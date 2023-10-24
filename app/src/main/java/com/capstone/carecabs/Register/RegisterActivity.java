@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
@@ -42,6 +43,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 	private final String TAG = "Register";
+	private String fontSize = "normal";
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
 	private Date date;
@@ -107,6 +109,11 @@ public class RegisterActivity extends AppCompatActivity {
 
 		binding.backBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
+		});
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 		});
 
 		GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -212,15 +219,12 @@ public class RegisterActivity extends AppCompatActivity {
 			showUserTypeImageDialog();
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
-		});
-
 	}
 
 	@Override
 	public void onBackPressed() {
 		showCancelRegisterDialog();
+		super.onBackPressed();
 	}
 
 	private void registerDriver(String email, String password, String userType, String phoneNumber) {
@@ -340,7 +344,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("userType", userType);
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
-		registerUser.put("fontSize", 17);
+		registerUser.put("fontSize", fontSize);
 		registerUser.put("registerType", "Email");
 		registerUser.put("isVerified", false);
 

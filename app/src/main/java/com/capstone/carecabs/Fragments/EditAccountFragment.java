@@ -43,6 +43,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -67,9 +68,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class EditAccountFragment extends Fragment {
 	private final String TAG = "EditAccountFragment";
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
@@ -155,7 +161,7 @@ public class EditAccountFragment extends Fragment {
 		binding.editMedicalConditionLayout.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
 		binding.medicalConditionTextView.setVisibility(View.GONE);
-		binding.idScannedTextView.setVisibility(View.GONE);
+		binding.idNotScannedTextView.setVisibility(View.GONE);
 		binding.vehicleInfoLayout.setVisibility(View.GONE);
 
 		context = getContext();
@@ -185,7 +191,7 @@ public class EditAccountFragment extends Fragment {
 			backToAccountFragment();
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			backToAccountFragment();
 		});
 
@@ -655,9 +661,6 @@ public class EditAccountFragment extends Fragment {
 
 		if (FirebaseMain.getUser() != null) {
 
-			getCurrentFontSizeFromUserSetting();
-			initializeEditTexts();
-
 			String userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
@@ -666,6 +669,8 @@ public class EditAccountFragment extends Fragment {
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
 							closePleaseWaitDialog();
+
+							initializeEditTexts();
 
 							String getProfilePicture = documentSnapshot.getString("profilePicture");
 							String getUserType = documentSnapshot.getString("userType");
@@ -678,6 +683,9 @@ public class EditAccountFragment extends Fragment {
 							String getSex = documentSnapshot.getString("sex");
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 							String getBirthdate = documentSnapshot.getString("birthdate");
+							String getFontSize = documentSnapshot.getString("fontSize");
+
+							setFontSize(getFontSize);
 
 							switch (getUserType) {
 								case "Driver":
@@ -735,7 +743,7 @@ public class EditAccountFragment extends Fragment {
 							}
 
 							if (!getVerificationStatus) {
-								binding.idScannedTextView.setVisibility(View.VISIBLE);
+								binding.idNotScannedTextView.setVisibility(View.VISIBLE);
 
 							}
 
@@ -764,10 +772,43 @@ public class EditAccountFragment extends Fragment {
 					});
 
 		} else {
-			intent = new Intent(getActivity(), LoginActivity.class);
+			intent = new Intent(getActivity(), LoginOrRegisterActivity.class);
 			startActivity(intent);
+			Objects.requireNonNull(getActivity()).finish();
 		}
 
+	}
+
+	private void setFontSize(String fontSize) {
+
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.editProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.tapImageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.guideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+		binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showEnterBirthdateDialog() {
@@ -1200,7 +1241,6 @@ public class EditAccountFragment extends Fragment {
 			editDisabilityDialog.dismiss();
 		}
 	}
-
 
 	private void backToAccountFragment() {
 		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();

@@ -42,6 +42,7 @@ import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.RequestLocationPermissionActivity;
 import com.capstone.carecabs.TripsActivity;
+import com.capstone.carecabs.Utility.FontSizeManager;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -65,6 +66,10 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 	private final String TAG = "HomeFragment";
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private int currentPage = 0;
 	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
@@ -132,9 +137,6 @@ public class HomeFragment extends Fragment {
 		binding.transportedToDestinationLayout.setVisibility(View.GONE);
 
 		context = getContext();
-
-//		FirebaseMain.signOutUser();
-
 		FirebaseApp.initializeApp(context);
 
 		slideFragments.add(new CarouselFragment1());
@@ -172,20 +174,18 @@ public class HomeFragment extends Fragment {
 
 	}
 
+	@SuppressLint({"DefaultLocale", "SetTextI18n"})
 	private void getCurrentTime() {
-		// Get the current time
 		LocalDateTime currentTime = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 			currentTime = LocalDateTime.now();
 		}
 
-		// Get the hour of the day
 		int hour = 0;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 			hour = currentTime.getHour();
 		}
 
-		// Set the greeting message based on the time
 		String greeting;
 		if (hour >= 0 && hour < 12) {
 			greeting = "Good Morning!";
@@ -195,7 +195,6 @@ public class HomeFragment extends Fragment {
 			greeting = "Good Evening!";
 		}
 
-		// Display the greeting message and formatted time in a TextView
 		String amPm = (hour < 12) ? "AM" : "PM";
 		if (hour > 12) {
 			hour -= 12;
@@ -203,13 +202,11 @@ public class HomeFragment extends Fragment {
 			hour = 12;
 		}
 
-		// Format the time
 		String formattedTime = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 			formattedTime = String.format("%02d:%02d %s", hour, currentTime.getMinute(), amPm);
 		}
 
-		// Concatenate the greeting message and formatted time
 		binding.greetTextView.setText(greeting);
 		binding.currentTimeTextView.setText("The time is " + formattedTime);
 	}
@@ -274,17 +271,7 @@ public class HomeFragment extends Fragment {
 						Long getFontSizeLong = documentSnapshot.getLong("fontSize");
 						int getFontSize = getFontSizeLong.intValue();
 
-						StaticDataPasser.storeFontSize = getFontSize;
-
 						switch (StaticDataPasser.storeFontSize) {
-							case 15:
-								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-								break;
 
 							case 17:
 								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
@@ -373,8 +360,6 @@ public class HomeFragment extends Fragment {
 	private void getUserTypeAndLoadProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
 
-			getCurrentFontSizeFromUserSetting();
-
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
@@ -387,8 +372,11 @@ public class HomeFragment extends Fragment {
 
 							String getUserType = documentSnapshot.getString("userType");
 							String getFirstName = documentSnapshot.getString("firstname");
+							String getFontSize = documentSnapshot.getString("fontSize");
 
 							binding.firstnameTextView.setText(getFirstName);
+
+							setFontSize(getFontSize);
 
 							if (getUserType != null) {
 								switch (getUserType) {
@@ -477,6 +465,46 @@ public class HomeFragment extends Fragment {
 
 	}
 
+	private void setFontSize(String fontSize) {
+
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.homeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.thankYouRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerDisabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.arrivalTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+	}
+
 	private void getUserTypeForMap(String userType) {
 		if (userType.equals("Driver")) {
 			intent = new Intent(getActivity(), MapDriverActivity.class);
@@ -509,10 +537,7 @@ public class HomeFragment extends Fragment {
 
 								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
 									binding.passengerDisabilityTextView.setVisibility(View.GONE);
-									binding.passengerMedicalConditionTextView
-											.setText("Medical condition: " + passengerBookingModel.getPassengerMedicalCondition());
 								} else {
-									binding.passengerMedicalConditionTextView.setVisibility(View.GONE);
 									binding.passengerDisabilityTextView
 											.setText("Disability: " + passengerBookingModel.getPassengerDisability());
 								}

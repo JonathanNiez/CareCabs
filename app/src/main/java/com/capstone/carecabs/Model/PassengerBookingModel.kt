@@ -19,8 +19,10 @@ data class PassengerBookingModel(
     val driverArrivalTime: Long = 0L,
     val vehicleColor: String = "",
     val vehiclePlateNumber: String = "",
+    val pickupLocation : String = "",
     val pickupLongitude: Double = 0.0,
     val pickupLatitude: Double = 0.0,
+    val destinationLocation : String = "",
     val destinationLongitude: Double = 0.0,
     val destinationLatitude: Double = 0.0,
 ){

@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	tools:context=".Fragments.AccountFragment">
 
 	<androidx.cardview.widget.CardView
@@ -12,31 +12,19 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/vermillion"
-		app:cardElevation="10dp">
+		app:cardBackgroundColor="@color/sky_blue"
+		app:cardElevation="5dp">
 
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<androidx.appcompat.widget.AppCompatImageButton
-				android:id="@+id/imgBackBtn"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentStart="true"
-				android:layout_alignParentTop="true"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
-				android:background="@color/vermillion"
-				android:src="@drawable/back_50_2" />
-
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView"
+				android:id="@+id/myProfileTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="MY PROFILE"
 				android:textColor="@color/white"
@@ -61,7 +49,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
 				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/tomato"
+				android:backgroundTint="@color/dark_cyan"
 				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
@@ -114,7 +102,7 @@
 									android:text="Firstname"
 									android:textAlignment="center"
 									android:textColor="@color/black"
-									android:textSize="22sp" />
+									android:textSize="20sp" />
 
 
 								<androidx.appcompat.widget.AppCompatTextView
@@ -126,7 +114,7 @@
 									android:text="Lastname"
 									android:textAlignment="center"
 									android:textColor="@color/black"
-									android:textSize="22sp" />
+									android:textSize="20sp" />
 
 								<RelativeLayout
 									android:layout_width="match_parent"
@@ -158,14 +146,12 @@
 
 								</RelativeLayout>
 
-
 							</androidx.appcompat.widget.LinearLayoutCompat>
-
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
 						<androidx.appcompat.widget.AppCompatTextView
-							android:id="@+id/idScannedTextView"
+							android:id="@+id/idNotScannedTextView"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
@@ -305,14 +291,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/personalInfoBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/personal_data_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Personal Info"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -321,31 +307,15 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/editProfileBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/edit_32png"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Edit Profile"
-					android:textAlignment="textStart"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-				<androidx.appcompat.widget.AppCompatButton
-					android:id="@+id/tripsBtn"
-					android:layout_width="match_parent"
-					android:layout_height="60dp"
-					android:layout_marginBottom="5dp"
-					android:background="@drawable/custom_card_view_1"
-					android:drawableStart="@drawable/trip_32"
-					android:drawableEnd="@drawable/right_arrow"
-					android:drawablePadding="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
-					android:text="Trips"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
@@ -353,14 +323,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/scanIDBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/scan_id_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Scan ID"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -369,14 +339,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/changePasswordBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/reset_password_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Change Password"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -385,14 +355,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/appSettingsBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/settings_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="App Settings"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -401,14 +371,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/aboutBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/information_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="About"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -417,14 +387,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/contactUsBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/contact_us_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Contact Us"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -433,14 +403,14 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/feedbackBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:drawableStart="@drawable/feedback_32"
 					android:drawableEnd="@drawable/right_arrow"
 					android:drawablePadding="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Submit a Feedback"
 					android:textAlignment="textStart"
 					android:textColor="@color/black"
@@ -449,13 +419,13 @@
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/signOutBtn"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
+					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
 					android:background="@drawable/custom_card_view_1"
 					android:backgroundTint="@color/platinum"
 					android:drawableEnd="@drawable/shutdown_32"
 					android:fontFamily="@font/gabarito_bold"
-					android:padding="10dp"
+					android:padding="15dp"
 					android:text="Sign Out"
 					android:textAlignment="center"
 					android:textColor="@color/red"
@@ -466,5 +436,23 @@
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.core.widget.NestedScrollView>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/backFloatingBtn"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentEnd="true"
+		android:layout_alignParentBottom="true"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginBottom="10dp"
+		android:backgroundTint="@color/cyan"
+		android:contentDescription="@string/accessibility"
+		android:elevation="5dp"
+		android:importantForAccessibility="yes"
+		android:src="@drawable/back"
+		app:fabSize="normal"
+		app:useCompatPadding="true" />
 
 </RelativeLayout>

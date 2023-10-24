@@ -1,40 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="gray">#C0C0C0</color>
-    <color name="light_gray">#E4DDDD</color>
-    <color name="dark_gray">#36363A</color>
+	<color name="black">#FF000000</color>
+	<color name="white">#FFFFFFFF</color>
+	<color name="gray">#C0C0C0</color>
+	<color name="light_gray">#E4DDDD</color>
+	<color name="dark_gray">#36363A</color>
 
-    <color name="light_red">#FF2C2C</color>
-    <color name="red">#EF0909</color>
-    <color name="dark_red">#B90000</color>
-    <color name="green">#2B942F</color>
-    <color name="light_green">#4FFF56</color>
-    <color name="dirty_yellow">#F6CD93</color>
-    <color name="yellow">#F9EE93</color>
-    <color name="cheese">#FFC800</color>
+	<color name="light_red">#FF2C2C</color>
+	<color name="red">#EF0909</color>
+	<color name="dark_red">#B90000</color>
+	<color name="green">#2B942F</color>
+	<color name="light_green">#4FFF56</color>
+	<color name="dirty_yellow">#F6CD93</color>
+	<color name="yellow">#F9EE93</color>
+	<color name="cheese">#FFC800</color>
 
-    <color name="rich_black">#0E1116</color>
-    <color name="yinmn_blue">#374A67</color>
-    <color name="ultra_violet">#616283</color>
-    <color name="mounbatten_pink">#9E7B9B</color>
-    <color name="wisteria">#CB9CF2</color>
+	<color name="rich_black">#0E1116</color>
+	<color name="yinmn_blue">#374A67</color>
+	<color name="ultra_violet">#616283</color>
+	<color name="mounbatten_pink">#9E7B9B</color>
+	<color name="wisteria">#CB9CF2</color>
 
-    <color name="tomato">#F85A3E</color>
-    <color name="orange">#FF945F</color>
-    <color name="cinnabar">#E15634</color>
-    <color name="vermillion">#E63B2E</color>
-    <color name="platinum">#E1E6E1</color>
+	<color name="tomato">#F85A3E</color>
+	<color name="orange">#FF945F</color>
+	<color name="cinnabar">#E15634</color>
+	<color name="vermillion">#E63B2E</color>
+	<color name="platinum">#E1E6E1</color>
 
-    <color name="transparent">#00FFFFFF</color>
-    <color name="semi_transparent">#80FFFFFF</color>
-    <color name="background">#FFF0DB</color>
-    <color name="dark_blue">#0D1282</color>
-    <color name="blue">#3265FF</color>
-    <color name="light_blue">#5A61FF</color>
+	<color name="transparent">#00FFFFFF</color>
+	<color name="semi_transparent">#80FFFFFF</color>
+	<color name="background">#FFF0DB</color>
+	<color name="dark_blue">#0D1282</color>
+	<color name="blue">#3265FF</color>
+	<color name="light_blue">#5A61FF</color>
 
-    <color name="selected_item_color">#374A67</color>
-    <color name="unselected_item_color">#E15634</color>
+	<color name="selected_item_color">#374A67</color>
+	<color name="unselected_item_color">#E15634</color>
+
+	<color name="sky_blue">#00b4d8</color>
+	<color name="dark_cyan">#0093B1</color>
+	<color name="cyan">#08bdbd</color>
+	<color name="white_blue">#caf0f8</color>
+	<color name="lime">#abff4f</color>
+
+<!--	<color name="mar_2">#ff9914</color>-->
+<!--	<color name="mar_2">#f21b3f</color>-->
+<!--	<color name="mar_2">#ff9914</color>-->
+
 
 </resources>

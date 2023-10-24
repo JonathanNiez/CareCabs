@@ -45,6 +45,10 @@ import java.util.Objects;
 
 public class AccountFragment extends Fragment {
 	private final String TAG = "AccountFragment";
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
 	private DocumentReference documentReference;
 	private String userType;
 	private Intent intent;
@@ -115,7 +119,7 @@ public class AccountFragment extends Fragment {
 		binding.driverStatusTextView1.setVisibility(View.GONE);
 		binding.driverStatusTextView2.setVisibility(View.GONE);
 		binding.driverRatingTextView.setVisibility(View.GONE);
-		binding.idScannedTextView.setVisibility(View.GONE);
+		binding.idNotScannedTextView.setVisibility(View.GONE);
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
@@ -130,11 +134,6 @@ public class AccountFragment extends Fragment {
 
 		binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
 
-		binding.tripsBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), TripsActivity.class);
-			startActivity(intent);
-		});
-
 		binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
 		binding.feedbackBtn.setOnClickListener(v -> {
@@ -142,7 +141,7 @@ public class AccountFragment extends Fragment {
 			startActivity(intent);
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> backToHomeFragment());
+		binding.backFloatingBtn.setOnClickListener(v -> backToHomeFragment());
 
 		binding.signOutBtn.setOnClickListener(v -> showSignOutDialog());
 
@@ -305,7 +304,6 @@ public class AccountFragment extends Fragment {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
-			getCurrentFontSizeFromUserSetting();
 
 			String userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -322,6 +320,9 @@ public class AccountFragment extends Fragment {
 							String getFirstName = documentSnapshot.getString("firstname");
 							String getLastName = documentSnapshot.getString("lastname");
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+							String getFontSize = documentSnapshot.getString("fontSize");
+
+							setFontSize(getFontSize);
 
 							if (getUserType != null) {
 								userType = getUserType;
@@ -385,8 +386,7 @@ public class AccountFragment extends Fragment {
 										getResources().getColor(R.color.light_red)
 								);
 								binding.verificationStatusTextView.setText("Not Verified");
-
-								binding.idScannedTextView.setVisibility(View.VISIBLE);
+								binding.idNotScannedTextView.setVisibility(View.VISIBLE);
 
 								Typeface typeface = ResourcesCompat.getFont(context, R.font.gabarito_bold);
 
@@ -396,7 +396,7 @@ public class AccountFragment extends Fragment {
 
 							} else {
 								binding.imageViewVerificationMark.setImageResource(R.drawable.check_24);
-
+								binding.scanIDBtn.setText("Rescan ID");
 								binding.verificationStatusTextView.setTextColor(
 										getResources().getColor(R.color.green)
 								);
@@ -420,6 +420,39 @@ public class AccountFragment extends Fragment {
 		} else {
 			closePleaseWaitDialog();
 		}
+	}
+
+	private void setFontSize(String fontSize) {
+
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showRegisterNotCompleteDialog() {

@@ -43,7 +43,7 @@ public class ChangeFontSizeFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentChangeFontSizeBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -87,20 +87,21 @@ public class ChangeFontSizeFragment extends Fragment {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
+
 			Map<String, Object> updateFontSize = new HashMap<>();
 			updateFontSize.put("fontSize", fontSize);
 
-			documentReference.update(updateFontSize).addOnSuccessListener(new OnSuccessListener<Void>() {
-				@Override
-				public void onSuccess(Void unused) {
-					closePleaseWaitDialog();
+			documentReference.update(updateFontSize)
+					.addOnSuccessListener(unused -> {
+						closePleaseWaitDialog();
 
-				}
-			}).addOnFailureListener(e -> {
-				closePleaseWaitDialog();
+						Log.i(TAG, "updateFontSizeToFireStore - onSuccess: font size updated successfully");
+					})
+					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, "updateFontSizeToFireStore - onFailure: " + e.getMessage());
+					});
 		}
 	}
 

@@ -23,7 +23,7 @@
 		android:layout_marginBottom="10dp"
 		android:elevation="10dp"
 		android:textAlignment="center"
-		app:maneuverViewBackgroundColor="@color/vermillion" />
+		app:maneuverViewBackgroundColor="@color/dark_cyan" />
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
@@ -195,8 +195,8 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
-					app:tripProgressTextColor="@color/black"
-					android:layout_weight="5" />
+					android:layout_weight="5"
+					app:tripProgressTextColor="@color/black" />
 
 				<androidx.appcompat.widget.AppCompatImageButton
 					android:id="@+id/stopNavigationImgBtn"
@@ -264,7 +264,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/cinnabar"
+		android:background="@color/cyan"
 		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"

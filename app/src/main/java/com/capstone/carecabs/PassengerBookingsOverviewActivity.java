@@ -93,7 +93,7 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 
 		binding.noPassengerBookingsTextView.setVisibility(View.GONE);
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
 		});
 
@@ -104,6 +104,7 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		finish();
+		super.onBackPressed();
 	}
 
 	private void loadPassengerBookingsFromDatabase() {

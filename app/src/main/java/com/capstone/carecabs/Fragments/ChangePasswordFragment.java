@@ -79,13 +79,9 @@ public class ChangePasswordFragment extends Fragment {
 		context = getContext();
 		checkUserRegisterMethod();
 
-		binding.imgBackBtn.setOnClickListener(v -> {
-			backToAccountFragment();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
-		binding.okayBtn.setOnClickListener(v -> {
-			backToAccountFragment();
-		});
+		binding.okayBtn.setOnClickListener(v -> backToAccountFragment());
 
 		binding.resetPasswordBtn.setOnClickListener(v -> {
 			String stringOldPassword = binding.oldPasswordEditText.getText().toString();

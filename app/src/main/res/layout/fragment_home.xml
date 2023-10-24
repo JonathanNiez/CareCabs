@@ -4,14 +4,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	tools:context=".Fragments.HomeFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardBackgroundColor="@color/vermillion"
+		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
@@ -19,14 +19,11 @@
 			android:layout_height="wrap_content">
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView"
+				android:id="@+id/homeTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_marginStart="20dp"
-				android:layout_marginTop="20dp"
-				android:layout_marginEnd="20dp"
-				android:layout_marginBottom="20dp"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="HOME"
 				android:textColor="@color/white"
@@ -51,7 +48,7 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_margin="10dp"
-				app:cardBackgroundColor="@color/tomato"
+				app:cardBackgroundColor="@color/dark_cyan"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -63,6 +60,7 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/hiTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
@@ -74,7 +72,7 @@
 						android:text="Hi and Welcome to CareCabs"
 						android:textAlignment="center"
 						android:textColor="@color/white"
-						android:textSize="20sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/firstnameTextView"
@@ -89,7 +87,7 @@
 						android:text="Name"
 						android:textAlignment="center"
 						android:textColor="@color/white"
-						android:textSize="22sp" />
+						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/currentTimeTextView"
@@ -127,7 +125,7 @@
 					android:id="@+id/progressBarLayout1"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:background="@color/tomato"
+					android:background="@color/dark_cyan"
 					android:gravity="center"
 					android:orientation="vertical">
 
@@ -235,6 +233,7 @@
 								android:padding="5dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/rateDriverTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
@@ -282,13 +281,14 @@
 									app:srcCompat="@drawable/check_48" />
 
 								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/thankYouRatingTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
 									android:fontFamily="@font/gabarito_bold"
 									android:text="Thank you for rating our Driver"
 									android:textColor="@color/black"
-									android:textSize="18sp" />
+									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -371,7 +371,7 @@
 								android:text="Passenger Name"
 								android:textAlignment="center"
 								android:textColor="@color/black"
-								android:textSize="20sp" />
+								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/passengerTypeTextView"
@@ -382,10 +382,10 @@
 								android:text="Passenger Type"
 								android:textAlignment="center"
 								android:textColor="@color/black"
-								android:textSize="18sp" />
+								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
-								android:id="@+id/passenger_disability_text_view"
+								android:id="@+id/passengerDisabilityTextView"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
@@ -393,18 +393,7 @@
 								android:text="Disability"
 								android:textAlignment="center"
 								android:textColor="@color/black"
-								android:textSize="18sp" />
-
-							<androidx.appcompat.widget.AppCompatTextView
-								android:id="@+id/passengerMedicalConditionTextView"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_margin="5dp"
-								android:fontFamily="@font/gabarito_semibold"
-								android:text="Medical Condition"
-								android:textAlignment="center"
-								android:textColor="@color/black"
-								android:textSize="18sp" />
+								android:textSize="17sp" />
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -489,7 +478,7 @@
 								android:text="Driver Name"
 								android:textAlignment="center"
 								android:textColor="@color/black"
-								android:textSize="20sp" />
+								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/vehicleColorTextView"
@@ -500,7 +489,7 @@
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Vehicle Color"
 								android:textColor="@color/black"
-								android:textSize="18sp" />
+								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/vehiclePlateNumberTextView"
@@ -511,7 +500,7 @@
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Vehicle Plate Number"
 								android:textColor="@color/black"
-								android:textSize="18sp" />
+								android:textSize="17sp" />
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -658,6 +647,7 @@
 									app:srcCompat="@drawable/profile_64" />
 
 								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/myProfileTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
@@ -694,6 +684,7 @@
 									app:srcCompat="@drawable/location_64_2" />
 
 								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/tripHistoryTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
@@ -752,6 +743,7 @@
 						android:textSize="25sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/availabilityTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
@@ -867,7 +859,7 @@
 						android:text="Total Trips"
 						android:textAlignment="center"
 						android:textColor="@color/blue"
-						android:textSize="25sp" />
+						android:textSize="20sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 

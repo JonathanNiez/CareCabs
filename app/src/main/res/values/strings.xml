@@ -58,5 +58,6 @@
 	<string name="change_password_warning">Once you reset your password\nYou won\'t be able to change it in 30 days</string>
 
 	<string name="tap_to_upload_profile_picture">Tap/Click on the picture icon to upload your profile picture</string>
+	<string name="accessibility">accessibility</string>
 
 </resources>

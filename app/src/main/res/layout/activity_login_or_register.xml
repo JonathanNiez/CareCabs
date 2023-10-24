@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/tomato"
+	android:background="@color/white_blue"
 	tools:context=".LoginOrRegisterActivity">
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -26,7 +26,7 @@
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
 		android:layout_margin="10dp"
-		app:cardBackgroundColor="@color/vermillion"
+		app:cardBackgroundColor="@color/sky_blue"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 

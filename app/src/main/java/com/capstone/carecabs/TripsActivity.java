@@ -61,7 +61,7 @@ public class TripsActivity extends AppCompatActivity {
 		binding = ActivityTripsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
 		});
 

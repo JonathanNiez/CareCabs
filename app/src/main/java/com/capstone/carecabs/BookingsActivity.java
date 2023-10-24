@@ -25,7 +25,7 @@ public class BookingsActivity extends AppCompatActivity {
 		binding = ActivityBookingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
 		});
 
