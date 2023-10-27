@@ -41,6 +41,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -70,12 +71,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class EditAccountFragment extends Fragment {
+public class EditAccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener{
 	private final String TAG = "EditAccountFragment";
+	private float textSizeSP;
+	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
-	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
-	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
@@ -781,11 +784,40 @@ public class EditAccountFragment extends Fragment {
 
 	private void setFontSize(String fontSize) {
 
-		float textSizeSP;
-		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.editProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.tapImageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.guideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+		binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		if (isChecked) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
 		} else {
 			textSizeSP = DEFAULT_TEXT_SIZE_SP;
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
@@ -1502,7 +1534,6 @@ public class EditAccountFragment extends Fragment {
 			showNoInternetDialog();
 		}
 	}
-
 	//			int pixel = 0;
 //			for (int n = 0; n < imageSize; n++) {
 //				for (int i = 0; i < imageSize; i++) {
@@ -1511,6 +1542,7 @@ public class EditAccountFragment extends Fragment {
 //					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
 //					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
 //				}
+
 //			}
 
 	private void identifyCar(Bitmap bitmap) {

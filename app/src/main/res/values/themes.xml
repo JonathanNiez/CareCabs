@@ -1,9 +1,71 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.CareCabs" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-         <item name="colorPrimary">@color/black</item>
-    </style>
+	<!-- Base application theme. -->
+	<style name="Base.Theme.CareCabs" parent="Theme.Material3.DayNight.NoActionBar">
+		<!-- Customize your light theme here. -->
+		<item name="colorPrimary">@color/black</item>
+	</style>
 
-    <style name="Theme.CareCabs" parent="Base.Theme.CareCabs" />
+	<style name="Theme.CareCabs" parent="Base.Theme.CareCabs" />
+
+	<style name="MainBackground">
+		<item name="android:backgroundTint">@color/white_blue</item>
+	</style>
+
+	<style name="ToolbarBackground">
+		<item name="cardBackgroundColor">@color/sky_blue</item>
+	</style>
+
+	<style name="BaseCardBackground">
+		<item name="cardBackgroundColor">@color/white</item>
+	</style>
+
+	<style name="TopCardBackground">
+		<item name="backgroundTint">@color/dark_cyan</item>
+		<item name="background">@drawable/rectangle_one</item>
+	</style>
+
+	<style name="GreetingCardBackground">
+		<item name="cardBackgroundColor">@color/dark_cyan</item>
+	</style>
+
+	<style name="TextColor">
+		<item name="android:textColor">@color/black</item>
+		<item name="android:elevation">5dp</item>
+	</style>
+
+	<style name="IndicatorTextColor">
+		<item name="android:textColor">@color/blue</item>
+	</style>
+
+	<style name="CareTextColor">
+		<item name="android:textColor">@color/black</item>
+	</style>
+
+	<style name="LongButton">
+		<item name="android:backgroundTint">@color/white</item>
+	</style>
+
+	<style name="MyProfileFragmentButton">
+		<item name="android:backgroundTint">@color/white</item>
+		<item name="android:textColor">@color/black</item>
+		<item name="android:drawableTint" tools:targetApi="m">@color/black</item>
+	</style>
+
+	<style name="BottomNavBackground">
+		<item name="android:background">@color/cyan</item>
+	</style>
+
+	<style name="FloatingButtonBackground">
+		<item name="android:backgroundTint">@color/cyan</item>
+	</style>
+
+	<style name="HorizontalLineBackground">
+		<item name="android:background">@color/black</item>
+	</style>
+
+	<style name="TabLayoutBackground">
+		<item name="android:background">@color/white_blue</item>
+		<item name="tabTextColor">@color/black</item>
+	</style>
+
 </resources>

@@ -345,6 +345,7 @@ public class RegisterActivity extends AppCompatActivity {
 		registerUser.put("phoneNumber", phoneNumber);
 		registerUser.put("accountCreationDate", formattedDate);
 		registerUser.put("fontSize", fontSize);
+		registerUser.put("theme", "normal");
 		registerUser.put("registerType", "Email");
 		registerUser.put("isVerified", false);
 

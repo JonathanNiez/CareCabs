@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.AccountFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
@@ -45,19 +45,18 @@
 			android:orientation="vertical">
 
 			<RelativeLayout
+				style="@style/TopCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="10dp"
-				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/dark_cyan"
 				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
+					style="@style/BaseCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					app:cardBackgroundColor="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -95,25 +94,25 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/firstnameTextView"
+									style="@style/TextColor"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Firstname"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="20sp" />
 
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/lastnameTextView"
+									style="@style/TextColor"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Lastname"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="20sp" />
 
 								<RelativeLayout
@@ -128,12 +127,12 @@
 
 									<androidx.appcompat.widget.AppCompatTextView
 										android:id="@+id/verificationStatusTextView"
+										style="@style/TextColor"
 										android:layout_width="wrap_content"
 										android:layout_height="wrap_content"
 										android:fontFamily="@font/gabarito_semibold"
 										android:text="Verification Status"
 										android:textAlignment="center"
-										android:textColor="@color/black"
 										android:textSize="17sp" />
 
 									<androidx.appcompat.widget.AppCompatImageView
@@ -182,6 +181,7 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/userTypeTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
@@ -192,39 +192,38 @@
 									android:padding="10dp"
 									android:text="User Type"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/disabilityTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Disability"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/medConTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Medical Condition"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/driverStatusTextView1"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Driver Status:"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatTextView
@@ -277,10 +276,10 @@
 			</RelativeLayout>
 
 			<View
+				style="@style/HorizontalLineBackground"
 				android:layout_width="match_parent"
 				android:layout_height="5dp"
-				android:layout_margin="10dp"
-				android:background="@color/dark_gray" />
+				android:layout_margin="10dp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
@@ -290,6 +289,7 @@
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/personalInfoBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -301,11 +301,11 @@
 					android:padding="15dp"
 					android:text="Personal Info"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/editProfileBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -317,11 +317,11 @@
 					android:padding="15dp"
 					android:text="Edit Profile"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/scanIDBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -333,11 +333,11 @@
 					android:padding="15dp"
 					android:text="Scan ID"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/changePasswordBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -349,11 +349,11 @@
 					android:padding="15dp"
 					android:text="Change Password"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/appSettingsBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -365,11 +365,11 @@
 					android:padding="15dp"
 					android:text="App Settings"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/aboutBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -381,11 +381,11 @@
 					android:padding="15dp"
 					android:text="About"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/contactUsBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -397,11 +397,11 @@
 					android:padding="15dp"
 					android:text="Contact Us"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/feedbackBtn"
+					style="@style/MyProfileFragmentButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="5dp"
@@ -413,7 +413,6 @@
 					android:padding="15dp"
 					android:text="Submit a Feedback"
 					android:textAlignment="textStart"
-					android:textColor="@color/black"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatButton
@@ -439,6 +438,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -447,7 +447,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"

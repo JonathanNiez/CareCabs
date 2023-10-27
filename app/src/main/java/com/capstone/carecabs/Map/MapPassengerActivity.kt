@@ -787,6 +787,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             true
         } else {
             showConfirmBookingBottomSheet(point)
+
             false
         }
     }

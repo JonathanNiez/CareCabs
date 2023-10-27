@@ -6,8 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.widget.Toast;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.FeedbackModel;
 import com.capstone.carecabs.databinding.ActivityFeedbackBinding;
@@ -18,8 +20,14 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.Calendar;
 import java.util.UUID;
 
-public class FeedbackActivity extends AppCompatActivity {
+public class FeedbackActivity extends AppCompatActivity implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "FeedbackActivity";
+	private float textSizeSP;
+	private float textHeaderSizeSP;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private ActivityFeedbackBinding binding;
 
 	@Override
@@ -28,8 +36,14 @@ public class FeedbackActivity extends AppCompatActivity {
 		binding = ActivityFeedbackBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
+		});
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
+			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 		});
 
 		binding.submitBtn.setOnClickListener(v -> {
@@ -42,10 +56,41 @@ public class FeedbackActivity extends AppCompatActivity {
 						comment);
 			}
 		});
+	}
 
-		binding.backBtn.setOnClickListener(v -> {
-			finish();
-		});
+	@Override
+	public void onBackPressed() {
+		finish();
+		super.onBackPressed();
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		if (isChecked) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.submitFeedbackTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.feedbackThankYouTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.commentEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.submitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 
 	}
 
@@ -90,20 +135,10 @@ public class FeedbackActivity extends AppCompatActivity {
 
 					})
 					.addOnFailureListener(e -> {
-						Toast.makeText(FeedbackActivity.this, "Feedback failed to submit", Toast.LENGTH_LONG).show();
+						Toast.makeText(FeedbackActivity.this, "Feedback failed to submit\nPlease try again", Toast.LENGTH_LONG).show();
 
 						Log.e(TAG, "submitFeedback: " + e.getMessage());
 					});
-		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		boolean shouldExit = false;
-		if (shouldExit) {
-			super.onBackPressed();
-		} else {
-			finish();
 		}
 	}
 }

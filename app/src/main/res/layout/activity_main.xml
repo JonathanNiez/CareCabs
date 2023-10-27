@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/sky_blue"
 	tools:context=".MainActivity">
 
 	<FrameLayout
@@ -15,6 +15,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/settingsFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_above="@id/bottomNavigationView"
@@ -23,7 +24,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"
@@ -33,10 +33,10 @@
 
 	<com.google.android.material.bottomnavigation.BottomNavigationView
 		android:id="@+id/bottomNavigationView"
+		style="@style/BottomNavBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/cyan"
 		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"

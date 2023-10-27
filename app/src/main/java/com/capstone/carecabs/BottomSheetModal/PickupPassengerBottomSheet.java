@@ -161,7 +161,6 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 									binding.pickupLocationTextView.setText("Location not found");
 								}
-
 							}
 
 							@Override

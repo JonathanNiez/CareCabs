@@ -24,6 +24,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.FeedbackActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoggingOutActivity;
@@ -43,12 +45,14 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Objects;
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "AccountFragment";
+	private float textSizeSP;
+	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
-	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
-	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private String userType;
 	private Intent intent;
@@ -60,6 +64,7 @@ public class AccountFragment extends Fragment {
 	private FragmentAccountBinding binding;
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
+	private RequestManager requestManager;
 
 	@Override
 	public void onStart() {
@@ -96,10 +101,9 @@ public class AccountFragment extends Fragment {
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		closeSignOutDialog();
-		closePleaseWaitDialog();
-		closeRegisterNotCompleteDialog();
-		closeNoInternetDialog();
+		if (requestManager != null){
+			requestManager.clear(binding.profilePic);
+		}
 	}
 
 	@Override
@@ -123,6 +127,7 @@ public class AccountFragment extends Fragment {
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
+		requestManager = Glide.with(this);
 
 		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
 
@@ -424,8 +429,6 @@ public class AccountFragment extends Fragment {
 
 	private void setFontSize(String fontSize) {
 
-		float textSizeSP;
-		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -434,6 +437,37 @@ public class AccountFragment extends Fragment {
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
 		}
 
+		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		if (isChecked) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
 		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);

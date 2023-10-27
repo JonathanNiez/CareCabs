@@ -12,11 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentAboutBinding;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
 
-public class AboutFragment extends Fragment {
+public class AboutFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
     private FragmentAboutBinding binding;
 
     @Override
@@ -46,5 +47,10 @@ public class AboutFragment extends Fragment {
         fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+    }
+
+    @Override
+    public void onFontSizeChanged(boolean isChecked) {
+
     }
 }

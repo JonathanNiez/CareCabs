@@ -180,7 +180,8 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_semibold"
-				android:text="Navigation Status"
+				android:text="Navigation status"
+				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 

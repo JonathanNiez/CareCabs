@@ -83,7 +83,7 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 				holder.binding.passengerTypeImageView.setImageResource(R.drawable.senior_32);
 				break;
 
-			case "Persons with Disability (PWD)":
+			case "Person with Disabilities (PWD)":
 				holder.binding.passengerTypeImageView.setImageResource(R.drawable.pwd_32);
 				break;
 		}

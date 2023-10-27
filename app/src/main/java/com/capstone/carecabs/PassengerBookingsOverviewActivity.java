@@ -281,7 +281,6 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 		intent = new Intent(PassengerBookingsOverviewActivity.this, MapPassengerActivity.class);
 		startActivity(intent);
 		finish();
-
 	}
 
 	private void goToMapAndFindRoute(Point point) {
@@ -292,7 +291,6 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 		startActivity(intent);
 		finish();
 	}
-
 
 	@SuppressLint("SetTextI18n")
 	private void showBookingInfoDialog(

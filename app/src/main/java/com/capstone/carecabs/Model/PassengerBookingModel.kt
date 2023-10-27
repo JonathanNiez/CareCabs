@@ -3,7 +3,7 @@ package com.capstone.carecabs.Model
 data class PassengerBookingModel(
     val bookingID: String = "",
     val bookingStatus: String = "",
-    val isDriverRated : Boolean = false,
+    val ratingStatus : String = "",
     val bookingDate: String = "",
     val fcmToken: String = "",
     val tripID: String = "",
@@ -25,7 +25,5 @@ data class PassengerBookingModel(
     val destinationLocation : String = "",
     val destinationLongitude: Double = 0.0,
     val destinationLatitude: Double = 0.0,
-){
-    constructor(): this(isDriverRated = false)
-}
+)
 

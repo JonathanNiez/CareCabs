@@ -133,14 +133,6 @@ public class ScanIDActivity extends AppCompatActivity {
 
 				if (getUserType != null) {
 
-					binding.imgBackBtn.setOnClickListener(v -> {
-						if (isUserVerified) {
-							goToMainActivity();
-						} else {
-							showCancelScanIDDialog();
-						}
-					});
-
 					binding.backBtn.setOnClickListener(v -> {
 						if (isUserVerified) {
 							goToMainActivity();
@@ -435,7 +427,7 @@ public class ScanIDActivity extends AppCompatActivity {
 								binding.idScanLayout.setVisibility(View.GONE);
 								binding.scanYourIDTypeTextView.setVisibility(View.GONE);
 
-								binding.imgBackBtn.setOnClickListener(view -> {
+								binding.backBtn.setOnClickListener(view -> {
 									goToMainActivity();
 								});
 							}

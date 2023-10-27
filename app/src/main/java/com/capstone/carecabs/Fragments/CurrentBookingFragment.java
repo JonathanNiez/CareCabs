@@ -132,7 +132,7 @@ public class CurrentBookingFragment extends Fragment {
 												&& currentBookingModel.getBookingStatus().equals("Driver on the way")
 										|| currentBookingModel.getPassengerUserID().equals(userID)
 										&& currentBookingModel.getBookingStatus().equals("Transported to destination")
-										&& !currentBookingModel.isDriverRated()
+										&& !currentBookingModel.getRatingStatus().equals("driver not rated")
 								) {
 
 									currentBookingModelList.add(currentBookingModel);

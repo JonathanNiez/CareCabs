@@ -18,16 +18,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -64,12 +69,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements
+		SettingsBottomSheet.FontSizeChangeListener, SettingsBottomSheet.ThemeChangeListener {
 	private final String TAG = "HomeFragment";
+	private float textSizeSP;
+	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
-	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 3;
-	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 3;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
+	private static final String THEME_NORMAL = "normal";
+	private static final String THEME_CONTRAST = "contrast";
+	private String theme;
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private int currentPage = 0;
 	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
@@ -86,10 +97,7 @@ public class HomeFragment extends Fragment {
 	private DatabaseReference databaseReference;
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
-
-	public interface OnFragmentInteractionListener {
-		void onFragmentChange(int menuItemId);
-	}
+	private RequestManager requestManager;
 
 	@Override
 	public void onPause() {
@@ -109,6 +117,17 @@ public class HomeFragment extends Fragment {
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
+
+	}
+
+	@Override
+	public void onDestroyView() {
+		super.onDestroyView();
+
+		if (requestManager != null){
+			requestManager.clear(binding.driverProfilePictureImageView);
+			requestManager.clear(binding.currentPassengerProfilePictureImageView);
+		}
 	}
 
 	@Override
@@ -135,9 +154,11 @@ public class HomeFragment extends Fragment {
 		binding.driverOnTheWayLayout.setVisibility(View.GONE);
 		binding.currentPassengerLayout.setVisibility(View.GONE);
 		binding.transportedToDestinationLayout.setVisibility(View.GONE);
+		binding.toDestinationLayout.setVisibility(View.GONE);
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
+		requestManager = Glide.with(this);
 
 		slideFragments.add(new CarouselFragment1());
 		slideFragments.add(new CarouselFragment2());
@@ -171,7 +192,108 @@ public class HomeFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		checkUserIfRegisterComplete();
+	}
 
+	@Override
+	public void onThemeChanged(boolean isChecked) {
+		if (isChecked){
+			theme = THEME_CONTRAST;
+		}else {
+			theme = THEME_NORMAL;
+		}
+
+		setTheme(theme);
+	}
+	private void setTheme(String theme){
+
+		int colorResID;
+
+		if (theme.equals(THEME_CONTRAST)){
+			colorResID = R.color.darker_gray;
+
+		}else {
+			colorResID = R.color.sky_blue;
+		}
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+
+		if (isChecked) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.homeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.thankYouRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerDisabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.arrivalTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.viewOnMapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.homeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.thankYouRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerDisabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.arrivalTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.viewOnMapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	@SuppressLint({"DefaultLocale", "SetTextI18n"})
@@ -248,7 +370,6 @@ public class HomeFragment extends Fragment {
 		}
 	}
 
-
 	public class NotificationReceiver extends BroadcastReceiver {
 
 		@Override
@@ -258,53 +379,6 @@ public class HomeFragment extends Fragment {
 			}
 		}
 
-	}
-
-	private void getCurrentFontSizeFromUserSetting() {
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection)
-				.document(FirebaseMain.getUser().getUid());
-
-		documentReference.get()
-				.addOnSuccessListener(documentSnapshot -> {
-					if (documentSnapshot != null && documentSnapshot.exists()) {
-						Long getFontSizeLong = documentSnapshot.getLong("fontSize");
-						int getFontSize = getFontSizeLong.intValue();
-
-						switch (StaticDataPasser.storeFontSize) {
-
-							case 17:
-								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-								break;
-
-							case 19:
-								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-								break;
-
-							case 21:
-								binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.driverRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-								binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-
-								break;
-						}
-					} else {
-
-						Log.e(TAG, "Not Exist");
-
-					}
-				})
-				.addOnFailureListener(e -> Log.e(TAG, "getCurrentFontSizeFromUserSetting: " + e.getMessage()));
 	}
 
 	private void goToEditAccountFragment(Context context) {
@@ -373,10 +447,12 @@ public class HomeFragment extends Fragment {
 							String getUserType = documentSnapshot.getString("userType");
 							String getFirstName = documentSnapshot.getString("firstname");
 							String getFontSize = documentSnapshot.getString("fontSize");
-
-							binding.firstnameTextView.setText(getFirstName);
+							String getTheme = documentSnapshot.getString("theme");
 
 							setFontSize(getFontSize);
+							setTheme(getTheme);
+
+							binding.firstnameTextView.setText(getFirstName);
 
 							if (getUserType != null) {
 								switch (getUserType) {
@@ -391,6 +467,7 @@ public class HomeFragment extends Fragment {
 											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
 											binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
 											showNavigationStatusLayout();
+
 										} else if (getNavigationStatus.equals("Navigating to pickup location")) {
 											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
 											showNavigationStatusLayout();
@@ -465,46 +542,6 @@ public class HomeFragment extends Fragment {
 
 	}
 
-	private void setFontSize(String fontSize) {
-
-		float textSizeSP;
-		float textHeaderSizeSP;
-		if (fontSize.equals("large")) {
-			textSizeSP = INCREASED_TEXT_SIZE_SP;
-			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
-		} else {
-			textSizeSP = DEFAULT_TEXT_SIZE_SP;
-			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
-		}
-
-		binding.homeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-
-		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.thankYouRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerDisabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.arrivalTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-
-	}
-
 	private void getUserTypeForMap(String userType) {
 		if (userType.equals("Driver")) {
 			intent = new Intent(getActivity(), MapDriverActivity.class);
@@ -532,14 +569,24 @@ public class HomeFragment extends Fragment {
 						if (passengerBookingModel != null) {
 							if (passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
 
+								if (isAdded()) {
+									Glide.with(context)
+											.load(passengerBookingModel.getPassengerProfilePicture())
+											.placeholder(R.drawable.loading_gif)
+											.into(binding.currentPassengerProfilePictureImageView);
+								}
+
+
 								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
 
 								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
 									binding.passengerDisabilityTextView.setVisibility(View.GONE);
-								} else {
+									binding.currentPassengerTypeImageView.setImageResource(R.drawable.senior_64_2);
+								} else if (passengerBookingModel.getPassengerType().equals("Person with Disabilities (PWD)")) {
 									binding.passengerDisabilityTextView
 											.setText("Disability: " + passengerBookingModel.getPassengerDisability());
+									binding.currentPassengerTypeImageView.setImageResource(R.drawable.pwd_64);
 								}
 							}
 						}
@@ -552,7 +599,6 @@ public class HomeFragment extends Fragment {
 				Log.e(TAG, "onCancelled: " + error.getMessage());
 			}
 		});
-
 	}
 
 	private void checkBookingStatus() {
@@ -571,6 +617,13 @@ public class HomeFragment extends Fragment {
 						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
 
+							if (isAdded()) {
+								Glide.with(context)
+										.load(passengerBookingModel.getDriverProfilePicture())
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.driverProfilePictureImageView);
+							}
+
 							if (
 									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) &&
 											passengerBookingModel.getBookingStatus().equals("Driver on the way")
@@ -588,26 +641,26 @@ public class HomeFragment extends Fragment {
 										.setText("Vehicle color: " + passengerBookingModel.getVehicleColor());
 								binding.vehiclePlateNumberTextView
 										.setText("Vehicle plate number: " + passengerBookingModel.getVehiclePlateNumber());
+
+								binding.viewOnMapBtn.setOnClickListener(v -> {
+									checkLocationService(passengerBookingModel.getPassengerType());
+								});
+
 							} else if (
 									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
-											&& passengerBookingModel.getBookingStatus().equals("On board")
+											&& passengerBookingModel.getBookingStatus().equals("Onboard")
 							) {
 
-								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
-								binding.tripStatusTextView.setText("You are currently Onboard to your destination");
-								binding.rateDriverLayout.setVisibility(View.GONE);
-								binding.driverRatedLayout.setVisibility(View.GONE);
+								binding.toDestinationLayout.setVisibility(View.VISIBLE);
+								binding.onBoardDestinationTextView.setText(String.valueOf(passengerBookingModel.getDestinationLatitude()));
+								binding.bookARideBtn.setVisibility(View.GONE);
 
 							} else if
 							(
 									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
-											&& !passengerBookingModel.isDriverRated() //TODO:always false
+											&& passengerBookingModel.getRatingStatus().equals("driver not rated")
 											&& passengerBookingModel.getBookingStatus().equals("Transported to destination")
 							) {
-
-								Log.d("DebugTag", "PassengerUserID: " + passengerBookingModel.getPassengerUserID());
-								Log.d("DebugTag", "isDriverRated: " + passengerBookingModel.isDriverRated());
-								Log.d("DebugTag", "BookingStatus: " + passengerBookingModel.getBookingStatus());
 
 								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
 								binding.driverRatedLayout.setVisibility(View.GONE);
@@ -641,7 +694,7 @@ public class HomeFragment extends Fragment {
 				.getReference(FirebaseMain.bookingCollection);
 
 		Map<String, Object> updateBooking = new HashMap<>();
-		updateBooking.put("isDriverRated", true);
+		updateBooking.put("ratingStatus", "driver rated");
 
 		bookingReference.child(bookingID).updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> Log.i(TAG, "rateDriver: onSuccess booking updated successfully"))

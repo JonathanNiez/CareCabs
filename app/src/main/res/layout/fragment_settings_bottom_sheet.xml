@@ -2,10 +2,11 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/parentLayout"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@drawable/smooth_top_edge"
-	android:backgroundTint="@color/white_blue"
 	tools:context=".BottomSheetModal.SettingsBottomSheet">
 
 	<androidx.appcompat.widget.LinearLayoutCompat
@@ -15,19 +16,20 @@
 		android:orientation="vertical">
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/textView1"
+			android:id="@+id/accessibilityToolBarTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
+			android:layout_margin="10dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Accessibility Toolbar"
 			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="20sp"
-			android:layout_margin="10dp"/>
+			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/textView2"
+			android:id="@+id/swipeDownTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
@@ -35,7 +37,6 @@
 			android:fontFamily="@font/gabarito_medium"
 			android:text="You can also swipe down to close this menu"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.LinearLayoutCompat
@@ -46,8 +47,10 @@
 			android:padding="5dp">
 
 			<androidx.appcompat.widget.LinearLayoutCompat
+				android:id="@+id/textSizeLayout"
+				style="@style/LongButton"
 				android:layout_width="match_parent"
-				android:layout_height="60dp"
+				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:background="@drawable/custom_card_view_1"
 				android:elevation="5dp"
@@ -56,19 +59,20 @@
 				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
+					android:id="@+id/fontImageView"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					app:srcCompat="@drawable/font_adjustment_32" />
+					app:srcCompat="@drawable/font_50" />
 
 				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/textView3"
+					android:id="@+id/increaseTextSizeTextView"
+					style="@style/TextColor"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="4"
 					android:fontFamily="@font/gabarito_medium"
-					android:text="Increase font size"
-					android:textColor="@color/black"
+					android:text="Increase text size"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.SwitchCompat
@@ -76,7 +80,86 @@
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:checked="false" />
+					android:checked="false"
+					app:thumbTint="@color/sky_blue" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:id="@+id/changeContrastLayout"
+				style="@style/LongButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:background="@drawable/custom_card_view_1"
+				android:elevation="5dp"
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:id="@+id/eyeImageView"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					app:srcCompat="@drawable/eye_50" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/changeContrastTextView"
+					style="@style/TextColor"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="4"
+					android:fontFamily="@font/gabarito_medium"
+					android:text="Change contrast"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.SwitchCompat
+					android:id="@+id/contrastSwitch"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:checked="false"
+					app:thumbTint="@color/sky_blue" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:id="@+id/voiceAssistantLayout"
+				style="@style/LongButton"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:background="@drawable/custom_card_view_1"
+				android:elevation="5dp"
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:id="@+id/voiceImageView"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					app:srcCompat="@drawable/voice_50" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/voiceAssistantTextView"
+					style="@style/TextColor"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="4"
+					android:fontFamily="@font/gabarito_medium"
+					android:text="Voice assistant"
+					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.SwitchCompat
+					android:id="@+id/voiceAssistantSwitch"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_weight="1"
+					android:checked="false"
+					app:thumbTint="@color/sky_blue" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 

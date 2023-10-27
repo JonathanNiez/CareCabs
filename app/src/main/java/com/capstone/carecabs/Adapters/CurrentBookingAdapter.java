@@ -181,7 +181,7 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		} else if (
 				currentBookingModel.getPassengerUserID().equals(userID) &&
 						currentBookingModel.getBookingStatus().equals("Transported to destination") &&
-						!currentBookingModel.isDriverRated()
+						currentBookingModel.getRatingStatus().equals("driver not rated")
 		) {
 
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);

@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	android:background="@color/white_blue"
 	tools:context=".ScanIDActivity">
 
 	<androidx.cardview.widget.CardView
@@ -12,31 +12,19 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/vermillion"
+		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
 
-			<androidx.appcompat.widget.AppCompatImageButton
-				android:id="@+id/imgBackBtn"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_alignParentStart="true"
-				android:layout_alignParentTop="true"
-				android:layout_marginStart="10dp"
-				android:layout_marginTop="10dp"
-				android:layout_marginEnd="10dp"
-				android:layout_marginBottom="10dp"
-				android:background="@color/vermillion"
-				android:src="@drawable/back_50_2" />
-
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="SCAN ID"
 				android:textColor="@color/white"
@@ -96,8 +84,8 @@
 							android:id="@+id/idImageView"
 							android:layout_width="match_parent"
 							android:layout_height="300dp"
-							app:srcCompat="@drawable/face_id_100"
-							android:textColor="@color/black" />
+							android:textColor="@color/black"
+							app:srcCompat="@drawable/face_id_100" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -158,41 +146,41 @@
 
 			</androidx.cardview.widget.CardView>
 
-<!--			<androidx.appcompat.widget.AppCompatTextView-->
-<!--				android:id="@+id/resultTextView"-->
-<!--				android:layout_width="wrap_content"-->
-<!--				android:layout_height="wrap_content"-->
-<!--				android:layout_margin="10dp"-->
-<!--				android:background="@drawable/custom_card_view_1"-->
-<!--				android:fontFamily="@font/gabarito_semibold"-->
-<!--				android:padding="10dp"-->
-<!--				android:text="Result"-->
-<!--				android:textAlignment="center"-->
-<!--				android:textColor="@color/black"-->
-<!--				android:textSize="20sp" />-->
+			<!--			<androidx.appcompat.widget.AppCompatTextView-->
+			<!--				android:id="@+id/resultTextView"-->
+			<!--				android:layout_width="wrap_content"-->
+			<!--				android:layout_height="wrap_content"-->
+			<!--				android:layout_margin="10dp"-->
+			<!--				android:background="@drawable/custom_card_view_1"-->
+			<!--				android:fontFamily="@font/gabarito_semibold"-->
+			<!--				android:padding="10dp"-->
+			<!--				android:text="Result"-->
+			<!--				android:textAlignment="center"-->
+			<!--				android:textColor="@color/black"-->
+			<!--				android:textSize="20sp" />-->
 
-<!--			<androidx.appcompat.widget.AppCompatTextView-->
-<!--				android:id="@+id/confidenceTextView"-->
-<!--				android:layout_width="wrap_content"-->
-<!--				android:layout_height="wrap_content"-->
-<!--				android:layout_margin="10dp"-->
-<!--				android:background="@drawable/custom_card_view_1"-->
-<!--				android:fontFamily="@font/gabarito_semibold"-->
-<!--				android:padding="10dp"-->
-<!--				android:text="Confidence"-->
-<!--				android:textAlignment="center"-->
-<!--				android:textColor="@color/black"-->
-<!--				android:textSize="20sp" />-->
+			<!--			<androidx.appcompat.widget.AppCompatTextView-->
+			<!--				android:id="@+id/confidenceTextView"-->
+			<!--				android:layout_width="wrap_content"-->
+			<!--				android:layout_height="wrap_content"-->
+			<!--				android:layout_margin="10dp"-->
+			<!--				android:background="@drawable/custom_card_view_1"-->
+			<!--				android:fontFamily="@font/gabarito_semibold"-->
+			<!--				android:padding="10dp"-->
+			<!--				android:text="Confidence"-->
+			<!--				android:textAlignment="center"-->
+			<!--				android:textColor="@color/black"-->
+			<!--				android:textSize="20sp" />-->
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/verifiedText"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:orientation="horizontal"
-				android:padding="5dp"
 				android:layout_margin="10dp"
 				android:background="@drawable/custom_card_view_1"
-				android:gravity="center">
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:layout_width="wrap_content"
@@ -207,7 +195,7 @@
 				<androidx.appcompat.widget.AppCompatImageView
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					app:srcCompat="@drawable/check_48"/>
+					app:srcCompat="@drawable/check_48" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -221,7 +209,7 @@
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
-				android:fontFamily="@font/gabarito_medium"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="DONE"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
@@ -250,7 +238,7 @@
 					android:layout_gravity="center_vertical"
 					android:layout_margin="5dp"
 					android:elevation="5dp"
-					android:fontFamily="@font/gabarito_medium"
+					android:fontFamily="@font/gabarito_semibold"
 					android:text="BACK"
 					android:textColor="@color/black"
 					android:textSize="17sp" />

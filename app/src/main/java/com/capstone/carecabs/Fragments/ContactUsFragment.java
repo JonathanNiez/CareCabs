@@ -14,49 +14,56 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.FeedbackActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentContactUsBinding;
 
 import java.util.Objects;
 
-public class ContactUsFragment extends Fragment {
-    private FragmentContactUsBinding binding;
-    private Context context;
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+public class ContactUsFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
+	private FragmentContactUsBinding binding;
+	private Context context;
 
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentContactUsBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
+	}
 
-        context = getContext();
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+	                         Bundle savedInstanceState) {
+		binding = FragmentContactUsBinding.inflate(inflater, container, false);
+		View view = binding.getRoot();
 
-        binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
+		context = getContext();
 
-        binding.submitFeedBackBtn.setOnClickListener(v -> {
-            Intent intent = new Intent(context, FeedbackActivity.class);
-            startActivity(intent);
-            Objects.requireNonNull(getActivity()).finish();
-        });
+		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
-        return view;
-    }
+		binding.submitFeedBackBtn.setOnClickListener(v -> {
+			Intent intent = new Intent(context, FeedbackActivity.class);
+			startActivity(intent);
+			Objects.requireNonNull(getActivity()).finish();
+		});
 
-    public void onBackPressed() {
-        backToAccountFragment();
-    }
+		return view;
+	}
 
-    private void backToAccountFragment() {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
+	public void onBackPressed() {
+		backToAccountFragment();
+	}
+
+	private void backToAccountFragment() {
+		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
+		fragmentTransaction.addToBackStack(null);
+		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+
+	}
 }

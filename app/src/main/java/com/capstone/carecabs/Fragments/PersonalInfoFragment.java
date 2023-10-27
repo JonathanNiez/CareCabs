@@ -22,6 +22,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
@@ -32,8 +34,14 @@ import com.capstone.carecabs.databinding.FragmentPersonalInfoBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 
-public class PersonalInfoFragment extends Fragment {
+public class PersonalInfoFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "FragmentPersonalInfo";
+	private float textSizeSP;
+	private float textHeaderSizeSP;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
@@ -41,12 +49,22 @@ public class PersonalInfoFragment extends Fragment {
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
 	private FragmentPersonalInfoBinding binding;
+	private RequestManager requestManager;
 
 	@Override
 	public void onStart() {
 		super.onStart();
 
 		initializeNetworkChecker();
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+
+		closePleaseWaitDialog();
+		closeNoInternetDialog();
+
 	}
 
 	@Override
@@ -59,17 +77,16 @@ public class PersonalInfoFragment extends Fragment {
 
 		closePleaseWaitDialog();
 		closeNoInternetDialog();
-
 	}
 
-
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onDestroyView() {
+		super.onDestroyView();
 
-		closePleaseWaitDialog();
-		closeNoInternetDialog();
-
+		if (requestManager != null){
+			requestManager.clear(binding.idImageView);
+			requestManager.clear(binding.vehicleImageView);
+		}
 	}
 
 	@Override
@@ -90,6 +107,7 @@ public class PersonalInfoFragment extends Fragment {
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
+		requestManager = Glide.with(this);
 		loadUserProfileInfo();
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
@@ -101,183 +119,110 @@ public class PersonalInfoFragment extends Fragment {
 		backToAccountFragment();
 	}
 
-	private void getCurrentFontSizeFromUserSetting() {
-
-		switch (StaticDataPasser.storeFontSize) {
-			case 15:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-				break;
-
-			case 17:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				break;
-
-			case 19:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-
-				break;
-
-			case 21:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.signInTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-
-				break;
-		}
-	}
 
 	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
-			getCurrentFontSizeFromUserSetting();
 
 			String userID = FirebaseMain.getUser().getUid();
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(userID);
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null && documentSnapshot.exists()) {
-					closePleaseWaitDialog();
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							closePleaseWaitDialog();
 
-					String getUserType = documentSnapshot.getString("userType");
-					String getFirstName = documentSnapshot.getString("firstname");
-					String getLastName = documentSnapshot.getString("lastname");
-					Long getAgeLong = documentSnapshot.getLong("age");
-					int getAge = getAgeLong.intValue();
-					String getEmail = documentSnapshot.getString("email");
-					String getPhoneNumber = documentSnapshot.getString("phoneNumber");
-					String getSex = documentSnapshot.getString("sex");
-					String getBirthdate = documentSnapshot.getString("birthdate");
-					String getAccountCreationDate = documentSnapshot.getString("accountCreationDate");
-					String getRegisterType = documentSnapshot.getString("registerType");
-					String getIDPicture = documentSnapshot.getString("idPicture");
+							String getUserType = documentSnapshot.getString("userType");
+							String getFirstName = documentSnapshot.getString("firstname");
+							String getLastName = documentSnapshot.getString("lastname");
+							Long getAgeLong = documentSnapshot.getLong("age");
+							int getAge = getAgeLong.intValue();
+							String getEmail = documentSnapshot.getString("email");
+							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
+							String getSex = documentSnapshot.getString("sex");
+							String getBirthdate = documentSnapshot.getString("birthdate");
+							String getAccountCreationDate = documentSnapshot.getString("accountCreationDate");
+							String getRegisterType = documentSnapshot.getString("registerType");
+							String getIDPicture = documentSnapshot.getString("idPicture");
+							String getFontSize = documentSnapshot.getString("fontSize");
 
-					if (!getIDPicture.equals("none")) {
-						Glide.with(context)
-								.load(getIDPicture)
-								.placeholder(R.drawable.loading_gif)
-								.into(binding.idImageView);
-					}
+							setFontSize(getFontSize);
 
-					switch (getUserType) {
-						case "Driver":
-							binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
-							binding.idTypeTextView.setText("Driver's License");
-
-							String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
-							String getVehicleColor = documentSnapshot.getString("vehicleColor");
-							String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
-
-							if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
+							if (!getIDPicture.equals("none")) {
 								Glide.with(context)
-										.load(getVehiclePicture)
+										.load(getIDPicture)
 										.placeholder(R.drawable.loading_gif)
-										.into(binding.vehicleImageView);
+										.into(binding.idImageView);
 							}
 
-							binding.vehicleColorTextView.setText("Vehicle Color: " + getVehicleColor);
-							binding.vehiclePlateNumberTextView.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+							switch (getUserType) {
+								case "Driver":
+									binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+									binding.idTypeTextView.setText("Driver's License");
 
-							break;
+									String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+									String getVehicleColor = documentSnapshot.getString("vehicleColor");
+									String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-						case "Persons with Disabilities (PWD)":
-							binding.idTypeTextView.setText("PWD ID");
+									if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
+										Glide.with(context)
+												.load(getVehiclePicture)
+												.placeholder(R.drawable.loading_gif)
+												.into(binding.vehicleImageView);
+									}
 
-							String getDisability = documentSnapshot.getString("disability");
+									binding.vehicleColorTextView.setText("Vehicle Color: " + getVehicleColor);
+									binding.vehiclePlateNumberTextView.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
 
-							binding.disabilityTextView.setVisibility(View.VISIBLE);
-							binding.disabilityTextView.setText("Disabilities: " + getDisability);
+									break;
+
+								case "Person with Disabilities (PWD)":
+									binding.idTypeTextView.setText("PWD ID");
+
+									String getDisability = documentSnapshot.getString("disability");
+
+									binding.disabilityTextView.setVisibility(View.VISIBLE);
+									binding.disabilityTextView.setText("Disabilities: " + getDisability);
 
 
-							break;
+									break;
 
-						case "Senior Citizen":
-							binding.idTypeTextView.setText("Senior Citizen ID");
+								case "Senior Citizen":
+									binding.idTypeTextView.setText("Senior Citizen ID");
 
-							String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-							binding.medConTextView.setVisibility(View.VISIBLE);
-							binding.medConTextView.setText("Medical Conditions: " + getMedicalCondition);
+									binding.medConTextView.setVisibility(View.VISIBLE);
+									binding.medConTextView.setText("Medical Conditions: " + getMedicalCondition);
 
-							break;
-					}
+									break;
+							}
 
-					binding.firstnameTextView.setText(getFirstName);
-					binding.lastnameTextView.setText(getLastName);
-					binding.userTypeTextView.setText(getUserType);
-					binding.emailTextView.setText("Email: " + getEmail);
-					binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
-					binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-					binding.ageTextView.setText("Age: " + getAge);
-					binding.sexTextView.setText("Sex: " + getSex);
-					binding.accountCreationDateTextView.setText("Account creation date: " + getAccountCreationDate);
-					binding.signInTypeTextView.setText("Register Type: " + getRegisterType);
+							binding.firstnameTextView.setText(getFirstName);
+							binding.lastnameTextView.setText(getLastName);
+							binding.userTypeTextView.setText(getUserType);
+							binding.emailTextView.setText("Email: " + getEmail);
+							binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
+							binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+							binding.ageTextView.setText("Age: " + getAge);
+							binding.sexTextView.setText("Sex: " + getSex);
+							binding.accountCreationDateTextView.setText("Account creation date: " + getAccountCreationDate);
+							binding.registerTypeTextView.setText("Register Type: " + getRegisterType);
 
-				} else {
-					closePleaseWaitDialog();
-				}
-			}).addOnFailureListener(e -> {
-				closePleaseWaitDialog();
+						} else {
+							closePleaseWaitDialog();
+						}
+					})
+					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 
-				Log.e(TAG, e.getMessage());
-			});
+						Log.e(TAG, "loadUserProfileInfo: " + e.getMessage());
+					});
 		} else {
 			closePleaseWaitDialog();
-
 		}
 
 	}
@@ -288,6 +233,65 @@ public class PersonalInfoFragment extends Fragment {
 		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		if (isChecked) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.personalInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.registerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.personalInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.registerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showPleaseWaitDialog() {

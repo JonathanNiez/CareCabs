@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".BookingsActivity">
@@ -10,7 +11,8 @@
 		android:id="@+id/tabLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:tabTextColor="@color/black" />
+		app:tabTextColor="@color/black"
+		style="@style/TabLayoutBackground"/>
 
 	<androidx.viewpager.widget.ViewPager
 		android:id="@+id/viewPager"
@@ -28,7 +30,9 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/white"
+		style="@style/FloatingButtonBackground"
+		android:contentDescription="@string/accessibility"
+		android:elevation="5dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
 		app:fabSize="normal"

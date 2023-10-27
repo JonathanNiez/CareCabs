@@ -2,6 +2,7 @@ package com.capstone.carecabs.Fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,10 +13,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentAppSettingsBinding;
 
-public class AppSettingsFragment extends Fragment {
+public class AppSettingsFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener{
 
 	private FragmentAppSettingsBinding binding;
 
@@ -26,7 +28,7 @@ public class AppSettingsFragment extends Fragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		binding = FragmentAppSettingsBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
@@ -66,5 +68,10 @@ public class AppSettingsFragment extends Fragment {
 		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+
 	}
 }

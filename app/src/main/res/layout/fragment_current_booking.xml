@@ -4,32 +4,42 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.CurrentBookingFragment">
 
-	<RelativeLayout
-		android:id="@+id/upperLayout"
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="@color/sky_blue">
+		app:cardElevation="5dp">
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerHorizontal="true"
-			android:layout_margin="10dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="CURRENT BOOKING"
-			android:textColor="@color/white"
-			android:textSize="20sp" />
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
 
-	</RelativeLayout>
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/homeTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:layout_marginStart="15dp"
+				android:layout_marginTop="15dp"
+				android:layout_marginEnd="15dp"
+				android:layout_marginBottom="15dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="CURRENT BOOKING"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/currentBookingsRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/upperLayout"
+		android:layout_below="@id/customActionBarLayout"
 		tools:listitem="@layout/item_current_booking" />
 
 	<androidx.cardview.widget.CardView

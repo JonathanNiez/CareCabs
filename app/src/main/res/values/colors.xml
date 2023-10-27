@@ -15,7 +15,6 @@
 	<color name="yellow">#F9EE93</color>
 	<color name="cheese">#FFC800</color>
 
-	<color name="rich_black">#0E1116</color>
 	<color name="yinmn_blue">#374A67</color>
 	<color name="ultra_violet">#616283</color>
 	<color name="mounbatten_pink">#9E7B9B</color>
@@ -30,9 +29,6 @@
 	<color name="transparent">#00FFFFFF</color>
 	<color name="semi_transparent">#80FFFFFF</color>
 	<color name="background">#FFF0DB</color>
-	<color name="dark_blue">#0D1282</color>
-	<color name="blue">#3265FF</color>
-	<color name="light_blue">#5A61FF</color>
 
 	<color name="selected_item_color">#374A67</color>
 	<color name="unselected_item_color">#E15634</color>
@@ -41,6 +37,15 @@
 	<color name="dark_cyan">#0093B1</color>
 	<color name="cyan">#08bdbd</color>
 	<color name="white_blue">#caf0f8</color>
+
+	<color name="rich_black">#0E1116</color>
+	<color name="darker_gray">#303030</color>
+	<color name="darker_blue">#000235</color>
+	<color name="dark_blue">#000460</color>
+
+	<color name="blue">#2252FF</color>
+	<color name="light_blue">#444CFF</color>
+
 	<color name="lime">#abff4f</color>
 
 <!--	<color name="mar_2">#ff9914</color>-->

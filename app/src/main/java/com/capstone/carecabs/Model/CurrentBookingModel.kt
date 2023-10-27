@@ -9,7 +9,7 @@ data class CurrentBookingModel(
     val bookingID: String = "",
     val tripID: String = "",
     val bookingStatus: String = "",
-    val isDriverRated : Boolean = false,
+    val ratingStatus : String = "",
     val pickupLongitude: Double = 0.0,
     val pickupLatitude: Double = 0.0,
     val destinationLongitude: Double = 0.0,

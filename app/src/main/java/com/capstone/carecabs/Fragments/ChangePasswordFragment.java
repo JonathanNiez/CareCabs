@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
@@ -30,7 +31,7 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-public class ChangePasswordFragment extends Fragment {
+public class ChangePasswordFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener{
 	private final String TAG = "ChangePasswordFragment";
 	private AlertDialog.Builder builder;
 	private AlertDialog passwordResetConfirmationDialog, cancelPasswordResetDialog,
@@ -298,5 +299,10 @@ public class ChangePasswordFragment extends Fragment {
 		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+
 	}
 }

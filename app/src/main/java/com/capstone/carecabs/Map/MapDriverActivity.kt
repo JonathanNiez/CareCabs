@@ -840,62 +840,62 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     var hasPassengersWaiting = false
 
                     for (locationSnapshot in snapshot.children) {
-                        val locationData =
+                        val bookingData =
                             locationSnapshot.getValue(PassengerBookingModel::class.java)
 
-                        if (locationData != null) {
-                            if (locationData.bookingStatus == "Waiting") {
+                        if (bookingData != null) {
+                            if (bookingData.bookingStatus == "Waiting") {
 
                                 binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                    showPassengerBookingsBottomSheetDialog(bookingData.bookingID)
                                 }
 
-                                initializeBottomNavButtons(locationData.bookingID)
+                                initializeBottomNavButtons(bookingData.bookingID)
 
                                 waitingPassengerCount++
                                 hasPassengersWaiting = true
 
-                                when (locationData.passengerType) {
+                                when (bookingData.passengerType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
+                                            bookingData.pickupLongitude,
+                                            bookingData.pickupLatitude,
+                                            bookingData.bookingID
                                         )
                                     }
 
                                     "Person with Disabilities (PWD)" -> {
                                         addPWDAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
+                                            bookingData.pickupLongitude,
+                                            bookingData.pickupLatitude,
+                                            bookingData.bookingID
                                         )
                                     }
                                 }
 
-                            } else if (locationData.bookingStatus == "Driver on the way"
-                                && locationData.driverUserID == FirebaseMain.getUser().uid
+                            } else if (bookingData.bookingStatus == "Driver on the way"
+                                && bookingData.driverUserID == FirebaseMain.getUser().uid
                             ) {
                                 binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(locationData.bookingID)
+                                    showPassengerBookingsBottomSheetDialog(bookingData.bookingID)
                                 }
 
-                                initializeBottomNavButtons(locationData.bookingID)
+                                initializeBottomNavButtons(bookingData.bookingID)
 
-                                when (locationData.passengerType) {
+                                when (bookingData.passengerType) {
                                     "Senior Citizen" -> {
                                         addSeniorAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
+                                            bookingData.pickupLongitude,
+                                            bookingData.pickupLatitude,
+                                            bookingData.bookingID
                                         )
                                     }
 
                                     "Person with Disabilities (PWD)" -> {
                                         addPWDAnnotationToMap(
-                                            locationData.pickupLongitude,
-                                            locationData.pickupLatitude,
-                                            locationData.bookingID
+                                            bookingData.pickupLongitude,
+                                            bookingData.pickupLatitude,
+                                            bookingData.bookingID
                                         )
                                     }
                                 }
@@ -1286,14 +1286,14 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
         val updateBooking = HashMap<String, Any>()
         updateBooking["bookingStatus"] = "Transported to destination"
-        updateBooking["isDriverRated"] = false
+        updateBooking["ratingStatus"] = "driver not rated"
 
         bookingReference.child(bookingID).updateChildren(updateBooking)
             .addOnSuccessListener {
                 Log.d(TAG, "setTripAsComplete: bookingReference updated successfully ")
             }
             .addOnFailureListener {
-                Log.e(TAG, "setTripAsComplete: bookingReference " + it.message)
+                Log.e(TAG, "setTripAsComplete - bookingReference: " + it.message)
             }
 
         //update current trip
@@ -1310,7 +1310,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 clearRouteAndStopNavigation()
             }
             .addOnFailureListener {
-                Log.e(TAG, "setTripAsComplete: tripReference " + it.message)
+                Log.e(TAG, "setTripAsComplete - tripReference: " + it.message)
             }
 
         //update driver status
@@ -1318,26 +1318,37 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
             .collection(FirebaseMain.userCollection)
             .document(FirebaseMain.getUser().uid)
 
-        val updateDriverStatus = HashMap<String, Any>()
-        updateDriverStatus["isAvailable"] = true
-        updateDriverStatus["isNavigatingToDestination"] = false
-        updateDriverStatus["navigationStatus"] = "idle"
-        updateDriverStatus["destinationLatitude"] = 0.0
-        updateDriverStatus["destinationLongitude"] = 0.0
-        (updateDriverStatus["passengersTransported"] as? Int ?: 0) + 1
-        updateDriverStatus["tripID"] = "none"
-        updateDriverStatus["bookingID"] = "none"
-        updateDriverStatus["driverRatings"] =
-            (updateDriverStatus["driverRatings"] as? Double ?: 0.0) + 3.0
+        driverReference.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val currentPassengersTransported =
+                        documentSnapshot.getLong("passengersTransported") ?: 0
+                    val newPassengersTransported = currentPassengersTransported + 1
 
-        driverReference.update(updateDriverStatus)
-            .addOnSuccessListener {
-                showPassengerTransportedSuccessDialog()
-            }
-            .addOnFailureListener {
-                Log.e(TAG, "setTripAsComplete: driverReference " + it.message)
-            }
+                    val updateDriverStatus = HashMap<String, Any>()
+                    updateDriverStatus["isAvailable"] = true
+                    updateDriverStatus["isNavigatingToDestination"] = false
+                    updateDriverStatus["navigationStatus"] = "idle"
+                    updateDriverStatus["destinationLatitude"] = 0.0
+                    updateDriverStatus["destinationLongitude"] = 0.0
+                    updateDriverStatus["passengersTransported"] = newPassengersTransported
+                    updateDriverStatus["tripID"] = "none"
+                    updateDriverStatus["bookingID"] = "none"
+                    updateDriverStatus["driverRatings"] =
+                        (updateDriverStatus["driverRatings"] as? Double ?: 0.0) + 3.0
 
+                    driverReference.update(updateDriverStatus)
+                        .addOnSuccessListener {
+                            showPassengerTransportedSuccessDialog()
+                        }
+                        .addOnFailureListener {
+                            Log.e(TAG, "setTripAsComplete - driverReference: " + it.message)
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error getting document: ", exception)
+            }
     }
 
 
@@ -1429,7 +1440,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
             .addOnFailureListener {
                 Log.e(TAG, "storeTripToDatabase: bookingReference " + it.message)
             }
-
 
         //update current trip
         val tripReference = FirebaseMain.getFireStoreInstance()

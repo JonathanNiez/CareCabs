@@ -14,10 +14,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.bumptech.glide.Glide;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatOverviewActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
@@ -48,8 +50,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-public class MainActivity extends AppCompatActivity implements HomeFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 	private final String TAG = "MainActivity";
+	private static final String THEME_NORMAL = "normal";
+	private static final String THEME_CONTRAST = "contrast";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private Intent intent;
 	private AlertDialog exitAppDialog, enableLocationServiceDialog;
@@ -69,12 +73,20 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 	}
 
 	@Override
+	protected void onStart() {
+		super.onStart();
+
+		getThemeSettingsFromFireStore();
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 
 		closeExitConfirmationDialog();
 		closeEnableLocationServiceDialog();
 //		updateDriverStatus(false);
+
 	}
 
 	@Override
@@ -129,8 +141,43 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		});
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+			SettingsBottomSheet.FontSizeChangeListener fontSizeChangeListener = null;
+			SettingsBottomSheet.ThemeChangeListener themeChangeListener = null;
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+
+			if (currentFragment instanceof HomeFragment) {
+				fontSizeChangeListener = (HomeFragment) currentFragment;
+			} else if (currentFragment instanceof AccountFragment) {
+				fontSizeChangeListener = (AccountFragment) currentFragment;
+
+			} else if (currentFragment instanceof AboutFragment) {
+				fontSizeChangeListener = (AboutFragment) currentFragment;
+
+			} else if (currentFragment instanceof ContactUsFragment) {
+				fontSizeChangeListener = (ContactUsFragment) currentFragment;
+
+			} else if (currentFragment instanceof EditAccountFragment) {
+				fontSizeChangeListener = (EditAccountFragment) currentFragment;
+
+			} else if (currentFragment instanceof ChangePasswordFragment) {
+				fontSizeChangeListener = (ChangePasswordFragment) currentFragment;
+
+			} else if (currentFragment instanceof AppSettingsFragment) {
+				fontSizeChangeListener = (AppSettingsFragment) currentFragment;
+
+			} else if (currentFragment instanceof PersonalInfoFragment) {
+				fontSizeChangeListener = (PersonalInfoFragment) currentFragment;
+
+			}
+
+			if (fontSizeChangeListener != null) {
+				settingsBottomSheet.setFontSizeChangeListener(fontSizeChangeListener);
+			} else if (themeChangeListener != null) {
+				settingsBottomSheet.setThemeChangeListener(themeChangeListener);
+			}
 			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
+
 		});
 	}
 
@@ -173,9 +220,9 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		}
 
 		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
+			super.onBackPressed();
 		} else {
-			// Show an exit confirmation dialog
+
 			showExitConfirmationDialog();
 		}
 	}
@@ -203,6 +250,40 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 
+	private void getThemeSettingsFromFireStore() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot.exists()) {
+							String getTheme = documentSnapshot.getString("theme");
+
+							if (getTheme != null) {
+
+								setTheme(getTheme);
+
+							}
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "getThemeSettingsFromFireStore - onFailure: " + e.getMessage()));
+		}
+	}
+
+	private void setTheme(String theme) {
+
+		if (theme.equals(THEME_CONTRAST)) {
+
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+
+		} else {
+
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+		}
+
+	}
 
 	private void checkLocationService() {
 		LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -470,12 +551,6 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 		fragmentTransaction.commit();
 	}
 
-	@Override
-	public void onFragmentChange(int menuItemId) {
-		Toast.makeText(this, "Nigga", Toast.LENGTH_SHORT).show();
-		binding.bottomNavigationView.setSelectedItemId(menuItemId);
-	}
-
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
@@ -513,4 +588,5 @@ public class MainActivity extends AppCompatActivity implements HomeFragment.OnFr
 			editAccountFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
 	}
+
 }
