@@ -9,6 +9,7 @@ import com.capstone.carecabs.Adapters.ChatOverviewAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatModel;
 import com.capstone.carecabs.Model.ChatOverviewModel;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityChatOverviewBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,6 +27,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,12 +36,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ChatOverviewActivity extends AppCompatActivity {
 	private final String TAG = "ChatOverviewActivity";
 	private List<String> stringUsersList;
-	private ActivityChatOverviewBinding binding;
 	private boolean hasAvailableChats = false;
+	private VoiceAssistant voiceAssistant;
+	private ActivityChatOverviewBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +52,14 @@ public class ChatOverviewActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		FirebaseApp.initializeApp(this);
+
+		SharedPreferences preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Chat");
+		}
 
 		binding.noAvailableChatsTextView.setVisibility(View.GONE);
 

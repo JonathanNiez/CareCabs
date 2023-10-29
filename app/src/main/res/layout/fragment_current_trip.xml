@@ -4,14 +4,41 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.CurrentTripFragment">
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardElevation="5dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/myProfileTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="CURRENT TRIP"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/currentTripRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		tools:listitem="@layout/item_trips" />
+		android:layout_below="@id/customActionBarLayout"
+		tools:listitem="@layout/item_current_trip" />
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/loadingLayout"

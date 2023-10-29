@@ -334,10 +334,10 @@
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.cardview.widget.CardView
+						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						app:cardBackgroundColor="@color/white"
 						app:cardCornerRadius="10dp"
 						app:cardElevation="5dp">
 
@@ -349,13 +349,12 @@
 
 							<de.hdodenhof.circleimageview.CircleImageView
 								android:id="@+id/currentPassengerProfilePictureImageView"
+								style="@style/ProfilePictureBorderColor"
 								android:layout_width="100dp"
 								android:layout_height="100dp"
 								android:layout_margin="5dp"
 								android:scaleType="centerCrop"
-								android:src="@drawable/account"
-								app:civ_border_color="@color/black"
-								app:civ_border_width="2dp" />
+								android:src="@drawable/account" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/passengerNameTextView"
@@ -389,6 +388,36 @@
 								android:text="Disability"
 								android:textAlignment="center"
 								android:textSize="17sp" />
+
+							<androidx.appcompat.widget.LinearLayoutCompat
+								android:id="@+id/viewPickupPassengerOnMapBtn"
+								android:layout_width="230dp"
+								android:layout_height="50dp"
+								android:layout_margin="10dp"
+								android:background="@drawable/smooth_edge_button"
+								android:backgroundTint="@color/yinmn_blue"
+								android:elevation="5dp"
+								android:gravity="center"
+								android:orientation="horizontal">
+
+								<androidx.appcompat.widget.AppCompatTextView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_gravity="start|center_vertical"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="VIEW ON MAP"
+									android:textColor="@color/white"
+									android:textSize="17sp" />
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_gravity="end|center_vertical"
+									android:layout_margin="5dp"
+									android:src="@drawable/map_32_white" />
+
+							</androidx.appcompat.widget.LinearLayoutCompat>
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -827,13 +856,13 @@
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverRatingTextView"
+						style="@style/IndicatorTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_black"
 						android:text="Driver Rating"
 						android:textAlignment="center"
-						android:textColor="@color/blue"
 						android:textSize="25sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
@@ -946,13 +975,13 @@
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/totalTripsTextView"
+						style="@style/IndicatorTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_black"
 						android:text="Total Trips"
 						android:textAlignment="center"
-						android:textColor="@color/blue"
 						android:textSize="20sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>

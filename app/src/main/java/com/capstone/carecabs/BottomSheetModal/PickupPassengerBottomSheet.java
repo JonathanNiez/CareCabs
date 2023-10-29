@@ -19,7 +19,7 @@ import com.capstone.carecabs.Model.BottomSheetData;
 import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.DistanceCalculator;
-import com.capstone.carecabs.databinding.FragmentBottomSheetBinding;
+import com.capstone.carecabs.databinding.FragmentPickupPassengerBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
@@ -59,7 +59,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 	private BottomSheetListener mBottomSheetListener;
 	private Context context;
-	private FragmentBottomSheetBinding binding;
+	private FragmentPickupPassengerBottomSheetBinding binding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -70,13 +70,13 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		binding = FragmentBottomSheetBinding.inflate(inflater, container, false);
+		binding = FragmentPickupPassengerBottomSheetBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
 		context = getContext();
 
-		binding.medicalConditionTextView.setVisibility(View.GONE);
 		binding.disabilityTextView.setVisibility(View.GONE);
+		binding.renavigateBtn.setVisibility(View.GONE);
 
 		binding.closeBtn.setOnClickListener(v -> dismiss());
 
@@ -208,11 +208,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 						switch (getPassengerType) {
 							case "Senior Citizen":
-								binding.medicalConditionTextView.setVisibility(View.VISIBLE);
 								binding.userTypeImageView.setImageResource(R.drawable.senior_32);
-								String getPassengerMedicalCondition = snapshot.child("passengerMedicalCondition").getValue(String.class);
-
-								binding.medicalConditionTextView.setText("Medical Condition:\n" + getPassengerMedicalCondition);
 
 								break;
 
@@ -273,7 +269,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 									.into(binding.passengerProfilePic);
 						}
 
-						binding.fullNameTextView.setText(getPassengerName);
+						binding.passengerNameTextView.setText(getPassengerName);
 						binding.userTypeTextView.setText(getPassengerType);
 					}
 				}

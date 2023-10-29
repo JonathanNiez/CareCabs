@@ -8,7 +8,7 @@
 	<style name="Theme.CareCabs" parent="Base.Theme.CareCabs" />
 
 	<style name="MainBackground">
-		<item name="android:backgroundTint">@color/white_blue</item>
+		<item name="android:background">@color/white_blue</item>
 	</style>
 
 	<style name="ToolbarBackground">
@@ -20,8 +20,16 @@
 	</style>
 
 	<style name="TopCardBackground">
-		<item name="backgroundTint">@color/dark_cyan</item>
-		<item name="background">@drawable/rectangle_one</item>
+		<item name="android:background">@drawable/rectangle_one</item>
+		<item name="android:backgroundTint">@color/dark_cyan</item>
+	</style>
+
+	<style name="ItemCardBackground">
+		<item name="cardBackgroundColor">@color/white</item>
+	</style>
+
+	<style name="ColoredCardBackground">
+		<item name="cardBackgroundColor">@color/dark_cyan</item>
 	</style>
 
 	<style name="GreetingCardBackground">
@@ -41,8 +49,15 @@
 		<item name="android:textColor">@color/black</item>
 	</style>
 
+	<style name="RoundedTextColor">
+		<item name="android:textColor">@color/black</item>
+		<item name="android:backgroundTint">@color/white</item>
+		<item name="android:background">@drawable/custom_card_view_1</item>
+	</style>
+
 	<style name="LongButton">
 		<item name="android:backgroundTint">@color/white</item>
+		<item name="android:elevation">5dp</item>
 	</style>
 
 	<style name="MyProfileFragmentButton">
@@ -66,6 +81,24 @@
 	<style name="TabLayoutBackground">
 		<item name="android:background">@color/white_blue</item>
 		<item name="tabTextColor">@color/black</item>
+	</style>
+
+	<style name="ChatEditTextLayout">
+		<item name="android:background">@color/white_blue</item>
+	</style>
+
+	<style name="ChatEditText">
+		<item name="android:textColor">@color/black</item>
+		<item name="android:textColorHint">@color/dark_gray</item>
+	</style>
+
+	<style name="ProfilePictureBorderColor">
+		<item name="civ_border_color">@color/black</item>
+		<item name="civ_border_width">2dp</item>
+	</style>
+
+	<style name="ImageViewTint">
+		<item name="tint">@color/black</item>
 	</style>
 
 </resources>

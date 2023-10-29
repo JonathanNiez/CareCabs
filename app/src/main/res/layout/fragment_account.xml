@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".Fragments.AccountFragment">
@@ -74,15 +73,14 @@
 
 							<de.hdodenhof.circleimageview.CircleImageView
 								android:id="@+id/profilePic"
+								style="@style/ProfilePictureBorderColor"
 								android:layout_width="0dp"
 								android:layout_height="150dp"
 								android:layout_margin="10dp"
 								android:layout_weight="2"
 								android:elevation="5dp"
 								android:scaleType="centerCrop"
-								android:src="@drawable/account"
-								app:civ_border_color="@color/black"
-								app:civ_border_width="2dp" />
+								android:src="@drawable/account" />
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"

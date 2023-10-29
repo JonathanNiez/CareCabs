@@ -2,17 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".FeedbackActivity">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
@@ -39,11 +39,11 @@
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/feedbackLayout"
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
 		android:layout_margin="10dp"
-		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -56,24 +56,23 @@
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/feedbackThankYouTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="@string/your_feedback_helps_us_improve"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="17sp"
 				android:textStyle="bold" />
 
 			<androidx.appcompat.widget.AppCompatEditText
 				android:id="@+id/commentEditText"
+				style="@style/ChatEditText"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:fontFamily="@font/gabarito_semibold"
-				android:hint="Type your feedback here"
-				android:textColor="@color/black"
-				android:textColorHint="@color/dark_gray" />
+				android:hint="Type your feedback here" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -96,6 +95,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -104,7 +104,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"

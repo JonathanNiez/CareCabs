@@ -1,12 +1,11 @@
 package com.capstone.carecabs.BottomSheetModal;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.ContextCompat;
 
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,12 +16,14 @@ import android.widget.ImageView;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentSettingsBottomSheetBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	private final String TAG = "SettingsBottomSheet";
@@ -34,11 +35,20 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private static final String THEME_NORMAL = "normal";
 	private static final String THEME_CONTRAST = "contrast";
+	private static final String VOICE_ASSISTANT_ENABLED = "enabled";
+	private static final String VOICE_ASSISTANT_DISABLED = "disabled";
 	private DocumentReference documentReference;
-	private FragmentSettingsBottomSheetBinding binding;
 	private Context context;
 	private FontSizeChangeListener fontSizeChangeListener;
 	private ThemeChangeListener themeChangeListener;
+	private VoiceAssistantToggleListener voiceAssistantToggleListener;
+	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantToggle;
+	private FragmentSettingsBottomSheetBinding binding;
+
+	public interface VoiceAssistantToggleListener {
+		void onVoiceAssistantToggled(boolean isToggled);
+	}
 
 	public interface ThemeChangeListener {
 		void onThemeChanged(boolean isChecked);
@@ -60,11 +70,16 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		binding = FragmentSettingsBottomSheetBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		getAppSettingsFromFireStore();
 		context = getContext();
+		getUserSettings();
 
 		binding.fontSizeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			String fontSize = isChecked ? FONT_SIZE_LARGE : FONT_SIZE_NORMAL;
+
+			if (voiceAssistantToggle.equals("enabled")) {
+				voiceAssistant = VoiceAssistant.getInstance(context);
+				voiceAssistant.speak("Text size changed to " + fontSize);
+			}
 
 			setFontSize(fontSize);
 			updateFontSizeToFireStore(fontSize);
@@ -75,7 +90,19 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		});
 
 		binding.contrastSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+			if (isChecked) {
+				AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+			} else {
+				AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+			}
+
 			String theme = isChecked ? THEME_CONTRAST : THEME_NORMAL;
+
+			if (voiceAssistantToggle.equals("enabled")) {
+				voiceAssistant = VoiceAssistant.getInstance(context);
+				voiceAssistant.speak("App theme changed to " + theme);
+			}
 
 			setTheme(theme);
 			updateThemeToFireStore(theme);
@@ -83,50 +110,63 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 			if (themeChangeListener != null) {
 				themeChangeListener.onThemeChanged(isChecked);
 			}
+		});
+
+		binding.voiceAssistantSwitch.setOnCheckedChangeListener((buttonView, isToggled) -> {
+
+			if (isToggled) {
+				voiceAssistant.speak("voice assistant enabled");
+			} else {
+				voiceAssistant.speak("voice assistant disabled");
+				voiceAssistant.shutdown();
+			}
+
+			String voiceAssistantState = isToggled ? VOICE_ASSISTANT_ENABLED : VOICE_ASSISTANT_DISABLED;
+
+			if (voiceAssistantToggle.equals("enabled")) {
+				voiceAssistant = VoiceAssistant.getInstance(context);
+				voiceAssistant.speak("Voice Assistant " + voiceAssistantState);
+			}
+
+			updateVoiceAssistantToFireStore(voiceAssistantState);
 
 		});
 
 		return view;
 	}
 
+	public void setVoiceAssistantToggleListener(VoiceAssistantToggleListener voiceAssistantToggleListener) {
+		this.voiceAssistantToggleListener = voiceAssistantToggleListener;
+	}
+
 	public void setThemeChangeListener(ThemeChangeListener themeChangeListener) {
 		this.themeChangeListener = themeChangeListener;
 	}
 
-	public void setFontSizeChangeListener(FontSizeChangeListener listener) {
-		this.fontSizeChangeListener = listener;
+	public void setFontSizeChangeListener(FontSizeChangeListener fontSizeChangeListener) {
+		this.fontSizeChangeListener = fontSizeChangeListener;
 	}
 
 	private void setTheme(String theme) {
-
-		int backgroundColorResID;
-		int layoutColorResID;
-		int textColorResID;
 		int fontImageResID;
 		int eyeImageResID;
 		int voiceImageResID;
 
 		if (theme.equals(THEME_CONTRAST)) {
-			backgroundColorResID = R.color.darker_gray;
-			layoutColorResID = R.color.dark_blue;
-			textColorResID = R.color.white;
 
 			fontImageResID = R.drawable.font_white_50;
 			eyeImageResID = R.drawable.eye_white_50;
 			voiceImageResID = R.drawable.voice_white_50;
 
-			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
 		} else {
-			backgroundColorResID = R.color.white_blue;
-			layoutColorResID = R.color.white;
-			textColorResID = R.color.black;
 
 			fontImageResID = R.drawable.font_50;
 			eyeImageResID = R.drawable.eye_50;
 			voiceImageResID = R.drawable.voice_50;
 
-			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 		}
 
 		setImageViewResource(binding.fontImageView, fontImageResID);
@@ -134,23 +174,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		setImageViewResource(binding.voiceImageView, voiceImageResID);
 	}
 
-	//		int backgroundColor = ContextCompat.getColor(context, backgroundColorResID);
-//		ColorStateList colorStateList = ColorStateList.valueOf(backgroundColor);
-//		binding.parentLayout.setBackgroundTintList(colorStateList);
-//
-//		int layoutColor = ContextCompat.getColor(context, layoutColorResID);
-//		ColorStateList layoutColorStateList = ColorStateList.valueOf(layoutColor);
-//		binding.textSizeLayout.setBackgroundTintList(layoutColorStateList);
-//		binding.changeContrastLayout.setBackgroundTintList(layoutColorStateList);
-//		binding.voiceAssistantLayout.setBackgroundTintList(layoutColorStateList);
-//
-//		int textColor = ContextCompat.getColor(context, textColorResID);
-//		binding.accessibilityToolBarTextView.setTextColor(textColor);
-//		binding.swipeDownTextView.setTextColor(textColor);
-//		binding.increaseTextSizeTextView.setTextColor(textColor);
-//		binding.changeContrastTextView.setTextColor(textColor);
-//		binding.voiceAssistantTextView.setTextColor(textColor);
-//
 	private void setImageViewResource(ImageView imageView, int imageResID) {
 		if (imageView != null && imageResID != 0) {
 			imageView.setImageResource(imageResID);
@@ -176,28 +199,22 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		binding.voiceAssistantTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
-	private void getAppSettingsFromFireStore() {
-		if (FirebaseMain.getUser() != null) {
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid());
+	private void getUserSettings() {
+		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String theme = preferences.getString("theme", "normal");
+		String fontSize = preferences.getString("fontSize", "normal");
+		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
 
-			documentReference.get()
-					.addOnSuccessListener(documentSnapshot -> {
-						if (documentSnapshot.exists()) {
-							String getFontSize = documentSnapshot.getString("fontSize");
-							String getTheme = documentSnapshot.getString("theme");
+		setFontSize(fontSize);
+		setTheme(theme);
 
-							if (getFontSize != null && getTheme != null) {
-								setFontSize(getFontSize);
-								setTheme(getTheme);
+		binding.fontSizeSwitch.setChecked(FONT_SIZE_LARGE.equals(fontSize));
+		binding.contrastSwitch.setChecked(THEME_CONTRAST.equals(theme));
+		binding.voiceAssistantSwitch.setChecked(VOICE_ASSISTANT_ENABLED.equals(voiceAssistantToggle));
 
-								binding.fontSizeSwitch.setChecked(FONT_SIZE_LARGE.equals(getFontSize));
-								binding.contrastSwitch.setChecked(THEME_CONTRAST.equals(getTheme));
-							}
-						}
-					})
-					.addOnFailureListener(e -> Log.e(TAG, "getAppSettingsFromFireStore - onFailure: " + e.getMessage()));
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Accessibility Settings");
 		}
 	}
 
@@ -241,5 +258,35 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 						Log.e(TAG, "updateThemeToFireStore - onFailure: " + e.getMessage());
 					});
 		}
+	}
+
+	private void updateVoiceAssistantToFireStore(String voiceAssistant) {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			Map<String, Object> updateFontSize = new HashMap<>();
+			updateFontSize.put("voiceAssistant", voiceAssistant);
+
+			documentReference.update(updateFontSize)
+					.addOnSuccessListener(unused -> {
+
+						Log.i(TAG, "updateVoiceAssistantToFireStore - onSuccess: voice assistant updated successfully");
+					})
+					.addOnFailureListener(e -> {
+
+						Log.e(TAG, "updateVoiceAssistantToFireStore - onFailure: " + e.getMessage());
+					});
+		}
+	}
+
+	private void storeUserSettings(String theme, String fontSize, String voiceAssistant) {
+		SharedPreferences sharedPreferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString("theme", theme);
+		editor.putString("fontSize", fontSize);
+		editor.putString("voiceAssistant", voiceAssistant);
+		editor.apply();
 	}
 }

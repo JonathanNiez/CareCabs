@@ -8,20 +8,28 @@
 	<style name="Theme.CareCabs" parent="Base.Theme.CareCabs" />
 
 	<style name="MainBackground">
-		<item name="android:backgroundTint">@color/rich_black</item>
+		<item name="android:background">@color/rich_black</item>
 	</style>
 
 	<style name="ToolbarBackground">
 		<item name="cardBackgroundColor">@color/darker_gray</item>
 	</style>
 
+	<style name="ItemCardBackground">
+		<item name="cardBackgroundColor">@color/dark_gray</item>
+	</style>
+
 	<style name="BaseCardBackground">
+		<item name="cardBackgroundColor">@color/dark_gray</item>
+	</style>
+
+	<style name="ColoredCardBackground">
 		<item name="cardBackgroundColor">@color/darker_gray</item>
 	</style>
 
 	<style name="TopCardBackground">
-		<item name="backgroundTint">@color/darker_gray</item>
-		<item name="background">@drawable/rectangle_one</item>
+		<item name="android:background">@drawable/rectangle_one</item>
+		<item name="android:backgroundTint">@color/darker_gray</item>
 	</style>
 
 	<style name="GreetingCardBackground">
@@ -36,7 +44,7 @@
 	</style>
 
 	<style name="IndicatorTextColor">
-		<item name="android:textColor">@color/white</item>
+		<item name="android:textColor">@color/yellow</item>
 		<item name="android:shadowColor">@color/white</item>
 		<item name="android:shadowRadius">4</item>
 		<item name="android:elevation">5dp</item>
@@ -49,8 +57,15 @@
 		<item name="android:elevation">5dp</item>
 	</style>
 
+	<style name="RoundedTextColor">
+		<item name="android:textColor">@color/white</item>
+		<item name="android:backgroundTint">@color/dark_gray</item>
+		<item name="android:background">@drawable/custom_card_view_1</item>
+	</style>
+
 	<style name="LongButton">
 		<item name="android:backgroundTint">@color/dark_blue</item>
+		<item name="android:elevation">5dp</item>
 	</style>
 
 	<style name="MyProfileFragmentButton">
@@ -67,7 +82,7 @@
 	</style>
 
 	<style name="FloatingButtonBackground">
-		<item name="android:backgroundTint">@color/rich_black</item>
+		<item name="android:backgroundTint">@color/dark_gray</item>
 	</style>
 
 	<style name="HorizontalLineBackground">
@@ -77,6 +92,29 @@
 	<style name="TabLayoutBackground">
 		<item name="android:background">@color/darker_gray</item>
 		<item name="tabTextColor">@color/white</item>
+	</style>
+
+	<style name="ChatEditTextLayout">
+		<item name="android:background">@color/dark_gray</item>
+	</style>
+
+	<style name="ChatEditText">
+		<item name="android:textColor">@color/white</item>
+		<item name="android:textColorHint">@color/gray</item>
+	</style>
+
+	<style name="ProfilePictureBorderColor">
+		<item name="civ_border_color">@color/white</item>
+		<item name="civ_border_width">2dp</item>
+	</style>
+
+	<style name="BottomSheetBackground">
+		<item name="background">@drawable/smooth_top_edge</item>
+		<item name="backgroundTint">@color/sky_blue</item>
+	</style>
+
+	<style name="ImageViewTint">
+		<item name="tint">@color/white</item>
 	</style>
 
 </resources>

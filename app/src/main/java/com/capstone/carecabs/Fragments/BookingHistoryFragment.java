@@ -3,6 +3,7 @@ package com.capstone.carecabs.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.capstone.carecabs.Adapters.BookingsHistoryAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Model.BookingsHistoryModel;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
 import com.capstone.carecabs.databinding.FragmentBookingHistoryBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -34,8 +36,9 @@ import java.util.Objects;
 public class BookingHistoryFragment extends Fragment {
 	private final String TAG = "BookingHistoryFragment";
 	private AlertDialog bookingInfoDialog;
-	private FragmentBookingHistoryBinding binding;
 	private Context context;
+	private VoiceAssistant voiceAssistant;
+	private FragmentBookingHistoryBinding binding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,13 @@ public class BookingHistoryFragment extends Fragment {
 		binding.noBookingsHistoryTextView.setVisibility(View.GONE);
 
 		context = getContext();
+		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Booking History");
+		}
 
 		loadBookingsFromDatabase();
 

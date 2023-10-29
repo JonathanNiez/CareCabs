@@ -4,14 +4,13 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.PersonalInfoFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -44,10 +43,10 @@
 			android:orientation="vertical">
 
 			<androidx.cardview.widget.CardView
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				app:cardBackgroundColor="@color/white"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -72,6 +71,7 @@
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/firstnameTextView"
+							style="@style/TextColor"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
@@ -79,12 +79,12 @@
 							android:padding="10dp"
 							android:text="Firstname"
 							android:textAlignment="center"
-							android:textColor="@color/black"
 							android:textSize="20sp" />
 
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/lastnameTextView"
+							style="@style/TextColor"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_weight="1"
@@ -92,212 +92,188 @@
 							android:padding="10dp"
 							android:text="Lastname"
 							android:textAlignment="center"
-							android:textColor="@color/black"
 							android:textSize="20sp" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/userTypeTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="User Type"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/birthdateTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Birthdate"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/ageTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Age"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/sexTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Sex"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/disabilityTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Disability"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/medConTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Medical Condition"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<View
+						style="@style/HorizontalLineBackground"
 						android:layout_width="match_parent"
 						android:layout_height="5dp"
-						android:layout_margin="10dp"
-						android:background="@color/dark_gray" />
+						android:layout_margin="10dp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/emailTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Email"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/phoneTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Phone No"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/registerTypeTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Register Type"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/accountCreationDateTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Account Creation Date"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/idTypeTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="ID Type"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.cardview.widget.CardView
+						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_marginStart="5dp"
-						android:layout_marginEnd="5dp"
-						android:layout_marginBottom="5dp"
-						app:cardBackgroundColor="@color/white"
+						android:layout_margin="10dp"
 						app:cardCornerRadius="10dp"
 						app:cardElevation="5dp">
 
@@ -311,19 +287,17 @@
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/idNumberTextView"
+						style="@style/RoundedTextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginStart="5dp"
 						android:layout_marginEnd="5dp"
 						android:layout_marginBottom="5dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/white"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="ID Number"
 						android:textAlignment="textStart"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.LinearLayoutCompat
@@ -334,10 +308,10 @@
 						android:orientation="vertical">
 
 						<View
+							style="@style/HorizontalLineBackground"
 							android:layout_width="match_parent"
 							android:layout_height="5dp"
-							android:layout_margin="10dp"
-							android:background="@color/dark_gray" />
+							android:layout_margin="10dp" />
 
 						<androidx.cardview.widget.CardView
 							android:layout_width="match_parent"
@@ -360,36 +334,32 @@
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/vehicleColorTextView"
+							style="@style/RoundedTextColor"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_marginStart="5dp"
 							android:layout_marginEnd="5dp"
 							android:layout_marginBottom="5dp"
-							android:background="@drawable/custom_card_view_1"
-							android:backgroundTint="@color/white"
 							android:elevation="5dp"
 							android:fontFamily="@font/gabarito_semibold"
 							android:padding="10dp"
 							android:text="Vehicle Color"
 							android:textAlignment="textStart"
-							android:textColor="@color/black"
 							android:textSize="17sp" />
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/vehiclePlateNumberTextView"
+							style="@style/RoundedTextColor"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_marginStart="5dp"
 							android:layout_marginEnd="5dp"
 							android:layout_marginBottom="5dp"
-							android:background="@drawable/custom_card_view_1"
-							android:backgroundTint="@color/white"
 							android:elevation="5dp"
 							android:fontFamily="@font/gabarito_semibold"
 							android:padding="10dp"
 							android:text="Vehicle Plate Number"
 							android:textAlignment="textStart"
-							android:textColor="@color/black"
 							android:textSize="17sp" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
@@ -404,6 +374,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -412,7 +383,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"

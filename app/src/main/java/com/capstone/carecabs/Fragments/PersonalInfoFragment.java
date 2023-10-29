@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -30,9 +31,12 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentPersonalInfoBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
+
+import java.util.Objects;
 
 public class PersonalInfoFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "FragmentPersonalInfo";
@@ -48,8 +52,9 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	private Context context;
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
-	private FragmentPersonalInfoBinding binding;
 	private RequestManager requestManager;
+	private VoiceAssistant voiceAssistant;
+	private FragmentPersonalInfoBinding binding;
 
 	@Override
 	public void onStart() {
@@ -108,6 +113,15 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 		context = getContext();
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
+
+		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Personal Info");
+		}
+
 		loadUserProfileInfo();
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());

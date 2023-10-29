@@ -3,6 +3,7 @@ package com.capstone.carecabs.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -23,6 +24,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentChangePasswordBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,13 +33,18 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
-public class ChangePasswordFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener{
+import java.util.Objects;
+
+public class ChangePasswordFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ChangePasswordFragment";
 	private AlertDialog.Builder builder;
 	private AlertDialog passwordResetConfirmationDialog, cancelPasswordResetDialog,
-	passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
+			passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
 	private Intent intent;
 	private Context context;
+	private SharedPreferences preferences;
+	private String voiceAssistantToggle;
+	private VoiceAssistant voiceAssistant;
 	private FragmentChangePasswordBinding binding;
 
 	@Override
@@ -80,6 +87,14 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		context = getContext();
 		checkUserRegisterMethod();
 
+		preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Change Password");
+		}
+
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
 		binding.okayBtn.setOnClickListener(v -> backToAccountFragment());
@@ -109,19 +124,21 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			documentReference.get().addOnSuccessListener(documentSnapshot -> {
-				if (documentSnapshot != null & documentSnapshot.exists()) {
-					String getRegisterType = documentSnapshot.getString("registerType");
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null & documentSnapshot.exists()) {
+							String getRegisterType = documentSnapshot.getString("registerType");
 
-					if (getRegisterType.equals("google")) {
-						binding.googleSignInLayout.setVisibility(View.VISIBLE);
-						binding.editTextLayout.setVisibility(View.GONE);
-						binding.resetPasswordBtn.setVisibility(View.GONE);
-					}else {
-						showPasswordWarningDialog();
-					}
-				}
-			}).addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+							if (getRegisterType.equals("google")) {
+								binding.googleSignInLayout.setVisibility(View.VISIBLE);
+								binding.editTextLayout.setVisibility(View.GONE);
+								binding.resetPasswordBtn.setVisibility(View.GONE);
+							} else {
+								showPasswordWarningDialog();
+							}
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "checkUserRegisterMethod: " + e.getMessage()));
 		}
 	}
 
@@ -135,6 +152,12 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_reset_password_warning, null);
 
 		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		String changePasswordWarning = getString(R.string.change_password_warning);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant.speak(changePasswordWarning);
+		}
 
 		okayBtn.setOnClickListener(v -> {
 			closePasswordWarningDialog();

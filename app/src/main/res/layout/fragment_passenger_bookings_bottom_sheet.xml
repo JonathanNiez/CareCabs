@@ -2,9 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".BottomSheetModal.PassengerBookingsBottomSheet">
 
 	<RelativeLayout
@@ -13,25 +13,24 @@
 
 		<androidx.cardview.widget.CardView
 			android:id="@+id/customActionBarLayout"
+			style="@style/ToolbarBackground"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_alignParentTop="true"
-			app:cardBackgroundColor="@color/sky_blue"
-			app:cardElevation="10dp">
+			app:cardElevation="5dp">
 
 			<RelativeLayout
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				>
+				android:layout_height="wrap_content">
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/textView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_centerInParent="true"
+					android:layout_margin="15dp"
 					android:fontFamily="@font/gabarito_bold"
 					android:text="PASSENGER BOOKINGS"
-					android:layout_margin="10dp"
 					android:textAlignment="center"
 					android:textColor="@color/white"
 					android:textSize="20sp" />
@@ -45,7 +44,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/customActionBarLayout"
-			tools:listitem="@layout/item_pickup_passenger" />
+			tools:listitem="@layout/item_passengers" />
 
 		<androidx.cardview.widget.CardView
 			android:id="@+id/loadingLayout"
@@ -74,17 +73,16 @@
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/noPassengerBookingsTextView"
+			style="@style/RoundedTextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerInParent="true"
 			android:layout_margin="10dp"
-			android:background="@drawable/custom_card_view_1"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:padding="10dp"
 			android:text="There are no Passenger Bookings right now"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 	</RelativeLayout>

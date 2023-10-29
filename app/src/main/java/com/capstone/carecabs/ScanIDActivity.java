@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
@@ -31,6 +32,7 @@ import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.capstone.carecabs.ml.IdScanV2;
 import com.capstone.carecabs.ml.IdScanner;
@@ -76,6 +78,9 @@ public class ScanIDActivity extends AppCompatActivity {
 	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private DocumentReference documentReference;
+	private SharedPreferences preferences;
+	private String voiceAssistantToggle;
+	private VoiceAssistant voiceAssistant;
 	private ActivityScanIdBinding binding;
 
 	@Override
@@ -125,6 +130,13 @@ public class ScanIDActivity extends AppCompatActivity {
 
 		checkIfUserIsVerified();
 		checkCameraAndStoragePermission();
+
+		preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+		}
 
 		if (getIntent() != null) {
 			if (getIntent().hasExtra("userType")) {
@@ -426,6 +438,14 @@ public class ScanIDActivity extends AppCompatActivity {
 								binding.backBtn.setVisibility(View.VISIBLE);
 								binding.idScanLayout.setVisibility(View.GONE);
 								binding.scanYourIDTypeTextView.setVisibility(View.GONE);
+
+								String idAlreadyScannedString = "You have already scanned your ID.\n" +
+										"Would you like to scan again?\n" +
+										"Tap/Click the white are to scan your ID";
+
+								if (voiceAssistantToggle.equals("enabled")) {
+									voiceAssistant.speak(idAlreadyScannedString);
+								}
 
 								binding.backBtn.setOnClickListener(view -> {
 									goToMainActivity();

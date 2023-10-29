@@ -3,7 +3,9 @@ package com.capstone.carecabs;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -12,12 +14,14 @@ import android.widget.Toast;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.FeedbackModel;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityFeedbackBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.UUID;
 
 public class FeedbackActivity extends AppCompatActivity implements SettingsBottomSheet.FontSizeChangeListener {
@@ -28,6 +32,7 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
+	private VoiceAssistant voiceAssistant;
 	private ActivityFeedbackBinding binding;
 
 	@Override
@@ -35,6 +40,14 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 		super.onCreate(savedInstanceState);
 		binding = ActivityFeedbackBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
+
+		SharedPreferences preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Feedback");
+		}
 
 		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
@@ -52,8 +65,7 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 				Toast.makeText(this, "Please enter your comment", Toast.LENGTH_LONG).show();
 				return;
 			} else {
-				submitFeedback(generateRandomFeedbackID(),
-						comment);
+				submitFeedback(generateRandomFeedbackID(), comment);
 			}
 		});
 	}

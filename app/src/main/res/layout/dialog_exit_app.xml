@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	android:gravity="center"
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
+		style="@style/ItemCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
@@ -22,30 +23,30 @@
 			android:padding="5dp">
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/ImageViewTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:src="@drawable/exit_128" />
 
-
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="EXIT APP"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Are you sure you want to Exit the App?"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>

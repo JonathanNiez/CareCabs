@@ -4,15 +4,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.AboutFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -24,9 +23,9 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="ABOUT"
-				android:layout_margin="10dp"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
@@ -47,10 +46,9 @@
 
 			<RelativeLayout
 				android:id="@+id/upperLayout"
+				style="@style/TopCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/cyan"
 				android:elevation="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
@@ -62,10 +60,10 @@
 			</RelativeLayout>
 
 			<androidx.cardview.widget.CardView
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:backgroundTint="@color/white"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -78,6 +76,7 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="20dp"
@@ -87,7 +86,6 @@
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="About Our Project"
-						android:textColor="@color/black"
 						android:textSize="22sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
@@ -102,6 +100,7 @@
 						android:textStyle="bold" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -111,21 +110,21 @@
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="Our Mission"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/our_mission"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -135,21 +134,21 @@
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="What Set Us Apart"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/what_set_us_apart"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -159,10 +158,10 @@
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="Our Features"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
@@ -171,21 +170,21 @@
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Accessible Vehicles:"
-						android:textColor="@color/black"
 						android:textSize="18sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/accessible_vehicles"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
@@ -193,21 +192,21 @@
 						android:layout_marginTop="10dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Personalized Assistance:"
-						android:textColor="@color/black"
 						android:textSize="18sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/personalized_assistance"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
@@ -215,17 +214,16 @@
 						android:layout_marginTop="10dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Safety First:"
-						android:textColor="@color/black"
 						android:textSize="18sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="@string/safety_first"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
@@ -249,13 +247,13 @@
 						android:textSize="25sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_regular"
 						android:text="@string/acknowledgments"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp"
 						android:textStyle="bold" />
 
@@ -269,6 +267,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -277,11 +276,11 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/white_blue"
+		android:contentDescription="@string/accessibility"
+		android:elevation="5dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
-
 
 </RelativeLayout>

@@ -38,7 +38,6 @@ import com.capstone.carecabs.Model.BottomSheetData
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.PickupPassengerBottomSheetData
 import com.capstone.carecabs.Model.TripModel
-import com.capstone.carecabs.PassengerBookingsOverviewActivity
 import com.capstone.carecabs.R
 import com.capstone.carecabs.TripsActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
@@ -414,12 +413,17 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
         binding.arrivedAtDestinationBtn.visibility = View.GONE
+        binding.bookingsImgBtn.visibility = View.GONE
 
         checkIfUserIsVerified()
 
         binding.chatImgBtn.setOnClickListener {
             intent = Intent(this@MapDriverActivity, ChatOverviewActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.bookingsImgBtn.setOnClickListener {
+
         }
 
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
@@ -456,6 +460,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
             binding.fullscreenImgBtn.visibility = View.GONE
             binding.minimizeScreenImgBtn.visibility = View.VISIBLE
+            binding.bookingsImgBtn.visibility = View.VISIBLE
 
             binding.bottomNavigationView.visibility = View.GONE
         }
@@ -468,6 +473,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
             binding.minimizeScreenImgBtn.visibility = View.GONE
             binding.fullscreenImgBtn.visibility = View.VISIBLE
+            binding.bookingsImgBtn.visibility = View.GONE
 
             binding.bottomNavigationView.visibility = View.VISIBLE
         }
@@ -694,7 +700,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 }
 
                 R.id.bookings -> {
-                    showPassengerBookingsBottomSheetDialog(bookingID)
+                    showPassengerBookingsBottomSheet(bookingID)
                 }
 
                 R.id.help -> {
@@ -786,11 +792,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                         val getBookingID = it.getString("bookingID")!!
 
                         binding.bookingsImgBtn.setOnClickListener {
-                            intent = Intent(
-                                this@MapDriverActivity,
-                                PassengerBookingsOverviewActivity::class.java
-                            )
-                            startActivity(intent)
+                            showPassengerBookingsBottomSheet(getBookingID)
                         }
 
                         initializeBottomNavButtons(getBookingID)
@@ -847,7 +849,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                             if (bookingData.bookingStatus == "Waiting") {
 
                                 binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(bookingData.bookingID)
+                                    showPassengerBookingsBottomSheet(bookingData.bookingID)
                                 }
 
                                 initializeBottomNavButtons(bookingData.bookingID)
@@ -877,7 +879,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                                 && bookingData.driverUserID == FirebaseMain.getUser().uid
                             ) {
                                 binding.bookingsImgBtn.setOnClickListener {
-                                    showPassengerBookingsBottomSheetDialog(bookingData.bookingID)
+                                    showPassengerBookingsBottomSheet(bookingData.bookingID)
                                 }
 
                                 initializeBottomNavButtons(bookingData.bookingID)
@@ -954,7 +956,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                     OnPointAnnotationClickListener {
 
 //                        showPassengerBookingLocationInfoDialog(bookingID)
-                        showBottomSheetDialog(bookingID)
+                        showPickupPassengerBottomSheet(bookingID)
 
                         true
                     }
@@ -991,7 +993,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 addClickListener(
                     OnPointAnnotationClickListener {
 
-                        showBottomSheetDialog(bookingID)
+                        showPickupPassengerBottomSheet(bookingID)
 
                         true
                     }
@@ -1789,17 +1791,18 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
     }
 
     //passenger location pin onclick
-    private fun showBottomSheetDialog(bookingID: String) {
+    private fun showPickupPassengerBottomSheet(bookingID: String) {
         val data = bookingID
         val pickupPassengerBottomSheet = PickupPassengerBottomSheet.newInstance(data)
-        pickupPassengerBottomSheet.setBottomSheetListener(this) // Set the listener in the activity
+        pickupPassengerBottomSheet.setBottomSheetListener(this)
         pickupPassengerBottomSheet.show(supportFragmentManager, PickupPassengerBottomSheet.TAG)
     }
 
-    private fun showPassengerBookingsBottomSheetDialog(bookingID: String) {
+
+    private fun showPassengerBookingsBottomSheet(bookingID: String) {
         val data = bookingID
         val passengerBookingsBottomSheet = PassengerBookingsBottomSheet.newInstance(data)
-        passengerBookingsBottomSheet.setPassengerBookingsBottomSheetListener(this) // Set the listener in the activity
+        passengerBookingsBottomSheet.setPassengerBookingsBottomSheetListener(this)
         passengerBookingsBottomSheet.show(supportFragmentManager, PassengerBookingsBottomSheet.TAG)
     }
 

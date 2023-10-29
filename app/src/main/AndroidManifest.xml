@@ -1,129 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+	xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature
-        android:name="android.hardware.camera"
-        android:required="false" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
+	<uses-feature
+		android:name="android.hardware.camera"
+		android:required="false" />
+	<uses-feature android:name="android.hardware.camera.autofocus" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission
+		android:name="android.permission.READ_EXTERNAL_STORAGE"
+		android:maxSdkVersion="32" />
+	<uses-permission android:name="android.permission.CAMERA" />
+	<uses-permission
+		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+		android:maxSdkVersion="32" />
 
-    <application
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.CareCabs"
-        tools:targetApi="31" >
+	<application
+		android:allowBackup="true"
+		android:dataExtractionRules="@xml/data_extraction_rules"
+		android:fullBackupContent="@xml/backup_rules"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:roundIcon="@mipmap/ic_launcher_round"
+		android:supportsRtl="true"
+		android:theme="@style/Theme.CareCabs"
+		tools:targetApi="31">
 
-        <activity
-            android:name=".Chat.ChatPassengerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Chat.ChatOverviewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TripFeedbackActivity"
-            android:exported="false" />
-        <activity
-            android:name=".FeedbackActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Chat.ChatDriverActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HelpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TripsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PassengerBookingsOverviewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginOrRegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Map.MapPassengerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RequestLocationPermissionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ResetPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".BookingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ScanIDActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoggingInActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoggingOutActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Register.RegisterPWDActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Register.RegisterSeniorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Register.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Register.RegisterDriverActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Register.RegisterUserTypeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GetStartedActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Map.MapDriverActivity"
-            android:exported="false" />
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SplashScreenActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+		<activity
+			android:name=".Chat.ChatPassengerActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Chat.ChatOverviewActivity"
+			android:exported="false" />
+		<activity
+			android:name=".TripFeedbackActivity"
+			android:exported="false" />
+		<activity
+			android:name=".FeedbackActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Chat.ChatDriverActivity"
+			android:exported="false" />
+		<activity
+			android:name=".HelpActivity"
+			android:exported="false" />
+		<activity
+			android:name=".TripsActivity"
+			android:exported="false" />
+		<activity
+			android:name=".PassengerBookingsOverviewActivity"
+			android:exported="false" />
+		<activity
+			android:name=".LoginOrRegisterActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Map.MapPassengerActivity"
+			android:exported="false" />
+		<activity
+			android:name=".RequestLocationPermissionActivity"
+			android:exported="false" />
+		<activity
+			android:name=".ResetPasswordActivity"
+			android:exported="false" />
+		<activity
+			android:name=".BookingsActivity"
+			android:exported="false" />
+		<activity
+			android:name=".ScanIDActivity"
+			android:exported="false" />
+		<activity
+			android:name=".LoggingInActivity"
+			android:exported="false" />
+		<activity
+			android:name=".LoggingOutActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Register.RegisterPWDActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Register.RegisterSeniorActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Register.RegisterActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Register.RegisterDriverActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Register.RegisterUserTypeActivity"
+			android:exported="false" />
+		<activity
+			android:name=".GetStartedActivity"
+			android:exported="false" />
+		<activity
+			android:name=".Map.MapDriverActivity"
+			android:exported="false" />
+		<activity
+			android:name=".LoginActivity"
+			android:exported="false" />
+		<activity
+			android:name=".SplashScreenActivity"
+			android:exported="true">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
-        <service
-            android:name=".Firebase.FirebaseCloudMessaging"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-    </application>
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity
+			android:name=".MainActivity"
+			android:exported="false"
+			android:windowSoftInputMode="adjustPan" />
+
+		<service
+			android:name=".Firebase.FirebaseCloudMessaging"
+			android:exported="false">
+			<intent-filter>
+				<action android:name="com.google.firebase.MESSAGING_EVENT" />
+			</intent-filter>
+		</service>
+	</application>
 
 </manifest>

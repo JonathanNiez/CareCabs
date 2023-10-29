@@ -23,7 +23,7 @@
 			android:layout_centerHorizontal="true"
 			android:layout_margin="10dp"
 			android:fontFamily="@font/gabarito_bold"
-			android:text="Accessibility Toolbar"
+			android:text="Accessibility Settings"
 			android:textAlignment="center"
 			android:textSize="20sp" />
 

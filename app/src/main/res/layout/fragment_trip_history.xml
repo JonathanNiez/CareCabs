@@ -6,6 +6,33 @@
 	android:layout_height="match_parent"
 	tools:context=".Fragments.TripHistoryFragment">
 
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		app:cardElevation="5dp">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/myProfileTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="TRIPS HISTORY"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
+
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/tripsHistoryRecyclerView"
 		android:layout_width="match_parent"

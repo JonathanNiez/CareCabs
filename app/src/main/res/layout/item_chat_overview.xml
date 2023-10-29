@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/ItemCardBackground"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
 	android:elevation="5dp"
-	app:cardBackgroundColor="@color/white"
 	app:cardCornerRadius="10dp">
 
 	<androidx.appcompat.widget.LinearLayoutCompat
@@ -25,11 +25,10 @@
 
 			<de.hdodenhof.circleimageview.CircleImageView
 				android:id="@+id/chatProfilePicture"
+				style="@style/ProfilePictureBorderColor"
 				android:layout_width="100dp"
 				android:layout_height="100dp"
-				android:src="@drawable/mar"
-				app:civ_border_color="@color/black"
-				app:civ_border_width="2dp" />
+				android:src="@drawable/mar" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -43,33 +42,33 @@
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/chatNameTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="Chat name"
-				android:textColor="@color/black"
-				android:textSize="22sp" />
+				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/chatUserTypeTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Chat User type"
-				android:textColor="@color/black"
 				android:textSize="18sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/recentMessageTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Recent message"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="16sp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat

@@ -262,10 +262,10 @@
 
 	<com.google.android.material.bottomnavigation.BottomNavigationView
 		android:id="@+id/bottomNavigationView"
+		style="@style/BottomNavBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/cyan"
 		app:itemIconSize="30dp"
 		app:itemIconTint="@color/white"
 		app:itemTextColor="@color/white"

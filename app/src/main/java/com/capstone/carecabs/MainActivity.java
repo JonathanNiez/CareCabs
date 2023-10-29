@@ -2,13 +2,13 @@ package com.capstone.carecabs;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.bumptech.glide.Glide;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatOverviewActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
@@ -36,8 +35,8 @@ import com.capstone.carecabs.Fragments.PersonalInfoFragment;
 import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
-import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NotificationHelper;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.google.android.material.badge.BadgeDrawable;
@@ -50,7 +49,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity implements
+		SettingsBottomSheet.VoiceAssistantToggleListener {
 	private final String TAG = "MainActivity";
 	private static final String THEME_NORMAL = "normal";
 	private static final String THEME_CONTRAST = "contrast";
@@ -59,10 +61,11 @@ public class MainActivity extends AppCompatActivity {
 	private AlertDialog exitAppDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
 	private boolean shouldExit = false;
-	private BadgeDrawable badgeDrawable;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
-	private DatabaseReference bookingReference;
+	private SharedPreferences preferences;
+	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantToggle;
 	private ActivityMainBinding binding;
 
 	@Override
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStart() {
 		super.onStart();
 
-		getThemeSettingsFromFireStore();
+		getUserSettingsFromFireStore();
 	}
 
 	@Override
@@ -85,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
 		closeExitConfirmationDialog();
 		closeEnableLocationServiceDialog();
-//		updateDriverStatus(false);
 
+		voiceAssistant.shutdown();
 	}
 
 	@Override
@@ -104,11 +107,19 @@ public class MainActivity extends AppCompatActivity {
 		binding = ActivityMainBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-//		checkUserIfVerified();
-
-		retrieveAndStoreFCMToken();
-
+		checkUserIfVerified();
 		showFragment(new HomeFragment());
+
+		preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+		}
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			showSettingsBottomSheet();
+		});
 
 		binding.bottomNavigationView.setSelectedItemId(R.id.home);
 		binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -140,45 +151,6 @@ public class MainActivity extends AppCompatActivity {
 			return true;
 		});
 
-		binding.settingsFloatingBtn.setOnClickListener(v -> {
-			Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
-			SettingsBottomSheet.FontSizeChangeListener fontSizeChangeListener = null;
-			SettingsBottomSheet.ThemeChangeListener themeChangeListener = null;
-			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
-
-			if (currentFragment instanceof HomeFragment) {
-				fontSizeChangeListener = (HomeFragment) currentFragment;
-			} else if (currentFragment instanceof AccountFragment) {
-				fontSizeChangeListener = (AccountFragment) currentFragment;
-
-			} else if (currentFragment instanceof AboutFragment) {
-				fontSizeChangeListener = (AboutFragment) currentFragment;
-
-			} else if (currentFragment instanceof ContactUsFragment) {
-				fontSizeChangeListener = (ContactUsFragment) currentFragment;
-
-			} else if (currentFragment instanceof EditAccountFragment) {
-				fontSizeChangeListener = (EditAccountFragment) currentFragment;
-
-			} else if (currentFragment instanceof ChangePasswordFragment) {
-				fontSizeChangeListener = (ChangePasswordFragment) currentFragment;
-
-			} else if (currentFragment instanceof AppSettingsFragment) {
-				fontSizeChangeListener = (AppSettingsFragment) currentFragment;
-
-			} else if (currentFragment instanceof PersonalInfoFragment) {
-				fontSizeChangeListener = (PersonalInfoFragment) currentFragment;
-
-			}
-
-			if (fontSizeChangeListener != null) {
-				settingsBottomSheet.setFontSizeChangeListener(fontSizeChangeListener);
-			} else if (themeChangeListener != null) {
-				settingsBottomSheet.setThemeChangeListener(themeChangeListener);
-			}
-			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
-
-		});
 	}
 
 	@Override
@@ -222,16 +194,14 @@ public class MainActivity extends AppCompatActivity {
 		if (shouldExit) {
 			super.onBackPressed();
 		} else {
-
 			showExitConfirmationDialog();
 		}
 	}
 
 	private void exitApp() {
 		shouldExit = true;
-		super.onBackPressed();
-
 		finishAffinity();
+		super.onBackPressed();
 	}
 
 	private void retrieveAndStoreFCMToken() {
@@ -250,7 +220,44 @@ public class MainActivity extends AppCompatActivity {
 				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 
-	private void getThemeSettingsFromFireStore() {
+	private void showSettingsBottomSheet() {
+		Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+
+		SettingsBottomSheet.FontSizeChangeListener fontSizeChangeListener = null;
+		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+
+		if (currentFragment instanceof HomeFragment) {
+			fontSizeChangeListener = (HomeFragment) currentFragment;
+
+		} else if (currentFragment instanceof AccountFragment) {
+			fontSizeChangeListener = (AccountFragment) currentFragment;
+
+		} else if (currentFragment instanceof AboutFragment) {
+			fontSizeChangeListener = (AboutFragment) currentFragment;
+
+		} else if (currentFragment instanceof ContactUsFragment) {
+			fontSizeChangeListener = (ContactUsFragment) currentFragment;
+
+		} else if (currentFragment instanceof EditAccountFragment) {
+			fontSizeChangeListener = (EditAccountFragment) currentFragment;
+
+		} else if (currentFragment instanceof ChangePasswordFragment) {
+			fontSizeChangeListener = (ChangePasswordFragment) currentFragment;
+
+		} else if (currentFragment instanceof AppSettingsFragment) {
+			fontSizeChangeListener = (AppSettingsFragment) currentFragment;
+
+		} else if (currentFragment instanceof PersonalInfoFragment) {
+			fontSizeChangeListener = (PersonalInfoFragment) currentFragment;
+		}
+
+		if (fontSizeChangeListener != null) {
+			settingsBottomSheet.setFontSizeChangeListener(fontSizeChangeListener);
+		}
+		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
+	}
+
+	private void getUserSettingsFromFireStore() {
 		if (FirebaseMain.getUser() != null) {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
@@ -260,11 +267,13 @@ public class MainActivity extends AppCompatActivity {
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot.exists()) {
 							String getTheme = documentSnapshot.getString("theme");
+							String getFontSize = documentSnapshot.getString("fontSize");
+							String getVoiceAssistant = documentSnapshot.getString("voiceAssistant");
 
-							if (getTheme != null) {
+							if (getTheme != null && getFontSize != null && getVoiceAssistant != null) {
 
 								setTheme(getTheme);
-
+								storeUserSettings(getTheme, getFontSize, getVoiceAssistant);
 							}
 						}
 					})
@@ -272,17 +281,41 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+//	@Override
+//	public void onThemeChanged(boolean isChecked) {
+//		String theme = isChecked ? THEME_CONTRAST : THEME_NORMAL;
+//
+//		setTheme(theme);
+//
+//	}
+
+	private void storeUserSettings(String theme, String fontSize, String voiceAssistant) {
+		SharedPreferences sharedPreferences = getSharedPreferences("userSettings", MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString("theme", theme);
+		editor.putString("fontSize", fontSize);
+		editor.putString("voiceAssistant", voiceAssistant);
+		editor.apply();
+	}
+
 	private void setTheme(String theme) {
-
 		if (theme.equals(THEME_CONTRAST)) {
-
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-
+		} else if (theme.equals(THEME_NORMAL)) {
+			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 		} else {
-
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 		}
+	}
 
+	@Override
+	public void onVoiceAssistantToggled(boolean isToggled) {
+		if (isToggled) {
+			voiceAssistant.speak("voice assistant enabled");
+		} else {
+			voiceAssistant.speak("voice assistant disabled");
+			voiceAssistant.shutdown();
+		}
 	}
 
 	private void checkLocationService() {
@@ -299,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	private void checkIfBookingIsAccepted() {
-		bookingReference = FirebaseDatabase.getInstance()
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
 
 		bookingReference.addValueEventListener(new ValueEventListener() {
@@ -333,81 +366,70 @@ public class MainActivity extends AppCompatActivity {
 				"A Driver has accepted your Booking and is on the way to pick up you");
 	}
 
-//	private void checkUserIfVerified() {
-//		if (FirebaseMain.getUser() != null) {
-//
-//			documentReference = FirebaseMain.getFireStoreInstance()
-//					.collection(FirebaseMain.userCollection)
-//					.document(FirebaseMain.getUser().getUid());
-//
-//			documentReference.get()
-//					.addOnSuccessListener(documentSnapshot -> {
-//						if (documentSnapshot != null && documentSnapshot.exists()) {
-//							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
-//
-//							badgeDrawable = binding.bottomNavigationView.getBadge(R.id.myProfile);
-//
-//							if (!getVerificationStatus) {
-//								if (badgeDrawable != null) {
-//									badgeDrawable.setVisible(true);
-//									badgeDrawable.setNumber(1);
-//								}
-//
-//								showProfileNotVerifiedNotification();
-//
-//							} else {
-//								binding.bottomNavigationView.removeBadge(R.id.myProfile);
-//								getUserTypeToCheckIfBookingIsAccepted();
-//								retrieveAndStoreFCMToken();
-//							}
-//
-//						}
-//					})
-//					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfVerified: " + e.getMessage()));
-//		} else {
-//			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
-//			startActivity(intent);
-//			finish();
-//		}
-//	}
-//
-//	private void checkForWaitingPassengers() {
-//		bookingReference = FirebaseDatabase.getInstance()
-//				.getReference(FirebaseMain.bookingCollection);
-//		bookingReference.addValueEventListener(new ValueEventListener() {
-//			@Override
-//			public void onDataChange(@NonNull DataSnapshot snapshot) {
-//				if (snapshot.exists()) {
-//					int waitingPassengersCount = 0;
-//					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
-//						PassengerBookingModel passengerBookingData =
-//								bookingSnapshot.getValue(PassengerBookingModel.class);
-//						if (passengerBookingData != null) {
-//
-//							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
-//								showPassengersWaitingNotification();
-//								waitingPassengersCount++;
-//								badgeDrawable = binding.bottomNavigationView.getOrCreateBadge(R.id.map);
-//
-//								badgeDrawable.setVisible(true);
-//								badgeDrawable.setNumber(waitingPassengersCount);
-//
-//							} else {
-//								if (badgeDrawable != null) {
-//									binding.bottomNavigationView.removeBadge(R.id.map);
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-//
-//			@Override
-//			public void onCancelled(@NonNull DatabaseError error) {
-//				Log.e(TAG, "checkForWaitingPassengers: onCancelled " + error.getMessage());
-//			}
-//		});
-//	}
+	private void checkUserIfVerified() {
+		if (FirebaseMain.getUser() != null) {
+
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+
+							if (!getVerificationStatus) {
+
+								showProfileNotVerifiedNotification();
+
+							} else {
+								retrieveAndStoreFCMToken();
+								getUserTypeToCheckBookingStatus();
+							}
+
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfVerified: " + e.getMessage()));
+		} else {
+			intent = new Intent(MainActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
+
+	private void checkForWaitingPassengers() {
+		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+				.getReference(FirebaseMain.bookingCollection);
+		bookingReference.addValueEventListener(new ValueEventListener() {
+			@Override
+			public void onDataChange(@NonNull DataSnapshot snapshot) {
+				if (snapshot.exists()) {
+					int waitingPassengersCount = 0;
+
+					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
+						PassengerBookingModel passengerBookingData =
+								bookingSnapshot.getValue(PassengerBookingModel.class);
+						if (passengerBookingData != null) {
+
+							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
+								showPassengersWaitingNotification();
+								waitingPassengersCount++;
+
+							} else {
+
+							}
+						}
+					}
+				}
+			}
+
+			@Override
+			public void onCancelled(@NonNull DatabaseError error) {
+				Log.e(TAG, "checkForWaitingPassengers: onCancelled " + error.getMessage());
+			}
+		});
+
+	}
 
 	private void getUserTypeForMap() {
 		if (FirebaseMain.getUser() != null) {
@@ -443,31 +465,30 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-//	private void getUserTypeToCheckIfBookingIsAccepted() {
-//		if (FirebaseMain.getUser() != null) {
-//			documentReference = FirebaseMain.getFireStoreInstance()
-//					.collection(FirebaseMain.userCollection)
-//					.document(FirebaseMain.getUser().getUid());
-//
-//			documentReference.get()
-//					.addOnSuccessListener(documentSnapshot -> {
-//						if (documentSnapshot != null && documentSnapshot.exists()) {
-//							String getUserType = documentSnapshot.getString("userType");
-//
-//							if (getUserType.equals("Senior Citizen") ||
-//									getUserType.equals("Person with Disabilities (PWD)")) {
-//
-//								checkIfBookingIsAccepted();
-//							} else {
-//								checkForWaitingPassengers();
-//							}
-//
-//						}
-//					})
-//					.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-//		}
-//	}
+	private void getUserTypeToCheckBookingStatus() {
+		if (FirebaseMain.getUser() != null) {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
+			documentReference.get()
+					.addOnSuccessListener(documentSnapshot -> {
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+							String getUserType = documentSnapshot.getString("userType");
+
+							if (getUserType != null && getUserType.equals("Driver")) {
+
+								checkForWaitingPassengers();
+							}
+						} else {
+							checkIfBookingIsAccepted();
+
+						}
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "getUserTypeToCheckBookingStatus: " + e.getMessage()));
+		}
+
+	}
 
 	private void updateDriverStatus(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
@@ -521,6 +542,10 @@ public class MainActivity extends AppCompatActivity {
 
 		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant.speak("Are you sure you want to exit the App?");
+		}
 
 		exitBtn.setOnClickListener(v -> {
 			exitApp();

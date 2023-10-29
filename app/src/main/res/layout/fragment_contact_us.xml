@@ -4,15 +4,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.ContactUsFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
@@ -23,11 +22,11 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="CONTACT US"
 				android:textColor="@color/white"
-				android:textSize="20sp"
-				android:layout_margin="15dp"/>
+				android:textSize="20sp" />
 
 		</RelativeLayout>
 
@@ -46,13 +45,13 @@
 
 			<RelativeLayout
 				android:id="@+id/upperLayout"
+				style="@style/TopCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/dark_cyan"
 				android:elevation="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
+					style="@style/ImageViewTint"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
@@ -192,6 +191,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -200,7 +200,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"

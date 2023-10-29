@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/ItemCardBackground"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
 	android:layout_marginBottom="10dp"
-	app:cardBackgroundColor="@color/dark_cyan"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
@@ -33,6 +33,7 @@
 				android:textSize="20sp" />
 
 			<androidx.cardview.widget.CardView
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
@@ -47,24 +48,24 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Pickup location:"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/pickupLocationTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Pickup Location"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="18sp" />
 
 					<pl.droidsonroids.gif.GifImageView
@@ -74,24 +75,24 @@
 						android:src="@drawable/loading_gif" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Destination:"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/destinationLocationTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Destination Location"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="18sp" />
 
 					<pl.droidsonroids.gif.GifImageView
@@ -120,6 +121,7 @@
 
 			<androidx.cardview.widget.CardView
 				android:id="@+id/driverDetailsLayout"
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -135,46 +137,46 @@
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverOnTheWayTextView"
+						style="@style/IndicatorTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Your Driver is on the way"
 						android:textAlignment="center"
-						android:textColor="@color/blue"
 						android:textSize="25sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverArrivalTimeTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Arrival Time"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/vehicleColorTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Vehicle Color"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/vehiclePlateNumberTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Vehicle Plate Number"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.LinearLayoutCompat

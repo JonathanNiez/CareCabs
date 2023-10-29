@@ -2,15 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".Chat.ChatDriverActivity">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="5dp">
 
 		<RelativeLayout
@@ -43,16 +44,17 @@
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/messageInputLayout"
+		style="@style/ChatEditTextLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
-		android:background="@color/white_blue"
 		android:gravity="center"
 		android:orientation="horizontal"
 		android:padding="5dp">
 
 		<androidx.appcompat.widget.AppCompatEditText
 			android:id="@+id/messageEditText"
+			style="@style/ChatEditText"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_marginStart="5dp"
@@ -63,8 +65,6 @@
 			android:fontFamily="@font/opensans_medium"
 			android:hint="Type a message..."
 			android:inputType="text"
-			android:textColor="@color/black"
-			android:textColorHint="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatImageButton

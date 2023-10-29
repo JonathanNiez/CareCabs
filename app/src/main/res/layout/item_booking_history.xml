@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/ItemCardBackground"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
-	app:cardBackgroundColor="@color/white"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
@@ -17,74 +17,74 @@
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingDateTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Date"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Status:"
-			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingStatusTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Status"
-			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_gravity="start"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_medium"
 			android:text="Pickup:"
-			android:layout_gravity="start"
-			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/pickupLocationTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Pickup Location"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="18sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_gravity="start"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_medium"
 			android:text="Destination:"
-			android:layout_gravity="start"
-			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/destinationLocationTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="18sp" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>

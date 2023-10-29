@@ -2,6 +2,7 @@ package com.capstone.carecabs.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,13 +18,15 @@ import android.widget.ImageButton;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.FeedbackActivity;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentContactUsBinding;
 
 import java.util.Objects;
 
 public class ContactUsFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
-	private FragmentContactUsBinding binding;
 	private Context context;
+	private VoiceAssistant voiceAssistant;
+	private FragmentContactUsBinding binding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,13 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 		View view = binding.getRoot();
 
 		context = getContext();
+		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Contact Us");
+		}
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 

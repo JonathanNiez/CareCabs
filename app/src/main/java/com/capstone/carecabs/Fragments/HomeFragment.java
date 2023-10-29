@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -52,6 +53,7 @@ import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.FirebaseApp;
@@ -70,7 +72,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class HomeFragment extends Fragment implements
-		SettingsBottomSheet.FontSizeChangeListener, SettingsBottomSheet.ThemeChangeListener {
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "HomeFragment";
 	private float textSizeSP;
 	private float textHeaderSizeSP;
@@ -78,9 +80,6 @@ public class HomeFragment extends Fragment implements
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
-	private static final String THEME_NORMAL = "normal";
-	private static final String THEME_CONTRAST = "contrast";
-	private String theme;
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private int currentPage = 0;
 	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
@@ -92,12 +91,12 @@ public class HomeFragment extends Fragment implements
 	private Context context;
 	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private FragmentHomeBinding binding;
 	private DocumentReference documentReference;
 	private DatabaseReference databaseReference;
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
 	private RequestManager requestManager;
+	private FragmentHomeBinding binding;
 
 	@Override
 	public void onPause() {
@@ -124,7 +123,7 @@ public class HomeFragment extends Fragment implements
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		if (requestManager != null){
+		if (requestManager != null) {
 			requestManager.clear(binding.driverProfilePictureImageView);
 			requestManager.clear(binding.currentPassengerProfilePictureImageView);
 		}
@@ -160,6 +159,8 @@ public class HomeFragment extends Fragment implements
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
+		getUserSettings();
+
 		slideFragments.add(new CarouselFragment1());
 		slideFragments.add(new CarouselFragment2());
 		slideFragments.add(new CarouselFragment3());
@@ -194,25 +195,16 @@ public class HomeFragment extends Fragment implements
 		checkUserIfRegisterComplete();
 	}
 
-	@Override
-	public void onThemeChanged(boolean isChecked) {
-		if (isChecked){
-			theme = THEME_CONTRAST;
-		}else {
-			theme = THEME_NORMAL;
-		}
+	private void getUserSettings() {
+		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String fontSize = preferences.getString("fontSize", "normal");
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
 
-		setTheme(theme);
-	}
-	private void setTheme(String theme){
+		setFontSize(fontSize);
 
-		int colorResID;
-
-		if (theme.equals(THEME_CONTRAST)){
-			colorResID = R.color.darker_gray;
-
-		}else {
-			colorResID = R.color.sky_blue;
+		if (voiceAssistantToggle.equals("enabled")) {
+			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Home");
 		}
 	}
 
@@ -370,17 +362,6 @@ public class HomeFragment extends Fragment implements
 		}
 	}
 
-	public class NotificationReceiver extends BroadcastReceiver {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			if ("user_not_verified_action".equals(intent.getAction())) {
-//				goToEditAccountFragment(context);
-			}
-		}
-
-	}
-
 	private void goToEditAccountFragment(Context context) {
 		fragmentManager = requireActivity().getSupportFragmentManager();
 		fragmentTransaction = fragmentManager.beginTransaction();
@@ -396,7 +377,6 @@ public class HomeFragment extends Fragment implements
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
 	}
-
 
 	private void checkUserIfRegisterComplete() {
 		if (FirebaseMain.getUser() != null) {
@@ -446,11 +426,6 @@ public class HomeFragment extends Fragment implements
 
 							String getUserType = documentSnapshot.getString("userType");
 							String getFirstName = documentSnapshot.getString("firstname");
-							String getFontSize = documentSnapshot.getString("fontSize");
-							String getTheme = documentSnapshot.getString("theme");
-
-							setFontSize(getFontSize);
-							setTheme(getTheme);
 
 							binding.firstnameTextView.setText(getFirstName);
 
@@ -576,9 +551,12 @@ public class HomeFragment extends Fragment implements
 											.into(binding.currentPassengerProfilePictureImageView);
 								}
 
-
 								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
+
+								binding.viewPickupPassengerOnMapBtn.setOnClickListener(v -> {
+									checkLocationService("Driver");
+								});
 
 								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
 									binding.passengerDisabilityTextView.setVisibility(View.GONE);
@@ -596,7 +574,7 @@ public class HomeFragment extends Fragment implements
 
 			@Override
 			public void onCancelled(@NonNull DatabaseError error) {
-				Log.e(TAG, "onCancelled: " + error.getMessage());
+				Log.e(TAG, "showNavigationStatusLayout - onCancelled: " + error.getMessage());
 			}
 		});
 	}
@@ -841,7 +819,7 @@ public class HomeFragment extends Fragment implements
 	}
 
 	private void checkLocationService(String userType) {
-		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+		LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
 		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -39,6 +40,7 @@ import com.capstone.carecabs.TripsActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
@@ -65,6 +67,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
 	private RequestManager requestManager;
+	private VoiceAssistant voiceAssistant;
 
 	@Override
 	public void onStart() {
@@ -101,7 +104,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		if (requestManager != null){
+		if (requestManager != null) {
 			requestManager.clear(binding.profilePic);
 		}
 	}
@@ -128,6 +131,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		context = getContext();
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
+
+		getUserSettings();
 
 		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
 
@@ -166,6 +171,19 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 		checkUserIfRegisterComplete();
 
+	}
+
+	private void getUserSettings() {
+		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String fontSize = preferences.getString("fontSize", "normal");
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("My Profile");
+		}
 	}
 
 	private void logoutUser() {
@@ -541,6 +559,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 		Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+
+		voiceAssistant.speak("Are you sure you want to Sign out?");
 
 		signOutBtn.setOnClickListener(v -> {
 			logoutUser();

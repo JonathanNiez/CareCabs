@@ -4,15 +4,14 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".Fragments.EditAccountFragment">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardElevation="10dp">
 
 		<RelativeLayout
@@ -24,11 +23,11 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="EDIT PROFILE"
 				android:textColor="@color/white"
-				android:textSize="20sp"
-				android:layout_margin="15dp"/>
+				android:textSize="20sp" />
 
 		</RelativeLayout>
 
@@ -47,18 +46,17 @@
 
 			<RelativeLayout
 				android:id="@+id/upperLayout"
+				style="@style/TopCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/dark_cyan"
 				android:elevation="5dp">
 
 				<androidx.cardview.widget.CardView
+					style="@style/BaseCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					android:backgroundTint="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -96,25 +94,25 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/firstnameTextView"
+									style="@style/TextColor"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Firstname"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="20sp" />
 
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/lastnameTextView"
+									style="@style/TextColor"
 									android:layout_width="match_parent"
 									android:layout_height="wrap_content"
 									android:fontFamily="@font/gabarito_bold"
 									android:padding="5dp"
 									android:text="Lastname"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="20sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -123,13 +121,13 @@
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/tapImageTextView"
+							style="@style/TextColor"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
 							android:fontFamily="@font/gabarito_medium"
 							android:text="Tap/Click on the profile picture to icon update your profile picture"
 							android:textAlignment="center"
-							android:textColor="@color/black"
 							android:textSize="17sp" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
@@ -643,6 +641,7 @@
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
+		style="@style/FloatingButtonBackground"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
@@ -651,7 +650,6 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
-		android:backgroundTint="@color/cyan"
 		android:contentDescription="@string/accessibility"
 		android:elevation="5dp"
 		android:importantForAccessibility="yes"

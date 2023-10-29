@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".ScanIDActivity">
 
 	<androidx.cardview.widget.CardView
@@ -47,23 +47,23 @@
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/scanYourIDTypeTextView"
+				style="@style/RoundedTextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:background="@drawable/custom_card_view_1"
+				android:elevation="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:padding="10dp"
 				android:text="Scan your ID"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<androidx.cardview.widget.CardView
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:padding="5dp"
-				app:cardBackgroundColor="@color/white"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -82,9 +82,9 @@
 
 						<androidx.appcompat.widget.AppCompatImageView
 							android:id="@+id/idImageView"
+							style="@style/ImageViewTint"
 							android:layout_width="match_parent"
 							android:layout_height="300dp"
-							android:textColor="@color/black"
 							app:srcCompat="@drawable/face_id_100" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
@@ -97,26 +97,27 @@
 						android:orientation="vertical">
 
 						<androidx.appcompat.widget.LinearLayoutCompat
+							style="@style/BaseCardBackground"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
-							android:background="@drawable/custom_card_view_1"
 							android:elevation="5dp"
 							android:gravity="center"
 							android:orientation="vertical"
 							android:padding="10dp">
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_semibold"
-								android:text="You have already scanned your ID\nWould you like to scan again?"
+								android:text="You have already scanned your ID"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="20sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
@@ -124,10 +125,10 @@
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Would you like to scan again?"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
@@ -135,7 +136,6 @@
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Tap/Click the white are to scan your ID"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="17sp" />
 
 						</androidx.appcompat.widget.LinearLayoutCompat>

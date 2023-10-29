@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/ItemCardBackground"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
@@ -22,7 +23,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Trip Date"
-			android:textColor="@color/black"
+			style="@style/TextColor"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
@@ -32,7 +33,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Passenger Name"
-			android:textColor="@color/black"
+			style="@style/TextColor"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
@@ -42,7 +43,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Passenger Type"
-			android:textColor="@color/black"
+			style="@style/TextColor"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
@@ -52,7 +53,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Pickup Location Name"
-			android:textColor="@color/black"
+			style="@style/TextColor"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
@@ -62,7 +63,7 @@
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location Name"
-			android:textColor="@color/black"
+			style="@style/TextColor"
 			android:textSize="17sp" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>

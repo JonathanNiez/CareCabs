@@ -56,7 +56,6 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private PassengerBookingsBottomSheetListener mPassengerBookingsBottomSheetListener;
-
 	private FragmentPassengerBookingsBottomSheetBinding binding;
 	private Context context;
 
@@ -168,7 +167,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 				@SuppressLint("LongLogTag")
 				@Override
 				public void onCancelled(@NonNull DatabaseError error) {
-					Log.e(TAG, error.getMessage());
+					Log.e(TAG, "loadPassengerBookingsFromDatabase - onCancelled: " + error.getMessage());
 				}
 			});
 

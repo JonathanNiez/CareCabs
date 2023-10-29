@@ -8,6 +8,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -49,6 +50,7 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
@@ -101,6 +103,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private StorageReference profilePicturePath;
 	private StorageReference vehiclePicturePath;
 	private RequestManager requestManager;
+	private VoiceAssistant voiceAssistant;
 	private FragmentEditAccountBinding binding;
 
 	@Override
@@ -168,11 +171,14 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		binding.vehicleInfoLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		checkPermission();
-		loadUserProfileInfo();
+		if (context != null) {
+			requestManager = Glide.with(context);
+			FirebaseApp.initializeApp(context);
 
-		requestManager = Glide.with(context);
-		FirebaseApp.initializeApp(context);
+			checkPermission();
+			getUserSettings();
+			loadUserProfileInfo();
+		}
 
 		binding.profilePicture.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
@@ -205,6 +211,18 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		backToAccountFragment();
 	}
 
+	private void getUserSettings() {
+		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String fontSize = preferences.getString("fontSize", "normal");
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Edit Profile");
+		}
+	}
 	@SuppressLint("ClickableViewAccessibility")
 	private void initializeEditTexts() {
 
@@ -686,55 +704,56 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							String getSex = documentSnapshot.getString("sex");
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 							String getBirthdate = documentSnapshot.getString("birthdate");
-							String getFontSize = documentSnapshot.getString("fontSize");
 
-							setFontSize(getFontSize);
+							if (getUserType != null) {
+								switch (getUserType) {
+									case "Driver":
+										binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
 
-							switch (getUserType) {
-								case "Driver":
-									binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+										String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+										String getVehicleColor = documentSnapshot.getString("vehicleColor");
+										String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-									String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
-									String getVehicleColor = documentSnapshot.getString("vehicleColor");
-									String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+										if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
+											Glide.with(context)
+													.load(getVehiclePicture)
+													.placeholder(R.drawable.loading_gif)
+													.into(binding.vehicleImageView);
+										}
 
-									if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
-										Glide.with(context)
-												.load(getVehiclePicture)
-												.placeholder(R.drawable.loading_gif)
-												.into(binding.vehicleImageView);
-									}
+										binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
+										binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
 
-									binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
-									binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+										break;
 
-									break;
+									case "Person with Disabilities (PWD)":
+										String getDisability = documentSnapshot.getString("disability");
+										binding.editDisabilityLayout.setVisibility(View.VISIBLE);
+										binding.disabilityTextView.setText("Disability: " + getDisability);
 
-								case "Person with Disabilities (PWD)":
-									String getDisability = documentSnapshot.getString("disability");
-									binding.editDisabilityLayout.setVisibility(View.VISIBLE);
-									binding.disabilityTextView.setText("Disability: " + getDisability);
+										break;
 
-									break;
+									case "Senior Citizen":
+										String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-								case "Senior Citizen":
-									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+										binding.editMedicalConditionLayout.setVisibility(View.VISIBLE);
+										binding.medicalConditionTextView.setVisibility(View.VISIBLE);
+										binding.medicalConditionTextView.setText(getMedicalCondition);
 
-									binding.editMedicalConditionLayout.setVisibility(View.VISIBLE);
-									binding.medicalConditionTextView.setVisibility(View.VISIBLE);
-									binding.medicalConditionTextView.setText(getMedicalCondition);
-
-									break;
+										break;
+								}
 							}
 
-							switch (getSex) {
-								case "Male":
-									binding.editSexSpinner.setSelection(1);
-									break;
+							if (getSex != null) {
+								switch (getSex) {
+									case "Male":
+										binding.editSexSpinner.setSelection(1);
+										break;
 
-								case "Female":
-									binding.editSexSpinner.setSelection(2);
-									break;
+									case "Female":
+										binding.editSexSpinner.setSelection(2);
+										break;
+								}
 							}
 
 							if (getProfilePicture != null && !getProfilePicture.equals("default")) {

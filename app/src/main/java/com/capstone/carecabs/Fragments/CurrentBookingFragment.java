@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.FragmentCurrentBookingBinding;
 import com.google.firebase.database.DataSnapshot;
@@ -49,6 +52,7 @@ public class CurrentBookingFragment extends Fragment {
 	private AlertDialog.Builder builder;
 	private Intent intent;
 	private CurrentBookingAdapter currentBookingAdapter;
+	private VoiceAssistant voiceAssistant;
 	private FragmentCurrentBookingBinding binding;
 
 	@Override
@@ -80,6 +84,13 @@ public class CurrentBookingFragment extends Fragment {
 		View view = binding.getRoot();
 
 		context = getContext();
+		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
+		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+
+		if (voiceAssistantToggle.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Current Booking");
+		}
 
 		binding.noCurrentBookingsLayout.setVisibility(View.GONE);
 
