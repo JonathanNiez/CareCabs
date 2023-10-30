@@ -88,7 +88,7 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	public void onDestroyView() {
 		super.onDestroyView();
 
-		if (requestManager != null){
+		if (requestManager != null) {
 			requestManager.clear(binding.idImageView);
 			requestManager.clear(binding.vehicleImageView);
 		}
@@ -114,14 +114,7 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
-		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")){
-			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Personal Info");
-		}
-
+		getUserSettings();
 		loadUserProfileInfo();
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
@@ -161,58 +154,57 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 							String getAccountCreationDate = documentSnapshot.getString("accountCreationDate");
 							String getRegisterType = documentSnapshot.getString("registerType");
 							String getIDPicture = documentSnapshot.getString("idPicture");
-							String getFontSize = documentSnapshot.getString("fontSize");
 
-							setFontSize(getFontSize);
-
-							if (!getIDPicture.equals("none")) {
+							if (getIDPicture != null && !getIDPicture.equals("none")) {
 								Glide.with(context)
 										.load(getIDPicture)
 										.placeholder(R.drawable.loading_gif)
 										.into(binding.idImageView);
 							}
 
-							switch (getUserType) {
-								case "Driver":
-									binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
-									binding.idTypeTextView.setText("Driver's License");
+							if (getUserType != null) {
+								switch (getUserType) {
+									case "Driver":
+										binding.vehicleInfoLayout.setVisibility(View.VISIBLE);
+										binding.idTypeTextView.setText("Driver's License");
 
-									String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
-									String getVehicleColor = documentSnapshot.getString("vehicleColor");
-									String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
+										String getVehiclePicture = documentSnapshot.getString("vehiclePicture");
+										String getVehicleColor = documentSnapshot.getString("vehicleColor");
+										String getVehiclePlateNumber = documentSnapshot.getString("vehiclePlateNumber");
 
-									if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
-										Glide.with(context)
-												.load(getVehiclePicture)
-												.placeholder(R.drawable.loading_gif)
-												.into(binding.vehicleImageView);
-									}
+										if (getVehiclePicture != null && !getVehiclePicture.equals("none")) {
+											Glide.with(context)
+													.load(getVehiclePicture)
+													.placeholder(R.drawable.loading_gif)
+													.into(binding.vehicleImageView);
+										}
 
-									binding.vehicleColorTextView.setText("Vehicle Color: " + getVehicleColor);
-									binding.vehiclePlateNumberTextView.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+										binding.vehicleColorTextView.setText("Vehicle Color: " + getVehicleColor);
+										binding.vehiclePlateNumberTextView.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
 
-									break;
+										break;
 
-								case "Person with Disabilities (PWD)":
-									binding.idTypeTextView.setText("PWD ID");
+									case "Person with Disabilities (PWD)":
+										binding.idTypeTextView.setText("PWD ID");
 
-									String getDisability = documentSnapshot.getString("disability");
+										String getDisability = documentSnapshot.getString("disability");
 
-									binding.disabilityTextView.setVisibility(View.VISIBLE);
-									binding.disabilityTextView.setText("Disabilities: " + getDisability);
+										binding.disabilityTextView.setVisibility(View.VISIBLE);
+										binding.disabilityTextView.setText("Disabilities: " + getDisability);
 
 
-									break;
+										break;
 
-								case "Senior Citizen":
-									binding.idTypeTextView.setText("Senior Citizen ID");
+									case "Senior Citizen":
+										binding.idTypeTextView.setText("Senior Citizen ID");
 
-									String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+										String getMedicalCondition = documentSnapshot.getString("medicalCondition");
 
-									binding.medConTextView.setVisibility(View.VISIBLE);
-									binding.medConTextView.setText("Medical Conditions: " + getMedicalCondition);
+										binding.medConTextView.setVisibility(View.VISIBLE);
+										binding.medConTextView.setText("Medical Conditions: " + getMedicalCondition);
 
-									break;
+										break;
+								}
 							}
 
 							binding.firstnameTextView.setText(getFirstName);
@@ -247,6 +239,18 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
+	}
+
+	private void getUserSettings() {
+		String fontSize = StaticDataPasser.storeFontSize;
+		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Personal Info");
+		}
 	}
 
 	@Override

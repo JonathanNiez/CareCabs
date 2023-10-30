@@ -73,7 +73,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class EditAccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener{
+public class EditAccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "EditAccountFragment";
 	private float textSizeSP;
 	private float textHeaderSizeSP;
@@ -212,9 +212,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	}
 
 	private void getUserSettings() {
-		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String fontSize = preferences.getString("fontSize", "normal");
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+		String fontSize = StaticDataPasser.storeFontSize;
+		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
@@ -223,6 +222,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			voiceAssistant.speak("Edit Profile");
 		}
 	}
+
 	@SuppressLint("ClickableViewAccessibility")
 	private void initializeEditTexts() {
 
@@ -578,83 +578,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
 			}
 		});
-
-	}
-
-	private void getCurrentFontSizeFromUserSetting() {
-
-		switch (StaticDataPasser.storeFontSize) {
-			case 15:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-
-				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-				break;
-
-			case 17:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-
-				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				break;
-
-			case 19:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-
-				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editBirthdateSwitch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-
-				binding.editFirstnameEditText.setHeight(62);
-				binding.editLastnameEditText.setHeight(62);
-				binding.editAgeEditText.setHeight(62);
-				binding.sexTextView.setHeight(62);
-				binding.editBirthdateBtn.setHeight(62);
-				binding.disabilityTextView.setHeight(62);
-				binding.medicalConditionTextView.setHeight(62);
-				break;
-
-			case 21:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-
-				binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editLastnameSwitch.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.medicalConditionTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-
-				binding.editFirstnameEditText.setHeight(64);
-				binding.editLastnameEditText.setHeight(64);
-				binding.editAgeEditText.setHeight(64);
-				binding.sexTextView.setHeight(64);
-				binding.editBirthdateBtn.setHeight(64);
-				binding.disabilityTextView.setHeight(64);
-				binding.medicalConditionTextView.setHeight(64);
-
-				break;
-		}
 
 	}
 

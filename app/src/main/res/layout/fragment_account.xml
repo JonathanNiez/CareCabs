@@ -179,12 +179,10 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/userTypeTextView"
-									style="@style/TextColor"
+									style="@style/UserTypeTextBackground"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="10dp"
-									android:background="@drawable/custom_card_view_1"
-									android:backgroundTint="@color/background"
 									android:elevation="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:padding="10dp"
@@ -200,17 +198,6 @@
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_medium"
 									android:text="Disability"
-									android:textAlignment="center"
-									android:textSize="17sp" />
-
-								<androidx.appcompat.widget.AppCompatTextView
-									android:id="@+id/medConTextView"
-									style="@style/TextColor"
-									android:layout_width="wrap_content"
-									android:layout_height="wrap_content"
-									android:layout_margin="5dp"
-									android:fontFamily="@font/gabarito_medium"
-									android:text="Medical Condition"
 									android:textAlignment="center"
 									android:textSize="17sp" />
 

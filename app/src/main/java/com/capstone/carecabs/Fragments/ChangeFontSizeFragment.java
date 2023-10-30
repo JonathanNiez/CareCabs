@@ -49,7 +49,6 @@ public class ChangeFontSizeFragment extends Fragment {
 		View view = binding.getRoot();
 
 		context = getContext();
-		getCurrentFontSizeFromUserSetting();
 
 		binding.smallFontSizeBtn.setOnClickListener(view1 -> {
 			updateFontSizeLabel(15);
@@ -75,7 +74,6 @@ public class ChangeFontSizeFragment extends Fragment {
 		binding.saveBtn.setOnClickListener(v -> {
 			showPleaseWaitDialog();
 
-			updateFontSizeToFireStore(StaticDataPasser.storeFontSize);
 		});
 
 
@@ -120,7 +118,6 @@ public class ChangeFontSizeFragment extends Fragment {
 						int getFontSize = getFontSizeLong.intValue();
 
 						closePleaseWaitDialog();
-						StaticDataPasser.storeFontSize = getFontSize;
 
 						switch (getFontSize) {
 							case 15:
@@ -181,7 +178,6 @@ public class ChangeFontSizeFragment extends Fragment {
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
@@ -190,7 +186,6 @@ public class ChangeFontSizeFragment extends Fragment {
 				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
 				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
@@ -200,7 +195,6 @@ public class ChangeFontSizeFragment extends Fragment {
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
 				binding.currentFontSize.setText(fontSizeLabelString);
 				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 
@@ -210,7 +204,6 @@ public class ChangeFontSizeFragment extends Fragment {
 				binding.fontSizePreview.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
 				binding.currentFontSize.setText(fontSizeLabelString);
 				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				StaticDataPasser.storeFontSize = fontSize;
 
 				break;
 

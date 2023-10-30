@@ -16,8 +16,9 @@ public class StaticDataPasser {
 	public static int storeCurrentAge = 0;
 	public static String storeUserType = "";
 	public static String storePhoneNumber = "";
-	public static int storeFontSize = 17;
-	public static String storeCurrentFontSize = "normal";
+	public static String storeFontSize = "normal";
+	public static String storeTheme = "normal";
+	public static String storeVoiceAssistantState = "disabled";
 	public static Uri storeUri = null;
 	public static Uri storeProfilePictureUri = null;
 	public static Uri storeVehiclePictureUri = null;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
+	style="@style/MainBackground"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -11,33 +11,34 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
+		style="@style/BaseCardBackground"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:fontFamily="@font/gabarito_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="You are registering as a:"
 				android:textAlignment="center"
-				android:textColor="@color/black"
+				style="@style/TextColor"
 				android:textSize="17sp" />
 
-			<ImageView
+			<androidx.appcompat.widget.AppCompatImageView
 				android:id="@+id/userTypeImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:src="@drawable/senior_64_2" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/registerAsTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -52,7 +53,7 @@
 				android:textColor="@color/black"
 				android:textSize="20sp" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
@@ -68,4 +69,4 @@
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

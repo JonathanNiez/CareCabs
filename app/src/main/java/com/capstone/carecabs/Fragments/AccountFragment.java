@@ -122,7 +122,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		View view = binding.getRoot();
 
 		binding.disabilityTextView.setVisibility(View.GONE);
-		binding.medConTextView.setVisibility(View.GONE);
 		binding.driverStatusTextView1.setVisibility(View.GONE);
 		binding.driverStatusTextView2.setVisibility(View.GONE);
 		binding.driverRatingTextView.setVisibility(View.GONE);
@@ -174,9 +173,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	private void getUserSettings() {
-		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String fontSize = preferences.getString("fontSize", "normal");
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+		String fontSize = StaticDataPasser.storeFontSize;
+		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
@@ -219,109 +217,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		}
 	}
 
-	private void getCurrentFontSizeFromUserSetting() {
-
-		switch (StaticDataPasser.storeFontSize) {
-			case 15:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-
-				break;
-
-			case 17:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17);
-
-				break;
-
-			case 19:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-
-				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 19);
-
-				binding.personalInfoBtn.setHeight(62);
-				binding.editProfileBtn.setHeight(62);
-				binding.changePasswordBtn.setHeight(62);
-				binding.editProfileBtn.setHeight(62);
-				binding.aboutBtn.setHeight(62);
-				binding.contactUsBtn.setHeight(62);
-				binding.signOutBtn.setHeight(62);
-				binding.scanIDBtn.setHeight(62);
-
-				break;
-
-			case 21:
-				binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
-				binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.medConTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-
-				binding.personalInfoBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-				binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 21);
-
-				binding.personalInfoBtn.setHeight(64);
-				binding.editProfileBtn.setHeight(64);
-				binding.changePasswordBtn.setHeight(64);
-				binding.editProfileBtn.setHeight(64);
-				binding.aboutBtn.setHeight(64);
-				binding.contactUsBtn.setHeight(64);
-				binding.signOutBtn.setHeight(64);
-				binding.scanIDBtn.setHeight(64);
-
-				break;
-		}
-	}
-
 	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
@@ -345,10 +240,11 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 							String getFontSize = documentSnapshot.getString("fontSize");
 
-							setFontSize(getFontSize);
 
-							if (getUserType != null) {
+							if (getUserType != null && getFontSize != null) {
 								userType = getUserType;
+
+								setFontSize(getFontSize);
 
 								switch (userType) {
 									case "Driver":
@@ -384,10 +280,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 										break;
 
 									case "Senior Citizen":
-										String getMedicalCondition = documentSnapshot.getString("medicalCondition");
-
-										binding.medConTextView.setVisibility(View.VISIBLE);
-										binding.medConTextView.setText("Medical Condition:\n" + getMedicalCondition);
 										binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 										break;

@@ -36,6 +36,7 @@ import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.Utility.NotificationHelper;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
@@ -273,7 +274,10 @@ public class MainActivity extends AppCompatActivity implements
 							if (getTheme != null && getFontSize != null && getVoiceAssistant != null) {
 
 								setTheme(getTheme);
-								storeUserSettings(getTheme, getFontSize, getVoiceAssistant);
+
+								StaticDataPasser.storeTheme = getTheme;
+								StaticDataPasser.storeFontSize = getFontSize;
+								StaticDataPasser.storeVoiceAssistantState = getVoiceAssistant;
 							}
 						}
 					})
@@ -289,14 +293,6 @@ public class MainActivity extends AppCompatActivity implements
 //
 //	}
 
-	private void storeUserSettings(String theme, String fontSize, String voiceAssistant) {
-		SharedPreferences sharedPreferences = getSharedPreferences("userSettings", MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString("theme", theme);
-		editor.putString("fontSize", fontSize);
-		editor.putString("voiceAssistant", voiceAssistant);
-		editor.apply();
-	}
 
 	private void setTheme(String theme) {
 		if (theme.equals(THEME_CONTRAST)) {

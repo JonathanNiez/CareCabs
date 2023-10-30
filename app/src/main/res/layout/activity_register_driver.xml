@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	tools:context=".Register.RegisterDriverActivity">
 
 	<androidx.core.widget.NestedScrollView
@@ -18,10 +18,9 @@
 			android:orientation="vertical">
 
 			<RelativeLayout
+				style="@style/TopCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/rectangle_one"
-				android:backgroundTint="@color/vermillion"
 				android:elevation="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageButton
@@ -78,12 +77,12 @@
 
 				<androidx.cardview.widget.CardView
 					android:id="@+id/profilePicLayout"
+					style="@style/BaseCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:layout_below="@id/textView"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
-					app:cardBackgroundColor="@color/white"
 					app:cardCornerRadius="10dp"
 					app:cardElevation="5dp">
 
@@ -95,23 +94,22 @@
 
 						<de.hdodenhof.circleimageview.CircleImageView
 							android:id="@+id/imgBtnProfilePic"
+							style="@style/ProfilePictureBorderColor"
 							android:layout_width="150dp"
 							android:layout_height="150dp"
 							android:layout_margin="10dp"
 							android:scaleType="centerCrop"
-							android:src="@drawable/account"
-							app:civ_border_color="@color/black"
-							app:civ_border_width="2dp" />
+							android:src="@drawable/account" />
 
 						<androidx.appcompat.widget.AppCompatTextView
 							android:id="@+id/textView4"
+							style="@style/TextColor"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
 							android:fontFamily="@font/gabarito_medium"
 							android:text="@string/tap_to_upload_profile_picture"
 							android:textAlignment="center"
-							android:textColor="@color/black"
 							android:textSize="15sp" />
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
@@ -121,10 +119,10 @@
 			</RelativeLayout>
 
 			<androidx.cardview.widget.CardView
+				style="@style/ColoredCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				app:cardBackgroundColor="@color/tomato"
 				app:cardCornerRadius="20dp"
 				app:cardElevation="5dp">
 
@@ -270,17 +268,17 @@
 
 
 			<View
+				style="@style/HorizontalLineBackground"
 				android:layout_width="match_parent"
 				android:layout_height="5dp"
 				android:layout_margin="10dp"
-				android:background="@color/dark_gray"
 				android:elevation="5dp" />
 
 			<androidx.cardview.widget.CardView
+				style="@style/ColoredCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				app:cardBackgroundColor="@color/tomato"
 				app:cardCornerRadius="10dp"
 				app:cardElevation="5dp">
 
@@ -292,18 +290,18 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:background="@drawable/custom_card_view_1"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
 						android:text="Vehicle Info"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.cardview.widget.CardView
+						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						app:cardCornerRadius="10dp"
@@ -317,6 +315,7 @@
 
 							<androidx.appcompat.widget.AppCompatImageView
 								android:id="@+id/vehicleImageView"
+								style="@style/ImageViewTint"
 								android:layout_width="150dp"
 								android:layout_height="150dp"
 								android:layout_margin="10dp"
@@ -324,13 +323,13 @@
 								app:srcCompat="@drawable/car_100" />
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Tap/Click on the picture icon to upload the image of your vehicle"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="15sp" />
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
@@ -338,16 +337,15 @@
 					</androidx.cardview.widget.CardView>
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:background="@drawable/custom_card_view_1"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:padding="10dp"
 						android:text="Fill up the vehicle info below so that passengers can easily spot you"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="15sp" />
 
 					<com.google.android.material.textfield.TextInputLayout
@@ -408,11 +406,11 @@
 				android:orientation="vertical">
 
 				<androidx.appcompat.widget.AppCompatTextView
+					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:fontFamily="@font/gabarito_bold"
 					android:text="Please Wait..."
-					android:textColor="@color/black"
 					android:textSize="20sp" />
 
 				<pl.droidsonroids.gif.GifImageView

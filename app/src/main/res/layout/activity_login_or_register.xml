@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/white_blue"
 	tools:context=".LoginOrRegisterActivity">
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -22,11 +22,11 @@
 		app:srcCompat="@drawable/bg_1" />
 
 	<androidx.cardview.widget.CardView
+		style="@style/ColoredCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
 		android:layout_margin="10dp"
-		app:cardBackgroundColor="@color/sky_blue"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -44,6 +44,7 @@
 				app:srcCompat="@drawable/logo_2_transparent" />
 
 			<androidx.cardview.widget.CardView
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
@@ -58,6 +59,7 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="center"
@@ -65,10 +67,10 @@
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Hi! and welcome to CareCabs"
 						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="22sp" />
+						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
@@ -76,7 +78,6 @@
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Please select an option to continue"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.LinearLayoutCompat
@@ -94,13 +95,13 @@
 							android:orientation="vertical">
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Already have an Account?"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.LinearLayoutCompat
@@ -141,13 +142,13 @@
 							android:orientation="vertical">
 
 							<androidx.appcompat.widget.AppCompatTextView
+								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Don't have an Account?"
 								android:textAlignment="center"
-								android:textColor="@color/black"
 								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.LinearLayoutCompat

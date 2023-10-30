@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 	private final String TAG = "Register";
-	private String fontSize = "normal";
+	private String fontSize;
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
 	private Date date;

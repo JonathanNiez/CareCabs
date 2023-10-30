@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.FeedbackModel;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityFeedbackBinding;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -41,13 +42,7 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 		binding = ActivityFeedbackBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		SharedPreferences preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(this);
-			voiceAssistant.speak("Feedback");
-		}
+		getUserSettings();
 
 		binding.backFloatingBtn.setOnClickListener(v -> {
 			finish();
@@ -74,6 +69,18 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 	public void onBackPressed() {
 		finish();
 		super.onBackPressed();
+	}
+
+	private void getUserSettings() {
+		String fontSize = StaticDataPasser.storeFontSize;
+		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantToggle.equals("enabled")) {
+			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Personal Info");
+		}
 	}
 
 	private void setFontSize(String fontSize) {

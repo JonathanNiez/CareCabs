@@ -196,9 +196,8 @@ public class HomeFragment extends Fragment implements
 	}
 
 	private void getUserSettings() {
-		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String fontSize = preferences.getString("fontSize", "normal");
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+		String fontSize = StaticDataPasser.storeFontSize;
+		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 

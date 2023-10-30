@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentSettingsBottomSheetBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -114,18 +116,17 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 		binding.voiceAssistantSwitch.setOnCheckedChangeListener((buttonView, isToggled) -> {
 
-			if (isToggled) {
-				voiceAssistant.speak("voice assistant enabled");
-			} else {
-				voiceAssistant.speak("voice assistant disabled");
-				voiceAssistant.shutdown();
-			}
-
 			String voiceAssistantState = isToggled ? VOICE_ASSISTANT_ENABLED : VOICE_ASSISTANT_DISABLED;
 
-			if (voiceAssistantToggle.equals("enabled")) {
+			if (isToggled) {
 				voiceAssistant = VoiceAssistant.getInstance(context);
-				voiceAssistant.speak("Voice Assistant " + voiceAssistantState);
+				voiceAssistant.speak("voice assistant " + voiceAssistantState);
+			} else {
+				voiceAssistant.speak("voice assistant " + voiceAssistantState);
+
+				new Handler().postDelayed(() -> {
+					voiceAssistant.shutdown();
+				}, 2500);
 			}
 
 			updateVoiceAssistantToFireStore(voiceAssistantState);
@@ -200,10 +201,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private void getUserSettings() {
-		SharedPreferences preferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String theme = preferences.getString("theme", "normal");
-		String fontSize = preferences.getString("fontSize", "normal");
-		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
+		String theme = StaticDataPasser.storeTheme;
+		String fontSize = StaticDataPasser.storeFontSize;
+		voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 		setTheme(theme);
@@ -230,6 +230,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 			documentReference.update(updateFontSize)
 					.addOnSuccessListener(unused -> {
 
+						StaticDataPasser.storeFontSize = fontSize;
 						Log.i(TAG, "updateFontSizeToFireStore - onSuccess: font size updated successfully");
 					})
 					.addOnFailureListener(e -> {
@@ -245,12 +246,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			Map<String, Object> updateFontSize = new HashMap<>();
-			updateFontSize.put("theme", theme);
+			Map<String, Object> updateTheme = new HashMap<>();
+			updateTheme.put("theme", theme);
 
-			documentReference.update(updateFontSize)
+			documentReference.update(updateTheme)
 					.addOnSuccessListener(unused -> {
 
+						StaticDataPasser.storeTheme = theme;
 						Log.i(TAG, "updateThemeToFireStore - onSuccess: theme updated successfully");
 					})
 					.addOnFailureListener(e -> {
@@ -266,12 +268,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
 
-			Map<String, Object> updateFontSize = new HashMap<>();
-			updateFontSize.put("voiceAssistant", voiceAssistant);
+			Map<String, Object> updateVoiceAssistant = new HashMap<>();
+			updateVoiceAssistant.put("voiceAssistant", voiceAssistant);
 
-			documentReference.update(updateFontSize)
+			documentReference.update(updateVoiceAssistant)
 					.addOnSuccessListener(unused -> {
 
+						StaticDataPasser.storeVoiceAssistantState = voiceAssistant;
 						Log.i(TAG, "updateVoiceAssistantToFireStore - onSuccess: voice assistant updated successfully");
 					})
 					.addOnFailureListener(e -> {
@@ -281,12 +284,4 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		}
 	}
 
-	private void storeUserSettings(String theme, String fontSize, String voiceAssistant) {
-		SharedPreferences sharedPreferences = context.getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putString("theme", theme);
-		editor.putString("fontSize", fontSize);
-		editor.putString("voiceAssistant", voiceAssistant);
-		editor.apply();
-	}
 }
