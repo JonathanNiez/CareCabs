@@ -63,56 +63,64 @@
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/hiTextView"
-						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Hi and Welcome to CareCabs"
 						android:textAlignment="center"
+						android:textColor="@color/white"
 						android:textSize="17sp" />
 
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/firstnameTextView"
-						style="@style/TextColor"
+					<androidx.appcompat.widget.AppCompatImageView
+						android:id="@+id/currentTimeImageView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_bold"
-						android:text="Name"
-						android:textAlignment="center"
-						android:textSize="20sp" />
+						app:srcCompat="@drawable/morning_128" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/currentTimeTextView"
-						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Current Time"
 						android:textAlignment="center"
+						android:textColor="@color/white"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/greetTextView"
-						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Good Morning"
 						android:textAlignment="center"
+						android:textColor="@color/white"
+						android:textSize="20sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/firstnameTextView"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Name"
+						android:textAlignment="center"
+						android:textColor="@color/white"
 						android:textSize="20sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/progressBarLayout1"
+					style="@style/LoadingGreetingCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:visibility="gone">
 
 					<pl.droidsonroids.gif.GifImageView
 						android:layout_width="wrap_content"
@@ -711,15 +719,27 @@
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 
-							<androidx.appcompat.widget.LinearLayoutCompat
+							<RelativeLayout
 								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:gravity="center"
-								android:orientation="vertical">
+								android:layout_height="wrap_content">
 
 								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/pickupPassengerBadge"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
+									android:layout_alignParentTop="true"
+									android:layout_alignParentEnd="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
+									app:srcCompat="@drawable/exclamation_24" />
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/rideImageView"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_centerHorizontal="true"
 									android:layout_margin="5dp"
 									app:srcCompat="@drawable/ride_booking_64" />
 
@@ -727,14 +747,19 @@
 									android:id="@+id/bookARideTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_margin="5dp"
+									android:layout_below="@id/rideImageView"
+									android:layout_centerHorizontal="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Book a Ride"
 									android:textAlignment="center"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</androidx.appcompat.widget.LinearLayoutCompat>
+							</RelativeLayout>
 
 						</androidx.cardview.widget.CardView>
 
@@ -757,29 +782,46 @@
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp">
 
-							<androidx.appcompat.widget.LinearLayoutCompat
+							<RelativeLayout
 								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:gravity="center"
-								android:orientation="vertical">
+								android:layout_height="wrap_content">
 
 								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/myProfileBadge"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_margin="5dp"
+									android:layout_alignParentTop="true"
+									android:layout_alignParentEnd="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
+									app:srcCompat="@drawable/exclamation_24" />
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/myProfileImageView"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_centerHorizontal="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
 									app:srcCompat="@drawable/profile_64" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/myProfileTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
+									android:layout_below="@id/myProfileImageView"
+									android:layout_centerHorizontal="true"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="My Profile"
 									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</androidx.appcompat.widget.LinearLayoutCompat>
+							</RelativeLayout>
 
 						</androidx.cardview.widget.CardView>
 

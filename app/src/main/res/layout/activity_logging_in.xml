@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/ClassicBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/cinnabar"
 	tools:context=".LoggingInActivity">
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="300dp"
 		android:layout_height="200dp"
 		android:layout_above="@id/cardView"
@@ -16,6 +16,7 @@
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/cardView"
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
@@ -39,21 +40,21 @@
 
 			<TextView
 				android:id="@+id/textView1"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="LOGGING IN"
-				android:textColor="@color/black"
 				android:textSize="25sp" />
 
 			<TextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="Please wait..."
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 

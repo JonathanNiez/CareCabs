@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
-	<TextView
+	<androidx.appcompat.widget.AppCompatTextView
 		android:id="@+id/textView"
+		style="@style/RoundedTextColor"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="20dp"
-		android:background="@drawable/custom_card_view_1"
+		android:elevation="5dp"
 		android:fontFamily="@font/gabarito_semibold"
 		android:padding="10dp"
 		android:text="Register Using:"
-		android:textColor="@color/black"
 		android:textSize="20sp" />
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/linearLayout"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -28,84 +28,83 @@
 		android:orientation="horizontal">
 
 		<androidx.cardview.widget.CardView
+			android:id="@+id/emailBtn"
+			style="@style/BaseCardBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginEnd="5dp"
+			android:layout_margin="5dp"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:gravity="center"
 				android:orientation="vertical">
 
-				<ImageButton
-					android:id="@+id/emailImgBtn"
+				<androidx.appcompat.widget.AppCompatImageView
+					style="@style/ImageViewTint"
 					android:layout_width="75dp"
 					android:layout_height="75dp"
 					android:layout_marginStart="20dp"
 					android:layout_marginTop="20dp"
 					android:layout_marginEnd="20dp"
 					android:layout_marginBottom="10dp"
-					android:background="@color/white"
 					android:scaleType="centerCrop"
 					android:src="@drawable/email" />
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
+					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="EMAIL"
-					android:textColor="@color/black"
 					android:textSize="20sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 		</androidx.cardview.widget.CardView>
 
-
 		<androidx.cardview.widget.CardView
+			android:id="@+id/googleBtn"
+			style="@style/BaseCardBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_marginStart="5dp"
+			android:layout_margin="5dp"
 			app:cardCornerRadius="10dp"
 			app:cardElevation="5dp">
 
-			<LinearLayout
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:gravity="center"
 				android:orientation="vertical">
 
-				<ImageButton
-					android:id="@+id/googleImgBtn"
+				<androidx.appcompat.widget.AppCompatImageView
 					android:layout_width="75dp"
 					android:layout_height="75dp"
 					android:layout_marginStart="20dp"
 					android:layout_marginTop="20dp"
 					android:layout_marginEnd="20dp"
 					android:layout_marginBottom="10dp"
-					android:background="@color/white"
 					android:scaleType="centerCrop"
 					android:src="@drawable/google" />
 
-				<TextView
+				<androidx.appcompat.widget.AppCompatTextView
+					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_marginBottom="10dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="GOOGLE"
-					android:textColor="@color/black"
 					android:textSize="20sp" />
 
-			</LinearLayout>
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
 		</androidx.cardview.widget.CardView>
 
-
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/cancelBtn"
@@ -114,9 +113,10 @@
 		android:layout_marginBottom="20dp"
 		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/red"
+		android:elevation="5dp"
 		android:fontFamily="@font/gabarito_bold"
 		android:text="Cancel"
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

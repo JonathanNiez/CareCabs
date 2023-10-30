@@ -109,9 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 			startActivityForResult(intent, RC_SIGN_IN);
 		});
 
-		binding.backBtn.setOnClickListener(v -> {
-			goToLoginOrRegisterActivity();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> goToLoginOrRegisterActivity());
 
 		binding.loginBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
@@ -121,8 +119,8 @@ public class LoginActivity extends AppCompatActivity {
 			final String stringPassword = binding.passwordEditText.getText().toString();
 
 			if (stringEmail.isEmpty()) {
-				binding.emailEditText.setError("Please enter your Email");
 
+				binding.emailEditText.setError("Please enter your Email");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 

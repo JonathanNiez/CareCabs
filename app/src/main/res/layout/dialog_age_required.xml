@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
+		android:layout_margin="10dp"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -28,24 +29,24 @@
 				android:src="@drawable/senior_128_2" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="REGISTER"
 				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
+				android:textSize="25sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/gabarito_medium"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Senior Citizens must be 60 Years old and above"
 				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="20sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -53,7 +54,7 @@
 
 
 	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/okBtn"
+		android:id="@+id/okayBtn"
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
@@ -64,4 +65,4 @@
 		android:textColor="@color/white"
 		android:textSize="17sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

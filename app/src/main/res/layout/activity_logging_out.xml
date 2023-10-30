@@ -2,11 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/ClassicBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/sky_blue"
-	tools:context=".LoggingOutActivity"
-	>
+	tools:context=".LoggingOutActivity">
 
 	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="300dp"
@@ -17,44 +16,45 @@
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/cardView"
-		android:layout_centerInParent="true"
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		app:cardCornerRadius="10dp"
+		android:layout_centerInParent="true"
 		android:layout_margin="20dp"
+		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:padding="5dp"
-			android:orientation="vertical">
+			android:orientation="vertical"
+			android:padding="5dp">
 
 			<pl.droidsonroids.gif.GifImageView
 				android:id="@+id/loadingGif"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:src="@drawable/loading_gif"
-				android:layout_margin="10dp"/>
+				android:layout_margin="10dp"
+				android:src="@drawable/loading_gif" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView1"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="SIGNING OUT"
-				android:textColor="@color/black"
 				android:textSize="25sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="Please wait..."
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>

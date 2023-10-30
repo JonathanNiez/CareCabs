@@ -4,7 +4,7 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	style="@style/MainBackground"
+	android:background="@color/sky_blue"
 	tools:context=".GetStartedActivity">
 
 	<androidx.appcompat.widget.AppCompatImageView
@@ -38,7 +38,7 @@
 		android:text="@string/app_description"
 		android:textAlignment="center"
 		android:textColor="@color/white"
-		android:textSize="25sp" />
+		android:textSize="30sp" />
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/getStartedBtn"

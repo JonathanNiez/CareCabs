@@ -240,7 +240,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
 							String getFontSize = documentSnapshot.getString("fontSize");
 
-
 							if (getUserType != null && getFontSize != null) {
 								userType = getUserType;
 
@@ -367,7 +366,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
-
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 		if (isChecked) {
@@ -454,14 +452,9 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 		voiceAssistant.speak("Are you sure you want to Sign out?");
 
-		signOutBtn.setOnClickListener(v -> {
-			logoutUser();
+		signOutBtn.setOnClickListener(v -> logoutUser());
 
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeSignOutDialog();
-		});
+		cancelBtn.setOnClickListener(v -> closeSignOutDialog());
 
 		builder.setView(dialogView);
 

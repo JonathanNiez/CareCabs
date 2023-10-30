@@ -6,10 +6,9 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -23,6 +22,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
+import com.capstone.carecabs.databinding.DialogYouAreRegisteringAsBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -41,13 +41,20 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "Register";
-	private String fontSize;
+	private float textSizeSP, textHeaderSizeSP;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
 	private Date date;
-	private String getUserID;
+	private String getUserID, registerType, userType,
+			prefixPhoneNumber, accountCreationDate,
+			theme = "normal", fontSize = "normal";
 	private Intent intent;
 	private static final int RC_SIGN_IN = 69;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
@@ -70,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 		closeRegisterFailedDialog();
 		closePleaseWaitDialog();
-		closeAgeInfoDialog();
+		closeAgeRequiredDialog();
 		closeCancelRegisterDialog();
 		closeNoInternetDialog();
 		closeUserTypeImageDialog();
@@ -87,7 +94,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 		closeRegisterFailedDialog();
 		closePleaseWaitDialog();
-		closeAgeInfoDialog();
+		closeAgeRequiredDialog();
 		closeCancelRegisterDialog();
 		closeNoInternetDialog();
 		closeUserTypeImageDialog();
@@ -107,9 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
 		Calendar calendar = Calendar.getInstance();
 		date = calendar.getTime();
 
-		binding.backBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> showCancelRegisterDialog());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
@@ -124,100 +129,100 @@ public class RegisterActivity extends AppCompatActivity {
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
 		if (getIntent() != null &&
-				getIntent().hasExtra("registerUserType") &&
+				getIntent().hasExtra("userType") &&
 				getIntent().hasExtra("registerType")) {
 
 			intent = getIntent();
-			String getRegisterUserType = intent.getStringExtra("registerUserType");
-			String getRegisterType = intent.getStringExtra("registerType");
-			StaticDataPasser.storeRegisterType = getRegisterType;
-			StaticDataPasser.storeRegisterUserType = getRegisterUserType;
+			userType = intent.getStringExtra("userType");
+			registerType = intent.getStringExtra("registerType");
 
-			if (getRegisterType != null && getRegisterUserType != null) {
+			switch (userType) {
+				case "Driver":
+					binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
 
-				switch (getRegisterUserType) {
-					case "Driver":
-						binding.userTypeImageBtn.setImageResource(R.drawable.driver_64);
-						break;
+					break;
 
-					case "Persons with Disability (PWD)":
-						binding.userTypeImageBtn.setImageResource(R.drawable.pwd_64);
-						break;
+				case "Person with Disabilities (PWD)":
+					binding.userTypeImageBtn.setImageResource(R.drawable.pwd_64);
 
-					case "Senior Citizen":
-						binding.userTypeImageBtn.setImageResource(R.drawable.senior_64_2);
-						break;
-				}
+					break;
 
-				if (getRegisterType.equals("googleRegister")) {
-					intent = googleSignInClient.getSignInIntent();
-					startActivityForResult(intent, RC_SIGN_IN);
+				case "Senior Citizen":
+					binding.userTypeImageBtn.setImageResource(R.drawable.senior_64_2);
+
+					break;
+			}
+
+			if (registerType.equals("Google")) {
+				intent = googleSignInClient.getSignInIntent();
+				startActivityForResult(intent, RC_SIGN_IN);
+
+			} else if (userType.equals("Senior Citizen")) {
+				showAgeRequiredDialog();
+
+				fontSize = "large";
+				StaticDataPasser.storeFontSize = fontSize;
+				setFontSize(fontSize);
+
+			} else if (registerType.equals("googleRegister") &&
+					userType.equals("Senior Citizen")) {
+				showAgeRequiredDialog();
+
+				fontSize = "large";
+				StaticDataPasser.storeFontSize = fontSize;
+				setFontSize(fontSize);
+
+				intent = googleSignInClient.getSignInIntent();
+				startActivityForResult(intent, RC_SIGN_IN);
+			}
+
+			binding.userTypeImageBtn.setOnClickListener(v -> showUserTypeImageDialog());
+
+			binding.nextBtn.setOnClickListener(v -> {
+				binding.progressBarLayout.setVisibility(View.VISIBLE);
+				binding.nextBtn.setVisibility(View.GONE);
+
+				String stringEmail = binding.email.getText().toString().trim();
+				String stringPassword = binding.password.getText().toString();
+				String stringConfirmPassword = binding.confirmPassword.getText().toString();
+				String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
+
+				if (stringEmail.isEmpty() || stringPassword.isEmpty()
+						|| stringPhoneNumber.isEmpty()) {
+					binding.email.setError("Please enter your Email");
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+
+				} else if (!stringConfirmPassword.equals(stringPassword)) {
+					binding.confirmPassword.setError("Password did not matched");
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+
+				} else {
+					prefixPhoneNumber = "+63" + stringPhoneNumber;
 
 					showPleaseWaitDialog();
 
-				} else if (getRegisterUserType.equals("Senior Citizen")) {
-					showAgeInfoDialog();
+					switch (userType) {
+						case "Driver":
 
-				} else if (getRegisterType.equals("googleRegister") &&
-						getRegisterUserType.equals("Senior Citizen")) {
-					intent = googleSignInClient.getSignInIntent();
-					startActivityForResult(intent, RC_SIGN_IN);
+							registerDriver(stringEmail, stringPassword);
+							break;
 
-					showAgeInfoDialog();
-				}
+						case "Persons with Disabilities (PWD)":
+							registerPWD(stringEmail, stringPassword);
 
-				binding.nextBtn.setOnClickListener(v -> {
-					binding.progressBarLayout.setVisibility(View.VISIBLE);
-					binding.nextBtn.setVisibility(View.GONE);
+							break;
 
-					String stringEmail = binding.email.getText().toString().trim();
-					String stringPassword = binding.password.getText().toString();
-					String stringConfirmPassword = binding.confirmPassword.getText().toString();
-					String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
-					String prefixPhoneNumber = "+63" + stringPhoneNumber;
-					StaticDataPasser.storePhoneNumber = prefixPhoneNumber;
+						case "Senior Citizen":
+							registerSenior(stringEmail, stringPassword);
 
-					if (stringEmail.isEmpty() || stringPassword.isEmpty()
-							|| stringPhoneNumber.isEmpty()) {
-						binding.email.setError("Please enter your Email");
-						binding.progressBarLayout.setVisibility(View.GONE);
-						binding.nextBtn.setVisibility(View.VISIBLE);
-
-					} else if (!stringConfirmPassword.equals(stringPassword)) {
-						binding.confirmPassword.setError("Password did not matched");
-						binding.progressBarLayout.setVisibility(View.GONE);
-						binding.nextBtn.setVisibility(View.VISIBLE);
-
-					} else {
-						showPleaseWaitDialog();
-
-						switch (getRegisterUserType) {
-							case "Driver":
-
-								registerDriver(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-								break;
-
-							case "Persons with Disability (PWD)":
-								registerPWD(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-
-								break;
-
-							case "Senior Citizen":
-								registerSenior(stringEmail, stringPassword, getRegisterUserType, prefixPhoneNumber);
-
-								break;
-						}
+							break;
 					}
-				});
+				}
+			});
 
-			}
-		} else {
-			return;
 		}
-
-		binding.userTypeImageBtn.setOnClickListener(v -> {
-			showUserTypeImageDialog();
-		});
 
 	}
 
@@ -227,13 +232,53 @@ public class RegisterActivity extends AppCompatActivity {
 		super.onBackPressed();
 	}
 
-	private void registerDriver(String email, String password, String userType, String phoneNumber) {
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+			binding.emailLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.passwordLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.confirmPasswordLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.phoneNumberLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+
+			binding.emailLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.passwordLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.confirmPasswordLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.phoneNumberLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+
+		}
+
+		binding.registerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.email.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.password.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.confirmPassword.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.phoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.neverShareYourPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.nextTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+	}
+
+	private void registerDriver(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
 					getUserID = authResult.getUser().getUid();
+
 					documentReference = FirebaseMain.getFireStoreInstance()
 							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					storeUserDataToFireStore(getUserID, email);
 
 				})
 				.addOnFailureListener(e -> {
@@ -261,14 +306,14 @@ public class RegisterActivity extends AppCompatActivity {
 				});
 	}
 
-	private void registerSenior(String email, String password, String userType, String phoneNumber) {
+	private void registerSenior(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
 					getUserID = authResult.getUser().getUid();
 
 					documentReference = FirebaseMain.getFireStoreInstance()
 							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					storeUserDataToFireStore(getUserID, email);
 
 				})
 				.addOnFailureListener(e -> {
@@ -297,14 +342,14 @@ public class RegisterActivity extends AppCompatActivity {
 
 	}
 
-	private void registerPWD(String email, String password, String userType, String phoneNumber) {
+	private void registerPWD(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
 					getUserID = authResult.getUser().getUid();
 
 					documentReference = FirebaseMain.getFireStoreInstance()
 							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email, userType, phoneNumber);
+					storeUserDataToFireStore(getUserID, email);
 
 				})
 				.addOnFailureListener(e -> {
@@ -333,69 +378,69 @@ public class RegisterActivity extends AppCompatActivity {
 
 	}
 
-	private void storeUserDataToFireStore(String userID, String email,
-	                                      String userType, String phoneNumber) {
+	private void storeUserDataToFireStore(String userID, String email) {
 		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-		String formattedDate = dateFormat.format(date);
+		accountCreationDate = dateFormat.format(date);
+		theme = StaticDataPasser.storeTheme;
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("userID", userID);
 		registerUser.put("email", email);
 		registerUser.put("userType", userType);
-		registerUser.put("phoneNumber", phoneNumber);
-		registerUser.put("accountCreationDate", formattedDate);
+		registerUser.put("phoneNumber", prefixPhoneNumber);
+		registerUser.put("accountCreationDate", accountCreationDate);
 		registerUser.put("fontSize", fontSize);
-		registerUser.put("theme", "normal");
+		registerUser.put("theme", theme);
 		registerUser.put("registerType", "Email");
 		registerUser.put("isVerified", false);
 
-		documentReference.set(registerUser).addOnSuccessListener(unused -> {
+		documentReference.set(registerUser)
+				.addOnSuccessListener(unused -> {
 
-			switch (userType) {
-				case "Driver":
-					intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
+					switch (userType) {
+						case "Driver":
+							intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
 
-					break;
+							break;
 
-				case "Senior Citizen":
-					intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
+						case "Senior Citizen":
+							intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
 
-					break;
+							break;
 
-				case "Persons with Disability (PWD)":
-					intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
+						case "Persons with Disability (PWD)":
+							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
-					break;
-			}
-			startActivity(intent);
-			finish();
+							break;
+					}
+					startActivity(intent);
+					finish();
 
-		}).addOnFailureListener(e -> {
-			Log.e(TAG, "storeUserDataToFireStore: " + e.getMessage());
+				})
+				.addOnFailureListener(e -> {
+					Log.e(TAG, "storeUserDataToFireStore: " + e.getMessage());
 
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-			intent = new Intent(RegisterActivity.this, LoginActivity.class);
-			startActivity(intent);
-			finish();
+					intent = new Intent(RegisterActivity.this, LoginActivity.class);
+					startActivity(intent);
+					finish();
 
-			showRegisterFailedDialog();
-		});
+					showRegisterFailedDialog();
+				});
 	}
 
-	private void showAgeInfoDialog() {
+	private void showAgeRequiredDialog() {
 		builder = new AlertDialog.Builder(this);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_age_required, null);
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
 
-		okBtn.setOnClickListener(v -> {
-			closeAgeInfoDialog();
-		});
+		okayBtn.setOnClickListener(v -> closeAgeRequiredDialog());
 
 		builder.setView(dialogView);
 
@@ -403,7 +448,7 @@ public class RegisterActivity extends AppCompatActivity {
 		ageInfoDialog.show();
 	}
 
-	private void closeAgeInfoDialog() {
+	private void closeAgeRequiredDialog() {
 		if (ageInfoDialog != null && ageInfoDialog.isShowing()) {
 			ageInfoDialog.dismiss();
 		}
@@ -412,32 +457,30 @@ public class RegisterActivity extends AppCompatActivity {
 	private void showUserTypeImageDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_you_are_registering_as, null);
+		DialogYouAreRegisteringAsBinding dialogYouAreRegisteringAsBinding =
+				DialogYouAreRegisteringAsBinding.inflate(getLayoutInflater());
+		View dialogView = dialogYouAreRegisteringAsBinding.getRoot();
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
-		TextView registerAsTextView = dialogView.findViewById(R.id.registerAsTextView);
-		ImageView userTypeImageView = dialogView.findViewById(R.id.userTypeImageView);
+		dialogYouAreRegisteringAsBinding.registerAsTextView.setText(userType);
 
-		registerAsTextView.setText(StaticDataPasser.storeRegisterUserType);
-
-		switch (StaticDataPasser.storeRegisterUserType) {
+		switch (userType) {
 			case "Driver":
-				userTypeImageView.setImageResource(R.drawable.driver_64);
+				dialogYouAreRegisteringAsBinding.userTypeImageView.setImageResource(R.drawable.driver_64);
 
 				break;
 
 			case "Senior Citizen":
-				userTypeImageView.setImageResource(R.drawable.senior_64_2);
+				dialogYouAreRegisteringAsBinding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
 
 				break;
 
-			case "Persons with Disability (PWD)":
-				userTypeImageView.setImageResource(R.drawable.pwd_64);
+			case "Person with Disabilities (PWD)":
+				dialogYouAreRegisteringAsBinding.userTypeImageView.setImageResource(R.drawable.pwd_64);
 
 				break;
 		}
 
-		okBtn.setOnClickListener(v -> {
+		dialogYouAreRegisteringAsBinding.okayBtn.setOnClickListener(v -> {
 			closeUserTypeImageDialog();
 		});
 
@@ -605,21 +648,6 @@ public class RegisterActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == RC_SIGN_IN) {
-			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-			try {
-				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
-				fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
-			} catch (Exception e) {
-				Log.e(TAG, "onActivityResult: " + e.getMessage());
-			}
-		}
-
-	}
-
 	private void googleRegisterDriver(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
 		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
 			getUserID = authResult.getUser().getUid();
@@ -681,22 +709,24 @@ public class RegisterActivity extends AppCompatActivity {
 
 	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
 		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-		String formattedDate = dateFormat.format(date);
+		accountCreationDate = dateFormat.format(date);
+		theme = StaticDataPasser.storeTheme;
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("userID", userID);
 		registerUser.put("email", googleEmail);
-		registerUser.put("userType", StaticDataPasser.storeRegisterUserType);
+		registerUser.put("userType", userType);
 		registerUser.put("profilePicture", profilePic);
-		registerUser.put("phoneNumber", StaticDataPasser.storePhoneNumber);
-		registerUser.put("accountCreationDate", formattedDate);
-		registerUser.put("fontSize", 17);
-		registerUser.put("registerType", "Google");
+		registerUser.put("phoneNumber", prefixPhoneNumber);
+		registerUser.put("accountCreationDate", accountCreationDate);
+		registerUser.put("fontSize", fontSize);
+		registerUser.put("theme", theme);
+		registerUser.put("registerType", registerType);
 		registerUser.put("isVerified", false);
 
 		documentReference.set(registerUser)
 				.addOnSuccessListener(unused -> {
-					switch (StaticDataPasser.storeRegisterUserType) {
+					switch (userType) {
 						case "Driver":
 							intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
 							break;
@@ -706,7 +736,7 @@ public class RegisterActivity extends AppCompatActivity {
 
 							break;
 
-						case "PWD":
+						case "Person with Disabilities (PWD)":
 							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
 							break;
@@ -738,13 +768,13 @@ public class RegisterActivity extends AppCompatActivity {
 			String getGoogleEmail = googleSignInAccount.getEmail();
 			String getGoogleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
 
-			switch (StaticDataPasser.storeRegisterUserType) {
+			switch (userType) {
 				case "Driver":
-
 					googleRegisterDriver(authCredential, getGoogleEmail, getGoogleProfilePic);
+
 					break;
 
-				case "Persons with Disability (PWD)":
+				case "Person with Disabilities (PWD)":
 					googleRegisterPWD(authCredential, getGoogleEmail, getGoogleProfilePic);
 
 					break;
@@ -755,5 +785,20 @@ public class RegisterActivity extends AppCompatActivity {
 					break;
 			}
 		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == RC_SIGN_IN) {
+			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+			try {
+				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
+				fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
+			} catch (Exception e) {
+				Log.e(TAG, "onActivityResult: " + e.getMessage());
+			}
+		}
+
 	}
 }

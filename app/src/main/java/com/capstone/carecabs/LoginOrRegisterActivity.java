@@ -15,6 +15,7 @@ import com.capstone.carecabs.Register.RegisterUserTypeActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginOrRegisterBinding;
+import com.capstone.carecabs.databinding.DialogRegisterUsingBinding;
 
 public class LoginOrRegisterActivity extends AppCompatActivity {
 
@@ -63,7 +64,6 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 		binding.loginBtn.setOnClickListener(v -> {
 			intent = new Intent(LoginOrRegisterActivity.this, LoginActivity.class);
 			startActivity(intent);
-//			overridePendingTransition(R.anim.popup_enter, R.anim.popup_exit);
 			finish();
 		});
 
@@ -76,7 +76,7 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		showExitConfirmationDialog();
-
+		super.onBackPressed();
 	}
 
 	private void showExitConfirmationDialog() {
@@ -110,34 +110,29 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 	private void showRegisterUsingDialog() {
 
 		builder = new AlertDialog.Builder(this);
+		DialogRegisterUsingBinding dialogRegisterUsingBinding =
+				DialogRegisterUsingBinding.inflate(getLayoutInflater());
+		View dialogView = dialogRegisterUsingBinding.getRoot();
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_register_using, null);
-
-		ImageButton googleImgBtn = dialogView.findViewById(R.id.googleImgBtn);
-		ImageButton emailImgBtn = dialogView.findViewById(R.id.emailImgBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		googleImgBtn.setOnClickListener(v -> {
+		dialogRegisterUsingBinding.googleBtn.setOnClickListener(v -> {
 			intent = new Intent(LoginOrRegisterActivity.this, RegisterUserTypeActivity.class);
-			intent.putExtra("registerType", "googleRegister");
+			intent.putExtra("registerType", "Google");
 			startActivity(intent);
-			overridePendingTransition(R.anim.popup_enter, R.anim.popup_exit);
 			finish();
 
 			closeRegisterUsingDialog();
 		});
 
-		emailImgBtn.setOnClickListener(v -> {
+		dialogRegisterUsingBinding.emailBtn.setOnClickListener(v -> {
 			intent = new Intent(LoginOrRegisterActivity.this, RegisterUserTypeActivity.class);
-			intent.putExtra("registerType", "emailRegister");
+			intent.putExtra("registerType", "Email");
 			startActivity(intent);
-			overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
 			finish();
 
 			closeRegisterUsingDialog();
 		});
 
-		cancelBtn.setOnClickListener(v -> {
+		dialogRegisterUsingBinding.cancelBtn.setOnClickListener(v -> {
 			closeRegisterUsingDialog();
 		});
 

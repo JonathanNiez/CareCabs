@@ -106,7 +106,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 				voiceAssistant.speak("App theme changed to " + theme);
 			}
 
-			setTheme(theme);
 			updateThemeToFireStore(theme);
 
 			if (themeChangeListener != null) {
@@ -148,38 +147,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		this.fontSizeChangeListener = fontSizeChangeListener;
 	}
 
-	private void setTheme(String theme) {
-		int fontImageResID;
-		int eyeImageResID;
-		int voiceImageResID;
-
-		if (theme.equals(THEME_CONTRAST)) {
-
-			fontImageResID = R.drawable.font_white_50;
-			eyeImageResID = R.drawable.eye_white_50;
-			voiceImageResID = R.drawable.voice_white_50;
-
-//			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-
-		} else {
-
-			fontImageResID = R.drawable.font_50;
-			eyeImageResID = R.drawable.eye_50;
-			voiceImageResID = R.drawable.voice_50;
-
-//			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-		}
-
-		setImageViewResource(binding.fontImageView, fontImageResID);
-		setImageViewResource(binding.eyeImageView, eyeImageResID);
-		setImageViewResource(binding.voiceImageView, voiceImageResID);
-	}
-
-	private void setImageViewResource(ImageView imageView, int imageResID) {
-		if (imageView != null && imageResID != 0) {
-			imageView.setImageResource(imageResID);
-		}
-	}
 
 	private void setFontSize(String fontSize) {
 
@@ -206,7 +173,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
-		setTheme(theme);
 
 		binding.fontSizeSwitch.setChecked(FONT_SIZE_LARGE.equals(fontSize));
 		binding.contrastSwitch.setChecked(THEME_CONTRAST.equals(theme));
@@ -237,6 +203,8 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 						Log.e(TAG, "updateFontSizeToFireStore - onFailure: " + e.getMessage());
 					});
+		} else {
+			StaticDataPasser.storeFontSize = fontSize;
 		}
 	}
 
@@ -259,6 +227,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 						Log.e(TAG, "updateThemeToFireStore - onFailure: " + e.getMessage());
 					});
+		}else {
+			StaticDataPasser.storeTheme = theme;
+
 		}
 	}
 
@@ -281,6 +252,8 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 						Log.e(TAG, "updateVoiceAssistantToFireStore - onFailure: " + e.getMessage());
 					});
+		} else {
+			StaticDataPasser.storeVoiceAssistantState = voiceAssistant;
 		}
 	}
 

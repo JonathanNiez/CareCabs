@@ -11,6 +11,10 @@
 		<item name="android:background">@color/rich_black</item>
 	</style>
 
+	<style name="ClassicBackground">
+		<item name="android:background">@color/darker_gray</item>
+	</style>
+
 	<style name="ToolbarBackground">
 		<item name="cardBackgroundColor">@color/darker_gray</item>
 	</style>
@@ -34,6 +38,10 @@
 
 	<style name="GreetingCardBackground">
 		<item name="cardBackgroundColor">@color/dark_gray</item>
+	</style>
+
+	<style name="LoadingGreetingCardBackground">
+		<item name="android:background">@color/darker_gray</item>
 	</style>
 
 	<style name="TextColor">
@@ -116,8 +124,8 @@
 	</style>
 
 	<style name="BottomSheetBackground">
-		<item name="background">@drawable/smooth_top_edge</item>
-		<item name="backgroundTint">@color/sky_blue</item>
+		<item name="android:background">@drawable/smooth_top_edge</item>
+		<item name="android:backgroundTint">@color/dark_gray</item>
 	</style>
 
 	<style name="ImageViewTint">

@@ -70,6 +70,7 @@
 					android:padding="8dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/registerTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="20dp"
@@ -84,6 +85,7 @@
 						android:textSize="25sp" />
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/emailLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -93,7 +95,8 @@
 						app:endIconMode="clear_text"
 						app:helperText="Your Email"
 						app:helperTextTextColor="@color/black"
-						app:startIconDrawable="@drawable/email_24">
+						app:startIconDrawable="@drawable/email_24"
+						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/email"
@@ -111,6 +114,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/passwordLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -120,7 +124,8 @@
 						app:endIconMode="password_toggle"
 						app:helperText="Your Password"
 						app:helperTextTextColor="@color/black"
-						app:startIconDrawable="@drawable/password_24">
+						app:startIconDrawable="@drawable/password_24"
+						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/password"
@@ -138,6 +143,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/confirmPasswordLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -148,7 +154,8 @@
 						app:helperText="Match your Password"
 						app:helperTextTextColor="@color/black"
 						app:hintTextColor="@color/black"
-						app:startIconDrawable="@drawable/password_24">
+						app:startIconDrawable="@drawable/password_24"
+						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/confirmPassword"
@@ -165,6 +172,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/phoneNumberLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:background="@drawable/smooth_edit_text"
@@ -177,7 +185,8 @@
 						app:helperTextTextColor="@color/red"
 						app:prefixText="+63"
 						app:prefixTextColor="@color/black"
-						app:startIconDrawable="@drawable/phone_24">
+						app:startIconDrawable="@drawable/phone_24"
+						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/phoneNumber"
@@ -196,6 +205,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/neverShareYourPasswordTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
@@ -244,6 +254,7 @@
 				android:layout_width="150dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
+				android:layout_marginBottom="50dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
@@ -251,6 +262,7 @@
 				android:orientation="horizontal">
 
 				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/nextTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="start|center_vertical"
@@ -266,38 +278,6 @@
 					android:layout_gravity="end|center_vertical"
 					android:layout_margin="5dp"
 					android:src="@drawable/next_32_white" />
-
-			</androidx.appcompat.widget.LinearLayoutCompat>
-
-
-			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/backBtn"
-				android:layout_width="160dp"
-				android:layout_height="50dp"
-				android:layout_marginTop="50dp"
-				android:layout_marginBottom="50dp"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/light_gray"
-				android:elevation="5dp"
-				android:gravity="center"
-				android:orientation="horizontal">
-
-				<androidx.appcompat.widget.AppCompatImageView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="start|center_vertical"
-					android:layout_margin="5dp"
-					android:src="@drawable/back_50_2" />
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="end|center_vertical"
-					android:layout_margin="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="BACK"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 

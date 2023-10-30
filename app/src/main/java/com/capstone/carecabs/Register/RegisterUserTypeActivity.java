@@ -16,15 +16,15 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityRegisterUserTypeBinding;
+import com.capstone.carecabs.databinding.DialogUserTypeBinding;
 
 public class RegisterUserTypeActivity extends AppCompatActivity {
 	private Intent intent;
-	private String registerUserType, registerType;
+	private String userType, registerType;
 	private AlertDialog.Builder builder;
 	private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog,
 			noInternetDialog, cancelRegisterDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private boolean shouldExit = false;
 	private ActivityRegisterUserTypeBinding binding;
 
 	@Override
@@ -62,49 +62,34 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 
 		binding.googleRegisterLayout.setVisibility(View.GONE);
 
-		intent = getIntent();
-		String getRegisterType = intent.getStringExtra("registerType");
+		if (getIntent() != null || getIntent().hasExtra("registerType")) {
 
-		if (getRegisterType != null) {
-			if (getRegisterType.equals("googleRegister")) {
+			intent = getIntent();
+			registerType = intent.getStringExtra("registerType");
+
+			if (registerType.equals("Google")) {
 				binding.googleRegisterLayout.setVisibility(View.VISIBLE);
-
-				registerType = "googleRegister";
-			} else {
-				registerType = "emailRegister";
 			}
-		} else {
-			return;
+
+			binding.driverBtn.setOnClickListener(v -> {
+				intent = new Intent(this, RegisterActivity.class);
+				userType = "Driver";
+				intent.putExtra("userType", userType);
+				intent.putExtra("registerType", registerType);
+				startActivity(intent);
+				finish();
+			});
+
+			binding.passengerBtn.setOnClickListener(v -> showUserTypeDialog());
+
+			binding.cancelBtn.setOnClickListener(v -> showCancelRegisterDialog());
 		}
-
-		binding.cancelBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
-		});
-
-		binding.driverImgBtn.setOnClickListener(v -> {
-			intent = new Intent(this, RegisterActivity.class);
-			registerUserType = "Driver";
-			intent.putExtra("registerUserType", registerUserType);
-			intent.putExtra("registerType", registerType);
-			startActivity(intent);
-			finish();
-		});
-
-		binding.passengerImgBtn.setOnClickListener(v -> {
-			showUserTypeDialog();
-		});
-
 	}
 
 	@Override
 	public void onBackPressed() {
-
-		if (shouldExit) {
-			super.onBackPressed(); // Exit the app
-		} else {
-			// Show an exit confirmation dialog
-			showCancelRegisterDialog();
-		}
+		showCancelRegisterDialog();
+		super.onBackPressed();
 	}
 
 	private void showCancelRegisterDialog() {
@@ -149,16 +134,13 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 	private void showUserTypeDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_user_type, null);
+		DialogUserTypeBinding dialogUserTypeBinding = DialogUserTypeBinding.inflate(getLayoutInflater());
+		View dialogView = dialogUserTypeBinding.getRoot();
 
-		ImageButton seniorImgBtn = dialogView.findViewById(R.id.seniorImgBtn);
-		ImageButton pwdImgBtn = dialogView.findViewById(R.id.pwdImgBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		seniorImgBtn.setOnClickListener(v -> {
+		dialogUserTypeBinding.seniorBtn.setOnClickListener(v -> {
 			intent = new Intent(RegisterUserTypeActivity.this, RegisterActivity.class);
-			registerUserType = "Senior Citizen";
-			intent.putExtra("registerUserType", registerUserType);
+			userType = "Senior Citizen";
+			intent.putExtra("userType", userType);
 			intent.putExtra("registerType", registerType);
 			startActivity(intent);
 			finish();
@@ -166,10 +148,10 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			closeUserTypeDialog();
 		});
 
-		pwdImgBtn.setOnClickListener(v -> {
+		dialogUserTypeBinding.pwdBtn.setOnClickListener(v -> {
 			intent = new Intent(RegisterUserTypeActivity.this, RegisterActivity.class);
-			registerUserType = "Persons with Disability (PWD)";
-			intent.putExtra("registerUserType", registerUserType);
+			userType = "Person with Disabilities (PWD)";
+			intent.putExtra("userType", userType);
 			intent.putExtra("registerType", registerType);
 			startActivity(intent);
 			finish();
@@ -177,7 +159,7 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			closeUserTypeDialog();
 		});
 
-		cancelBtn.setOnClickListener(v -> {
+		dialogUserTypeBinding.cancelBtn.setOnClickListener(v -> {
 			closeUserTypeDialog();
 		});
 
@@ -236,7 +218,6 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			updateConnectionStatus(isConnected);
 		}
 	}
-
 
 	private void initializeNetworkChecker() {
 		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {

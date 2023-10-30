@@ -2,8 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/parentLayout"
-	style="@style/MainBackground"
+	style="@style/BottomSheetBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:background="@drawable/smooth_top_edge"
@@ -60,6 +59,7 @@
 
 				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/fontImageView"
+					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
@@ -99,6 +99,7 @@
 
 				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/eyeImageView"
+					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
@@ -138,6 +139,7 @@
 
 				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/voiceImageView"
+					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"

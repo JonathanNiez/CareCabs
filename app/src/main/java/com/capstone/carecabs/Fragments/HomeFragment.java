@@ -2,11 +2,9 @@ package com.capstone.carecabs.Fragments;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
@@ -19,12 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -37,7 +33,6 @@ import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
-import com.capstone.carecabs.MainActivity;
 import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
@@ -48,7 +43,6 @@ import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.RequestLocationPermissionActivity;
 import com.capstone.carecabs.TripsActivity;
-import com.capstone.carecabs.Utility.FontSizeManager;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -82,7 +76,7 @@ public class HomeFragment extends Fragment implements
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private int currentPage = 0;
-	private final long AUTOSLIDE_DELAY = 3000; // Delay in milliseconds (3 seconds)
+	private final long AUTOSLIDE_DELAY = 3000;
 	private Handler handler;
 	private Runnable runnable;
 	private List<Fragment> slideFragments = new ArrayList<>();
@@ -154,6 +148,8 @@ public class HomeFragment extends Fragment implements
 		binding.currentPassengerLayout.setVisibility(View.GONE);
 		binding.transportedToDestinationLayout.setVisibility(View.GONE);
 		binding.toDestinationLayout.setVisibility(View.GONE);
+		binding.myProfileBadge.setVisibility(View.GONE);
+		binding.pickupPassengerBadge.setVisibility(View.GONE);
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
@@ -302,10 +298,16 @@ public class HomeFragment extends Fragment implements
 		String greeting;
 		if (hour >= 0 && hour < 12) {
 			greeting = "Good Morning!";
+			binding.currentTimeImageView.setImageResource(R.drawable.morning_128);
+
 		} else if (hour >= 12 && hour < 18) {
 			greeting = "Good Afternoon!";
+			binding.currentTimeImageView.setImageResource(R.drawable.afternoon_128);
+
 		} else {
 			greeting = "Good Evening!";
+			binding.currentTimeImageView.setImageResource(R.drawable.evening_128);
+
 		}
 
 		String amPm = (hour < 12) ? "AM" : "PM";
@@ -357,7 +359,7 @@ public class HomeFragment extends Fragment implements
 					.document(FirebaseMain.getUser().getUid())
 					.update("isAvailable", isAvailable);
 
-			getUserTypeAndLoadProfileInfo();
+			getUserTypeAndLoadUserProfileInfo();
 		}
 	}
 
@@ -387,16 +389,13 @@ public class HomeFragment extends Fragment implements
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
 							boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
-							String getRegisterUserType = documentSnapshot.getString("userType");
 
 							if (getUserRegisterStatus) {
-
-								getUserTypeAndLoadProfileInfo();
+								getUserTypeAndLoadUserProfileInfo();
 
 							} else {
-
+								String getRegisterUserType = documentSnapshot.getString("userType");
 								showRegisterNotCompleteDialog(getRegisterUserType);
-
 							}
 						}
 					})
@@ -410,7 +409,7 @@ public class HomeFragment extends Fragment implements
 	}
 
 	@SuppressLint("SetTextI18n")
-	private void getUserTypeAndLoadProfileInfo() {
+	private void getUserTypeAndLoadUserProfileInfo() {
 		if (FirebaseMain.getUser() != null) {
 
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -425,8 +424,13 @@ public class HomeFragment extends Fragment implements
 
 							String getUserType = documentSnapshot.getString("userType");
 							String getFirstName = documentSnapshot.getString("firstname");
+							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 
 							binding.firstnameTextView.setText(getFirstName);
+
+							if (!isVerified) {
+								binding.myProfileBadge.setVisibility(View.VISIBLE);
+							}
 
 							if (getUserType != null) {
 								switch (getUserType) {
@@ -549,6 +553,8 @@ public class HomeFragment extends Fragment implements
 											.placeholder(R.drawable.loading_gif)
 											.into(binding.currentPassengerProfilePictureImageView);
 								}
+
+								binding.pickupPassengerBadge.setVisibility(View.VISIBLE);
 
 								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	style="@style/MainBackground"
 	android:gravity="center"
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="20dp"
-		style="@style/BaseCardBackground"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -22,13 +22,13 @@
 			android:orientation="vertical">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="You are registering as a:"
 				android:textAlignment="center"
-				style="@style/TextColor"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
@@ -40,17 +40,15 @@
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/registerAsTextView"
+				style="@style/UserTypeTextBackground"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
-				android:background="@drawable/custom_card_view_1"
-				android:backgroundTint="@color/background"
+				android:elevation="5dp"
 				android:fontFamily="@font/opensans_bold"
 				android:padding="10dp"
-				android:elevation="5dp"
 				android:text="User Type"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
@@ -58,7 +56,7 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/okBtn"
+		android:id="@+id/okayBtn"
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"

@@ -11,6 +11,10 @@
 		<item name="android:background">@color/white_blue</item>
 	</style>
 
+	<style name="ClassicBackground">
+		<item name="android:background">@color/sky_blue</item>
+	</style>
+
 	<style name="ToolbarBackground">
 		<item name="cardBackgroundColor">@color/sky_blue</item>
 	</style>
@@ -34,6 +38,10 @@
 
 	<style name="GreetingCardBackground">
 		<item name="cardBackgroundColor">@color/dark_cyan</item>
+	</style>
+
+	<style name="LoadingGreetingCardBackground">
+		<item name="android:background">@color/dark_cyan</item>
 	</style>
 
 	<style name="TextColor">
@@ -102,6 +110,11 @@
 	<style name="ProfilePictureBorderColor">
 		<item name="civ_border_color">@color/black</item>
 		<item name="civ_border_width">2dp</item>
+	</style>
+
+	<style name="BottomSheetBackground">
+		<item name="android:background">@drawable/smooth_top_edge</item>
+		<item name="android:backgroundTint">@color/sky_blue</item>
 	</style>
 
 	<style name="ImageViewTint">
