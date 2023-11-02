@@ -414,6 +414,8 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         binding.maneuverView.visibility = View.INVISIBLE
         binding.arrivedAtDestinationBtn.visibility = View.GONE
         binding.bookingsImgBtn.visibility = View.GONE
+        binding.navigationStatusTextView.visibility = View.GONE
+        binding.pickupBtn.visibility = View.GONE
 
         checkIfUserIsVerified()
 
@@ -745,13 +747,12 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
         driverReference.get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    val getIsNavigatingToDestination: Boolean? =
-                        it.getBoolean("isNavigatingToDestination")
                     val getNavigationStatus: String? = it.getString("navigationStatus")
 
-                    if (getIsNavigatingToDestination == true && getNavigationStatus == "Navigating to destination") {
+                    if (getNavigationStatus == "Navigating to destination") {
                         isNavigatingToDestination = true
 
+                        binding.navigationStatusTextView.visibility = View.VISIBLE
                         binding.navigationStatusTextView.text =
                             "Navigating to Passenger's destination"
                         binding.passengersInMapTextView.text =
@@ -779,6 +780,10 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                         }
 
                     } else if (getNavigationStatus == "Navigating to pickup location") {
+
+                        binding.navigationStatusTextView.visibility = View.VISIBLE
+                        binding.pickupBtn.visibility = View.VISIBLE
+
                         binding.passengersInMapTextView.text =
                             "You are currently navigating to Passenger's pickup location"
                         binding.navigationStatusTextView.text =
@@ -1329,7 +1334,6 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
 
                     val updateDriverStatus = HashMap<String, Any>()
                     updateDriverStatus["isAvailable"] = true
-                    updateDriverStatus["isNavigatingToDestination"] = false
                     updateDriverStatus["navigationStatus"] = "idle"
                     updateDriverStatus["destinationLatitude"] = 0.0
                     updateDriverStatus["destinationLongitude"] = 0.0
@@ -1349,7 +1353,7 @@ class MapDriverActivity : AppCompatActivity(), PickupPassengerBottomSheet.Bottom
                 }
             }
             .addOnFailureListener { exception ->
-                Log.e(TAG, "Error getting document: ", exception)
+                Log.e(TAG, "Error getting document in setTripAsComplete - driverReference: ", exception)
             }
     }
 

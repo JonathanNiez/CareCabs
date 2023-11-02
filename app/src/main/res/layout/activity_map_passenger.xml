@@ -18,7 +18,10 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
-		android:layout_margin="10dp">
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginBottom="10dp">
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:layout_width="wrap_content"
@@ -167,6 +170,7 @@
 	</androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 	<FrameLayout
+		android:id="@+id/bottomFrameLayout"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_above="@id/bottomNavigationView"
@@ -174,6 +178,7 @@
 		android:layout_margin="10dp">
 
 		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/longTapTextView"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
@@ -182,7 +187,7 @@
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:padding="10dp"
-			android:text="Long tap/click on the location you want to go"
+			android:text="Long tap/click on the Map you want to go"
 			android:textAlignment="center"
 			android:textColor="@color/black"
 			android:textSize="18sp" />

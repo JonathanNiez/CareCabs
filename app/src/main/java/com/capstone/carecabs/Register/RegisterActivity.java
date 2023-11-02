@@ -17,11 +17,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
+import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
+import com.capstone.carecabs.databinding.DialogEnableVoiceAssistantBinding;
 import com.capstone.carecabs.databinding.DialogYouAreRegisteringAsBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -55,11 +58,13 @@ public class RegisterActivity extends AppCompatActivity implements
 	private String getUserID, registerType, userType,
 			prefixPhoneNumber, accountCreationDate,
 			theme = "normal", fontSize = "normal";
+	private String voiceAssistantState = "enabled";
+	private VoiceAssistant voiceAssistant;
 	private Intent intent;
 	private static final int RC_SIGN_IN = 69;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
 			ageInfoDialog, registerFailedDialog, cancelRegisterDialog,
-			emailAlreadyUsedDialog;
+			emailAlreadyUsedDialog, enableVoiceAssistantDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterBinding binding;
@@ -114,7 +119,17 @@ public class RegisterActivity extends AppCompatActivity implements
 		Calendar calendar = Calendar.getInstance();
 		date = calendar.getTime();
 
-		binding.backFloatingBtn.setOnClickListener(v -> showCancelRegisterDialog());
+		binding.backFloatingBtn.setOnClickListener(v -> {
+			String email = binding.emailEditText.getText().toString().trim();
+			String password = binding.passwordEditText.getText().toString();
+			String confirmPassword = binding.confirmPasswordEditText.getText().toString();
+			String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+
+			if (!email.isEmpty() || !password.isEmpty()
+					|| !confirmPassword.isEmpty() || !phoneNumber.isEmpty()) {
+				showCancelRegisterDialog();
+			}
+		});
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
@@ -164,7 +179,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				StaticDataPasser.storeFontSize = fontSize;
 				setFontSize(fontSize);
 
-			} else if (registerType.equals("googleRegister") &&
+			} else if (registerType.equals("Google") &&
 					userType.equals("Senior Citizen")) {
 				showAgeRequiredDialog();
 
@@ -172,8 +187,35 @@ public class RegisterActivity extends AppCompatActivity implements
 				StaticDataPasser.storeFontSize = fontSize;
 				setFontSize(fontSize);
 
+
 				intent = googleSignInClient.getSignInIntent();
 				startActivityForResult(intent, RC_SIGN_IN);
+
+			} else if (userType.equals("Person with Disabilities (PWD)")) {
+
+				showEnableVoiceAssistantDialog();
+
+				if (voiceAssistantState.equals("enabled")) {
+					voiceAssistant = VoiceAssistant.getInstance(this);
+
+					binding.emailEditText.setOnClickListener(v -> {
+						voiceAssistant.speak("Email");
+					});
+
+					binding.passwordEditText.setOnClickListener(v -> {
+						voiceAssistant.speak("Password");
+					});
+
+
+					binding.confirmPasswordEditText.setOnClickListener(v -> {
+						voiceAssistant.speak("Confirm password");
+					});
+
+
+					binding.phoneNumberEditText.setOnClickListener(v -> {
+						voiceAssistant.speak("Phone number");
+					});
+				}
 			}
 
 			binding.userTypeImageBtn.setOnClickListener(v -> showUserTypeImageDialog());
@@ -182,40 +224,51 @@ public class RegisterActivity extends AppCompatActivity implements
 				binding.progressBarLayout.setVisibility(View.VISIBLE);
 				binding.nextBtn.setVisibility(View.GONE);
 
-				String stringEmail = binding.email.getText().toString().trim();
-				String stringPassword = binding.password.getText().toString();
-				String stringConfirmPassword = binding.confirmPassword.getText().toString();
-				String stringPhoneNumber = binding.phoneNumber.getText().toString().trim();
+				String email = binding.emailEditText.getText().toString().trim();
+				String password = binding.passwordEditText.getText().toString();
+				String confirmPassword = binding.confirmPasswordEditText.getText().toString();
+				String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
 
-				if (stringEmail.isEmpty() || stringPassword.isEmpty()
-						|| stringPhoneNumber.isEmpty()) {
-					binding.email.setError("Please enter your Email");
+				if (email.isEmpty() || password.isEmpty()
+						|| phoneNumber.isEmpty()) {
+					binding.emailEditText.setError("Please enter your Email");
+
+					if (voiceAssistantState.equals("enabled")) {
+						voiceAssistant = VoiceAssistant.getInstance(this);
+						voiceAssistant.speak("Please enter your Email");
+					}
+
 					binding.progressBarLayout.setVisibility(View.GONE);
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
-				} else if (!stringConfirmPassword.equals(stringPassword)) {
-					binding.confirmPassword.setError("Password did not matched");
+				} else if (!confirmPassword.equals(password)) {
+					binding.confirmPasswordEditText.setError("Password did not matched");
+
+					if (voiceAssistantState.equals("enabled")) {
+						voiceAssistant = VoiceAssistant.getInstance(this);
+						voiceAssistant.speak("Password did not matched");
+					}
 					binding.progressBarLayout.setVisibility(View.GONE);
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
 				} else {
-					prefixPhoneNumber = "+63" + stringPhoneNumber;
+					prefixPhoneNumber = "+63" + phoneNumber;
 
 					showPleaseWaitDialog();
 
 					switch (userType) {
 						case "Driver":
 
-							registerDriver(stringEmail, stringPassword);
+							registerDriver(email, password);
 							break;
 
-						case "Persons with Disabilities (PWD)":
-							registerPWD(stringEmail, stringPassword);
+						case "Person with Disabilities (PWD)":
+							registerPWD(email, password);
 
 							break;
 
 						case "Senior Citizen":
-							registerSenior(stringEmail, stringPassword);
+							registerSenior(email, password);
 
 							break;
 					}
@@ -226,10 +279,23 @@ public class RegisterActivity extends AppCompatActivity implements
 
 	}
 
+
 	@Override
 	public void onBackPressed() {
-		showCancelRegisterDialog();
-		super.onBackPressed();
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed();
+		} else {
+			String email = binding.emailEditText.getText().toString().trim();
+			String password = binding.passwordEditText.getText().toString();
+			String confirmPassword = binding.confirmPasswordEditText.getText().toString();
+			String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+
+			if (!email.isEmpty() || !password.isEmpty()
+					|| !confirmPassword.isEmpty() || !phoneNumber.isEmpty()) {
+				showCancelRegisterDialog();
+			}
+		}
 	}
 
 	@Override
@@ -262,10 +328,10 @@ public class RegisterActivity extends AppCompatActivity implements
 
 		binding.registerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
-		binding.email.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.password.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.confirmPassword.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.phoneNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.emailEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passwordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.confirmPasswordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.phoneNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.neverShareYourPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.nextTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 
@@ -391,8 +457,9 @@ public class RegisterActivity extends AppCompatActivity implements
 		registerUser.put("accountCreationDate", accountCreationDate);
 		registerUser.put("fontSize", fontSize);
 		registerUser.put("theme", theme);
-		registerUser.put("registerType", "Email");
+		registerUser.put("registerType", registerType);
 		registerUser.put("isVerified", false);
+		registerUser.put("isFirstTimeUser", true);
 
 		documentReference.set(registerUser)
 				.addOnSuccessListener(unused -> {
@@ -408,7 +475,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 							break;
 
-						case "Persons with Disability (PWD)":
+						case "Person with Disabilities (PWD)":
 							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
 
 							break;
@@ -431,6 +498,46 @@ public class RegisterActivity extends AppCompatActivity implements
 
 					showRegisterFailedDialog();
 				});
+	}
+
+	private void showEnableVoiceAssistantDialog() {
+		builder = new AlertDialog.Builder(this);
+
+		DialogEnableVoiceAssistantBinding binding =
+				DialogEnableVoiceAssistantBinding.inflate(getLayoutInflater());
+		View dialogView = binding.getRoot();
+
+		String message = "Voice Assistant is helpful for visual impairments." +
+				"Do you want to enable Voice Assistant?";
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistantState = "disabled";
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak(message);
+		}
+
+		binding.yesBtn.setOnClickListener(v -> closeEnableVoiceAssistantDialog());
+
+		binding.noBtn.setOnClickListener(v -> {
+			if (voiceAssistantState.equals("enabled")) {
+				voiceAssistant = VoiceAssistant.getInstance(this);
+				voiceAssistant.shutdown();
+			}
+
+			closeEnableVoiceAssistantDialog();
+		});
+
+		builder.setView(dialogView);
+
+		enableVoiceAssistantDialog = builder.create();
+		enableVoiceAssistantDialog.show();
+
+	}
+
+	private void closeEnableVoiceAssistantDialog() {
+		if (enableVoiceAssistantDialog != null && enableVoiceAssistantDialog.isShowing()) {
+			enableVoiceAssistantDialog.dismiss();
+		}
 	}
 
 	private void showAgeRequiredDialog() {
@@ -504,10 +611,13 @@ public class RegisterActivity extends AppCompatActivity implements
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
-		yesBtn.setOnClickListener(v -> {
-			FirebaseMain.signOutUser();
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Do you want to cancel the Registration?");
+		}
 
-			intent = new Intent(this, LoginActivity.class);
+		yesBtn.setOnClickListener(v -> {
+			intent = new Intent(this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 		});
@@ -533,6 +643,11 @@ public class RegisterActivity extends AppCompatActivity implements
 		builder.setCancelable(false);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Please wait");
+		}
 
 		builder.setView(dialogView);
 
@@ -607,9 +722,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-		okBtn.setOnClickListener(v -> {
-			closeRegisterFailedDialog();
-		});
+		okBtn.setOnClickListener(v -> closeRegisterFailedDialog());
 
 		builder.setView(dialogView);
 
@@ -723,6 +836,7 @@ public class RegisterActivity extends AppCompatActivity implements
 		registerUser.put("theme", theme);
 		registerUser.put("registerType", registerType);
 		registerUser.put("isVerified", false);
+		registerUser.put("isFirstTimeUser", true);
 
 		documentReference.set(registerUser)
 				.addOnSuccessListener(unused -> {

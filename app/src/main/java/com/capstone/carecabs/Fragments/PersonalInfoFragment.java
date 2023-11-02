@@ -46,13 +46,15 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
-	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private AlertDialog.Builder builder;
+	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
 	private RequestManager requestManager;
+	private final String fontSize = StaticDataPasser.storeFontSize;
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
 	private FragmentPersonalInfoBinding binding;
 
@@ -242,13 +244,11 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	}
 
 	private void getUserSettings() {
-		String fontSize = StaticDataPasser.storeFontSize;
-		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
-		if (voiceAssistantToggle.equals("enabled")) {
-			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Personal Info");
 		}
 	}

@@ -132,4 +132,14 @@
 		<item name="tint">@color/white</item>
 	</style>
 
+	<style name="MapButtonsBackground">
+		<item name="tint">@color/white</item>
+		<item name="android:background">@drawable/floating_button_background</item>
+		<item name="android:backgroundTint">@color/dark_gray</item>
+	</style>
+
+	<style name="MapboxManeuverViewBackground">
+		<item name="maneuverViewBackgroundColor">@color/darker_gray</item>
+	</style>
+
 </resources>

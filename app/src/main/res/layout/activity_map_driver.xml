@@ -14,6 +14,7 @@
 
 	<com.mapbox.navigation.ui.maneuver.view.MapboxManeuverView
 		android:id="@+id/maneuverView"
+		style="@style/MapboxManeuverViewBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
@@ -22,8 +23,7 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:elevation="10dp"
-		android:textAlignment="center"
-		app:maneuverViewBackgroundColor="@color/dark_cyan" />
+		android:textAlignment="center" />
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
@@ -40,14 +40,14 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:elevation="10dp" />
+			android:elevation="5dp" />
 
 		<com.mapbox.navigation.ui.maps.camera.view.MapboxRouteOverviewButton
 			android:id="@+id/routeOverviewBtn"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:elevation="10dp" />
+			android:elevation="5dp" />
 
 		<com.mapbox.navigation.ui.maps.camera.view.MapboxRecenterButton
 			android:id="@+id/recenterBtn"
@@ -58,11 +58,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/minimizeScreenImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -71,11 +70,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/fullscreenImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -83,11 +81,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/zoomInImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -133,11 +130,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/bookingsImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -145,11 +141,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/chatImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -174,16 +169,38 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/navigationStatusTextView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:text="Navigation status"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<androidx.appcompat.widget.AppCompatImageButton
+					android:id="@+id/showCurrentLocationImgBtn"
+					style="@style/MapButtonsBackground"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_marginStart="5dp"
+					android:layout_marginTop="5dp"
+					android:layout_marginEnd="5dp"
+					android:layout_marginBottom="5dp"
+					android:layout_toStartOf="@id/navigationStatusTextView"
+					android:elevation="10dp"
+					android:padding="10dp"
+					android:scaleType="centerCrop"
+					android:src="@drawable/location_32" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/navigationStatusTextView"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_centerInParent="true"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="Navigation status"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="17sp" />
+
+			</RelativeLayout>
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
@@ -215,7 +232,7 @@
 				android:id="@+id/pickupBtn"
 				android:layout_width="250dp"
 				android:layout_height="50dp"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:fontFamily="@font/gabarito_semibold"
@@ -227,7 +244,7 @@
 				android:id="@+id/arrivedAtDestinationBtn"
 				android:layout_width="250dp"
 				android:layout_height="50dp"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:fontFamily="@font/gabarito_semibold"

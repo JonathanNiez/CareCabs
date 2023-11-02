@@ -131,135 +131,72 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						String getPassengerType = snapshot.child("passengerType").getValue(String.class);
 						String getPassengerName = snapshot.child("passengerName").getValue(String.class);
 
+						String getPickupLocation = snapshot.child("pickupLocation").getValue(String.class);
 						Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
 						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
+						String getDestination = snapshot.child("destination").getValue(String.class);
 						Double getDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
 						Double getDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
 
-						//geocode
-						MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-								.accessToken(getString(R.string.mapbox_access_token))
-								.query(Point.fromLngLat(getPickupLongitude, getPickupLatitude))
-								.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-								.build();
+						binding.pickupLocationTextView.setText(getPickupLocation);
+						binding.destinationTextView.setText(getDestination);
 
-						pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-							@Override
-							public void onResponse(@NonNull Call<GeocodingResponse> call,
-							                       @NonNull Response<GeocodingResponse> response) {
-								if (response.isSuccessful()) {
-									if (response.body() != null && !response.body().features().isEmpty()) {
-										CarmenFeature feature = response.body().features().get(0);
-										String locationName = feature.placeName();
+						if (getPassengerType != null && getBookingStatus != null){
+							switch (getPassengerType) {
+								case "Senior Citizen":
+									binding.userTypeImageView.setImageResource(R.drawable.senior_32);
 
-										binding.pickupLocationTextView.setText(locationName);
-									} else {
-										binding.pickupLocationTextView.setText("Location not found");
-									}
-								} else {
-									Log.e(TAG, "onResponse: " + response.message());
+									break;
 
-									binding.pickupLocationTextView.setText("Location not found");
-								}
+								case "Persons with Disability (PWD)":
+									binding.disabilityTextView.setVisibility(View.VISIBLE);
+									binding.userTypeImageView.setImageResource(R.drawable.pwd_32);
+									String getPassengerDisability = snapshot.child("passengerDisability").getValue(String.class);
+
+									binding.disabilityTextView.setText("Disability:\n" + getPassengerDisability);
+
+									break;
 							}
 
-							@Override
-							public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-								Log.e(TAG, Objects.requireNonNull(t.getMessage()));
+							switch (getBookingStatus) {
+								case "Waiting":
+									binding.renavigateBtn.setVisibility(View.GONE);
+									binding.pickupBtn.setOnClickListener(v -> {
 
-								binding.pickupLocationTextView.setText("Location not found");
+										getDriverAndVehicleInfo(
+												getFCMToken,
+												getPassengerID,
+												getPassengerType,
+												bookingID,
+												getPickupLatitude,
+												getPickupLongitude,
+												getDestinationLatitude,
+												getDestinationLongitude);
+
+									});
+									break;
+
+								case "Driver on the way":
+									binding.pickupBtn.setVisibility(View.GONE);
+									binding.renavigateBtn.setOnClickListener(v -> {
+
+										//convert to point
+										LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
+										Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
+
+										LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
+										Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
+
+										//renavigate
+										sendDataToMap(bookingID,
+												getPassengerID,
+												pickupCoordinates,
+												destinationCoordinates);
+
+										dismiss();
+									});
+									break;
 							}
-						});
-
-						MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-								.accessToken(getString(R.string.mapbox_access_token))
-								.query(Point.fromLngLat(getDestinationLongitude, getDestinationLatitude))
-								.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-								.build();
-						destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-							@Override
-							public void onResponse(@NonNull Call<GeocodingResponse> call,
-							                       @NonNull Response<GeocodingResponse> response) {
-								if (response.isSuccessful()) {
-									if (response.body() != null && !response.body().features().isEmpty()) {
-										CarmenFeature feature = response.body().features().get(0);
-										String locationName = feature.placeName();
-
-										binding.destinationLocationTextView.setText(locationName);
-									} else {
-										binding.destinationLocationTextView.setText("Location not found");
-									}
-								} else {
-									Log.e(TAG, response.message());
-
-									binding.destinationLocationTextView.setText("Location not found");
-								}
-
-							}
-
-							@Override
-							public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-								Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-								binding.destinationLocationTextView.setText("Location not found");
-							}
-						});
-
-
-						switch (getPassengerType) {
-							case "Senior Citizen":
-								binding.userTypeImageView.setImageResource(R.drawable.senior_32);
-
-								break;
-
-							case "Persons with Disability (PWD)":
-								binding.disabilityTextView.setVisibility(View.VISIBLE);
-								binding.userTypeImageView.setImageResource(R.drawable.pwd_32);
-								String getPassengerDisability = snapshot.child("passengerDisability").getValue(String.class);
-
-								binding.disabilityTextView.setText("Disability:\n" + getPassengerDisability);
-
-								break;
-						}
-
-						switch (getBookingStatus) {
-							case "Waiting":
-								binding.renavigateBtn.setVisibility(View.GONE);
-								binding.pickupBtn.setOnClickListener(v -> {
-
-									getDriverAndVehicleInfo(
-											getFCMToken,
-											getPassengerID,
-											getPassengerType,
-											bookingID,
-											getPickupLatitude,
-											getPickupLongitude,
-											getDestinationLatitude,
-											getDestinationLongitude);
-
-								});
-								break;
-
-							case "Driver on the way":
-								binding.pickupBtn.setVisibility(View.GONE);
-								binding.renavigateBtn.setOnClickListener(v -> {
-
-									//convert to point
-									LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
-									Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
-
-									LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
-									Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
-
-									//renavigate
-									sendDataToMap(bookingID,
-											getPassengerID,
-											pickupCoordinates,
-											destinationCoordinates);
-
-									dismiss();
-								});
-								break;
 						}
 
 						if (getPassengerProfilePicture != null && !getPassengerProfilePicture.equals("default")) {

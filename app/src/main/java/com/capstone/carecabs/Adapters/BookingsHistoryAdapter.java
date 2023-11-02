@@ -54,92 +54,13 @@ public class BookingsHistoryAdapter extends RecyclerView.Adapter<BookingsHistory
 		BookingsHistoryModel bookingsHistoryModel = bookingsHistoryModelList.get(position);
 
 		holder.binding.bookingDateTextView.setText("Booking Date: " + bookingsHistoryModel.getBookingDate());
-
-		//geocode
-		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						bookingsHistoryModel.getPickupLongitude(),
-						bookingsHistoryModel.getPickupLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-
-		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call,
-			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.pickupLocationTextView.setText(locationName);
-
-					} else {
-						Log.e(TAG, "Geocode error: No features found in the response.");
-
-						holder.binding.pickupLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, "Geocode error" + response.message());
-					holder.binding.pickupLocationTextView.setText("Location not found");
-
-				}
-			}
-
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.pickupLocationTextView.setText("Location not found");
-			}
-		});
-
-		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						bookingsHistoryModel.getDestinationLongitude(),
-						bookingsHistoryModel.getDestinationLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call,
-			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.destinationLocationTextView.setText(locationName);
-					} else {
-						Log.e(TAG, "Geocode error: No features found in the response.");
-
-						holder.binding.destinationLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, "Geocode error: " + response.message());
-
-					holder.binding.destinationLocationTextView.setText("Location not found");
-				}
-			}
-
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.destinationLocationTextView.setText("Location not found");
-			}
-		});
+		holder.binding.pickupLocationTextView.setText(bookingsHistoryModel.getPickupLocation());
+		holder.binding.destinationTextView.setText(bookingsHistoryModel.getDestination());
 
 		if (bookingsHistoryModel.getBookingStatus().equals("Waiting")
 				|| bookingsHistoryModel.getBookingStatus().equals("Driver on the way")) {
 			holder.binding.bookingStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.light_blue));
-		} else if (bookingsHistoryModel.getBookingStatus().equals("Cancelled")){
+		} else if (bookingsHistoryModel.getBookingStatus().equals("Cancelled")) {
 			holder.binding.bookingStatusTextView.setTextColor(ContextCompat.getColor(context, R.color.light_red));
 		}
 

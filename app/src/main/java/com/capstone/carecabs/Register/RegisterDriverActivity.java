@@ -33,6 +33,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -141,8 +142,11 @@ public class RegisterDriverActivity extends AppCompatActivity {
 					.start(VEHICLE_PICTURE_REQUEST_CODE);
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
+		binding.backFloatingBtn.setOnClickListener(v -> showCancelRegisterDialog());
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -206,9 +210,12 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		showCancelRegisterDialog();
-
-		super.onBackPressed();
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed();
+		} else {
+			showCancelRegisterDialog();
+		}
 	}
 
 	private void updateUserRegisterToFireStore(String firstname,
@@ -237,7 +244,6 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("vehicleColor", vehicleColor);
 			registerUser.put("vehiclePlateNumber", vehiclePlateNumber);
 			registerUser.put("vehiclePicture", vehiclePictureURL);
-			registerUser.put("isNavigatingToDestination", false);
 			registerUser.put("navigationStatus", "idle");
 			registerUser.put("destinationLatitude", 0.0);
 			registerUser.put("destinationLongitude", 0.0);

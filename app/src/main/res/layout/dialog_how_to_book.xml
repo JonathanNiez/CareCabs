@@ -19,34 +19,35 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
-			android:orientation="vertical"
-			android:padding="5dp">
+			android:orientation="vertical">
 
 			<androidx.appcompat.widget.AppCompatImageView
+				android:id="@+id/instructionImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:src="@drawable/calendar_64" />
+				android:layout_margin="5dp"
+				app:srcCompat="@drawable/mar" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/titleTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="CANCEL BOOKING"
-				android:textAlignment="center"
-				style="@style/TextColor"
-				android:textSize="20sp" />
+				android:text="HOW TO BOOK A RIDE"
+				android:textSize="25sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
+				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="Are you sure you want to cancel Booking?"
-				android:textAlignment="center"
-				style="@style/TextColor"
-				android:textSize="17sp" />
+				android:text="HOW TO BOOK A RIDE"
+				android:textSize="20sp" />
+
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -64,25 +65,39 @@
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
+			android:backgroundTint="@color/light_gray"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Close"
-			android:textColor="@color/white"
+			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/cancelBtn"
+			android:id="@+id/nextBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/light_red"
+			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Cancel"
+			android:text="Next"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/previousBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/yinmn_blue"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Previous"
+			android:textColor="@color/white"
+			android:textSize="17sp"
+			android:visibility="gone" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>
 

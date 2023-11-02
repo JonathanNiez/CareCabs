@@ -18,6 +18,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentConfirmBookingBottomSheetBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DatabaseReference;
@@ -43,9 +44,16 @@ import retrofit2.Response;
 public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	private static final String TAG = "ConfirmBookingBottomSheet";
 	private static final String ARG_POINT = "point";
+	private String pickupLocation, destination;
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private VoiceAssistant voiceAssistant;
+	private int pickupLocationGeocodeResult = 0, destinationGeocodeResult = 0;
 	private Context context;
-	private FragmentConfirmBookingBottomSheetBinding binding;
 	private Point destinationPoint;
+	private FirebaseDatabase firebaseDatabase;
+	private DatabaseReference bookingReference;
+	private FragmentConfirmBookingBottomSheetBinding binding;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,8 +74,13 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 		context = getContext();
 
-		if (destinationPoint != null) {
+		if (
+				destinationPoint != null
+						&& StaticDataPasser.storePickupLatitude != null
+						&& StaticDataPasser.storePickupLongitude != null
+		) {
 
+			//destination geocode
 			MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
 					.accessToken(context.getString(R.string.mapbox_access_token))
 					.query(Point.fromLngLat(
@@ -85,17 +98,18 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 							CarmenFeature feature = response.body().features().get(0);
 							String locationName = feature.placeName();
 
+							destination = locationName;
 							binding.destinationTextView.setText(locationName);
+							destinationGeocodeResult = 1;
 						} else {
 
 							binding.destinationTextView.setText("Location not found");
 						}
 					} else {
-						Log.e(TAG, "Geocode error" + response.message());
+						Log.e(TAG, "Geocode error " + response.message());
 						binding.destinationTextView.setText("Location not found");
 
 					}
-
 				}
 
 				@SuppressLint({"SetTextI18n", "LongLogTag"})
@@ -107,61 +121,63 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				}
 			});
 
-			if (StaticDataPasser.storePickupLatitude != null &&
-					StaticDataPasser.storePickupLongitude != null) {
+			//pickup location geocode
+			MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
+					.accessToken(context.getString(R.string.mapbox_access_token))
+					.query(Point.fromLngLat(
+							StaticDataPasser.storePickupLongitude,
+							StaticDataPasser.storePickupLatitude))
+					.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+					.build();
 
-				//geocode
-				MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-						.accessToken(context.getString(R.string.mapbox_access_token))
-						.query(Point.fromLngLat(
-								StaticDataPasser.storePickupLongitude,
-								StaticDataPasser.storePickupLatitude))
-						.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-						.build();
+			pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+				@SuppressLint({"SetTextI18n", "LongLogTag"})
+				@Override
+				public void onResponse(@NonNull Call<GeocodingResponse> call,
+				                       @NonNull Response<GeocodingResponse> response) {
+					if (response.isSuccessful()) {
+						if (response.body() != null && !response.body().features().isEmpty()) {
+							CarmenFeature feature = response.body().features().get(0);
+							String locationName = feature.placeName();
 
-				pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-					@SuppressLint({"SetTextI18n", "LongLogTag"})
-					@Override
-					public void onResponse(@NonNull Call<GeocodingResponse> call,
-					                       @NonNull Response<GeocodingResponse> response) {
-						if (response.isSuccessful()) {
-							if (response.body() != null && !response.body().features().isEmpty()) {
-								CarmenFeature feature = response.body().features().get(0);
-								String locationName = feature.placeName();
-
-								binding.pickupLocationTextView.setText(locationName);
-							} else {
-
-								binding.pickupLocationTextView.setText("Location not found");
-							}
+							pickupLocation = locationName;
+							binding.pickupLocationTextView.setText(locationName);
+							pickupLocationGeocodeResult = 1;
 						} else {
-							Log.e(TAG, "Geocode error" + response.message());
+
 							binding.pickupLocationTextView.setText("Location not found");
 						}
-
-					}
-
-					@SuppressLint({"SetTextI18n", "LongLogTag"})
-					@Override
-					public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-						Log.e(TAG, Objects.requireNonNull(t.getMessage()));
+					} else {
+						Log.e(TAG, "Geocode error " + response.message());
 						binding.pickupLocationTextView.setText("Location not found");
 					}
-				});
 
+				}
 
-				binding.pickupLocationTextView.setText(
-						StaticDataPasser.storePickupLatitude + "\n" +
-								StaticDataPasser.storePickupLongitude
-				);
-			} else {
-				binding.pickupLocationTextView.setText("Location not found");
+				@SuppressLint({"SetTextI18n", "LongLogTag"})
+				@Override
+				public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+					Log.e(TAG, Objects.requireNonNull(t.getMessage()));
+					binding.pickupLocationTextView.setText("Location not found");
+				}
+			});
+
+			String message = "Pickup location: " + pickupLocation + "."
+					+ "Destination: " + destination;
+
+			if (voiceAssistantState.equals("enabled")) {
+
+				voiceAssistant = VoiceAssistant.getInstance(context);
+				voiceAssistant.speak(message);
 			}
-
 
 			binding.confirmButton.setOnClickListener(v -> {
 				retrieveAndStoreFCMToken(destinationPoint);
 			});
+
+		} else {
+			binding.pickupLocationTextView.setText("Location not found");
+			binding.destinationTextView.setText("Location not found");
 		}
 
 		binding.cancelButton.setOnClickListener(v -> {
@@ -216,34 +232,37 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 							String getLastName = documentSnapshot.getString("lastname");
 							String fullName = getFirstName + " " + getLastName;
 
-							Intent intent = new Intent(context, BookingsActivity.class);
-							intent.putExtra("dataSent", "dummy");
-							startActivity(intent);
+							if (pickupLocationGeocodeResult == 1 && destinationGeocodeResult == 1) {
+								if (getUserType.equals("Senior Citizen")) {
 
-							if ("Senior Citizen".equals(getUserType)) {
-								String getMedicalCondition = documentSnapshot.getString("medicalCondition");
+									storeSeniorCitizenBookingToDatabase(
+											fcmToken,
+											destinationPoint,
+											pickupLocation,
+											destination,
+											fullName,
+											getUserType,
+											getProfilePicture,
+											generateRandomBookingID()
+									);
+								} else if (getUserType.equals("Person with Disabilities (PWD)")) {
+									String getDisability = documentSnapshot.getString("disability");
 
-								storeSeniorCitizenBookingToDatabase(
-										fcmToken,
-										destinationPoint,
-										fullName,
-										getUserType,
-										getProfilePicture,
-										getMedicalCondition,
-										generateRandomBookingID()
-								);
-							} else if ("Person with Disabilities (PWD)".equals(getUserType)) {
-								String getDisability = documentSnapshot.getString("disability");
-
-								storePWDBookingToDatabase(
-										fcmToken,
-										destinationPoint,
-										fullName,
-										getUserType,
-										getProfilePicture,
-										getDisability,
-										generateRandomBookingID()
-								);
+									storePWDBookingToDatabase(
+											fcmToken,
+											destinationPoint,
+											pickupLocation,
+											destination,
+											fullName,
+											getUserType,
+											getProfilePicture,
+											getDisability,
+											generateRandomBookingID()
+									);
+								}
+							} else {
+								showToast(context, "Try again");
+								dismiss();
 							}
 						}
 					})
@@ -258,13 +277,15 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	@SuppressLint("LongLogTag")
 	private void storeSeniorCitizenBookingToDatabase(String fcmToken,
 	                                                 Point destinationPoint,
+	                                                 String pickupLocation,
+	                                                 String destination,
 	                                                 String fullName,
 	                                                 String userType,
 	                                                 String profilePicture,
-	                                                 String medicalCondition,
 	                                                 String generateBookingID) {
-		FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-		DatabaseReference locationReference = firebaseDatabase
+
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		bookingReference = firebaseDatabase
 				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
@@ -272,21 +293,22 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 		booking.put("passengerUserID", FirebaseMain.getUser().getUid());
 		booking.put("bookingID", generateBookingID);
 		booking.put("bookingStatus", "Waiting");
+		booking.put("pickupLocation", pickupLocation);
 		booking.put("pickupLongitude", StaticDataPasser.storePickupLongitude);
 		booking.put("pickupLatitude", StaticDataPasser.storePickupLatitude);
+		booking.put("destination", destination);
 		booking.put("destinationLongitude", destinationPoint.longitude());
 		booking.put("destinationLatitude", destinationPoint.latitude());
 		booking.put("bookingDate", getCurrentTimeAndDate());
 		booking.put("passengerName", fullName);
 		booking.put("passengerProfilePicture", profilePicture);
 		booking.put("passengerType", userType);
-		booking.put("passengerMedicalCondition", medicalCondition);
 
-		locationReference.setValue(booking)
+		bookingReference.setValue(booking)
 				.addOnSuccessListener(aVoid -> {
 					showToast(context, "Booking success");
 
-					dismiss();
+					openBookingsActivity();
 
 				})
 				.addOnFailureListener(e -> {
@@ -297,14 +319,17 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 	@SuppressLint("LongLogTag")
 	private void storePWDBookingToDatabase(String fcmToken,
-	                                                 Point destinationPoint,
-	                                                 String fullName,
-	                                                 String userType,
-	                                                 String profilePicture,
-	                                                 String disability,
-	                                                 String generateBookingID) {
-		FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-		DatabaseReference locationReference = firebaseDatabase
+	                                       Point destinationPoint,
+	                                       String pickupLocation,
+	                                       String destination,
+	                                       String fullName,
+	                                       String userType,
+	                                       String profilePicture,
+	                                       String disability,
+	                                       String generateBookingID) {
+
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		bookingReference = firebaseDatabase
 				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
@@ -312,8 +337,10 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 		booking.put("passengerUserID", FirebaseMain.getUser().getUid());
 		booking.put("bookingID", generateBookingID);
 		booking.put("bookingStatus", "Waiting");
+		booking.put("pickupLocation", pickupLocation);
 		booking.put("pickupLongitude", StaticDataPasser.storePickupLongitude);
 		booking.put("pickupLatitude", StaticDataPasser.storePickupLatitude);
+		booking.put("destination", destination);
 		booking.put("destinationLongitude", destinationPoint.longitude());
 		booking.put("destinationLatitude", destinationPoint.latitude());
 		booking.put("bookingDate", getCurrentTimeAndDate());
@@ -322,16 +349,22 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 		booking.put("passengerType", userType);
 		booking.put("passengerDisability", disability);
 
-		locationReference.setValue(booking)
+		bookingReference.setValue(booking)
 				.addOnSuccessListener(aVoid -> {
 					showToast(context, "Booking success");
 
-					dismiss();
+					openBookingsActivity();
 				})
 				.addOnFailureListener(e -> {
 					showToast(context, "Booking failed");
-					Log.e(TAG, "storeSeniorCitizenBookingToDatabase: " + e.getMessage());
+					Log.e(TAG, "storePWDBookingToDatabase: " + e.getMessage());
 				});
+	}
+
+	private void openBookingsActivity() {
+		dismiss();
+		Intent intent = new Intent(context, BookingsActivity.class);
+		startActivity(intent);
 	}
 
 	public static ConfirmBookingBottomSheet newInstance(String pointJson) {

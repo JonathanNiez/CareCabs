@@ -18,5 +18,4 @@ data class PickupPassengerModel(
     val passengerProfilePicture: String = "",
     val passengerUserType: String = "",
     val passengerDisability: String = "",
-    val passengerMedicalCondition: String = ""
 )

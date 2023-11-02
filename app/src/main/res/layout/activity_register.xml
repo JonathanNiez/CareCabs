@@ -99,7 +99,7 @@
 						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/email"
+							android:id="@+id/emailEditText"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:autofillHints="emailAddress"
@@ -128,7 +128,7 @@
 						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/password"
+							android:id="@+id/passwordEditText"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:autofillHints="password"
@@ -158,7 +158,7 @@
 						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/confirmPassword"
+							android:id="@+id/confirmPasswordEditText"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:background="@drawable/smooth_edit_text_2"
@@ -189,7 +189,7 @@
 						app:startIconTint="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/phoneNumber"
+							android:id="@+id/phoneNumberEditText"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:autofillHints="phone"

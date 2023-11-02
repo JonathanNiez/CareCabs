@@ -20,6 +20,7 @@ import com.capstone.carecabs.Adapters.BookingsHistoryAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Model.BookingsHistoryModel;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogBookingInfoBinding;
 import com.capstone.carecabs.databinding.FragmentBookingHistoryBinding;
@@ -38,6 +39,7 @@ public class BookingHistoryFragment extends Fragment {
 	private AlertDialog bookingInfoDialog;
 	private Context context;
 	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantState;
 	private FragmentBookingHistoryBinding binding;
 
 	@Override
@@ -55,23 +57,23 @@ public class BookingHistoryFragment extends Fragment {
 		binding.noBookingsHistoryTextView.setVisibility(View.GONE);
 
 		context = getContext();
-		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
 
-		if (voiceAssistantToggle.equals("enabled")){
+		voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+
+		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Booking History");
 		}
 
-		loadBookingsFromDatabase();
+		loadBookingHistoryFromDatabase();
 
 		return view;
 	}
 
-	private void loadBookingsFromDatabase() {
+	private void loadBookingHistoryFromDatabase() {
 		if (FirebaseMain.getUser() != null) {
 
-			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+			DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
 			List<BookingsHistoryModel> bookingsHistoryModelList = new ArrayList<>();
@@ -81,19 +83,21 @@ public class BookingHistoryFragment extends Fragment {
 							bookingsHistoryModelList);
 			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.bookingHistoryRecyclerView.setAdapter(bookingsHistoryAdapter);
-			databaseReference.addValueEventListener(new ValueEventListener() {
+			bookingReference.addValueEventListener(new ValueEventListener() {
 				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
 					if (snapshot.exists()) {
+
 						bookingsHistoryModelList.clear();
 						boolean hasBookingsHistory = false;
 						for (DataSnapshot bookingHistorySnapshot : snapshot.getChildren()) {
 							BookingsHistoryModel bookingsHistoryModel =
 									bookingHistorySnapshot.getValue(BookingsHistoryModel.class);
+
 							if (bookingsHistoryModel != null) {
 								if (bookingsHistoryModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
-								&& !bookingsHistoryModel.getBookingStatus().equals("Driver on the way")) {
+										&& !bookingsHistoryModel.getBookingStatus().equals("Waiting")) {
 									bookingsHistoryModelList.add(bookingsHistoryModel);
 									hasBookingsHistory = true;
 								}

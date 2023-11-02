@@ -37,6 +37,7 @@
 	<color name="dark_cyan">#0093B1</color>
 	<color name="cyan">#08bdbd</color>
 	<color name="white_blue">#caf0f8</color>
+	<color name="color_sa_eyes_ni_mar">#0077cc </color>
 
 	<color name="rich_black">#0E1116</color>
 	<color name="darker_gray">#303030</color>
@@ -51,6 +52,5 @@
 <!--	<color name="mar_2">#ff9914</color>-->
 <!--	<color name="mar_2">#f21b3f</color>-->
 <!--	<color name="mar_2">#ff9914</color>-->
-
 
 </resources>

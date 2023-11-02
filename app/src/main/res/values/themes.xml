@@ -114,11 +114,21 @@
 
 	<style name="BottomSheetBackground">
 		<item name="android:background">@drawable/smooth_top_edge</item>
-		<item name="android:backgroundTint">@color/sky_blue</item>
+		<item name="android:backgroundTint">@color/white_blue</item>
 	</style>
 
 	<style name="ImageViewTint">
 		<item name="tint">@color/black</item>
+	</style>
+
+	<style name="MapButtonsBackground">
+		<item name="tint">@color/black</item>
+		<item name="android:background">@drawable/floating_button_background</item>
+		<item name="android:backgroundTint">@color/white</item>
+	</style>
+
+	<style name="MapboxManeuverViewBackground">
+		<item name="maneuverViewBackgroundColor">@color/sky_blue</item>
 	</style>
 
 </resources>

@@ -33,7 +33,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAdapter.CurrentBookingViewHolder> {
-	private final String TAG = "CurrentBookingAdapter";
 	private Context context;
 	private List<CurrentBookingModel> currentBookingModelList;
 	private ItemCurrentBookingClickListener itemCurrentBookingClickListener;
@@ -68,90 +67,10 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 		holder.binding.driverDetailsLayout.setVisibility(View.GONE);
 		holder.binding.rateDriverBtn.setVisibility(View.GONE);
 		holder.binding.rateYourDriverTextView.setVisibility(View.GONE);
-
-		//geocode
-		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						currentBookingModel.getPickupLongitude(),
-						currentBookingModel.getPickupLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-
-		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call,
-			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.pickupLocationTextView.setText(locationName);
-					} else {
-
-						holder.binding.pickupLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, "Geocode error" + response.message());
-
-					holder.binding.pickupLocationTextView.setText("Location not found");
-				}
-
-			}
-
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.pickupLocationTextView.setText("Location not found");
-			}
-		});
-
-		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						currentBookingModel.getDestinationLongitude(),
-						currentBookingModel.getDestinationLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onResponse(@NonNull Call<GeocodingResponse> call,
-			                       @NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.destinationLocationTextView.setText(locationName);
-					} else {
-
-						holder.binding.destinationLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, "Geocode error" + response.message());
-
-					holder.binding.destinationLocationTextView.setText("Location not found");
-
-				}
-
-			}
-
-			@SuppressLint("SetTextI18n")
-			@Override
-			public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.destinationLocationTextView.setText("Location not found");
-			}
-		});
-
 		holder.binding.loadingDestinationLocation.setVisibility(View.GONE);
 		holder.binding.loadingPickupLocation.setVisibility(View.GONE);
+		holder.binding.pickupLocationTextView.setText(currentBookingModel.getPickupLocation());
+		holder.binding.destinationTextView.setText(currentBookingModel.getDestination());
 		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
 
 		final String userID = FirebaseMain.getUser().getUid();

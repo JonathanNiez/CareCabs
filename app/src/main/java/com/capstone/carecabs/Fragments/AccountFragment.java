@@ -57,17 +57,19 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private String userType;
+	private final String fontSize = StaticDataPasser.storeFontSize;
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private Intent intent;
-	private AlertDialog signOutDialog, pleaseWaitDialog,
-			noInternetDialog, registerNotCompleteDialog;
 	private AlertDialog.Builder builder;
+	private AlertDialog signOutDialog, pleaseWaitDialog,
+	noInternetDialog, registerNotCompleteDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
-	private FragmentAccountBinding binding;
 	private FragmentTransaction fragmentTransaction;
 	private FragmentManager fragmentManager;
 	private RequestManager requestManager;
 	private VoiceAssistant voiceAssistant;
+	private FragmentAccountBinding binding;
 
 	@Override
 	public void onStart() {
@@ -173,12 +175,10 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	private void getUserSettings() {
-		String fontSize = StaticDataPasser.storeFontSize;
-		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("My Profile");
 		}

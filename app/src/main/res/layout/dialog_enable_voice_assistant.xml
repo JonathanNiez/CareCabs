@@ -8,7 +8,7 @@
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
-		style="@style/BaseCardBackground"
+		style="@style/ItemCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
@@ -23,29 +23,40 @@
 			android:padding="5dp">
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/ImageViewTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:src="@drawable/calendar_64" />
+				android:layout_margin="5dp"
+				android:src="@drawable/voice_50" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="CANCEL BOOKING"
+				android:text="VOICE ASSISTANT"
 				android:textAlignment="center"
-				style="@style/TextColor"
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="Are you sure you want to cancel Booking?"
+				android:text="Voice Assistant is helpful for visual impairments"
 				android:textAlignment="center"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
 				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Do you want to enable Voice Assistant?"
+				android:textAlignment="center"
 				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
@@ -59,7 +70,20 @@
 		android:gravity="center">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/closeBtn"
+			android:id="@+id/yesBtn"
+			android:layout_width="130dp"
+			android:layout_height="50dp"
+			android:layout_margin="5dp"
+			android:background="@drawable/smooth_edge_button"
+			android:backgroundTint="@color/light_gray"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Yes"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/noBtn"
 			android:layout_width="130dp"
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
@@ -67,20 +91,7 @@
 			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Close"
-			android:textColor="@color/white"
-			android:textSize="17sp" />
-
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/cancelBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
-			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/light_red"
-			android:elevation="5dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="Cancel"
+			android:text="No"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
 

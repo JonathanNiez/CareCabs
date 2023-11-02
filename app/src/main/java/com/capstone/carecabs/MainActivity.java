@@ -52,21 +52,19 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements
-		SettingsBottomSheet.VoiceAssistantToggleListener {
+public class MainActivity extends AppCompatActivity {
 	private final String TAG = "MainActivity";
 	private static final String THEME_NORMAL = "normal";
 	private static final String THEME_CONTRAST = "contrast";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private Intent intent;
-	private AlertDialog exitAppDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
+	private AlertDialog exitAppDialog, enableLocationServiceDialog;
 	private boolean shouldExit = false;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
-	private SharedPreferences preferences;
 	private VoiceAssistant voiceAssistant;
-	private String voiceAssistantToggle;
 	private ActivityMainBinding binding;
 
 	@Override
@@ -90,7 +88,10 @@ public class MainActivity extends AppCompatActivity implements
 		closeExitConfirmationDialog();
 		closeEnableLocationServiceDialog();
 
-		voiceAssistant.shutdown();
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.shutdown();
+		}
 	}
 
 	@Override
@@ -110,13 +111,6 @@ public class MainActivity extends AppCompatActivity implements
 
 		checkUserIfVerified();
 		showFragment(new HomeFragment());
-
-		preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(this);
-		}
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			showSettingsBottomSheet();
@@ -285,15 +279,6 @@ public class MainActivity extends AppCompatActivity implements
 		}
 	}
 
-//	@Override
-//	public void onThemeChanged(boolean isChecked) {
-//		String theme = isChecked ? THEME_CONTRAST : THEME_NORMAL;
-//
-//		setTheme(theme);
-//
-//	}
-
-
 	private void setTheme(String theme) {
 		if (theme.equals(THEME_CONTRAST)) {
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -301,16 +286,6 @@ public class MainActivity extends AppCompatActivity implements
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 		} else {
 			AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-		}
-	}
-
-	@Override
-	public void onVoiceAssistantToggled(boolean isToggled) {
-		if (isToggled) {
-			voiceAssistant.speak("voice assistant enabled");
-		} else {
-			voiceAssistant.speak("voice assistant disabled");
-			voiceAssistant.shutdown();
 		}
 	}
 
@@ -539,7 +514,8 @@ public class MainActivity extends AppCompatActivity implements
 		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Are you sure you want to exit the App?");
 		}
 
@@ -582,7 +558,6 @@ public class MainActivity extends AppCompatActivity implements
 			boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 			if (isGpsEnabled || isNetworkEnabled) {
-				// Location services are now enabled, open your desired activity.
 				getUserTypeForMap();
 			} else {
 				// Location services are still not enabled, you can show a message to the user.

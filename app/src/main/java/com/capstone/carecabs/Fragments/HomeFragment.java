@@ -49,6 +49,7 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
+import com.capstone.carecabs.databinding.DialogHowToBookBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -68,6 +69,8 @@ import java.util.Objects;
 public class HomeFragment extends Fragment implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "HomeFragment";
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private final String fontSize = StaticDataPasser.storeFontSize;
 	private float textSizeSP;
 	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
@@ -80,8 +83,9 @@ public class HomeFragment extends Fragment implements
 	private Handler handler;
 	private Runnable runnable;
 	private List<Fragment> slideFragments = new ArrayList<>();
-	private AlertDialog noInternetDialog, registerNotCompleteDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
+	private AlertDialog noInternetDialog, registerNotCompleteDialog,
+			enableLocationServiceDialog, howToBookDialog;
 	private Context context;
 	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
@@ -192,12 +196,10 @@ public class HomeFragment extends Fragment implements
 	}
 
 	private void getUserSettings() {
-		String fontSize = StaticDataPasser.storeFontSize;
-		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
 			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Home");
 		}
@@ -423,10 +425,19 @@ public class HomeFragment extends Fragment implements
 							binding.progressBarLayout2.setVisibility(View.GONE);
 
 							String getUserType = documentSnapshot.getString("userType");
-							String getFirstName = documentSnapshot.getString("firstname");
+							String getFirstname = documentSnapshot.getString("firstname");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
+							boolean isFirstTimeUser = documentSnapshot.getBoolean("isFirstTimeUser");
 
-							binding.firstnameTextView.setText(getFirstName);
+							binding.firstnameTextView.setText(getFirstname);
+
+							if (isFirstTimeUser) {
+								if (isAdded()){
+									showHowToBookDialog();
+								}
+							} else {
+								binding.hiTextView.setText("Welcome back!");
+							}
 
 							if (!isVerified) {
 								binding.myProfileBadge.setVisibility(View.VISIBLE);
@@ -438,10 +449,9 @@ public class HomeFragment extends Fragment implements
 										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
 										Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 										boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
-										boolean isNavigatingToDestination = documentSnapshot.getBoolean("isNavigatingToDestination");
 										String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 
-										if (isNavigatingToDestination && getNavigationStatus.equals("Navigating to destination")) {
+										if (getNavigationStatus.equals("Navigating to destination")) {
 											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
 											binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
 											showNavigationStatusLayout();
@@ -520,6 +530,7 @@ public class HomeFragment extends Fragment implements
 
 	}
 
+
 	private void getUserTypeForMap(String userType) {
 		if (userType.equals("Driver")) {
 			intent = new Intent(getActivity(), MapDriverActivity.class);
@@ -543,9 +554,11 @@ public class HomeFragment extends Fragment implements
 					passengerBookingModelList.clear();
 
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
-						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
+						PassengerBookingModel passengerBookingModel =
+								bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
-							if (passengerBookingModel.getDriverUserID().equals(FirebaseMain.getUser().getUid())) {
+							if (passengerBookingModel.getDriverUserID()
+									.equals(FirebaseMain.getUser().getUid())) {
 
 								if (isAdded()) {
 									Glide.with(context)
@@ -558,10 +571,10 @@ public class HomeFragment extends Fragment implements
 
 								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
+								binding.pickupLocationTextView.setText(passengerBookingModel.getPickupLocation());
+								binding.destinationTextView.setText(passengerBookingModel.getDestination());
 
-								binding.viewPickupPassengerOnMapBtn.setOnClickListener(v -> {
-									checkLocationService("Driver");
-								});
+								binding.viewPassengerOnMapBtn.setOnClickListener(v -> checkLocationService("Driver"));
 
 								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
 									binding.passengerDisabilityTextView.setVisibility(View.GONE);
@@ -766,6 +779,43 @@ public class HomeFragment extends Fragment implements
 	private void closeRegisterNotCompleteDialog() {
 		if (registerNotCompleteDialog != null && registerNotCompleteDialog.isShowing()) {
 			registerNotCompleteDialog.dismiss();
+		}
+	}
+
+	private void showHowToBookDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		DialogHowToBookBinding binding =
+				DialogHowToBookBinding.inflate(getLayoutInflater());
+		View dialogView = binding.getRoot();
+
+		binding.nextBtn.setOnClickListener(v -> {
+			binding.instructionImageView.setImageResource(R.drawable.book_a_ride_ss);
+			binding.titleTextView.setText("Go to Book a Ride");
+			binding.bodyTextView.setText("Yeah body");
+			binding.previousBtn.setVisibility(View.VISIBLE);
+			binding.nextBtn.setVisibility(View.GONE);
+		});
+
+		binding.previousBtn.setOnClickListener(v -> {
+			binding.instructionImageView.setImageResource(R.drawable.mar);
+			binding.titleTextView.setText("HOW TO BOOK A RIDE");
+			binding.bodyTextView.setText("Yeah body");
+			binding.previousBtn.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+		});
+
+		binding.closeBtn.setOnClickListener(v -> closeHowToBookDialog());
+
+		builder.setView(dialogView);
+
+		howToBookDialog = builder.create();
+		howToBookDialog.show();
+	}
+
+	private void closeHowToBookDialog() {
+		if (howToBookDialog != null && howToBookDialog.isShowing()) {
+			howToBookDialog.dismiss();
 		}
 	}
 

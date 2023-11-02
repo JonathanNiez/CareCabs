@@ -23,17 +23,6 @@
 				android:layout_height="wrap_content"
 				android:elevation="5dp">
 
-				<androidx.appcompat.widget.AppCompatImageButton
-					android:id="@+id/imgBackBtn"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_alignParentStart="true"
-					android:layout_alignParentTop="true"
-					android:layout_marginStart="20dp"
-					android:layout_marginTop="20dp"
-					android:background="@color/vermillion"
-					android:src="@drawable/back_50_2" />
-
 				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/logo"
 					android:layout_width="200dp"
@@ -136,6 +125,7 @@
 					android:padding="8dp">
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/firstnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -162,6 +152,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/lastnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="20dp"
@@ -229,7 +220,7 @@
 							<androidx.appcompat.widget.AppCompatButton
 								android:id="@+id/birthdateBtn"
 								android:layout_width="match_parent"
-								android:layout_height="60dp"
+								android:layout_height="wrap_content"
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Date of Birth"
@@ -253,7 +244,7 @@
 							<androidx.appcompat.widget.AppCompatButton
 								android:id="@+id/ageBtn"
 								android:layout_width="match_parent"
-								android:layout_height="60dp"
+								android:layout_height="wrap_content"
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Age"

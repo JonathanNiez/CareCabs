@@ -35,6 +35,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -121,9 +122,15 @@ public class RegisterPWDActivity extends AppCompatActivity {
 					.start();
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
 		});
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
+		});
+
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -206,12 +213,12 @@ public class RegisterPWDActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-	boolean shouldExit = false;
-	if (shouldExit){
-		super.onBackPressed();
-	}else {
-		showCancelRegisterDialog();
-	}
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed();
+		} else {
+			showCancelRegisterDialog();
+		}
 	}
 
 	private void showIDScanInfoDialog() {
@@ -266,7 +273,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 				closePleaseWaitDialog();
-				if (profilePictureUri != null){
+				if (profilePictureUri != null) {
 					uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
 				}
 

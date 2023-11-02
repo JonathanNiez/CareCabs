@@ -34,6 +34,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
@@ -121,8 +122,13 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 					.start();
 		});
 
-		binding.imgBackBtn.setOnClickListener(v -> {
+		binding.backFloatingBtn.setOnClickListener(v -> {
 			showCancelRegisterDialog();
+		});
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -215,7 +221,12 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		showCancelRegisterDialog();
+		boolean shouldExit = false;
+		if (shouldExit) {
+			super.onBackPressed();
+		} else {
+			showCancelRegisterDialog();
+		}
 	}
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname) {
@@ -254,7 +265,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 				Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
 
 			});
-		}else {
+		} else {
 			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
 
 			intent = new Intent(RegisterSeniorActivity.this, LoginOrRegisterActivity.class);
