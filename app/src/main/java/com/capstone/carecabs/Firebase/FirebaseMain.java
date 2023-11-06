@@ -19,17 +19,18 @@ public class FirebaseMain {
 	public static String chatCollection = "chats";
 	public static String feedbackCollection = "feedbacks";
 	public static String tripFeebackCollection = "tripFeedbacks";
+	public static String favoriteCollection = "favorites";
 	private static FirebaseFirestore firebaseFirestore;
 	public static DatabaseReference databaseReference;
 	private static FirebaseAuth auth;
 	private static FirebaseStorage firebaseStorage;
 
-	public static HashMap<String,String> remoteMsgHeaders = null;
+	public static HashMap<String, String> remoteMsgHeaders = null;
 
 	private static Retrofit retrofit = null;
 
-	public static Retrofit getClient(){
-		if(retrofit == null){
+	public static Retrofit getClient() {
+		if (retrofit == null) {
 			retrofit = new Retrofit.Builder()
 					.baseUrl("https://fcm.googleapis.com/fcm/")
 					.addConverterFactory(ScalarsConverterFactory.create())
@@ -37,13 +38,14 @@ public class FirebaseMain {
 		}
 		return retrofit;
 	}
-	public static HashMap<String,String> getRemoteMsgHeaders(){
-		if(remoteMsgHeaders == null){
+
+	public static HashMap<String, String> getRemoteMsgHeaders() {
+		if (remoteMsgHeaders == null) {
 			remoteMsgHeaders = new HashMap<>();
 			remoteMsgHeaders.put(
 					"Authorization",
 					"key=AAAAL79ShUw:APA91bH0mZmKzad678UAk3bRtnlDlvWOiLKDM0rmpFbQK7K4nY87hl58NseGCjgP3Cht5Y7ZPoJE82zzdIU3Motx3K5P8BMXO43auFVAw-R6XVmdki0ugDX-ouOo2oiNKmnBwGkiyiaq");
-			remoteMsgHeaders.put("Content-Type","application/json");
+			remoteMsgHeaders.put("Content-Type", "application/json");
 		}
 
 		return remoteMsgHeaders;

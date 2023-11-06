@@ -61,8 +61,9 @@ import java.util.Objects;
 public class RegisterDriverActivity extends AppCompatActivity {
 	private final String TAG = "RegisterDriver";
 	private final String userType = "Driver";
-	private String profilePictureURL = "default";
-	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
+	private String profilePictureURL = "default", sex, birthDate, month;
+	private int age;
+	private Uri profilePictureUri;
 	private String vehiclePictureURL = "none";
 	private Uri vehiclePictureUri;
 	private DocumentReference documentReference;
@@ -163,7 +164,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				if (position == 0) {
 					binding.spinnerSex.setSelection(0);
 				} else {
-					StaticDataPasser.storeSelectedSex = parent.getItemAtPosition(position).toString();
+					sex = parent.getItemAtPosition(position).toString();
 				}
 			}
 
@@ -173,22 +174,21 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		binding.birthdateBtn.setOnClickListener(v -> {
-			showEnterBirthdateDialog();
-		});
+		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 
-			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
-			String stringLastname = binding.lastnameEditText.getText().toString().trim();
+			String firstname = binding.firstnameEditText.getText().toString().trim();
+			String lastname = binding.lastnameEditText.getText().toString().trim();
 			String plateNumber = binding.vehiclePlateNumberEditText.getText().toString().trim();
 			String vehicleColor = binding.vehicleColorEditText.getText().toString().trim();
 
-			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-					|| StaticDataPasser.storeBirthdate == null
-					|| StaticDataPasser.storeCurrentAge == 0
-					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
+			if (firstname.isEmpty()
+					|| lastname.isEmpty()
+					|| birthDate == null
+					|| age == 0
+					|| sex == null
 			) {
 				Toast.makeText(this, "Please enter your info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
@@ -199,8 +199,8 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				showPleaseWaitDialog();
 
 				updateUserRegisterToFireStore(
-						stringFirstname,
-						stringLastname,
+						firstname,
+						lastname,
 						vehicleColor,
 						plateNumber
 				);
@@ -233,10 +233,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("profilePicture", profilePictureURL);
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
-			registerUser.put("age", StaticDataPasser.storeCurrentAge);
+			registerUser.put("age", age);
 			registerUser.put("isAvailable", true);
-			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
-			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("birthdate", birthDate);
+			registerUser.put("sex", sex);
 			registerUser.put("userType", userType);
 			registerUser.put("driverRatings", 0.0);
 			registerUser.put("passengersTransported", 0);
@@ -529,11 +529,11 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	}
 
 	private void showEnterBirthdateDialog() {
-		DialogEnterBirthdateBinding binding =
-				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = binding.getRoot();
+		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
+				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
+		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -541,28 +541,26 @@ public class RegisterDriverActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerMonth.setAdapter(adapter);
-		binding.spinnerMonth.setSelection(0);
-		binding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
+		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					binding.spinnerMonth.setSelection(0);
+					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 				} else {
-					String selectedMonth = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedMonth = selectedMonth;
-
-					binding.monthTextView.setText(selectedMonth);
+					month = parent.getItemAtPosition(position).toString();
+					dialogEnterBirthdateBinding.monthTextView.setText(month);
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerMonth.setSelection(0);
+				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 			}
 		});
 
-		binding.dayEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -571,7 +569,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				binding.dayTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
 			}
 
 			@Override
@@ -580,7 +578,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		binding.yearEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -588,7 +586,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				binding.yearTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
 
 			}
 
@@ -598,41 +596,36 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			}
 		});
 
-		binding.doneBtn.setOnClickListener(view -> {
-			String year = binding.yearEditText.getText().toString();
-			String day = binding.dayEditText.getText().toString();
+		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
+			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
+			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
-			if (StaticDataPasser.storeSelectedMonth == null
+			if (month == null
 					|| year.isEmpty()
 					|| day.isEmpty()) {
 
-				Toast.makeText(RegisterDriverActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
 
 			} else {
-				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
+				birthDate = month + "-" + day + "-" + year;
 
 				//Calculate age
 				Calendar today = Calendar.getInstance();
-				int age = today.get(Calendar.YEAR) - Integer.parseInt(year);
+				age = today.get(Calendar.YEAR) - Integer.parseInt(year);
 
 				// Check if the user's birthday has already happened this year or not
 				if (today.get(Calendar.DAY_OF_YEAR) < Integer.parseInt(year)) {
 					age--;
 				}
 
-				StaticDataPasser.storeBirthdate = fullBirthdate;
-				StaticDataPasser.storeCurrentAge = age;
-
-				this.binding.birthdateBtn.setText(fullBirthdate);
-				this.binding.ageBtn.setText(String.valueOf(age));
+				binding.birthdateBtn.setText(birthDate);
+				binding.ageBtn.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}
 		});
 
-		binding.cancelBtn.setOnClickListener(v -> {
-			closeEnterBirthdateDialog();
-		});
+		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> closeEnterBirthdateDialog());
 
 		builder.setView(dialogView);
 

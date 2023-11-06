@@ -60,8 +60,9 @@ import java.util.Objects;
 public class RegisterPWDActivity extends AppCompatActivity {
 	private final String TAG = "RegisterPWDActivity";
 	private final String userType = "Person with Disabilities (PWD)";
-	private String profilePictureURL = "default";
-	private Uri profilePictureUri = null;
+	private String profilePictureURL = "default", sex, birthDate, month;
+	private int age;
+	private Uri profilePictureUri;
 	private DocumentReference documentReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;

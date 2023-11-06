@@ -10,33 +10,47 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.BookingsHistoryModel;
+import com.capstone.carecabs.Model.FavoritesModel;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.ItemBookingHistoryBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
 import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BookingsHistoryAdapter extends RecyclerView.Adapter<BookingsHistoryAdapter.BookingHistoryViewHolder> {
+public class BookingsHistoryAdapter
+		extends RecyclerView.Adapter<BookingsHistoryAdapter.BookingHistoryViewHolder> {
 	private final String TAG = "BookingsHistoryAdapter";
-
 	private Context context;
 	private List<BookingsHistoryModel> bookingsHistoryModelList;
+	private ItemBookingsHistoryClickListener itemBookingsHistoryClickListener;
 
-	public BookingsHistoryAdapter(
-			Context context,
-			List<BookingsHistoryModel> bookingsHistoryModelList) {
+	public interface ItemBookingsHistoryClickListener {
+		void onItemBookingsHistoryClick(BookingsHistoryModel bookingsHistoryModel);
+	}
+
+	public BookingsHistoryAdapter(Context context,
+	                              List<BookingsHistoryModel> bookingsHistoryModelList,
+	                              ItemBookingsHistoryClickListener itemBookingsHistoryClickListener) {
 		this.context = context;
 		this.bookingsHistoryModelList = bookingsHistoryModelList;
+		this.itemBookingsHistoryClickListener = itemBookingsHistoryClickListener;
 	}
 
 
@@ -54,7 +68,6 @@ public class BookingsHistoryAdapter extends RecyclerView.Adapter<BookingsHistory
 		BookingsHistoryModel bookingsHistoryModel = bookingsHistoryModelList.get(position);
 
 		holder.binding.bookingDateTextView.setText("Booking Date: " + bookingsHistoryModel.getBookingDate());
-		holder.binding.pickupLocationTextView.setText(bookingsHistoryModel.getPickupLocation());
 		holder.binding.destinationTextView.setText(bookingsHistoryModel.getDestination());
 
 		if (bookingsHistoryModel.getBookingStatus().equals("Waiting")
@@ -66,7 +79,16 @@ public class BookingsHistoryAdapter extends RecyclerView.Adapter<BookingsHistory
 
 		holder.binding.bookingStatusTextView.setText(bookingsHistoryModel.getBookingStatus());
 
+		holder.binding.heartImageView.setOnClickListener(v -> {
+			if (itemBookingsHistoryClickListener != null) {
+				holder.binding.heartImageView.setImageResource(R.drawable.heart_48);
+				itemBookingsHistoryClickListener
+						.onItemBookingsHistoryClick(bookingsHistoryModelList.get(position));
+			}
+		});
+
 	}
+
 
 	@Override
 	public int getItemCount() {

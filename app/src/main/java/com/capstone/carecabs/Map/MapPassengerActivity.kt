@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.capstone.carecabs.BookingsActivity
 import com.capstone.carecabs.BottomSheetModal.ConfirmBookingBottomSheet
+import com.capstone.carecabs.FavoritesActivity
 import com.capstone.carecabs.Firebase.FirebaseMain
 import com.capstone.carecabs.HelpActivity
 import com.capstone.carecabs.LoginOrRegisterActivity
@@ -37,6 +38,7 @@ import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.Utility.VoiceAssistant
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
 import com.capstone.carecabs.databinding.DialogHasActiveBookingBinding
+import com.capstone.carecabs.databinding.DialogMapInstructionsBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.google.firebase.database.DataSnapshot
@@ -111,10 +113,13 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private lateinit var userNotVerifiedDialog: AlertDialog
     private lateinit var passengerOwnBookingInfoDialog: AlertDialog
     private lateinit var hasActiveBookingDialog: AlertDialog
+    private lateinit var mapInstructionsDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private val voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
     private lateinit var voiceAssistant: VoiceAssistant
     private var hasActiveBooking = false
+    private var currentLongitude: Double = 0.0
+    private var currentLatitude: Double = 0.0
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -167,16 +172,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         checkIfUserIsVerified()
         initializeBottomNavButtons()
 
-        binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
-            if (b) {
+        binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if (isChecked) {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.MAPBOX_STREETS) {
+                    loadStyleUri(Style.SATELLITE_STREETS) {
                         showToast("Changed Map style to Streets")
                     }
                 }
             } else {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.SATELLITE_STREETS) {
+                    loadStyleUri(Style.MAPBOX_STREETS) {
                         showToast("Changed Map style to Satellite")
                     }
                 }
@@ -184,7 +189,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
 
         binding.fullscreenImgBtn.setOnClickListener {
-            showToast("Entered Fullscreen")
+            showToast("Entered fullscreen")
+
+            if (voiceAssistantState.equals("enabled")) {
+                voiceAssistant = VoiceAssistant.getInstance(this)
+                voiceAssistant.speak("Entered fullscreen")
+            }
 
             binding.fullscreenImgBtn.visibility = View.GONE
             binding.minimizeScreenImgBtn.visibility = View.VISIBLE
@@ -193,7 +203,12 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
 
         binding.minimizeScreenImgBtn.setOnClickListener {
-            showToast("Exited Fullscreen")
+            showToast("Exited fullscreen")
+
+            if (voiceAssistantState.equals("enabled")) {
+                voiceAssistant = VoiceAssistant.getInstance(this)
+                voiceAssistant.speak("Exited fullscreen")
+            }
 
             binding.minimizeScreenImgBtn.visibility = View.GONE
             binding.fullscreenImgBtn.visibility = View.VISIBLE
@@ -217,7 +232,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun onMapReady() {
 
         mapboxMap = binding.mapView.getMapboxMap().apply {
-            loadStyleUri(Style.SATELLITE_STREETS) {
+            loadStyleUri(Style.MAPBOX_STREETS) {
 
                 initializeLocationComponent()
                 initializeSearchEngine()
@@ -372,15 +387,15 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         locationComponentPlugin.addOnIndicatorPositionChangedListener {
 
             //store the current location
-            StaticDataPasser.storePickupLatitude = it.latitude()
-            StaticDataPasser.storePickupLongitude = it.longitude()
+            currentLongitude = it.longitude()
+            currentLatitude = it.latitude()
+
+            StaticDataPasser.storePickupLatitude = currentLatitude
+            StaticDataPasser.storePickupLongitude = currentLongitude
 
             createViewAnnotation(
                 binding.mapView,
-                Point.fromLngLat(
-                    StaticDataPasser.storePickupLongitude,
-                    StaticDataPasser.storePickupLatitude
-                )
+                Point.fromLngLat(currentLongitude, currentLatitude)
             )
 
 //            val passengerBookingModel = PassengerBookingModel(
@@ -477,6 +492,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
                 R.id.help -> {
                     intent = Intent(this, HelpActivity::class.java)
+                    startActivity(intent)
+                }
+                R.id.favorites -> {
+                    intent = Intent(this, FavoritesActivity::class.java)
                     startActivity(intent)
                 }
             }
@@ -777,8 +796,10 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                             if (passengerBookingData != null) {
-                                if (passengerBookingData.bookingStatus == "Waiting" &&
-                                    passengerBookingData.passengerUserID == FirebaseMain.getUser().uid
+                                if (passengerBookingData.bookingStatus == "Waiting"
+                                    && passengerBookingData.passengerUserID == FirebaseMain.getUser().uid
+                                    || passengerBookingData.bookingStatus == "Driver on the way"
+                                    && passengerBookingData.passengerUserID == FirebaseMain.getUser().uid
                                 ) {
 
                                     hasActiveBooking = true
@@ -855,11 +876,15 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                 .addOnSuccessListener {
 
                     if (it != null && it.exists()) {
-                        val getVerificationStatus = it.getBoolean("isVerified")
+                        val isVerified = it.getBoolean("isVerified")
+                        val isFirstTimeUser = it.getBoolean("isFirstTimeUser")
 
-                        if (getVerificationStatus == false) {
+                        if (isVerified == false) {
                             showUserNotVerifiedDialog()
                         } else {
+                            if (isFirstTimeUser == true) {
+                                showMapInstructionsDialog()
+                            }
                             onMapReady()
                         }
                     }
@@ -1087,6 +1112,32 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             "CareCabs",
             "A Driver has accepted your Booking and is on the way to your location"
         )
+    }
+
+    private fun showMapInstructionsDialog() {
+        val binding: DialogMapInstructionsBinding =
+            DialogMapInstructionsBinding.inflate(layoutInflater)
+        builder = AlertDialog.Builder(this)
+        val dialogView = binding.root
+
+        if (voiceAssistantState.equals("enabled")) {
+            voiceAssistant = VoiceAssistant.getInstance(this)
+            voiceAssistant.speak("Do you need help?")
+        }
+
+        binding.closeBtn.setOnClickListener {
+            closeMapInstructionsDialog()
+        }
+
+        builder.setView(dialogView)
+        mapInstructionsDialog = builder.create()
+        mapInstructionsDialog.show()
+    }
+
+    private fun closeMapInstructionsDialog() {
+        if (mapInstructionsDialog.isShowing) {
+            mapInstructionsDialog.dismiss()
+        }
     }
 
     private fun showHasActiveBookingDialog() {

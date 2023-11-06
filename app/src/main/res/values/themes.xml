@@ -81,8 +81,12 @@
 		<item name="android:drawableTint" tools:targetApi="m">@color/black</item>
 	</style>
 
+
 	<style name="BottomNavBackground">
 		<item name="android:background">@color/cyan</item>
+		<item name="itemTextColor">@color/black</item>
+		<item name="itemIconTint">@color/black</item>
+		<item name="itemTextAppearance">@dimen/bottom_nav_text_size</item>
 	</style>
 
 	<style name="FloatingButtonBackground">

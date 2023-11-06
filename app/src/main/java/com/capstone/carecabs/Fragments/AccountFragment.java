@@ -143,8 +143,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 		binding.contactUsBtn.setOnClickListener(v -> goToContactUsFragment());
 
-		binding.appSettingsBtn.setOnClickListener(v -> goToAppSettingsFragment());
-
 		binding.changePasswordBtn.setOnClickListener(v -> goToChangePasswordFragment());
 
 		binding.feedbackBtn.setOnClickListener(v -> {
@@ -159,6 +157,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.scanIDBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), ScanIDActivity.class);
 			intent.putExtra("userType", userType);
+			intent.putExtra("activityData", "fromMyProfile");
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		});
@@ -360,7 +359,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -390,7 +388,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.editProfileBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.scanIDBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.appSettingsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.aboutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.contactUsBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);

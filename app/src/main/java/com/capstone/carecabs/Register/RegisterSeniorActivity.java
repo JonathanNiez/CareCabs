@@ -44,10 +44,10 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
+import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -55,13 +55,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class RegisterSeniorActivity extends AppCompatActivity {
 	private final String TAG = "RegisterSeniorActivity";
 	private final String userType = "Senior Citizen";
-	private String profilePictureURL = "default";
-	private Uri profilePictureUri = Uri.parse(String.valueOf(R.drawable.account));
+	private String profilePictureURL = "default", sex, birthDate, month;
+	private int age;
+	private Uri profilePictureUri;
 	private DocumentReference documentReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -70,7 +70,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
-	private AlertDialog ageReqDialog, noInternetDialog,
+	private AlertDialog notSeniorDialog, noInternetDialog,
 			registerFailedDialog, cancelRegisterDialog,
 			idNotScannedDialog, birthdateInputChoiceDialog,
 			cameraGalleryOptionsDialog;
@@ -145,8 +145,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 				if (position == 0) {
 					binding.spinnerSex.setSelection(0);
 				} else {
-					String selectedSex = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedSex = selectedSex;
+					sex = parent.getItemAtPosition(position).toString();
 				}
 			}
 
@@ -156,34 +155,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			}
 		});
 
-		ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(
-				this,
-				R.array.senior_citizen_medical_condition,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerMedicalCondition.setAdapter(adapter1);
-		binding.spinnerMedicalCondition.setSelection(0);
-		binding.spinnerMedicalCondition.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					binding.spinnerMedicalCondition.setSelection(0);
-				} else {
-					String selectedMedicalCondition = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedMedicalCondition = selectedMedicalCondition;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerMedicalCondition.setSelection(0);
-			}
-		});
-
-		binding.birthdateBtn.setOnClickListener(v -> {
-			showEnterBirthdateDialog();
-		});
+		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
@@ -191,28 +163,20 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
 			String stringLastname = binding.lastnameEditText.getText().toString().trim();
 
-			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-					|| StaticDataPasser.storeBirthdate == null
-					|| StaticDataPasser.storeCurrentAge == 0
-					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedMedicalCondition, "Select your Medical Condition")
-			) {
+			if (stringFirstname.isEmpty()
+					|| stringLastname.isEmpty()
+					|| birthDate == null
+					|| age == 0
+					|| sex == null) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
 
-			} else if (StaticDataPasser.storeCurrentAge <= 60) {
-				intent = new Intent(this, LoginActivity.class);
-				startActivity(intent);
-				finish();
-
-				showAgeReqDialog();
-
-				updateCancelledRegister(FirebaseMain.getUser().getUid());
+			} else if (age <= 60) {
+				showNotSeniorDialog();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
-
 			} else {
 				updateUserRegisterToFireStore(stringFirstname, stringLastname);
 			}
@@ -239,32 +203,33 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			Map<String, Object> registerUser = new HashMap<>();
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
-			registerUser.put("age", StaticDataPasser.storeCurrentAge);
-			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
-			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("age", age);
+			registerUser.put("birthdate", birthDate);
+			registerUser.put("sex", sex);
 			registerUser.put("userType", userType);
-			registerUser.put("medicalCondition", StaticDataPasser.storeSelectedMedicalCondition);
 			registerUser.put("isRegisterComplete", true);
 			registerUser.put("totalTrips", 0);
 
-			documentReference.update(registerUser).addOnSuccessListener(unused -> {
-				binding.progressBarLayout.setVisibility(View.GONE);
+			documentReference.update(registerUser)
+					.addOnSuccessListener(unused -> {
+						binding.progressBarLayout.setVisibility(View.GONE);
 
-				uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+						uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
 
-				intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
-				intent.putExtra("userType", userType);
-				startActivity(intent);
-				finish();
+						intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
+						intent.putExtra("userType", userType);
+						startActivity(intent);
+						finish();
 
-			}).addOnFailureListener(e -> {
-				showRegisterFailedDialog();
+					})
+					.addOnFailureListener(e -> {
+						showRegisterFailedDialog();
 
-				binding.progressBarLayout.setVisibility(View.GONE);
+						binding.progressBarLayout.setVisibility(View.GONE);
 
-				Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
+						Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
 
-			});
+					});
 		} else {
 			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
 
@@ -396,16 +361,9 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private void showEnterBirthdateDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_enter_birthdate, null);
-
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
-		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
-		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
-		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
-		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
+		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
+				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
+		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -413,28 +371,26 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerMonth.setAdapter(adapter);
-		spinnerMonth.setSelection(0);
-		spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
+		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					spinnerMonth.setSelection(0);
+					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 				} else {
-					String selectedMonth = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedMonth = selectedMonth;
-
-					monthTextView.setText(selectedMonth);
+					month = parent.getItemAtPosition(position).toString();
+					dialogEnterBirthdateBinding.monthTextView.setText(month);
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				spinnerMonth.setSelection(0);
+				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 			}
 		});
 
-		dayEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -443,7 +399,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				dayTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
 			}
 
 			@Override
@@ -452,7 +408,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			}
 		});
 
-		yearEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -460,7 +416,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				yearTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
 
 			}
 
@@ -470,41 +426,36 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			}
 		});
 
-		doneBtn.setOnClickListener(view -> {
-			String year = yearEditText.getText().toString();
-			String day = dayEditText.getText().toString();
+		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
+			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
+			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
-			if (StaticDataPasser.storeSelectedMonth == null
+			if (month == null
 					|| year.isEmpty()
 					|| day.isEmpty()) {
 
 				Toast.makeText(RegisterSeniorActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
 
 			} else {
-				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
+				birthDate = month + "-" + day + "-" + year;
 
 				//Calculate age
 				Calendar today = Calendar.getInstance();
-				int age = today.get(Calendar.YEAR) - Integer.parseInt(year);
+				age = today.get(Calendar.YEAR) - Integer.parseInt(year);
 
 				// Check if the user's birthday has already happened this year or not
 				if (today.get(Calendar.DAY_OF_YEAR) < Integer.parseInt(year)) {
 					age--;
 				}
 
-				StaticDataPasser.storeBirthdate = fullBirthdate;
-				StaticDataPasser.storeCurrentAge = age;
-
-				binding.birthdateBtn.setText(fullBirthdate);
+				binding.birthdateBtn.setText(birthDate);
 				binding.ageBtn.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}
 		});
 
-		cancelBtn.setOnClickListener(v -> {
-			closeEnterBirthdateDialog();
-		});
+		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> closeEnterBirthdateDialog());
 
 		builder.setView(dialogView);
 
@@ -577,7 +528,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
-	private void showAgeReqDialog() {
+	private void showNotSeniorDialog() {
 		builder = new AlertDialog.Builder(this);
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_you_are_not_a_senior_ciitizen, null);
@@ -585,15 +536,25 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
 		okBtn.setOnClickListener(v -> {
-			if (ageReqDialog != null && ageReqDialog.isShowing()) {
-				ageReqDialog.dismiss();
-			}
+			intent = new Intent(this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+
+			updateCancelledRegister(FirebaseMain.getUser().getUid());
+
+			closeNotSeniorDialog();
 		});
 
 		builder.setView(dialogView);
 
-		ageReqDialog = builder.create();
-		ageReqDialog.show();
+		notSeniorDialog = builder.create();
+		notSeniorDialog.show();
+	}
+
+	private void closeNotSeniorDialog() {
+		if (notSeniorDialog != null && notSeniorDialog.isShowing()) {
+			notSeniorDialog.dismiss();
+		}
 	}
 
 	private void showRegisterSuccessNotification() {

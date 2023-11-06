@@ -110,11 +110,19 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		checkUserIfVerified();
-		showFragment(new HomeFragment());
 
-		binding.settingsFloatingBtn.setOnClickListener(v -> {
-			showSettingsBottomSheet();
-		});
+		if (getIntent() != null && getIntent().hasExtra("activityData")) {
+			intent = getIntent();
+			String activityData = intent.getStringExtra("activityData");
+
+			if (activityData != null && activityData.equals("fromMyProfile")) {
+				showFragment(new AccountFragment());
+			}
+		} else {
+			showFragment(new HomeFragment());
+		}
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
 		binding.bottomNavigationView.setSelectedItemId(R.id.home);
 		binding.bottomNavigationView.setOnItemSelectedListener(item -> {

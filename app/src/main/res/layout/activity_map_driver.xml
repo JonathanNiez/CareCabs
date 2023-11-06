@@ -284,8 +284,6 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		app:itemIconSize="30dp"
-		app:itemIconTint="@color/white"
-		app:itemTextColor="@color/white"
 		app:labelVisibilityMode="labeled"
 		app:menu="@menu/menu_map_bottom_nav_driver" />
 

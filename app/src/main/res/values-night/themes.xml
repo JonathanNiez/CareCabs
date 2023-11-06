@@ -94,6 +94,9 @@
 
 	<style name="BottomNavBackground">
 		<item name="android:backgroundTint">@color/rich_black</item>
+		<item name="itemTextColor">@color/white</item>
+		<item name="itemIconTint">@color/white</item>
+		<item name="itemTextAppearance">@dimen/bottom_nav_text_size</item>
 	</style>
 
 	<style name="FloatingButtonBackground">

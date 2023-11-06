@@ -3,7 +3,6 @@ package com.capstone.carecabs.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -29,10 +28,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class BookingHistoryFragment extends Fragment {
 	private final String TAG = "BookingHistoryFragment";
@@ -80,7 +83,15 @@ public class BookingHistoryFragment extends Fragment {
 			BookingsHistoryAdapter bookingsHistoryAdapter =
 					new BookingsHistoryAdapter(
 							context,
-							bookingsHistoryModelList);
+							bookingsHistoryModelList,
+							bookingsHistoryModel ->
+									storeFavoriteToFireStore(
+											generateRandomFavoritesID(),
+											bookingsHistoryModel.getBookingID(),
+											bookingsHistoryModel.getDestination(),
+											bookingsHistoryModel.getDestinationLongitude(),
+											bookingsHistoryModel.getDestinationLatitude()));
+
 			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.bookingHistoryRecyclerView.setAdapter(bookingsHistoryAdapter);
 			bookingReference.addValueEventListener(new ValueEventListener() {
@@ -124,6 +135,39 @@ public class BookingHistoryFragment extends Fragment {
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		}
+	}
+
+	private void storeFavoriteToFireStore(String favoriteID,
+	                                      String bookingID,
+	                                      String destination,
+	                                      Double destinationLongitude,
+	                                      Double destinationLatitude) {
+		if (FirebaseMain.getUser() != null) {
+			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.favoriteCollection)
+					.document(favoriteID);
+
+			Map<String, Object> favorites = new HashMap<>();
+			favorites.put("favoriteID", favoriteID);
+			favorites.put("userID", FirebaseMain.getUser().getUid());
+			favorites.put("bookingID", bookingID);
+			favorites.put("destination", destination);
+			favorites.put("destinationLongitude", destinationLongitude);
+			favorites.put("destinationLatitude", destinationLatitude);
+
+			documentReference.set(favorites)
+					.addOnSuccessListener(unused -> {
+
+						Log.i(TAG, "onSuccess: favorite added");
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
+		}
+
+	}
+
+	private String generateRandomFavoritesID() {
+		String uuid = String.valueOf(UUID.randomUUID());
+		return uuid.toString();
 	}
 
 	private void showBookingInfoDialog(String bookingID) {

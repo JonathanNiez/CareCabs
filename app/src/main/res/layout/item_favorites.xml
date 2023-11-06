@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/ItemCardBackground"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_margin="10dp"
+	app:cardCornerRadius="10dp"
+	app:cardElevation="5dp">
+
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_weight="5"
+			android:orientation="vertical">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/textView2"
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerHorizontal="true"
+				android:layout_gravity="start"
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Destination:"
+				android:textSize="18sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/destinationTextView"
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@id/textView2"
+				android:layout_centerHorizontal="true"
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:text="Destination Location"
+				android:textAlignment="center"
+				android:textSize="20sp" />
+
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/heartImageView"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_centerVertical="true"
+			android:layout_weight="1"
+			app:srcCompat="@drawable/heart_48" />
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.cardview.widget.CardView>

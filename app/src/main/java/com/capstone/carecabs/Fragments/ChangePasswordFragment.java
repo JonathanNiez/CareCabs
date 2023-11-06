@@ -42,9 +42,14 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 			passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
 	private Intent intent;
 	private Context context;
-	private SharedPreferences preferences;
-	private String voiceAssistantToggle;
+	private float textSizeSP;
+	private float textHeaderSizeSP;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private FragmentChangePasswordBinding binding;
 
 	@Override
@@ -86,14 +91,6 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 
 		context = getContext();
 		checkUserRegisterMethod();
-
-		preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Change Password");
-		}
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
@@ -146,6 +143,29 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		backToAccountFragment();
 	}
 
+	private void getUserSettings() {
+		String fontSize = StaticDataPasser.storeFontSize;
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("About us");
+		}
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+	}
+
+
 	private void showPasswordWarningDialog() {
 		builder = new AlertDialog.Builder(context);
 
@@ -155,7 +175,8 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 
 		String changePasswordWarning = getString(R.string.change_password_warning);
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak(changePasswordWarning);
 		}
 

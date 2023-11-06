@@ -34,6 +34,7 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private ActivityFeedbackBinding binding;
 
 	@Override
@@ -73,13 +74,12 @@ public class FeedbackActivity extends AppCompatActivity implements SettingsBotto
 
 	private void getUserSettings() {
 		String fontSize = StaticDataPasser.storeFontSize;
-		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
-		if (voiceAssistantToggle.equals("enabled")) {
-			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(this);
-			voiceAssistant.speak("Personal Info");
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Feedback");
 		}
 	}
 

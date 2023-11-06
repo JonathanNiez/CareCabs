@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.FeedbackActivity;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentContactUsBinding;
 
@@ -25,7 +26,14 @@ import java.util.Objects;
 
 public class ContactUsFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private Context context;
+	private float textSizeSP;
+	private float textHeaderSizeSP;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private FragmentContactUsBinding binding;
 
 	@Override
@@ -41,13 +49,7 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 		View view = binding.getRoot();
 
 		context = getContext();
-		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")){
-			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Contact Us");
-		}
+		getUserSettings();
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
@@ -74,6 +76,32 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
 
 	}
+
+	private void getUserSettings() {
+		String fontSize = StaticDataPasser.storeFontSize;
+
+		setFontSize(fontSize);
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Contact us");
+		}
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+	}
+
 }
+

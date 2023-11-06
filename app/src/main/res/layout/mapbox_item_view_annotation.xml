@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	xmlns:tools="http://schemas.android.com/tools"
 	android:id="@+id/annotationBackground"
+	style="@style/ColoredCardBackground"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:gravity="center"
 	android:padding="10dp"
-	app:cardBackgroundColor="@color/vermillion"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<TextView
+	<androidx.appcompat.widget.AppCompatTextView
+		style="@style/TextColor"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
 		android:fontFamily="@font/gabarito_bold"
+		android:text="You"
 		android:textColor="@android:color/white"
-		android:text="You" />
+		android:textSize="20sp" />
 
 </androidx.cardview.widget.CardView>

@@ -88,6 +88,7 @@ public class HomeFragment extends Fragment implements
 			enableLocationServiceDialog, howToBookDialog;
 	private Context context;
 	private Intent intent;
+	private VoiceAssistant voiceAssistant;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private DocumentReference documentReference;
 	private DatabaseReference databaseReference;
@@ -432,7 +433,7 @@ public class HomeFragment extends Fragment implements
 							binding.firstnameTextView.setText(getFirstname);
 
 							if (isFirstTimeUser) {
-								if (isAdded()){
+								if (isAdded()) {
 									showHowToBookDialog();
 								}
 							} else {
@@ -788,6 +789,11 @@ public class HomeFragment extends Fragment implements
 		DialogHowToBookBinding binding =
 				DialogHowToBookBinding.inflate(getLayoutInflater());
 		View dialogView = binding.getRoot();
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Do you need help?");
+		}
 
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.instructionImageView.setImageResource(R.drawable.book_a_ride_ss);

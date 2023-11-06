@@ -54,7 +54,7 @@ public class ScanIDActivity extends AppCompatActivity {
 	private Uri idPictureUri = null;
 	private String getUserType;
 	private final int imageSize = 224;
-	private boolean isUserVerified = false;
+	private boolean isUserVerified = false, isFromMyProfile = false;
 	private AlertDialog.Builder builder;
 	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
 			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog;
@@ -119,12 +119,23 @@ public class ScanIDActivity extends AppCompatActivity {
 		checkCameraAndStoragePermission();
 
 		if (getIntent() != null) {
-			if (getIntent().hasExtra("userType")) {
-				intent = getIntent();
-				getUserType = intent.getStringExtra("userType");
+			intent = getIntent();
+			getUserType = intent.getStringExtra("userType");
+			String activityData = intent.getStringExtra("activityData");
 
-				if (getUserType != null) {
+			if (getUserType != null && activityData != null) {
 
+				if (activityData.equals("fromMyProfile")) {
+					binding.backBtn.setOnClickListener(v -> {
+
+						if (isUserVerified) {
+							backToMyProfile();
+						} else {
+							showCancelScanIDDialog();
+						}
+
+					});
+				} else {
 					binding.backBtn.setOnClickListener(v -> {
 						if (isUserVerified) {
 							goToMainActivity();
@@ -132,25 +143,26 @@ public class ScanIDActivity extends AppCompatActivity {
 							showCancelScanIDDialog();
 						}
 					});
-
-					switch (getUserType) {
-						case "Driver":
-							binding.scanYourIDTypeTextView.setText("Scan your Driver's license");
-
-							break;
-
-						case "Senior Citizen":
-							binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
-
-							break;
-
-						case "Person with Disabilities (PWD)":
-							binding.scanYourIDTypeTextView.setText("Scan your PWD ID");
-
-							break;
-					}
-
 				}
+
+
+				switch (getUserType) {
+					case "Driver":
+						binding.scanYourIDTypeTextView.setText("Scan your Driver's license");
+
+						break;
+
+					case "Senior Citizen":
+						binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
+
+						break;
+
+					case "Person with Disabilities (PWD)":
+						binding.scanYourIDTypeTextView.setText("Scan your PWD ID");
+
+						break;
+				}
+
 			}
 		}
 
@@ -180,13 +192,18 @@ public class ScanIDActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (isUserVerified) {
-			goToMainActivity();
-			super.onBackPressed();
-
+		if (getIntent().hasExtra("activityData")) {
+			backToMyProfile();
 		} else {
-			showCancelScanIDDialog();
+			if (isUserVerified) {
+				goToMainActivity();
+				super.onBackPressed();
+
+			} else {
+				showCancelScanIDDialog();
+			}
 		}
+
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -428,8 +445,6 @@ public class ScanIDActivity extends AppCompatActivity {
 									voiceAssistant.speak(message);
 								}
 
-								binding.backBtn.setOnClickListener(view -> goToMainActivity());
-
 							} else {
 								if (voiceAssistantState.equals("enabled")) {
 									voiceAssistant = VoiceAssistant.getInstance(this);
@@ -467,6 +482,14 @@ public class ScanIDActivity extends AppCompatActivity {
 		startActivity(intent);
 		finish();
 	}
+
+	private void backToMyProfile() {
+		intent = new Intent(ScanIDActivity.this, MainActivity.class);
+		intent.putExtra("activityData", "fromMyProfile");
+		startActivity(intent);
+		finish();
+	}
+
 
 	private void showCancelScanIDDialog() {
 		builder = new AlertDialog.Builder(this);

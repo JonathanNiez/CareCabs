@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_margin="10dp"
-		app:cardBackgroundColor="@color/white"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -22,14 +22,14 @@
 			android:orientation="vertical">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Enter your Date of Birth"
 				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
@@ -66,7 +66,7 @@
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						android:textSize="20sp" />
 
 
 					<androidx.appcompat.widget.AppCompatEditText
@@ -83,11 +83,9 @@
 						android:textAlignment="center"
 						android:textColor="@color/black"
 						android:textColorHint="@color/black"
-						android:textSize="17sp" />
-
+						android:textSize="20sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
-
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -109,7 +107,7 @@
 					android:text="Month"
 					android:textAlignment="center"
 					android:textColor="@color/black"
-					android:textSize="17sp" />
+					android:textSize="20sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/dayTextView"
@@ -120,7 +118,7 @@
 					android:text="Day"
 					android:textAlignment="center"
 					android:textColor="@color/black"
-					android:textSize="17sp" />
+					android:textSize="20sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/yearTextView"
@@ -131,7 +129,7 @@
 					android:text="Year"
 					android:textAlignment="center"
 					android:textColor="@color/black"
-					android:textSize="17sp" />
+					android:textSize="20sp" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 

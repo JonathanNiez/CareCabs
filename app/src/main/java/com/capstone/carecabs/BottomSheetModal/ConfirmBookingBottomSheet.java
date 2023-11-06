@@ -157,7 +157,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				@SuppressLint({"SetTextI18n", "LongLogTag"})
 				@Override
 				public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-					Log.e(TAG, Objects.requireNonNull(t.getMessage()));
+					Log.e(TAG, "onFailure: " + t.getMessage());
 					binding.pickupLocationTextView.setText("Location not found");
 				}
 			});
@@ -166,14 +166,14 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 					+ "Destination: " + destination;
 
 			if (voiceAssistantState.equals("enabled")) {
-
 				voiceAssistant = VoiceAssistant.getInstance(context);
-				voiceAssistant.speak(message);
+
+				if (pickupLocation != null && destination != null) {
+					voiceAssistant.speak(message);
+				}
 			}
 
-			binding.confirmButton.setOnClickListener(v -> {
-				retrieveAndStoreFCMToken(destinationPoint);
-			});
+			binding.confirmButton.setOnClickListener(v -> retrieveAndStoreFCMToken(destinationPoint));
 
 		} else {
 			binding.pickupLocationTextView.setText("Location not found");

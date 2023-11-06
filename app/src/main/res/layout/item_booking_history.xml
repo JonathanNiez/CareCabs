@@ -8,11 +8,9 @@
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<androidx.appcompat.widget.LinearLayoutCompat
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:orientation="vertical"
 		android:padding="5dp">
 
 		<androidx.appcompat.widget.AppCompatTextView
@@ -20,6 +18,7 @@
 			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Date"
@@ -27,9 +26,12 @@
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/textView1"
 			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/bookingDateTextView"
+			android:layout_centerHorizontal="true"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Status:"
@@ -40,38 +42,29 @@
 			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
+			android:layout_below="@id/textView1"
+			android:layout_centerHorizontal="true"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Booking Status"
 			android:textSize="20sp" />
 
-		<androidx.appcompat.widget.AppCompatTextView
-			style="@style/TextColor"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="start"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:text="Pickup location:"
-			android:textSize="18sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/pickupLocationTextView"
+			android:id="@+id/textView2"
 			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="Pickup Location"
-			android:textAlignment="center"
-			android:textSize="20sp" />
-
-		<androidx.appcompat.widget.AppCompatTextView
-			style="@style/TextColor"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_below="@id/bookingStatusTextView"
+			android:layout_centerHorizontal="true"
 			android:layout_gravity="start"
-			android:layout_margin="5dp"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="5dp"
 			android:fontFamily="@font/gabarito_medium"
 			android:text="Destination:"
 			android:textSize="18sp" />
@@ -81,13 +74,26 @@
 			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
+			android:layout_below="@id/textView2"
+			android:layout_centerHorizontal="true"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Destination Location"
 			android:textAlignment="center"
 			android:textSize="20sp" />
 
-	</androidx.appcompat.widget.LinearLayoutCompat>
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/heartImageView"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_centerVertical="true"
+			app:srcCompat="@drawable/black_heart_48" />
+
+	</RelativeLayout>
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:id="@+id/progressBarLayout"
