@@ -69,8 +69,8 @@ import java.util.Objects;
 public class HomeFragment extends Fragment implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "HomeFragment";
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
-	private final String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private float textSizeSP;
 	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
@@ -133,7 +133,7 @@ public class HomeFragment extends Fragment implements
 		super.onStart();
 
 		initializeNetworkChecker();
-		startAutoSlide();
+//		startAutoSlide();
 	}
 
 	@Override
@@ -162,9 +162,9 @@ public class HomeFragment extends Fragment implements
 
 		getUserSettings();
 
-		slideFragments.add(new CarouselFragment1());
-		slideFragments.add(new CarouselFragment2());
-		slideFragments.add(new CarouselFragment3());
+//		slideFragments.add(new CarouselFragment1());
+//		slideFragments.add(new CarouselFragment2());
+//		slideFragments.add(new CarouselFragment3());
 //		slideFragments.add(new CarouselFragment4());
 
 		binding.myProfileBtn.setOnClickListener(v -> {
@@ -180,10 +180,10 @@ public class HomeFragment extends Fragment implements
 			startActivity(intent);
 		});
 
-		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
-		binding.viewPager.setAdapter(adapter);
-
-		startAutoSlide();
+//		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
+//		binding.viewPager.setAdapter(adapter);
+//
+//		startAutoSlide();
 		getCurrentTime();
 
 		return view;
@@ -209,42 +209,10 @@ public class HomeFragment extends Fragment implements
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 
-		if (isChecked) {
-			textSizeSP = INCREASED_TEXT_SIZE_SP;
-			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		String fontSize = isChecked ? "large" : "normal";
 
-		} else {
-			textSizeSP = DEFAULT_TEXT_SIZE_SP;
-			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
-		}
+		setFontSize(fontSize);
 
-		binding.homeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-
-		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.thankYouRatingTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerDisabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.arrivalTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.viewOnMapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void setFontSize(String fontSize) {
@@ -273,6 +241,7 @@ public class HomeFragment extends Fragment implements
 		binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.pingedLocationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.bookingsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -329,26 +298,26 @@ public class HomeFragment extends Fragment implements
 		binding.currentTimeTextView.setText("The time is " + formattedTime);
 	}
 
-	private void startAutoSlide() {
-
-		if (handler == null) {
-			handler = new Handler();
-		}
-
-		if (runnable == null) {
-			runnable = new Runnable() {
-				@Override
-				public void run() {
-					currentPage = (currentPage + 1) % slideFragments.size();
-					binding.viewPager.setCurrentItem(currentPage, true);
-					handler.postDelayed(this, AUTOSLIDE_DELAY);
-				}
-			};
-		}
-
-		handler.removeCallbacks(runnable);
-		handler.postDelayed(runnable, AUTOSLIDE_DELAY);
-	}
+//	private void startAutoSlide() {
+//
+//		if (handler == null) {
+//			handler = new Handler();
+//		}
+//
+//		if (runnable == null) {
+//			runnable = new Runnable() {
+//				@Override
+//				public void run() {
+//					currentPage = (currentPage + 1) % slideFragments.size();
+//					binding.viewPager.setCurrentItem(currentPage, true);
+//					handler.postDelayed(this, AUTOSLIDE_DELAY);
+//				}
+//			};
+//		}
+//
+//		handler.removeCallbacks(runnable);
+//		handler.postDelayed(runnable, AUTOSLIDE_DELAY);
+//	}
 
 	private void stopAutoSlide() {
 		if (handler != null && runnable != null) {
@@ -531,7 +500,6 @@ public class HomeFragment extends Fragment implements
 
 	}
 
-
 	private void getUserTypeForMap(String userType) {
 		if (userType.equals("Driver")) {
 			intent = new Intent(getActivity(), MapDriverActivity.class);
@@ -609,9 +577,11 @@ public class HomeFragment extends Fragment implements
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
 				if (snapshot.exists()) {
 					passengerBookingModelList.clear();
+					String userID = FirebaseMain.getUser().getUid();
 
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
-						PassengerBookingModel passengerBookingModel = bookingSnapshot.getValue(PassengerBookingModel.class);
+						PassengerBookingModel passengerBookingModel =
+								bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
 
 							if (isAdded()) {
@@ -621,44 +591,42 @@ public class HomeFragment extends Fragment implements
 										.into(binding.driverProfilePictureImageView);
 							}
 
-							if (
-									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid()) &&
-											passengerBookingModel.getBookingStatus().equals("Driver on the way")
-							) {
+							if (passengerBookingModel.getPassengerUserID().equals(userID) &&
+									passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 
+								binding.toDestinationLayout.setVisibility(View.GONE);
 								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
 								binding.bookARideBtn.setVisibility(View.GONE);
 
 								binding.arrivalTimeTextView.setText("Arrival Time:\n" + "Estimated " +
 										passengerBookingModel.getDriverArrivalTime() + " minute(s)");
+								binding.driverNameTextView.setText("Driver name: " +
+										passengerBookingModel.getDriverName());
+								binding.vehicleColorTextView.setText("Vehicle color: " +
+										passengerBookingModel.getVehicleColor());
+								binding.vehiclePlateNumberTextView.setText("Vehicle plate number: " +
+										passengerBookingModel.getVehiclePlateNumber());
+								passengerBookingModel.getDriverPingedLocation();
+								binding.pingedLocationTextView.setText("Ping location: " +
+										passengerBookingModel.getDriverPingedLocation());
 
-								binding.driverNameTextView
-										.setText("Driver name: " + passengerBookingModel.getDriverName());
-								binding.vehicleColorTextView
-										.setText("Vehicle color: " + passengerBookingModel.getVehicleColor());
-								binding.vehiclePlateNumberTextView
-										.setText("Vehicle plate number: " + passengerBookingModel.getVehiclePlateNumber());
+								binding.viewOnMapBtn.setOnClickListener(v ->
+										checkLocationService(passengerBookingModel.getPassengerType()));
 
-								binding.viewOnMapBtn.setOnClickListener(v -> {
-									checkLocationService(passengerBookingModel.getPassengerType());
-								});
+							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
+									&& passengerBookingModel.getBookingStatus().equals("Onboard")) {
 
-							} else if (
-									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
-											&& passengerBookingModel.getBookingStatus().equals("Onboard")
-							) {
-
+								binding.driverOnTheWayLayout.setVisibility(View.GONE);
 								binding.toDestinationLayout.setVisibility(View.VISIBLE);
-								binding.onBoardDestinationTextView.setText(String.valueOf(passengerBookingModel.getDestinationLatitude()));
+								binding.onBoardDestinationTextView.setText(passengerBookingModel.getDestination());
 								binding.bookARideBtn.setVisibility(View.GONE);
 
-							} else if
-							(
-									passengerBookingModel.getPassengerUserID().equals(FirebaseMain.getUser().getUid())
-											&& passengerBookingModel.getRatingStatus().equals("driver not rated")
-											&& passengerBookingModel.getBookingStatus().equals("Transported to destination")
-							) {
+							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
+									&& passengerBookingModel.getRatingStatus().equals("Driver not rated")
+									&& passengerBookingModel.getBookingStatus().equals("Transported to destination")) {
 
+								binding.driverOnTheWayLayout.setVisibility(View.GONE);
+								binding.toDestinationLayout.setVisibility(View.GONE);
 								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
 								binding.driverRatedLayout.setVisibility(View.GONE);
 
@@ -691,18 +659,18 @@ public class HomeFragment extends Fragment implements
 				.getReference(FirebaseMain.bookingCollection);
 
 		Map<String, Object> updateBooking = new HashMap<>();
-		updateBooking.put("ratingStatus", "driver rated");
+		updateBooking.put("ratingStatus", "Driver rated");
 
 		bookingReference.child(bookingID).updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> Log.i(TAG, "rateDriver: onSuccess booking updated successfully"))
 				.addOnFailureListener(e -> Log.e(TAG, "rateDriver: onFailure " + e.getMessage()));
 
 		//update driver ratings
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+		DocumentReference driverReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(driverID);
 
-		documentReference.get()
+		driverReference.get()
 				.addOnSuccessListener(documentSnapshot -> {
 					if (documentSnapshot.exists()) {
 						double currentRatings = documentSnapshot.getDouble("driverRatings");
@@ -712,7 +680,7 @@ public class HomeFragment extends Fragment implements
 						Map<String, Object> updatedData = new HashMap<>();
 						updatedData.put("driverRatings", totalRatings);
 
-						documentReference.update(updatedData)
+						driverReference.update(updatedData)
 								.addOnSuccessListener(unused -> {
 									binding.driverRatedLayout.setVisibility(View.VISIBLE);
 									binding.rateDriverLayout.setVisibility(View.GONE);
@@ -726,19 +694,23 @@ public class HomeFragment extends Fragment implements
 										}
 									};
 
-									handler.postDelayed(dismissRunnable, 2000);
+									handler.postDelayed(dismissRunnable, 2500);
 								})
 								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Failed to rate Driver", Toast.LENGTH_SHORT).show();
+									showToast("Failed to rate Driver");
 									Log.e(TAG, "rateDriver: " + e.getMessage());
 								});
 					} else {
-						Toast.makeText(context, "Driver document does not exist", Toast.LENGTH_SHORT).show();
+						showToast("Driver document does not exist");
 					}
 				}).addOnFailureListener(e -> {
-					Toast.makeText(context, "Failed to fetch driver ratings", Toast.LENGTH_SHORT).show();
+					showToast("Failed to fetch driver ratings");
 					Log.e(TAG, "getDriverRatings: " + e.getMessage());
 				});
+	}
+
+	private void showToast(String message) {
+		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 	}
 
 	private void showRegisterNotCompleteDialog(String userType) {

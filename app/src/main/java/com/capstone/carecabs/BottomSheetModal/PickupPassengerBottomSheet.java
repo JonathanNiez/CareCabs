@@ -15,10 +15,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Model.BottomSheetData;
-import com.capstone.carecabs.Model.TripModel;
+import com.capstone.carecabs.Map.MapDriverActivity;
+import com.capstone.carecabs.Model.PickupPassengerBottomSheetData;
+import com.capstone.carecabs.Model.RenavigateData;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.DistanceCalculator;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentPickupPassengerBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -34,6 +36,7 @@ import com.mapbox.api.geocoding.v5.models.CarmenFeature;
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
 import com.mapbox.geojson.Point;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +48,6 @@ import retrofit2.Response;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
@@ -53,11 +55,12 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	public static final String TAG = "ModalBottomSheet";
 	private static final String ARG_DATA = "data";
 
-	public interface BottomSheetListener {
-		void onDataReceived(BottomSheetData bottomSheetData);
+	public interface PickupPassengerBottomSheetListener {
+		void onDataReceivedFromPickupPassengerBottomSheet
+				(PickupPassengerBottomSheetData pickupPassengerBottomSheetData);
 	}
 
-	private BottomSheetListener mBottomSheetListener;
+	private PickupPassengerBottomSheetListener mPickupPassengerBottomSheetListener;
 	private Context context;
 	private FragmentPickupPassengerBottomSheetBinding binding;
 
@@ -95,147 +98,175 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		return fragment;
 	}
 
-	public void setBottomSheetListener(BottomSheetListener bottomSheetListener) {
-		mBottomSheetListener = bottomSheetListener;
+	public void setPickupPassengerBottomSheetListener(PickupPassengerBottomSheetListener pickupPassengerBottomSheetListener) {
+		mPickupPassengerBottomSheetListener = pickupPassengerBottomSheetListener;
 	}
+
 
 	private void sendDataToMap(String bookingID,
 	                           String passengerID,
+	                           String passengerName,
+	                           String passengerType,
+	                           String driverName,
+	                           String pickupLocation,
 	                           Point pickupCoordinates,
+	                           String destinationLocation,
 	                           Point destinationCoordinates) {
-		BottomSheetData bottomSheetData = new BottomSheetData(
+
+		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new PickupPassengerBottomSheetData(
 				bookingID,
 				passengerID,
+				passengerName,
+				passengerType,
+				driverName,
+				pickupLocation,
 				pickupCoordinates,
+				destinationLocation,
 				destinationCoordinates);
-		if (mBottomSheetListener != null) {
-			mBottomSheetListener.onDataReceived(bottomSheetData);
+
+		if (mPickupPassengerBottomSheetListener != null) {
+			mPickupPassengerBottomSheetListener.onDataReceivedFromPickupPassengerBottomSheet(pickupPassengerBottomSheetData);
 		}
 	}
+
 
 	public void loadPassengerBooking() {
 		if (getArguments() != null) {
 			String bookingID = getArguments().getString(ARG_DATA);
 
-			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
-					.getReference(FirebaseMain.bookingCollection).child(bookingID);
-			databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-				@SuppressLint("SetTextI18n")
-				@Override
-				public void onDataChange(@NonNull DataSnapshot snapshot) {
-					if (snapshot.exists()) {
-						String getFCMToken = snapshot.child("fcmToken").getValue(String.class);
-						String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
-						String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
-						String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
-						String getPassengerType = snapshot.child("passengerType").getValue(String.class);
-						String getPassengerName = snapshot.child("passengerName").getValue(String.class);
+			if (bookingID != null) {
+				DatabaseReference bookingReference = FirebaseDatabase.getInstance()
+						.getReference(FirebaseMain.bookingCollection).child(bookingID);
+				bookingReference.addListenerForSingleValueEvent(new ValueEventListener() {
+					@SuppressLint("SetTextI18n")
+					@Override
+					public void onDataChange(@NonNull DataSnapshot snapshot) {
+						if (snapshot.exists()) {
+							String getFCMToken = snapshot.child("fcmToken").getValue(String.class);
+							String getPassengerID = snapshot.child("passengerUserID").getValue(String.class);
+							String getBookingStatus = snapshot.child("bookingStatus").getValue(String.class);
+							String getPassengerProfilePicture = snapshot.child("passengerProfilePicture").getValue(String.class);
+							String getPassengerType = snapshot.child("passengerType").getValue(String.class);
+							String getPassengerName = snapshot.child("passengerName").getValue(String.class);
 
-						String getPickupLocation = snapshot.child("pickupLocation").getValue(String.class);
-						Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
-						Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
-						String getDestination = snapshot.child("destination").getValue(String.class);
-						Double getDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
-						Double getDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
+							String getPickupLocation = snapshot.child("pickupLocation").getValue(String.class);
+							Double getPickupLatitude = snapshot.child("pickupLatitude").getValue(Double.class);
+							Double getPickupLongitude = snapshot.child("pickupLongitude").getValue(Double.class);
+							String getDestination = snapshot.child("destination").getValue(String.class);
+							Double getDestinationLatitude = snapshot.child("destinationLatitude").getValue(Double.class);
+							Double getDestinationLongitude = snapshot.child("destinationLongitude").getValue(Double.class);
 
-						binding.pickupLocationTextView.setText(getPickupLocation);
-						binding.destinationTextView.setText(getDestination);
+							binding.pickupLocationTextView.setText(getPickupLocation);
+							binding.destinationTextView.setText(getDestination);
 
-						if (getPassengerType != null && getBookingStatus != null){
-							switch (getPassengerType) {
-								case "Senior Citizen":
-									binding.userTypeImageView.setImageResource(R.drawable.senior_32);
+							if (getPassengerType != null && getBookingStatus != null) {
+								switch (getPassengerType) {
+									case "Senior Citizen":
+										binding.passengerProfilePic.setImageResource(R.drawable.senior_32);
 
-									break;
+										break;
 
-								case "Persons with Disability (PWD)":
-									binding.disabilityTextView.setVisibility(View.VISIBLE);
-									binding.userTypeImageView.setImageResource(R.drawable.pwd_32);
-									String getPassengerDisability = snapshot.child("passengerDisability").getValue(String.class);
+									case "Person with Disabilities (PWD)":
+										binding.disabilityTextView.setVisibility(View.VISIBLE);
+										binding.passengerTypeImageView.setImageResource(R.drawable.pwd_32);
+										String getPassengerDisability = snapshot.child("passengerDisability").getValue(String.class);
 
-									binding.disabilityTextView.setText("Disability:\n" + getPassengerDisability);
+										binding.disabilityTextView.setText("Disability:\n" + getPassengerDisability);
 
-									break;
+										break;
+								}
+
+								switch (getBookingStatus) {
+									case "Waiting":
+										binding.renavigateBtn.setVisibility(View.GONE);
+										binding.pickupBtn.setOnClickListener(v -> {
+
+											getDriverAndVehicleInfo(
+													getFCMToken,
+													getPassengerID,
+													getPassengerName,
+													getPassengerType,
+													bookingID,
+													getPickupLocation,
+													getPickupLatitude,
+													getPickupLongitude,
+													getDestination,
+													getDestinationLatitude,
+													getDestinationLongitude);
+
+										});
+
+										break;
+
+									case "Driver on the way":
+										binding.pickupBtn.setVisibility(View.GONE);
+										binding.renavigateBtn.setVisibility(View.VISIBLE);
+										binding.renavigateBtn.setOnClickListener(v -> {
+
+											//convert to point
+											LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
+											Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
+
+											LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
+											Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
+
+											//renavigate
+											sendDataToMap(bookingID,
+													getPassengerID,
+													getPassengerName,
+													getPassengerType,
+													"none",
+													getPickupLocation,
+													pickupCoordinates,
+													getDestination,
+													destinationCoordinates);
+
+											dismiss();
+										});
+										break;
+								}
 							}
 
-							switch (getBookingStatus) {
-								case "Waiting":
-									binding.renavigateBtn.setVisibility(View.GONE);
-									binding.pickupBtn.setOnClickListener(v -> {
-
-										getDriverAndVehicleInfo(
-												getFCMToken,
-												getPassengerID,
-												getPassengerType,
-												bookingID,
-												getPickupLatitude,
-												getPickupLongitude,
-												getDestinationLatitude,
-												getDestinationLongitude);
-
-									});
-									break;
-
-								case "Driver on the way":
-									binding.pickupBtn.setVisibility(View.GONE);
-									binding.renavigateBtn.setOnClickListener(v -> {
-
-										//convert to point
-										LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
-										Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
-
-										LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
-										Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
-
-										//renavigate
-										sendDataToMap(bookingID,
-												getPassengerID,
-												pickupCoordinates,
-												destinationCoordinates);
-
-										dismiss();
-									});
-									break;
+							if (getPassengerProfilePicture != null && !getPassengerProfilePicture.equals("default")) {
+								Glide.with(context)
+										.load(getPassengerProfilePicture)
+										.placeholder(R.drawable.loading_gif)
+										.into(binding.passengerProfilePic);
 							}
-						}
 
-						if (getPassengerProfilePicture != null && !getPassengerProfilePicture.equals("default")) {
-							Glide.with(context)
-									.load(getPassengerProfilePicture)
-									.placeholder(R.drawable.loading_gif)
-									.into(binding.passengerProfilePic);
+							binding.passengerNameTextView.setText(getPassengerName);
+							binding.passengerTypeTextView.setText(getPassengerType);
 						}
-
-						binding.passengerNameTextView.setText(getPassengerName);
-						binding.userTypeTextView.setText(getPassengerType);
 					}
-				}
 
-				@SuppressLint("LongLogTag")
-				@Override
-				public void onCancelled(@NonNull DatabaseError error) {
-					Log.e(TAG, "loadPassengerBooking: " + error.getMessage());
-				}
-			});
+					@SuppressLint("LongLogTag")
+					@Override
+					public void onCancelled(@NonNull DatabaseError error) {
+						Log.e(TAG, "loadPassengerBooking: " + error.getMessage());
+					}
+				});
+
+			}
 		}
 	}
 
-	private void getDriverAndVehicleInfo
-			(
-					String fcmToken,
-					String passengerID,
-					String passengerType,
-					String bookingID,
-					Double pickupLatitude,
-					Double pickupLongitude,
-					Double destinationLatitude,
-					Double destinationLongitude
-			) {
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+	private void getDriverAndVehicleInfo(String fcmToken,
+	                                     String passengerID,
+	                                     String passengerName,
+	                                     String passengerType,
+	                                     String bookingID,
+	                                     String pickupLocation,
+	                                     Double pickupLatitude,
+	                                     Double pickupLongitude,
+	                                     String destinationLocation,
+	                                     Double destinationLatitude,
+	                                     Double destinationLongitude) {
+
+		DocumentReference driverReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(FirebaseMain.getUser().getUid());
 
-		documentReference.get()
+		driverReference.get()
 				.addOnSuccessListener(documentSnapshot -> {
 					if (documentSnapshot.exists()) {
 						String getVehicleColor = documentSnapshot.getString("vehicleColor");
@@ -248,10 +279,13 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						updatePassengerBooking(
 								fcmToken,
 								passengerID,
+								passengerName,
 								passengerType,
 								bookingID,
+								pickupLocation,
 								pickupLatitude,
 								pickupLongitude,
+								destinationLocation,
 								destinationLatitude,
 								destinationLongitude,
 								fullName,
@@ -264,21 +298,21 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
 	}
 
-	private void updatePassengerBooking
-			(
-					String fcmToken,
-					String passengerID,
-					String passengerType,
-					String bookingID,
-					Double pickupLatitude,
-					Double pickupLongitude,
-					Double destinationLatitude,
-					Double destinationLongitude,
-					String fullName,
-					String profilePicture,
-					String vehicleColor,
-					String vehiclePlateNumber
-			) {
+	private void updatePassengerBooking(String fcmToken,
+	                                    String passengerID,
+	                                    String passengerName,
+	                                    String passengerType,
+	                                    String bookingID,
+	                                    String pickupLocation,
+	                                    Double pickupLatitude,
+	                                    Double pickupLongitude,
+	                                    String destinationLocation,
+	                                    Double destinationLatitude,
+	                                    Double destinationLongitude,
+	                                    String driverName,
+	                                    String profilePicture,
+	                                    String vehicleColor,
+	                                    String vehiclePlateNumber) {
 
 		//convert to point
 		LatLng pickupLatLng = new LatLng(pickupLatitude, pickupLongitude);
@@ -302,7 +336,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		Map<String, Object> updateBooking = new HashMap<>();
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
-		updateBooking.put("driverName", fullName);
+		updateBooking.put("driverName", driverName);
 		updateBooking.put("driverProfilePicture", profilePicture);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
@@ -314,19 +348,22 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 					String notificationMessage = "Vehicle Color: " + vehicleColor
 							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
 
-					updateDriverStatus
-							(
-									passengerType,
-									bookingID,
-									pickupLatitude,
-									pickupLongitude
-							);
+					updateDriverStatus(passengerType,
+							bookingID,
+							pickupLocation,
+							pickupLatitude,
+							pickupLongitude);
 
 					notificationData(fcmToken, notificationMessage);
 
 					sendDataToMap(bookingID,
 							passengerID,
+							passengerName,
+							passengerType,
+							driverName,
+							pickupLocation,
 							pickupCoordinates,
+							destinationLocation,
 							destinationCoordinates);
 
 					dismiss();
@@ -343,12 +380,15 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 	private void updateDriverStatus(String passengerType,
 	                                String bookingID,
+	                                String pickupLocation,
 	                                Double pickupLatitude,
 	                                Double pickupLongitude) {
 		if (FirebaseMain.getUser() != null) {
 
+
 			Map<String, Object> updateDriverStatus = new HashMap<>();
 			updateDriverStatus.put("isAvailable", false);
+			updateDriverStatus.put("pickupLocation", pickupLocation);
 			updateDriverStatus.put("pickupLatitude", pickupLatitude);
 			updateDriverStatus.put("pickupLongitude", pickupLongitude);
 			updateDriverStatus.put("navigationStatus", "Navigating to pickup location");
@@ -434,44 +474,44 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		return uuid.toString();
 	}
 
-	private void storeTripToDatabase(
-			String generateTripID,
-			String bookingID,
-			String passengerID,
-			Double pickupLatitude,
-			Double pickupLongitude,
-			Double destinationLatitude,
-			Double destinationLongitude
-	) {
-
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.tripCollection).document(generateTripID);
-
-		TripModel tripModel = new TripModel(
-				generateTripID,
-				false,
-				bookingID,
-				"Ongoing",
-				FirebaseMain.getUser().getUid(),
-				passengerID,
-				getCurrentTimeAndDate(),
-				pickupLatitude,
-				pickupLongitude,
-				destinationLatitude,
-				destinationLongitude
-		);
-
-		documentReference.set(tripModel)
-				.addOnSuccessListener(unused -> {
-					Toast.makeText(context,
-							"Booking accepted", Toast.LENGTH_LONG).show();
-
-				})
-				.addOnFailureListener(e -> {
-					Toast.makeText(context,
-							"Booking failed to accept", Toast.LENGTH_LONG).show();
-
-					Log.e(TAG, "storeTripToDatabase: " + e.getMessage());
-				});
-	}
+//	private void storeTripToDatabase(
+//			String generateTripID,
+//			String bookingID,
+//			String passengerID,
+//			Double pickupLatitude,
+//			Double pickupLongitude,
+//			Double destinationLatitude,
+//			Double destinationLongitude
+//	) {
+//
+//		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+//				.collection(FirebaseMain.tripCollection).document(generateTripID);
+//
+//		TripModel tripModel = new TripModel(
+//				generateTripID,
+//				false,
+//				bookingID,
+//				"Ongoing",
+//				FirebaseMain.getUser().getUid(),
+//				passengerID,
+//				getCurrentTimeAndDate(),
+//				pickupLatitude,
+//				pickupLongitude,
+//				destinationLatitude,
+//				destinationLongitude
+//		);
+//
+//		documentReference.set(tripModel)
+//				.addOnSuccessListener(unused -> {
+//					Toast.makeText(context,
+//							"Booking accepted", Toast.LENGTH_LONG).show();
+//
+//				})
+//				.addOnFailureListener(e -> {
+//					Toast.makeText(context,
+//							"Booking failed to accept", Toast.LENGTH_LONG).show();
+//
+//					Log.e(TAG, "storeTripToDatabase: " + e.getMessage());
+//				});
+//	}
 }

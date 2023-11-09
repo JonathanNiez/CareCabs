@@ -85,90 +85,14 @@ public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBook
 
 			case "Person with Disabilities (PWD)":
 				holder.binding.passengerTypeImageView.setImageResource(R.drawable.pwd_32);
+				holder.binding.disabilityTextView.setText(passengerBookingModel.getPassengerDisability());
+
 				break;
 		}
 		holder.binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
-		holder.binding.bookingDateTextView.setText("Booking Date: " + passengerBookingModel.getBookingDate());
 
-		//geocode
-		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						passengerBookingModel.getPickupLongitude(),
-						passengerBookingModel.getPickupLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-
-		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("LongLogTag")
-			@Override
-			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.pickupLocationTextView.setText(locationName);
-					} else {
-						Log.e(TAG, "onResponse: ");
-						holder.binding.pickupLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, response.message());
-
-					holder.binding.pickupLocationTextView.setText("Location not found");
-				}
-			}
-
-			@SuppressLint("LongLogTag")
-			@Override
-			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.pickupLocationTextView.setText("Location not found");
-			}
-		});
-
-		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						passengerBookingModel.getDestinationLongitude(),
-						passengerBookingModel.getDestinationLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint("LongLogTag")
-			@Override
-			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.destinationLocationTextView.setText(locationName);
-					} else {
-
-						holder.binding.destinationLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, response.message());
-
-					holder.binding.destinationLocationTextView.setText("Location not found");
-				}
-			}
-
-			@SuppressLint("LongLogTag")
-			@Override
-			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.destinationLocationTextView.setText("Location not found");
-			}
-		});
+		holder.binding.pickupLocationTextView.setText(passengerBookingModel.getPickupLocation());
+		holder.binding.destinationTextView.setText(passengerBookingModel.getDestination());
 
 		if (passengerBookingModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatusTextView.setTextColor(Color.BLUE);

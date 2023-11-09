@@ -74,11 +74,9 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 		context = getContext();
 
-		if (
-				destinationPoint != null
-						&& StaticDataPasser.storePickupLatitude != null
-						&& StaticDataPasser.storePickupLongitude != null
-		) {
+		if (destinationPoint != null
+				&& StaticDataPasser.storePickupLatitude != null
+				&& StaticDataPasser.storePickupLongitude != null) {
 
 			//destination geocode
 			MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
@@ -173,7 +171,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				}
 			}
 
-			binding.confirmButton.setOnClickListener(v -> retrieveAndStoreFCMToken(destinationPoint));
+			binding.confirmButton.setOnClickListener(v -> storeCoordinatesInFireStore(destinationPoint));
 
 		} else {
 			binding.pickupLocationTextView.setText("Location not found");
@@ -210,14 +208,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@SuppressLint("LongLogTag")
-	private void retrieveAndStoreFCMToken(Point destinationPoint) {
-		FirebaseMessaging.getInstance().getToken()
-				.addOnSuccessListener(token -> storeCoordinatesInFireStore(destinationPoint, token))
-				.addOnFailureListener(e -> Log.e(TAG, "retrieveAndStoreFCMToken: " + e.getMessage()));
-	}
-
-	@SuppressLint("LongLogTag")
-	private void storeCoordinatesInFireStore(Point destinationPoint, String fcmToken) {
+	private void storeCoordinatesInFireStore(Point destinationPoint) {
 		if (FirebaseMain.getUser() != null) {
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
@@ -236,7 +227,6 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 								if (getUserType.equals("Senior Citizen")) {
 
 									storeSeniorCitizenBookingToDatabase(
-											fcmToken,
 											destinationPoint,
 											pickupLocation,
 											destination,
@@ -249,7 +239,6 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 									String getDisability = documentSnapshot.getString("disability");
 
 									storePWDBookingToDatabase(
-											fcmToken,
 											destinationPoint,
 											pickupLocation,
 											destination,
@@ -275,8 +264,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@SuppressLint("LongLogTag")
-	private void storeSeniorCitizenBookingToDatabase(String fcmToken,
-	                                                 Point destinationPoint,
+	private void storeSeniorCitizenBookingToDatabase(Point destinationPoint,
 	                                                 String pickupLocation,
 	                                                 String destination,
 	                                                 String fullName,
@@ -289,7 +277,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
-		booking.put("fcmToken", fcmToken);
+		booking.put("fcmToken", StaticDataPasser.storeFCMToken);
 		booking.put("passengerUserID", FirebaseMain.getUser().getUid());
 		booking.put("bookingID", generateBookingID);
 		booking.put("bookingStatus", "Waiting");
@@ -318,8 +306,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@SuppressLint("LongLogTag")
-	private void storePWDBookingToDatabase(String fcmToken,
-	                                       Point destinationPoint,
+	private void storePWDBookingToDatabase(Point destinationPoint,
 	                                       String pickupLocation,
 	                                       String destination,
 	                                       String fullName,
@@ -333,7 +320,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
-		booking.put("fcmToken", fcmToken);
+		booking.put("fcmToken", StaticDataPasser.storeFCMToken);
 		booking.put("passengerUserID", FirebaseMain.getUser().getUid());
 		booking.put("bookingID", generateBookingID);
 		booking.put("bookingStatus", "Waiting");

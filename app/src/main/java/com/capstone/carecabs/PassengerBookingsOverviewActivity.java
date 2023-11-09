@@ -110,7 +110,7 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 	private void loadPassengerBookingsFromDatabase() {
 		if (FirebaseMain.getUser() != null) {
 
-			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+			DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
 			List<PassengerBookingModel> passengerBookingModelList = new ArrayList<>();
@@ -118,10 +118,11 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 					PassengerBookingsOverviewActivity.this,
 					passengerBookingModelList,
 					PassengerBookingsOverviewActivity.this);
+
 			binding.bookingHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 			binding.bookingHistoryRecyclerView.setAdapter(passengerBookingsAdapter);
 
-			databaseReference.addValueEventListener(new ValueEventListener() {
+			bookingReference.addValueEventListener(new ValueEventListener() {
 				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -192,43 +193,43 @@ public class PassengerBookingsOverviewActivity extends AppCompatActivity {
 		return String.format("%02d-%02d-%04d %02d:%02d:%02d", month, day, year, hour, minute, second);
 	}
 
-	@SuppressLint("LongLogTag")
-	private void storeTripToDatabase(
-			String generateTripID,
-			String bookingID,
-			String passengerID,
-			Double currentLatitude,
-			Double currentLongitude,
-			Double destinationLatitude,
-			Double destinationLongitude
-	) {
-
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.tripCollection)
-				.document(generateTripID);
-
-		TripModel tripModel = new TripModel(
-				generateTripID,
-				false,
-				bookingID,
-				"Ongoing",
-				FirebaseMain.getUser().getUid(),
-				passengerID,
-				getCurrentTimeAndDate(),
-				currentLatitude,
-				currentLongitude,
-				destinationLatitude,
-				destinationLongitude
-		);
-
-		documentReference.set(tripModel)
-				.addOnSuccessListener(unused -> {
-
-				})
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
-
-
-	}
+//	@SuppressLint("LongLogTag")
+//	private void storeTripToDatabase(
+//			String generateTripID,
+//			String bookingID,
+//			String passengerID,
+//			Double currentLatitude,
+//			Double currentLongitude,
+//			Double destinationLatitude,
+//			Double destinationLongitude
+//	) {
+//
+//		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+//				.collection(FirebaseMain.tripCollection)
+//				.document(generateTripID);
+//
+//		TripModel tripModel = new TripModel(
+//				generateTripID,
+//				false,
+//				bookingID,
+//				"Ongoing",
+//				FirebaseMain.getUser().getUid(),
+//				passengerID,
+//				getCurrentTimeAndDate(),
+//				currentLatitude,
+//				currentLongitude,
+//				destinationLatitude,
+//				destinationLongitude
+//		);
+//
+//		documentReference.set(tripModel)
+//				.addOnSuccessListener(unused -> {
+//
+//				})
+//				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+//
+//
+//	}
 
 	private void updateDriverAvailabilityStatus(Boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {

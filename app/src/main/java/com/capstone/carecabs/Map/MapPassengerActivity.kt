@@ -686,6 +686,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
+    //displays the the "you"
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
 
         binding.zoomInImgBtn.setOnClickListener {

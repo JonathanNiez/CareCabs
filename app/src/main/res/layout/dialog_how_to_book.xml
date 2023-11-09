@@ -36,6 +36,7 @@
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="HOW TO BOOK A RIDE"
+				android:textAlignment="center"
 				android:textSize="25sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -46,6 +47,7 @@
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_medium"
 				android:text="HOW TO BOOK A RIDE"
+				android:textAlignment="center"
 				android:textSize="20sp" />
 
 

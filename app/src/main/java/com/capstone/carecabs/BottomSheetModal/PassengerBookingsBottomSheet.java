@@ -73,6 +73,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 
 		context = getContext();
 		loadPassengerBookingsFromDatabase();
+
 		return view;
 	}
 
@@ -84,19 +85,30 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 		return fragment;
 	}
 
-	public void setPassengerBookingsBottomSheetListener(PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener passengerBookingsBottomSheetListener) {
+	public void setPassengerBookingsBottomSheetListener(
+			PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener passengerBookingsBottomSheetListener) {
 		mPassengerBookingsBottomSheetListener = passengerBookingsBottomSheetListener;
 	}
 
 	private void sendDataToMap(String bookingID,
 	                           String passengerID,
+	                           String passengerName,
+	                           String passengerType,
+	                           String driverName,
+	                           String pickupLocation,
 	                           Point pickupCoordinates,
+	                           String destinationLocation,
 	                           Point destinationCoordinates) {
-		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new PickupPassengerBottomSheetData(
-				bookingID,
+		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new PickupPassengerBottomSheetData(bookingID,
 				passengerID,
+				passengerName,
+				passengerType,
+				driverName,
+				pickupLocation,
 				pickupCoordinates,
+				destinationLocation,
 				destinationCoordinates);
+
 		if (mPassengerBookingsBottomSheetListener != null) {
 			mPassengerBookingsBottomSheetListener.onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData);
 		}
@@ -105,27 +117,31 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	private void loadPassengerBookingsFromDatabase() {
 		if (FirebaseMain.getUser() != null) {
 
-			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+			DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
 			List<PickupPassengerModel> pickupPassengerModelList = new ArrayList<>();
 			PickupPassengerAdapter pickupPassengerAdapter = new PickupPassengerAdapter(
 					context,
 					pickupPassengerModelList,
-					pickupPassengerModel -> getDriverAndVehicleInfo(
-							pickupPassengerModel.getFcmToken(),
-							pickupPassengerModel.getPassengerUserID(),
-							pickupPassengerModel.getPassengerUserType(),
-							pickupPassengerModel.getBookingID(),
-							pickupPassengerModel.getPickupLatitude(),
-							pickupPassengerModel.getPickupLongitude(),
-							pickupPassengerModel.getDestinationLatitude(),
-							pickupPassengerModel.getDestinationLongitude()
-					));
+					pickupPassengerModel ->
+							getDriverAndVehicleInfo(
+									pickupPassengerModel.getFcmToken(),
+									pickupPassengerModel.getPassengerUserID(),
+									pickupPassengerModel.getPassengerName(),
+									pickupPassengerModel.getPassengerType(),
+									pickupPassengerModel.getBookingID(),
+									pickupPassengerModel.getPickupLocation(),
+									pickupPassengerModel.getPickupLatitude(),
+									pickupPassengerModel.getPickupLongitude(),
+									pickupPassengerModel.getDestination(),
+									pickupPassengerModel.getDestinationLatitude(),
+									pickupPassengerModel.getDestinationLongitude()));
+
 			binding.passengerBookingRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.passengerBookingRecyclerView.setAdapter(pickupPassengerAdapter);
 
-			databaseReference.addValueEventListener(new ValueEventListener() {
+			bookingReference.addValueEventListener(new ValueEventListener() {
 				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -181,18 +197,21 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	@SuppressLint("LongLogTag")
 	private void getDriverAndVehicleInfo(String fcmToken,
 	                                     String passengerID,
+	                                     String passengerName,
 	                                     String passengerType,
 	                                     String bookingID,
+	                                     String pickupLocation,
 	                                     Double pickupLatitude,
 	                                     Double pickupLongitude,
+	                                     String destinationLocation,
 	                                     Double destinationLatitude,
 	                                     Double destinationLongitude) {
 
-		DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
+		DocumentReference driverReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(FirebaseMain.getUser().getUid());
 
-		documentReference.get()
+		driverReference.get()
 				.addOnSuccessListener(documentSnapshot -> {
 					if (documentSnapshot.exists()) {
 						String getVehicleColor = documentSnapshot.getString("vehicleColor");
@@ -205,10 +224,13 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 						updatePassengerBooking(
 								fcmToken,
 								passengerID,
+								passengerName,
 								passengerType,
 								bookingID,
+								pickupLocation,
 								pickupLatitude,
 								pickupLongitude,
+								destinationLocation,
 								destinationLatitude,
 								destinationLongitude,
 								fullName,
@@ -222,21 +244,21 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	@SuppressLint("LongLogTag")
-	private void updatePassengerBooking
-			(
-					String fcmToken,
-					String passengerID,
-					String passengerType,
-					String bookingID,
-					Double pickupLatitude,
-					Double pickupLongitude,
-					Double destinationLatitude,
-					Double destinationLongitude,
-					String fullName,
-					String profilePicture,
-					String vehicleColor,
-					String vehiclePlateNumber
-			) {
+	private void updatePassengerBooking(String fcmToken,
+	                                    String passengerID,
+	                                    String passengerName,
+	                                    String passengerType,
+	                                    String bookingID,
+	                                    String pickupLocation,
+	                                    Double pickupLatitude,
+	                                    Double pickupLongitude,
+	                                    String destinationLocation,
+	                                    Double destinationLatitude,
+	                                    Double destinationLongitude,
+	                                    String driverName,
+	                                    String profilePicture,
+	                                    String vehicleColor,
+	                                    String vehiclePlateNumber) {
 
 		//convert to point
 		LatLng pickupLatLng = new LatLng(pickupLatitude, pickupLongitude);
@@ -260,7 +282,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 		Map<String, Object> updateBooking = new HashMap<>();
 		updateBooking.put("bookingStatus", "Driver on the way");
 		updateBooking.put("driverUserID", FirebaseMain.getUser().getUid());
-		updateBooking.put("driverName", fullName);
+		updateBooking.put("driverName", driverName);
 		updateBooking.put("driverProfilePicture", profilePicture);
 		updateBooking.put("vehicleColor", vehicleColor);
 		updateBooking.put("vehiclePlateNumber", vehiclePlateNumber);
@@ -273,23 +295,22 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 					String notificationMessage = "Vehicle Color: " + vehicleColor
 							+ "\n" + "Vehicle plate number: " + vehiclePlateNumber;
 
-					updateDriverStatus
-							(
-									passengerType,
-									bookingID,
-									pickupLatitude,
-									pickupLongitude
-							);
+					updateDriverStatus(passengerType,
+							bookingID,
+							pickupLatitude,
+							pickupLongitude);
 
 					notificationData(fcmToken, notificationMessage);
 
-					sendDataToMap
-							(
-									bookingID,
-									passengerID,
-									pickupCoordinates,
-									destinationCoordinates
-							);
+					sendDataToMap(bookingID,
+							passengerID,
+							passengerName,
+							passengerType,
+							driverName,
+							pickupLocation,
+							pickupCoordinates,
+							destinationLocation,
+							destinationCoordinates);
 
 					dismiss();
 
@@ -304,13 +325,10 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 				});
 	}
 
-	private void updateDriverStatus
-			(
-					String passengerType,
-					String bookingID,
-					Double pickupLatitude,
-					Double pickupLongitude
-			) {
+	private void updateDriverStatus(String passengerType,
+	                                String bookingID,
+	                                Double pickupLatitude,
+	                                Double pickupLongitude) {
 
 		if (FirebaseMain.getUser() != null) {
 

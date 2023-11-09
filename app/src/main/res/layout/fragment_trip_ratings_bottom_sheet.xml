@@ -2,10 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/BottomSheetBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/smooth_top_edge"
-	android:backgroundTint="@color/orange"
 	tools:context=".BottomSheetModal.TripRatingsBottomSheet">
 
 	<androidx.appcompat.widget.LinearLayoutCompat
@@ -16,10 +15,10 @@
 		android:orientation="vertical">
 
 		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/RoundedTextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/custom_card_view_1"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:padding="10dp"
@@ -51,10 +50,12 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/rateYourDriverTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_semibold"
+						android:fontFamily="@font/gabarito_bold"
 						android:text="Rate your driver"
 						android:textColor="@color/black"
 						android:textSize="20sp" />
@@ -84,13 +85,15 @@
 						app:srcCompat="@drawable/check_48" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/thankYouTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Thank you for rating our Driver"
 						android:textColor="@color/black"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -10,7 +10,7 @@ public class StaticDataPasser {
 	public static String storeSelectedSex = "";
 	public static String storeSelectedDisability = "";
 	public static String storeCurrentBirthDate = "";
-	public static String storeRegisterType = "";
+	public static String storeFCMToken = "";
 	public static String storeRegisterUserType = "";
 	public static String storeSelectedMedicalCondition = "";
 	public static int storeCurrentAge = 0;

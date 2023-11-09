@@ -39,13 +39,15 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	private static final String THEME_CONTRAST = "contrast";
 	private static final String VOICE_ASSISTANT_ENABLED = "enabled";
 	private static final String VOICE_ASSISTANT_DISABLED = "disabled";
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String theme = StaticDataPasser.storeTheme;
+	private String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 	private DocumentReference documentReference;
 	private Context context;
 	private FontSizeChangeListener fontSizeChangeListener;
 	private ThemeChangeListener themeChangeListener;
 	private VoiceAssistantToggleListener voiceAssistantToggleListener;
 	private VoiceAssistant voiceAssistant;
-	private String voiceAssistantToggle;
 	private FragmentSettingsBottomSheetBinding binding;
 
 	public interface VoiceAssistantToggleListener {
@@ -168,9 +170,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	private void getUserSettings() {
-		String theme = StaticDataPasser.storeTheme;
-		String fontSize = StaticDataPasser.storeFontSize;
-		voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
@@ -227,7 +226,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 						Log.e(TAG, "updateThemeToFireStore - onFailure: " + e.getMessage());
 					});
-		}else {
+		} else {
 			StaticDataPasser.storeTheme = theme;
 
 		}

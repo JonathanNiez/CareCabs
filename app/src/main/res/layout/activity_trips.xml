@@ -7,17 +7,81 @@
 	android:layout_height="match_parent"
 	tools:context=".TripsActivity">
 
-	<com.google.android.material.tabs.TabLayout
-		android:id="@+id/tabLayout"
+	<androidx.cardview.widget.CardView
+		android:id="@+id/customActionBarLayout"
+		style="@style/ToolbarBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true" />
+		android:layout_alignParentTop="true"
+		app:cardElevation="5dp">
 
-	<androidx.viewpager.widget.ViewPager
-		android:id="@+id/viewPager"
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/myProfileTextView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				android:layout_margin="15dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="TRIPS HISTORY"
+				android:textColor="@color/white"
+				android:textSize="20sp" />
+
+		</RelativeLayout>
+
+	</androidx.cardview.widget.CardView>
+
+	<androidx.recyclerview.widget.RecyclerView
+		android:id="@+id/tripsHistoryRecyclerView"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_below="@id/tabLayout" />
+		android:layout_height="wrap_content"
+		android:layout_below="@id/customActionBarLayout"
+		tools:listitem="@layout/item_trips" />
+
+	<androidx.cardview.widget.CardView
+		android:id="@+id/loadingLayout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		app:cardBackgroundColor="@color/white"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical">
+
+			<pl.droidsonroids.gif.GifImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:src="@drawable/loading_gif" />
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+	</androidx.cardview.widget.CardView>
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/noTripHistoryTextView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginBottom="10dp"
+		android:background="@drawable/custom_card_view_1"
+		android:elevation="5dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:padding="10dp"
+		android:text="Trip history will be shown here"
+		android:textAlignment="center"
+		android:textColor="@color/black"
+		android:textSize="20sp" />
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
@@ -30,10 +94,11 @@
 		android:layout_marginTop="10dp"
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
+		android:contentDescription="@string/accessibility"
+		android:elevation="5dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
-
 
 </RelativeLayout>

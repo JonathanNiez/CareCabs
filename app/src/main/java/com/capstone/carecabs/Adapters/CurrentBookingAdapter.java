@@ -75,10 +75,8 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 
 		final String userID = FirebaseMain.getUser().getUid();
 
-		if (
-				currentBookingModel.getPassengerUserID().equals(userID) &&
-						currentBookingModel.getBookingStatus().equals("Driver on the way")
-		) {
+		if (currentBookingModel.getPassengerUserID().equals(userID) &&
+				currentBookingModel.getBookingStatus().equals("Driver on the way")) {
 
 			holder.binding.bookingStatusTextView.setVisibility(View.GONE);
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
@@ -97,11 +95,9 @@ public class CurrentBookingAdapter extends RecyclerView.Adapter<CurrentBookingAd
 				context.startActivity(intent);
 			});
 
-		} else if (
-				currentBookingModel.getPassengerUserID().equals(userID) &&
+		} else if (currentBookingModel.getPassengerUserID().equals(userID) &&
 						currentBookingModel.getBookingStatus().equals("Transported to destination") &&
-						currentBookingModel.getRatingStatus().equals("driver not rated")
-		) {
+						currentBookingModel.getRatingStatus().equals("Diver not rated")) {
 
 			holder.binding.cancelBookingBtn.setVisibility(View.GONE);
 			holder.binding.rateYourDriverTextView.setVisibility(View.VISIBLE);

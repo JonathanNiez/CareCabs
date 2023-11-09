@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.speech.tts.Voice;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +25,7 @@ import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.CurrentBookingModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.FragmentCurrentBookingBinding;
@@ -35,8 +34,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +45,11 @@ public class CurrentBookingFragment extends Fragment {
 	private final String TAG = "CurrentBookingFragment";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private Context context;
-	private AlertDialog cancelBookingDialog, enableLocatonServiceDialog;
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private AlertDialog cancelBookingDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
 	private Intent intent;
 	private CurrentBookingAdapter currentBookingAdapter;
-	private VoiceAssistant voiceAssistant;
 	private FragmentCurrentBookingBinding binding;
 
 	@Override
@@ -83,34 +80,31 @@ public class CurrentBookingFragment extends Fragment {
 		binding = FragmentCurrentBookingBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		context = getContext();
-		SharedPreferences preferences = Objects.requireNonNull(context).getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")){
-			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Current Booking");
-		}
-
 		binding.noCurrentBookingsLayout.setVisibility(View.GONE);
 
-		binding.bookARideBtn.setOnClickListener(v -> {
-			checkLocationService();
-		});
+		binding.bookARideBtn.setOnClickListener(v -> checkLocationService());
 
 		loadCurrentBookingFromDatabase();
+		getUserSettings();
 
 		return view;
+	}
+
+	private void getUserSettings() {
+
+		if (voiceAssistantState.equals("enabled")) {
+			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Bookings");
+		}
 	}
 
 	private void loadCurrentBookingFromDatabase() {
 		if (FirebaseMain.getUser() != null) {
 
-			DatabaseReference databaseReference = FirebaseDatabase.getInstance()
+			DatabaseReference bookingReference = FirebaseDatabase.getInstance()
 					.getReference(FirebaseMain.bookingCollection);
 
 			List<CurrentBookingModel> currentBookingModelList = new ArrayList<>();
-
 			currentBookingAdapter = new CurrentBookingAdapter(
 					context,
 					currentBookingModelList,
@@ -119,9 +113,10 @@ public class CurrentBookingFragment extends Fragment {
 									currentBookingModel.getBookingID()
 							),
 					getActivity());
+
 			binding.currentBookingsRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.currentBookingsRecyclerView.setAdapter(currentBookingAdapter);
-			databaseReference.addValueEventListener(new ValueEventListener() {
+			bookingReference.addValueEventListener(new ValueEventListener() {
 				@SuppressLint("NotifyDataSetChanged")
 				@Override
 				public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -136,15 +131,13 @@ public class CurrentBookingFragment extends Fragment {
 									currentBookingSnapshot.getValue(CurrentBookingModel.class);
 							if (currentBookingModel != null) {
 
-								if (
-										currentBookingModel.getPassengerUserID().equals(userID)
-												&& currentBookingModel.getBookingStatus().equals("Waiting")
-												|| currentBookingModel.getPassengerUserID().equals(userID)
-												&& currentBookingModel.getBookingStatus().equals("Driver on the way")
+								if (currentBookingModel.getPassengerUserID().equals(userID)
+										&& currentBookingModel.getBookingStatus().equals("Waiting")
+										|| currentBookingModel.getPassengerUserID().equals(userID)
+										&& currentBookingModel.getBookingStatus().equals("Driver on the way")
 										|| currentBookingModel.getPassengerUserID().equals(userID)
 										&& currentBookingModel.getBookingStatus().equals("Transported to destination")
-										&& !currentBookingModel.getRatingStatus().equals("driver not rated")
-								) {
+										&& currentBookingModel.getRatingStatus().equals("Driver not rated")) {
 
 									currentBookingModelList.add(currentBookingModel);
 									hasCurrentBookings = true;
@@ -212,13 +205,13 @@ public class CurrentBookingFragment extends Fragment {
 
 		builder.setView(dialogView);
 
-		enableLocatonServiceDialog = builder.create();
-		enableLocatonServiceDialog.show();
+		enableLocationServiceDialog = builder.create();
+		enableLocationServiceDialog.show();
 	}
 
 	private void closeEnableLocationServiceDialog() {
-		if (enableLocatonServiceDialog != null && enableLocatonServiceDialog.isShowing()) {
-			enableLocatonServiceDialog.dismiss();
+		if (enableLocationServiceDialog != null && enableLocationServiceDialog.isShowing()) {
+			enableLocationServiceDialog.dismiss();
 		}
 	}
 

@@ -5,7 +5,6 @@
 	style="@style/BottomSheetBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@drawable/smooth_top_edge"
 	tools:context=".BottomSheetModal.SettingsBottomSheet">
 
 	<androidx.appcompat.widget.LinearLayoutCompat

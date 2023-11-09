@@ -219,7 +219,12 @@ public class MainActivity extends AppCompatActivity {
 				.document(FirebaseMain.getUser().getUid());
 
 		documentReference.update("fcmToken", token)
-				.addOnSuccessListener(aVoid -> Log.i(TAG, "Device token stored: " + token))
+				.addOnSuccessListener(aVoid -> {
+
+					StaticDataPasser.storeFCMToken = token;
+
+					Log.i(TAG, "Device token stored: " + StaticDataPasser.storeFCMToken);
+				})
 				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 

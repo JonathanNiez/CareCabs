@@ -57,7 +57,7 @@ public class TripHistoryFragment extends Fragment {
 	private void loadTripHistoryFromFireStore() {
 		if (FirebaseMain.getUser() != null) {
 
-			CollectionReference collectionReference = FirebaseMain.getFireStoreInstance()
+			CollectionReference tripReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.tripCollection);
 
 			List<TripModel> tripModelList = new ArrayList<>();
@@ -67,8 +67,9 @@ public class TripHistoryFragment extends Fragment {
 			binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(context));
 			binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
 
-			collectionReference.addSnapshotListener((value, error) -> {
+			tripReference.addSnapshotListener((value, error) -> {
 				if (error != null){
+					binding.loadingLayout.setVisibility(View.GONE);
 					Log.e(TAG, "loadTripHistoryFromFireStore: " + error.getMessage());
 
 					return;

@@ -62,7 +62,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	private Intent intent;
 	private AlertDialog.Builder builder;
 	private AlertDialog signOutDialog, pleaseWaitDialog,
-	noInternetDialog, registerNotCompleteDialog;
+			noInternetDialog, registerNotCompleteDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private FragmentTransaction fragmentTransaction;
@@ -124,9 +124,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		View view = binding.getRoot();
 
 		binding.disabilityTextView.setVisibility(View.GONE);
-		binding.driverStatusTextView1.setVisibility(View.GONE);
-		binding.driverStatusTextView2.setVisibility(View.GONE);
-		binding.driverRatingTextView.setVisibility(View.GONE);
+		binding.driverInfoLayout.setVisibility(View.GONE);
 		binding.idNotScannedTextView.setVisibility(View.GONE);
 
 		context = getContext();
@@ -250,10 +248,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
 										Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
 
-										binding.driverStatusTextView1.setVisibility(View.VISIBLE);
-										binding.driverStatusTextView2.setVisibility(View.VISIBLE);
-										binding.driverRatingTextView.setVisibility(View.VISIBLE);
-										binding.userTypeImageView.setImageResource(R.drawable.driver_64);
+										binding.driverInfoLayout.setVisibility(View.VISIBLE);
+										binding.userTypeImageView.setImageResource(R.drawable.driver_32);
 
 										if (getDriverStatus) {
 											binding.driverStatusTextView2.setTextColor(Color.BLUE);
@@ -265,7 +261,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 										}
 
-										binding.driverRatingTextView.setText("Driver Rating: " + getDriverRatings);
+										binding.driverRatingTextView.setText("Driver rating: " + getDriverRatings);
 										break;
 
 									case "Person with Disabilities (PWD)":
@@ -273,12 +269,12 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 										binding.disabilityTextView.setVisibility(View.VISIBLE);
 										binding.disabilityTextView.setText("Disability:\n" + getDisability);
-										binding.userTypeImageView.setImageResource(R.drawable.pwd_64);
+										binding.userTypeImageView.setImageResource(R.drawable.pwd_32);
 
 										break;
 
 									case "Senior Citizen":
-										binding.userTypeImageView.setImageResource(R.drawable.senior_64_2);
+										binding.userTypeImageView.setImageResource(R.drawable.senior_32);
 
 										break;
 								}
@@ -364,6 +360,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.feedbackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
+
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 		if (isChecked) {

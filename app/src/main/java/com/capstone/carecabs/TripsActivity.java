@@ -1,5 +1,7 @@
 package com.capstone.carecabs;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -14,17 +16,28 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.capstone.carecabs.Adapters.TripAdapter;
+import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Fragments.CurrentTripFragment;
 import com.capstone.carecabs.Fragments.TripHistoryFragment;
+import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityTripsBinding;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class TripsActivity extends AppCompatActivity {
 	private final String TAG = "TripsActivity";
+	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private AlertDialog noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityTripsBinding binding;
@@ -61,60 +74,81 @@ public class TripsActivity extends AppCompatActivity {
 		binding = ActivityTripsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.backFloatingBtn.setOnClickListener(v -> {
-			finish();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> finish());
 
-		ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-		viewPagerAdapter.addFragment(new CurrentTripFragment(), "Current");
-		viewPagerAdapter.addFragment(new TripHistoryFragment(), "History");
-
-		binding.viewPager.setAdapter(viewPagerAdapter);
-		binding.tabLayout.setupWithViewPager(binding.viewPager);
+		loadTripHistoryFromFireStore();
+		getUserSettings();
 	}
 
 	@Override
 	public void onBackPressed() {
-		boolean shouldExit = false;
-		if (shouldExit){
-			super.onBackPressed();
-		}else {
+		finish();
+		super.onBackPressed();
+	}
+
+	@SuppressLint("NotifyDataSetChanged")
+	private void loadTripHistoryFromFireStore() {
+		if (FirebaseMain.getUser() != null) {
+
+			CollectionReference tripReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.tripCollection);
+
+			List<TripModel> tripModelList = new ArrayList<>();
+			TripAdapter tripAdapter = new TripAdapter(this, tripModelList, tripModel -> {
+				// Handle item click if needed
+			});
+			binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+			binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
+
+			tripReference.addSnapshotListener((value, error) -> {
+				if (error != null) {
+					binding.loadingLayout.setVisibility(View.GONE);
+					Log.e(TAG, "loadTripHistoryFromFireStore: " + error.getMessage());
+
+					return;
+				}
+
+				if (value != null) {
+					binding.loadingLayout.setVisibility(View.GONE);
+					tripModelList.clear();
+					boolean hasTripHistory = false;
+					String userID = FirebaseMain.getUser().getUid();
+
+					for (QueryDocumentSnapshot tripSnapshot : value) {
+						TripModel tripModel = tripSnapshot.toObject(TripModel.class);
+
+						if (tripModel.getDriverUserID().equals(userID)
+								|| tripModel.getPassengerUserID().equals(userID)) {
+							tripModelList.add(tripModel);
+							hasTripHistory = true;
+						}
+					}
+					tripAdapter.notifyDataSetChanged();
+
+					if (hasTripHistory) {
+						binding.noTripHistoryTextView.setVisibility(View.GONE);
+						binding.loadingLayout.setVisibility(View.GONE);
+					} else {
+						binding.noTripHistoryTextView.setVisibility(View.VISIBLE);
+						binding.loadingLayout.setVisibility(View.GONE);
+					}
+
+				} else {
+					Log.e(TAG, "loadTripHistoryFromFireStore: addSnapshotListener is null");
+				}
+			});
+		} else {
+			Intent intent = new Intent(this, LoginOrRegisterActivity.class);
+			startActivity(intent);
 			finish();
 		}
 	}
 
-	public class ViewPagerAdapter extends FragmentPagerAdapter {
-		private final ArrayList<Fragment> fragmentArrayList;
-		private final ArrayList<String> stringArrayList;
+	private void getUserSettings() {
 
-		ViewPagerAdapter(FragmentManager fragmentManager) {
-			super(fragmentManager);
-			this.fragmentArrayList = new ArrayList<>();
-			this.stringArrayList = new ArrayList<>();
-		}
-
-		@NonNull
-		@Override
-		public Fragment getItem(int position) {
-			return fragmentArrayList.get(position);
-		}
-
-		@Override
-		public int getCount() {
-			return fragmentArrayList.size();
-		}
-
-		public void addFragment(Fragment fragment, String title) {
-			fragmentArrayList.add(fragment);
-			stringArrayList.add(title);
-			notifyDataSetChanged();
-			Log.d(TAG, "addFragment: " + stringArrayList);
-		}
-
-		@Nullable
-		@Override
-		public CharSequence getPageTitle(int position) {
-			return stringArrayList.get(position);
+		if (voiceAssistantState.equals("enabled")) {
+			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Trip history");
 		}
 	}
 

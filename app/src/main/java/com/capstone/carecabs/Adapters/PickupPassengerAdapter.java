@@ -69,96 +69,24 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 			Glide.with(context)
 					.load(pickupPassengerModel.getPassengerProfilePicture())
 					.placeholder(R.drawable.loading_gif)
-					.into(holder.binding.passengerImage);
+					.into(holder.binding.passengerProfilePic);
 		}
 
-		switch (pickupPassengerModel.getPassengerUserType()) {
+		switch (pickupPassengerModel.getPassengerType()) {
 			case "Senior Citizen":
-				holder.binding.passengerTypeImage.setImageResource(R.drawable.senior_32);
+				holder.binding.passengerTypeImageView.setImageResource(R.drawable.senior_32);
 				break;
 
-			case "Persons with Disability (PWD)":
-				holder.binding.passengerTypeImage.setImageResource(R.drawable.pwd_32);
+			case "Person with Disabilities (PWD)":
+				holder.binding.passengerTypeImageView.setImageResource(R.drawable.pwd_32);
+				holder.binding.disabilityTextView.setText(pickupPassengerModel.getPassengerDisability());
+
 				break;
 		}
-		holder.binding.passengerType.setText(pickupPassengerModel.getPassengerUserType());
-		holder.binding.bookingDate.setText("Booking Date: " + pickupPassengerModel.getBookingDate());
+		holder.binding.passengerTypeTextView.setText(pickupPassengerModel.getPassengerType());
 
-		//geocode
-		MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						pickupPassengerModel.getPickupLongitude(),
-						pickupPassengerModel.getPickupLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-
-		pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint({"LongLogTag", "SetTextI18n"})
-			@Override
-			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.isSuccessful()) {
-					if (response.body() != null && !response.body().features().isEmpty()) {
-						CarmenFeature feature = response.body().features().get(0);
-						String locationName = feature.placeName();
-
-						holder.binding.pickupLocationTextView.setText(locationName);
-					} else {
-
-						holder.binding.pickupLocationTextView.setText("Location not found");
-					}
-				} else {
-					Log.e(TAG, response.message());
-					holder.binding.pickupLocationTextView.setText("Location not found");
-
-				}
-
-			}
-
-			@SuppressLint({"LongLogTag", "SetTextI18n"})
-			@Override
-			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.pickupLocationTextView.setText("Location not found");
-			}
-		});
-
-		MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-				.accessToken(context.getString(R.string.mapbox_access_token))
-				.query(Point.fromLngLat(
-						pickupPassengerModel.getDestinationLongitude(),
-						pickupPassengerModel.getDestinationLatitude()))
-				.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-				.build();
-		destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-			@SuppressLint({"LongLogTag", "SetTextI18n"})
-			@Override
-			public void onResponse(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                       @androidx.annotation.NonNull Response<GeocodingResponse> response) {
-				if (response.body() != null && !response.body().features().isEmpty()) {
-					CarmenFeature feature = response.body().features().get(0);
-					String locationName = feature.placeName();
-
-					holder.binding.destinationLocationTextView.setText(locationName);
-				} else {
-					Log.e(TAG, response.message());
-
-					holder.binding.destinationLocationTextView.setText("Location not found");
-				}
-			}
-
-			@SuppressLint({"LongLogTag", "SetTextI18n"})
-			@Override
-			public void onFailure(@androidx.annotation.NonNull Call<GeocodingResponse> call,
-			                      @androidx.annotation.NonNull Throwable t) {
-				Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-				holder.binding.destinationLocationTextView.setText("Location not found");
-			}
-		});
+		holder.binding.pickupLocationTextView.setText(pickupPassengerModel.getPickupLocation());
+		holder.binding.destinationTextView.setText(pickupPassengerModel.getDestination());
 
 		if (pickupPassengerModel.getBookingStatus().equals("Waiting")) {
 			holder.binding.bookingStatus.setTextColor(Color.BLUE);

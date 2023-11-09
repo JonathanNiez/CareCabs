@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	style="@style/MainBackground"
+	style="@style/ItemCardBackground"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="10dp"
 	app:cardCornerRadius="10dp"
 	app:cardElevation="5dp">
 
-	<LinearLayout
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_centerVertical="true"
 		android:gravity="center"
 		android:orientation="vertical"
 		android:padding="5dp">
 
 		<androidx.appcompat.widget.AppCompatTextView
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
@@ -24,138 +24,159 @@
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="PASSENGER"
 			android:textAlignment="center"
-			style="@style/TextColor"
 			android:textSize="20sp" />
 
-		<LinearLayout
+		<RelativeLayout
+			android:layout_width="120dp"
+			android:layout_height="120dp">
+
+			<de.hdodenhof.circleimageview.CircleImageView
+				android:id="@+id/passengerProfilePic"
+				style="@style/ProfilePictureBorderColor"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
+				android:scaleType="centerCrop"
+				android:src="@drawable/mar" />
+
+			<androidx.appcompat.widget.AppCompatImageView
+				android:id="@+id/passengerTypeImageView"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_alignParentEnd="true"
+				android:layout_alignParentBottom="true"
+				android:background="@drawable/circular_button"
+				android:padding="5dp"
+				app:srcCompat="@drawable/pwd_32" />
+
+		</RelativeLayout>
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/passengerName"
+			style="@style/TextColor"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:text="Passenger Name"
+			android:textAlignment="center"
+			android:textSize="20sp" />
+
+		<androidx.appcompat.widget.LinearLayoutCompat
+			style="@style/RoundedTextColor"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:elevation="5dp"
+			android:gravity="center"
+			android:orientation="vertical"
+			android:padding="10dp">
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/passengerTypeTextView"
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="User Type"
+				android:textAlignment="center"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/disabilityTextView"
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/opensans_bold"
+				android:text="Disability"
+				android:textAlignment="center"
+				android:textSize="17sp" />
+
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+		<androidx.cardview.widget.CardView
+			style="@style/BaseCardBackground"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:gravity="center"
-			android:orientation="horizontal">
+			android:layout_margin="10dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
 
-			<LinearLayout
-				android:layout_width="0dp"
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_weight="2"
 				android:gravity="center"
-				android:orientation="vertical">
+				android:orientation="vertical"
+				android:padding="5dp">
 
-				<de.hdodenhof.circleimageview.CircleImageView
-					android:id="@+id/passengerImage"
-					android:layout_width="125dp"
-					android:layout_height="125dp"
-					android:layout_margin="5dp"
-					android:elevation="5dp"
-					android:src="@drawable/mar"
-					app:civ_border_color="@color/black"
-					app:civ_border_width="2dp" />
-
-			</LinearLayout>
-
-			<LinearLayout
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="2"
-				android:gravity="center"
-				android:orientation="vertical">
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/passengerName"
-					android:layout_width="wrap_content"
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_gravity="center_horizontal"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="Passenger Name"
-					android:textAlignment="center"
-					android:textColor="@color/black"
-					android:textSize="20sp" />
-
-				<LinearLayout
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="5dp"
-					android:background="@drawable/custom_card_view_1"
-					android:elevation="5dp"
-					android:gravity="center"
-					android:orientation="horizontal"
-					android:padding="10dp">
-
-					<androidx.appcompat.widget.AppCompatImageView
-						android:id="@+id/passengerTypeImage"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_marginEnd="5dp"
-						android:src="@drawable/senior_32" />
+					android:orientation="horizontal">
 
 					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/passengerType"
-						android:layout_width="wrap_content"
+						style="@style/TextColor"
+						android:layout_width="0dp"
 						android:layout_height="wrap_content"
-						android:fontFamily="@font/gabarito_bold"
-						android:text="Passenger Type"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="20sp" />
+						android:layout_gravity="start|center_vertical"
+						android:layout_margin="5dp"
+						android:layout_weight="1"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Pickup Location:"
+						android:textSize="17sp" />
 
-				</LinearLayout>
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/pickupLocationTextView"
+						style="@style/TextColor"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="end|center_vertical"
+						android:layout_margin="5dp"
+						android:layout_weight="1"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Pickup Location"
+						android:textSize="18sp" />
 
-			</LinearLayout>
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-		</LinearLayout>
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal">
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/bookingDate"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:text="Booking Date"
-			android:textAlignment="center"
-			style="@style/TextColor"
-			android:textSize="17sp" />
+					<androidx.appcompat.widget.AppCompatTextView
+						style="@style/TextColor"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="start|center_vertical"
+						android:layout_margin="5dp"
+						android:layout_weight="1"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="Destination:"
+						android:textSize="17sp" />
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:text="Pickup Location:"
-			android:textColor="@color/black"
-			android:textSize="17sp" />
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/destinationTextView"
+						style="@style/TextColor"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_gravity="end|center_vertical"
+						android:layout_margin="5dp"
+						android:layout_weight="1"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Destination"
+						android:textSize="18sp" />
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/pickupLocationTextView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="Pickup Location Name"
-			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="18sp" />
+				</androidx.appcompat.widget.LinearLayoutCompat>
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_medium"
-			android:text="Destination:"
-			android:textColor="@color/black"
-			android:textSize="17sp" />
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/destinationLocationTextView"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_margin="5dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="Destination Location Name"
-			android:textAlignment="center"
-			android:textColor="@color/black"
-			android:textSize="18sp" />
+		</androidx.cardview.widget.CardView>
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/bookingStatus"
@@ -224,6 +245,6 @@
 
 		</LinearLayout>
 
-	</LinearLayout>
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.cardview.widget.CardView>

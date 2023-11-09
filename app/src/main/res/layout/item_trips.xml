@@ -17,53 +17,63 @@
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/tripDateTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="Trip Date"
-			style="@style/TextColor"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/passengerNameTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_bold"
-			android:text="Passenger Name"
+			android:text="Passenger name"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/driverNameTextView"
 			style="@style/TextColor"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:fontFamily="@font/gabarito_bold"
+			android:text="Driver name"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/passengerTypeTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Passenger Type"
-			style="@style/TextColor"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/pickupLocationNameTextView"
+			android:id="@+id/pickupLocationTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Pickup Location Name"
-			style="@style/TextColor"
+			android:text="Pickup location"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatTextView
-			android:id="@+id/locationNameTextView"
+			android:id="@+id/destinationTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:fontFamily="@font/gabarito_semibold"
-			android:text="Destination Location Name"
-			style="@style/TextColor"
+			android:text="Destination"
 			android:textSize="17sp" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>

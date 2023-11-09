@@ -37,15 +37,14 @@
 	<color name="dark_cyan">#0093B1</color>
 	<color name="cyan">#08bdbd</color>
 	<color name="white_blue">#caf0f8</color>
-	<color name="color_sa_eyes_ni_mar">#0077cc </color>
+	<color name="blue">#0077cc </color>
+	<color name="light_blue">#00C4FF</color>
+	<color name="maya_blue">#51BBFE</color>
 
 	<color name="rich_black">#0E1116</color>
 	<color name="darker_gray">#303030</color>
 	<color name="darker_blue">#000235</color>
 	<color name="dark_blue">#000460</color>
-
-	<color name="blue">#2252FF</color>
-	<color name="light_blue">#444CFF</color>
 
 	<color name="lime">#abff4f</color>
 

@@ -86,7 +86,7 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 				.getReference(FirebaseMain.bookingCollection);
 
 		Map<String, Object> updateBooking = new HashMap<>();
-		updateBooking.put("isDriverRated", true);
+		updateBooking.put("ratingStatus", "Driver rated");
 
 		bookingReference.child(bookingID).updateChildren(updateBooking)
 				.addOnSuccessListener(unused -> Log.d(TAG, "rateDriver: onSuccess booking updated successfully"))

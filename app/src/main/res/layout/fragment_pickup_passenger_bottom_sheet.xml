@@ -21,44 +21,39 @@
 			android:padding="5dp">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="PASSENGER"
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<RelativeLayout
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content">
+				android:layout_width="120dp"
+				android:layout_height="120dp">
 
 				<de.hdodenhof.circleimageview.CircleImageView
 					android:id="@+id/passengerProfilePic"
 					style="@style/ProfilePictureBorderColor"
-					android:layout_width="125dp"
-					android:layout_height="120dp"
-					android:layout_margin="5dp"
-					android:elevation="5dp"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_marginStart="5dp"
+					android:layout_marginTop="5dp"
+					android:layout_marginEnd="5dp"
+					android:layout_marginBottom="5dp"
 					android:scaleType="centerCrop"
 					android:src="@drawable/mar" />
 
-				<FrameLayout
+				<androidx.appcompat.widget.AppCompatImageView
+					android:id="@+id/passengerTypeImageView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_alignEnd="@id/passengerProfilePic"
-					android:layout_alignBottom="@id/passengerProfilePic"
-					android:elevation="5dp">
-
-					<androidx.appcompat.widget.AppCompatImageView
-						android:id="@+id/userTypeImageView"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:background="@drawable/circular_button"
-						android:padding="3dp"
-						app:srcCompat="@drawable/pwd_32" />
-
-				</FrameLayout>
+					android:layout_alignParentEnd="true"
+					android:layout_alignParentBottom="true"
+					android:background="@drawable/circular_button"
+					android:padding="5dp"
+					app:srcCompat="@drawable/pwd_32" />
 
 			</RelativeLayout>
 
@@ -83,7 +78,7 @@
 				android:padding="10dp">
 
 				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/userTypeTextView"
+					android:id="@+id/passengerTypeTextView"
 					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
