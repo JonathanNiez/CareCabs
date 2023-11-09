@@ -627,6 +627,7 @@ public class HomeFragment extends Fragment implements
 
 								binding.driverOnTheWayLayout.setVisibility(View.GONE);
 								binding.toDestinationLayout.setVisibility(View.GONE);
+								binding.bookARideBtn.setVisibility(View.VISIBLE);
 								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
 								binding.driverRatedLayout.setVisibility(View.GONE);
 

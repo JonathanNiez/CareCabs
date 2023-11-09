@@ -36,7 +36,6 @@ import com.capstone.carecabs.LoginActivity
 import com.capstone.carecabs.MainActivity
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.PickupPassengerBottomSheetData
-import com.capstone.carecabs.Model.RenavigateData
 import com.capstone.carecabs.Model.TripModel
 import com.capstone.carecabs.R
 import com.capstone.carecabs.TripsActivity
@@ -367,7 +366,6 @@ class MapDriverActivity : AppCompatActivity(),
     )
 
     private val viewAnnotationMap = mutableMapOf<Point, View>()
-
 
     private companion object {
         private const val BUTTON_ANIMATION_DURATION = 1500L
@@ -737,10 +735,11 @@ class MapDriverActivity : AppCompatActivity(),
 
     @SuppressLint("SetTextI18n")
     private fun checkIfCurrentlyNavigatingToDestination() {
-
-        val driverReference: DocumentReference = FirebaseMain.getFireStoreInstance()
+        val userID = FirebaseMain.getUser().uid
+        var driverReference: DocumentReference
+        driverReference = FirebaseMain.getFireStoreInstance()
             .collection(FirebaseMain.userCollection)
-            .document(FirebaseMain.getUser().uid)
+            .document(userID)
 
         driverReference.get()
             .addOnSuccessListener {
@@ -784,9 +783,9 @@ class MapDriverActivity : AppCompatActivity(),
                         var locationName: String
                         binding.pingLocationImgBtn.visibility = View.VISIBLE
                         binding.pingLocationImgBtn.setOnClickListener {
-                            val documentReference = FirebaseMain.getFireStoreInstance()
+                            driverReference = FirebaseMain.getFireStoreInstance()
                                 .collection(FirebaseMain.userCollection)
-                                .document(FirebaseMain.getUser().uid)
+                                .document(userID)
 
                             //ping location geocode
                             val pickupLocationGeocode = MapboxGeocoding.builder()
@@ -821,7 +820,7 @@ class MapDriverActivity : AppCompatActivity(),
                                             pingLocation["driverPingedLatitude"] =
                                                 StaticDataPasser.storePickupLatitude
 
-                                            documentReference.update(pingLocation)
+                                            driverReference.update(pingLocation)
                                                 .addOnSuccessListener {
                                                     showToast("Location pinged")
                                                 }
@@ -1306,11 +1305,8 @@ class MapDriverActivity : AppCompatActivity(),
 
     private fun clearRouteAndStopNavigation() {
 
-        Toast.makeText(
-            this@MapDriverActivity,
-            "Cancelled Navigation",
-            Toast.LENGTH_LONG
-        ).show()
+        showToast("Cancelled Navigation")
+
         // clear
         mapboxNavigation.setNavigationRoutes(listOf())
 
@@ -1855,11 +1851,15 @@ class MapDriverActivity : AppCompatActivity(),
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
+            binding.navigationStatusTextView.visibility = View.VISIBLE
+            binding.pingLocationImgBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
 
         } else {
             findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
 
+            binding.navigationStatusTextView.visibility = View.VISIBLE
+            binding.pingLocationImgBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
             binding.pickupBtn.setOnClickListener {
 
@@ -1889,14 +1889,15 @@ class MapDriverActivity : AppCompatActivity(),
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
             binding.navigationStatusTextView.visibility = View.VISIBLE
+            binding.pingLocationImgBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
 
         } else {
             findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
 
             binding.navigationStatusTextView.visibility = View.VISIBLE
-            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
             binding.pingLocationImgBtn.visibility = View.VISIBLE
+            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
             binding.pickupBtn.setOnClickListener {
 
                 showPassengerOnBoardDialog(

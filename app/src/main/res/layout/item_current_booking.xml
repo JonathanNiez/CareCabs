@@ -16,12 +16,13 @@
 		android:padding="5dp">
 
 		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/yourCurrentBookingTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
 			android:fontFamily="@font/gabarito_bold"
 			android:text="YOUR CURRENT BOOKING"
-			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 		<androidx.cardview.widget.CardView

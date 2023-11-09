@@ -7,20 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RatingBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Model.DriverRatingsModel;
-import com.capstone.carecabs.R;
-import com.capstone.carecabs.databinding.FragmentTripRatingsBottomSheetBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.capstone.carecabs.databinding.FragmentRateDriverBottomSheetBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -29,9 +22,9 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
+public class RateDriverBottomSheet extends BottomSheetDialogFragment {
 	private static final String TAG = "TripRatingsBottomSheet";
-	private FragmentTripRatingsBottomSheetBinding binding;
+	private FragmentRateDriverBottomSheetBinding binding;
 	private Context context;
 
 	@Override
@@ -43,12 +36,12 @@ public class TripRatingsBottomSheet extends BottomSheetDialogFragment {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
-		binding = FragmentTripRatingsBottomSheetBinding.inflate(inflater, container, false);
+		binding = FragmentRateDriverBottomSheetBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		binding.driverRatedLayout.setVisibility(View.GONE);
-
 		context = getContext();
+
+		binding.driverRatedLayout.setVisibility(View.GONE);
 
 		Bundle bundle = getArguments();
 		if (bundle != null) {

@@ -5,7 +5,7 @@
 	style="@style/BottomSheetBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".BottomSheetModal.TripRatingsBottomSheet">
+	tools:context=".BottomSheetModal.RateDriverBottomSheet">
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"

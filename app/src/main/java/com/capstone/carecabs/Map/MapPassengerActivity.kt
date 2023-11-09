@@ -310,7 +310,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         binding.zoomOutImgBtn.visibility = View.GONE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(10.0)
+                .zoom(9.0)
                 .center(coordinate)
                 .build()
         )
@@ -494,6 +494,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                     intent = Intent(this, HelpActivity::class.java)
                     startActivity(intent)
                 }
+
                 R.id.favorites -> {
                     intent = Intent(this, FavoritesActivity::class.java)
                     startActivity(intent)
@@ -686,6 +687,25 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
+    //TODO: driver location
+    private fun addDriverPingLocationToMap(
+        driverLongitude: Double,
+        driverLatitude: Double,
+    ) {
+        bitmapFromDrawableRes(
+            this@MapPassengerActivity,
+            R.drawable.location_pin_128
+        ).let {
+            val annotationApi = binding.mapView.annotations
+            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                .withPoint(Point.fromLngLat(driverLongitude, driverLatitude))
+                .withIconImage(it)
+
+            pointAnnotationManager.create(pointAnnotationOptions)
+        }
+    }
+
     //displays the the "you"
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
 
@@ -792,38 +812,56 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
 
+                        val userID = FirebaseMain.getUser().uid
                         for (locationSnapshot in snapshot.children) {
                             val passengerBookingData =
                                 locationSnapshot.getValue(PassengerBookingModel::class.java)
 
                             if (passengerBookingData != null) {
                                 if (passengerBookingData.bookingStatus == "Waiting"
-                                    && passengerBookingData.passengerUserID == FirebaseMain.getUser().uid
-                                    || passengerBookingData.bookingStatus == "Driver on the way"
-                                    && passengerBookingData.passengerUserID == FirebaseMain.getUser().uid
+                                    && passengerBookingData.passengerUserID == userID
                                 ) {
 
                                     hasActiveBooking = true
 
-                                    if (hasActiveBooking) {
-                                        binding.searchDestinationLayout.visibility = View.GONE
-                                        binding.longTapTextView.text =
-                                            "You are currently waiting for a Driver"
-                                    } else {
-                                        binding.searchDestinationLayout.visibility = View.VISIBLE
-                                        binding.longTapTextView.text =
-                                            "Long tap/click on the Map you want to go"
-                                    }
+                                    binding.searchDestinationLayout.visibility = View.GONE
+                                    binding.longTapTextView.text =
+                                        "You are currently waiting for a Driver"
+                                    binding.searchDestinationLayout.visibility = View.VISIBLE
 
-                                    val getDestinationLatitude =
+                                    val destinationLatitude =
                                         passengerBookingData.destinationLatitude
-                                    val getDestinationLongitude =
+                                    val destinationLongitude =
                                         passengerBookingData.destinationLongitude
                                     val getBookingID = passengerBookingData.bookingID
 
                                     addDestinationAnnotationToMap(
-                                        getDestinationLongitude,
-                                        getDestinationLatitude,
+                                        destinationLongitude,
+                                        destinationLatitude,
+                                        getBookingID
+                                    )
+                                } else if (passengerBookingData.bookingStatus == "Driver on the way"
+                                    && passengerBookingData.passengerUserID == userID
+                                ) {
+
+                                    hasActiveBooking = true
+
+                                    binding.longTapTextView.text = "Your Driver is on the way!"
+
+                                    val driverLongitude = passengerBookingData.driverPingedLongitude
+                                    val driverLatitude = passengerBookingData.driverPingedLatitude
+
+                                    val destinationLatitude =
+                                        passengerBookingData.destinationLatitude
+                                    val destinationLongitude =
+                                        passengerBookingData.destinationLongitude
+                                    val getBookingID = passengerBookingData.bookingID
+
+                                    addDriverPingLocationToMap(driverLongitude, driverLatitude)
+
+                                    addDestinationAnnotationToMap(
+                                        destinationLongitude,
+                                        destinationLatitude,
                                         getBookingID
                                     )
                                 }
@@ -1062,22 +1100,27 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             .getReference(FirebaseMain.bookingCollection)
 
         bookingReference.addValueEventListener(object : ValueEventListener {
+            @SuppressLint("SetTextI18n")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
 
+                    val userID = FirebaseMain.getUser().uid
                     for (locationSnapshot in snapshot.children) {
                         val passengerBookingData =
                             locationSnapshot.getValue(PassengerBookingModel::class.java)
                         if (passengerBookingData != null) {
 
-                            if (passengerBookingData.passengerUserID == FirebaseMain.getUser().uid &&
-                                passengerBookingData.bookingStatus == "Waiting" ||
-                                passengerBookingData.passengerUserID == FirebaseMain.getUser().uid &&
-                                passengerBookingData.bookingStatus == "Driver on the way"
+                            if (passengerBookingData.passengerUserID == userID &&
+                                passengerBookingData.bookingStatus == "Waiting"
                             ) {
-
                                 hasActiveBooking = true
 
+                            } else if (passengerBookingData.passengerUserID == userID &&
+                                passengerBookingData.bookingStatus == "Driver on the way"
+                            ) {
+                                hasActiveBooking = true
+
+                                binding.longTapTextView.text = "Your Driver on the way!"
                             }
                         }
                     }
@@ -1169,8 +1212,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         builder = AlertDialog.Builder(this)
         val dialogView = binding.root
 
-        val database = FirebaseDatabase.getInstance()
-        val bookingReference = database.getReference(FirebaseMain.bookingCollection)
+        var isDriverOnTheWay = false
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(FirebaseMain.bookingCollection)
 
         bookingReference.addListenerForSingleValueEvent(object : ValueEventListener {
             @SuppressLint("SetTextI18n")
@@ -1184,7 +1228,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                             if (passengerBookingModel.bookingID == bookingID &&
                                 passengerBookingModel.passengerUserID == FirebaseMain.getUser().uid
                             ) {
-
                                 val destination = passengerBookingModel.destination
                                 val pickupLocation = passengerBookingModel.pickupLocation
 
@@ -1194,13 +1237,18 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 binding.pickupLocationTextView.text = pickupLocation
                                 binding.destinationTextView.text = destination
 
-                                val message =
-                                    "Pickup location: $pickupLocation. Destination: $destination"
+                                val message = "Pickup location: $pickupLocation." +
+                                        " Destination: $destination"
 
                                 if (voiceAssistantState == "enabled") {
                                     voiceAssistant =
                                         VoiceAssistant.getInstance(this@MapPassengerActivity)
                                     voiceAssistant.speak(message)
+                                }
+
+                                if (passengerBookingModel.bookingStatus == "Driver on the way") {
+                                    isDriverOnTheWay = true
+                                    binding.cancelBookingBtn.visibility = View.GONE
                                 }
                             }
                         }
@@ -1215,19 +1263,22 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         })
 
         binding.cancelBookingBtn.setOnClickListener {
-            val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
-            bookingReference.child(bookingID).updateChildren(updateBookingStatus)
-                .addOnSuccessListener {
-                    showToast("Booking cancelled")
+            if (isDriverOnTheWay) {
+                val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
+                bookingReference.child(bookingID).updateChildren(updateBookingStatus)
+                    .addOnSuccessListener {
+                        showToast("Booking cancelled")
 
-                    closeOwnBookingInfoDialog()
-                    loadBookingsToMapFromDatabase()
-                }
-                .addOnFailureListener {
-                    showToast("Booking failed to cancel")
+                        hasActiveBooking = false
+                        loadBookingsToMapFromDatabase()
+                        closeOwnBookingInfoDialog()
+                    }
+                    .addOnFailureListener {
+                        showToast("Booking failed to cancel")
 
-                    Log.e(TAG, "showPassengerOwnBookingInfoDialog: " + it.message)
-                }
+                        Log.e(TAG, "showPassengerOwnBookingInfoDialog: " + it.message)
+                    }
+            }
         }
 
         binding.closeBtn.setOnClickListener {

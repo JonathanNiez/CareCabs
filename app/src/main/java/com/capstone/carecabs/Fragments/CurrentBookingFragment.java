@@ -80,14 +80,22 @@ public class CurrentBookingFragment extends Fragment {
 		binding = FragmentCurrentBookingBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		context = getContext();
+
 		binding.noCurrentBookingsLayout.setVisibility(View.GONE);
 
 		binding.bookARideBtn.setOnClickListener(v -> checkLocationService());
 
+		return view;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
 		loadCurrentBookingFromDatabase();
 		getUserSettings();
 
-		return view;
 	}
 
 	private void getUserSettings() {
@@ -131,13 +139,13 @@ public class CurrentBookingFragment extends Fragment {
 									currentBookingSnapshot.getValue(CurrentBookingModel.class);
 							if (currentBookingModel != null) {
 
-								if (currentBookingModel.getPassengerUserID().equals(userID)
-										&& currentBookingModel.getBookingStatus().equals("Waiting")
-										|| currentBookingModel.getPassengerUserID().equals(userID)
-										&& currentBookingModel.getBookingStatus().equals("Driver on the way")
-										|| currentBookingModel.getPassengerUserID().equals(userID)
-										&& currentBookingModel.getBookingStatus().equals("Transported to destination")
-										&& currentBookingModel.getRatingStatus().equals("Driver not rated")) {
+								if (currentBookingModel.getPassengerUserID().equals(userID) &&
+										currentBookingModel.getBookingStatus().equals("Waiting") ||
+										currentBookingModel.getPassengerUserID().equals(userID) &&
+												currentBookingModel.getBookingStatus().equals("Driver on the way") ||
+										currentBookingModel.getPassengerUserID().equals(userID) &&
+												currentBookingModel.getBookingStatus().equals("Transported to destination") &&
+												currentBookingModel.getRatingStatus().equals("Driver not rated")) {
 
 									currentBookingModelList.add(currentBookingModel);
 									hasCurrentBookings = true;
