@@ -466,7 +466,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+		View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 

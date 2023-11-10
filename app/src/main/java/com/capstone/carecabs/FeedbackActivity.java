@@ -1,11 +1,7 @@
 package com.capstone.carecabs;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -17,12 +13,9 @@ import com.capstone.carecabs.Model.FeedbackModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityFeedbackBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Calendar;
-import java.util.Objects;
 import java.util.UUID;
 
 public class FeedbackActivity extends AppCompatActivity implements SettingsBottomSheet.FontSizeChangeListener {

@@ -39,6 +39,7 @@ import retrofit2.Response;
 public class ChatDriverActivity extends AppCompatActivity {
 	private final String TAG = "ChatDriverActivity";
 	private DatabaseReference databaseReference;
+	private Intent intent;
 	private List<ChatDriverModel> chatDriverModelList = new ArrayList<>();
 	private ActivityChatDriverBinding binding;
 
@@ -49,7 +50,6 @@ public class ChatDriverActivity extends AppCompatActivity {
 		binding = ActivityChatDriverBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		Intent intent;
 		if (getIntent().hasExtra("chatUserID")) {
 			intent = getIntent();
 			String getDriverID = intent.getStringExtra("chatUserID");
@@ -68,14 +68,11 @@ public class ChatDriverActivity extends AppCompatActivity {
 					return;
 				} else {
 					binding.messageEditText.setText("");
-					sendMessage(
-							getFCMToken,
+					sendMessage(getFCMToken,
 							getCurrentTimeAndDate(),
 							FirebaseMain.getUser().getUid(),
 							getDriverID,
-							message
-					);
-
+							message);
 				}
 			});
 		} else if (getIntent().hasExtra("driverID")) {
@@ -93,14 +90,11 @@ public class ChatDriverActivity extends AppCompatActivity {
 					String message = binding.messageEditText.getText().toString();
 					binding.messageEditText.setText("");
 
-					sendMessage
-							(
-									getFCMToken,
-									getCurrentTimeAndDate(),
-									FirebaseMain.getUser().getUid(),
-									getDriverID,
-									message
-							);
+					sendMessage(getFCMToken,
+							getCurrentTimeAndDate(),
+							FirebaseMain.getUser().getUid(),
+							getDriverID,
+							message);
 				}
 			});
 		}
@@ -200,7 +194,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 					}
 					chatDriverAdapter.notifyDataSetChanged();
 
-					if (chatDriverAdapter.getItemCount() >= 4){
+					if (chatDriverAdapter.getItemCount() >= 4) {
 						binding.chatRecyclerView.smoothScrollToPosition(chatDriverAdapter.getItemCount() - 1);
 					}
 				}

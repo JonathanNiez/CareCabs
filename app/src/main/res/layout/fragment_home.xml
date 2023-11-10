@@ -181,7 +181,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Your Driver has successfully transported you to your Destination"
 						android:textAlignment="center"
-						android:textSize="25sp" />
+						android:textSize="27sp" />
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="wrap_content"
@@ -317,7 +317,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="You are currently picking-up a Passenger"
 						android:textAlignment="center"
-						android:textSize="25sp" />
+						android:textSize="27sp" />
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="wrap_content"
@@ -502,7 +502,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Stay safe on the road"
 						android:textAlignment="center"
-						android:textSize="20sp" />
+						android:textSize="25sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -521,12 +521,13 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatImageView
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						app:srcCompat="@drawable/driver_64" />
 
 					<androidx.appcompat.widget.AppCompatTextView
@@ -537,7 +538,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Your Driver is on the way!"
 						android:textAlignment="center"
-						android:textSize="25sp" />
+						android:textSize="27sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/arrivalTimeTextView"
@@ -551,10 +552,10 @@
 						android:textSize="17sp" />
 
 					<androidx.cardview.widget.CardView
+						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						app:cardBackgroundColor="@color/white"
 						app:cardCornerRadius="10dp"
 						app:cardElevation="5dp">
 
@@ -566,13 +567,12 @@
 
 							<de.hdodenhof.circleimageview.CircleImageView
 								android:id="@+id/driverProfilePictureImageView"
+								style="@style/ProfilePictureBorderColor"
 								android:layout_width="100dp"
 								android:layout_height="100dp"
 								android:layout_margin="5dp"
 								android:scaleType="centerCrop"
-								android:src="@drawable/account"
-								app:civ_border_color="@color/black"
-								app:civ_border_width="2dp" />
+								android:src="@drawable/account" />
 
 
 							<androidx.appcompat.widget.AppCompatTextView
@@ -582,7 +582,7 @@
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_bold"
-								android:text="Driver Name"
+								android:text="Driver name:"
 								android:textAlignment="center"
 								android:textSize="17sp" />
 
@@ -651,6 +651,37 @@
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
+							<androidx.appcompat.widget.LinearLayoutCompat
+								android:id="@+id/chatDriverBtn"
+								android:layout_width="200dp"
+								android:layout_height="50dp"
+								android:layout_margin="10dp"
+								android:background="@drawable/smooth_edge_button"
+								android:backgroundTint="@color/yinmn_blue"
+								android:elevation="5dp"
+								android:gravity="center"
+								android:orientation="horizontal">
+
+								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/chatDriverTextView"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_gravity="start|center_vertical"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="CHAT DRIVER"
+									android:textColor="@color/white"
+									android:textSize="17sp" />
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_gravity="end|center_vertical"
+									android:layout_margin="5dp"
+									app:srcCompat="@drawable/chat_32_white" />
+
+							</androidx.appcompat.widget.LinearLayoutCompat>
+
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
 					</androidx.cardview.widget.CardView>
@@ -663,7 +694,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Hang in there and Stay safe"
 						android:textAlignment="center"
-						android:textSize="20sp" />
+						android:textSize="25sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -698,7 +729,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="You're on your way to your Destination"
 						android:textAlignment="center"
-						android:textSize="25sp" />
+						android:textSize="27sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/onBoardDestinationTextView"
@@ -719,7 +750,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Have a friendly chat with your Driver\nand Stay safe"
 						android:textAlignment="center"
-						android:textSize="20sp" />
+						android:textSize="25sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -939,6 +970,49 @@
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
+					<androidx.appcompat.widget.LinearLayoutCompat
+						android:layout_width="match_parent"
+						android:layout_height="match_parent">
+
+						<androidx.cardview.widget.CardView
+							android:id="@+id/helpBtn"
+							android:layout_width="0dp"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:layout_weight="1"
+							app:cardBackgroundColor="@color/light_green"
+							app:cardCornerRadius="10dp"
+							app:cardElevation="5dp">
+
+							<androidx.appcompat.widget.LinearLayoutCompat
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:gravity="center"
+								android:orientation="vertical">
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									app:srcCompat="@drawable/help_64_2" />
+
+								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/helpTextView"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:fontFamily="@font/gabarito_semibold"
+									android:text="Help"
+									android:textAlignment="center"
+									android:textColor="@color/black"
+									android:textSize="17sp" />
+
+							</androidx.appcompat.widget.LinearLayoutCompat>
+
+						</androidx.cardview.widget.CardView>
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
+
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 			</androidx.cardview.widget.CardView>
@@ -956,14 +1030,15 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverDashBoardTextView"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						android:drawableEnd="@drawable/driver_32"
 						android:fontFamily="@font/gabarito_semibold"
 						android:padding="10dp"
@@ -980,14 +1055,14 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Driver Rating"
 						android:textAlignment="center"
-						android:textSize="25sp" />
+						android:textSize="27sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/availabilityTextView"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/driver_availability_info"
 						android:textAlignment="center"
@@ -998,10 +1073,10 @@
 						style="@style/TextColor"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
+						android:layout_margin="5dp"
 						android:checked="false"
 						android:fontFamily="@font/gabarito_medium"
-						android:text="or set your Availability manually"
+						android:text="or you can set your Availability manually"
 						android:textAlignment="center"
 						android:textSize="17sp" />
 
@@ -1015,50 +1090,41 @@
 						android:textColor="@color/black"
 						android:textSize="17sp" />
 
-					<LinearLayout
+					<androidx.cardview.widget.CardView
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
-						android:gravity="center"
-						android:orientation="horizontal">
+						android:layout_margin="5dp"
+						app:cardBackgroundColor="@color/cheese"
+						app:cardCornerRadius="10dp"
+						app:cardElevation="5dp">
 
-						<androidx.cardview.widget.CardView
+						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
-							android:layout_margin="5dp"
-							app:cardBackgroundColor="@color/cheese"
-							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							android:gravity="center"
+							android:orientation="vertical"
+							android:padding="5dp">
 
-							<androidx.appcompat.widget.LinearLayoutCompat
-								android:layout_width="match_parent"
+							<androidx.appcompat.widget.AppCompatImageView
+								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:gravity="center"
-								android:orientation="vertical"
-								android:padding="5dp">
+								android:layout_margin="10dp"
+								app:srcCompat="@drawable/car_64_2" />
 
-								<androidx.appcompat.widget.AppCompatImageView
-									android:layout_width="wrap_content"
-									android:layout_height="wrap_content"
-									android:layout_margin="10dp"
-									app:srcCompat="@drawable/car_64_2" />
+							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/passengerTransportedTextView"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_margin="5dp"
+								android:fontFamily="@font/gabarito_medium"
+								android:text="Passengers\nTransported: 0"
+								android:textAlignment="center"
+								android:textColor="@color/black"
+								android:textSize="17sp" />
 
-								<androidx.appcompat.widget.AppCompatTextView
-									android:id="@+id/passengerTransportedTextView"
-									android:layout_width="wrap_content"
-									android:layout_height="wrap_content"
-									android:layout_margin="5dp"
-									android:fontFamily="@font/gabarito_medium"
-									android:text="Passengers\nTransported: 0"
-									android:textAlignment="center"
-									android:textColor="@color/black"
-									android:textSize="17sp" />
+						</androidx.appcompat.widget.LinearLayoutCompat>
 
-							</androidx.appcompat.widget.LinearLayoutCompat>
-
-						</androidx.cardview.widget.CardView>
-
-					</LinearLayout>
+					</androidx.cardview.widget.CardView>
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1077,7 +1143,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/yourTripOverviewTextView"
@@ -1099,7 +1166,7 @@
 						android:fontFamily="@font/gabarito_black"
 						android:text="Total Trips"
 						android:textAlignment="center"
-						android:textSize="20sp" />
+						android:textSize="27sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 

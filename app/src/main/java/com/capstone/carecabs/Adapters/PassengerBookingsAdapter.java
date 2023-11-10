@@ -33,8 +33,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PassengerBookingsAdapter extends RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
-	private final String TAG = "PassengerBookingsAdapter";
+public class PassengerBookingsAdapter extends
+		RecyclerView.Adapter<PassengerBookingsAdapter.PassengerViewHolder> {
 	private Intent intent;
 
 	public interface ItemPassengerClickListener {

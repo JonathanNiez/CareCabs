@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -50,11 +51,9 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	private AlertDialog pleaseWaitDialog, noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
-	private FragmentTransaction fragmentTransaction;
-	private FragmentManager fragmentManager;
 	private RequestManager requestManager;
-	private final String fontSize = StaticDataPasser.storeFontSize;
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
 	private FragmentPersonalInfoBinding binding;
 
@@ -116,12 +115,17 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
-		getUserSettings();
-		loadUserProfileInfo();
-
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		getUserSettings();
+		loadUserProfileInfo();
 	}
 
 	public void onBackPressed() {
@@ -236,8 +240,8 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	}
 
 	private void backToAccountFragment() {
-		fragmentManager = requireActivity().getSupportFragmentManager();
-		fragmentTransaction = fragmentManager.beginTransaction();
+		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.replace(R.id.fragmentContainer, new AccountFragment());
 		fragmentTransaction.addToBackStack(null);
 		fragmentTransaction.commit();
@@ -255,32 +259,9 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		if (isChecked) {
-			textSizeSP = INCREASED_TEXT_SIZE_SP;
-			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		String fontSize = isChecked ? "large" : "normal";
 
-		} else {
-			textSizeSP = DEFAULT_TEXT_SIZE_SP;
-			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
-		}
-
-		binding.personalInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-
-		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.birthdateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.ageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.registerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		setFontSize(fontSize);
 	}
 
 	private void setFontSize(String fontSize) {

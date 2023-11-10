@@ -3,7 +3,6 @@ package com.capstone.carecabs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -14,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -48,13 +49,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScanIDActivity extends AppCompatActivity {
+public class ScanIDActivity extends AppCompatActivity implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ScanID";
 	private String idPictureURL = "none";
-	private Uri idPictureUri = null;
+	private float textSizeSP;
+	private float textHeaderSizeSP;
+	private Uri idPictureUri;
 	private String getUserType;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private final int imageSize = 224;
-	private boolean isUserVerified = false, isFromMyProfile = false;
+	private boolean isUserVerified = false;
 	private AlertDialog.Builder builder;
 	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
 			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog;
@@ -67,6 +74,7 @@ public class ScanIDActivity extends AppCompatActivity {
 	private NetworkChangeReceiver networkChangeReceiver;
 	private DocumentReference documentReference;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private final String fontSize = StaticDataPasser.storeFontSize;
 	private VoiceAssistant voiceAssistant;
 	private ActivityScanIdBinding binding;
 
@@ -117,6 +125,7 @@ public class ScanIDActivity extends AppCompatActivity {
 
 		checkIfUserIsVerified();
 		checkCameraAndStoragePermission();
+		getUserSettings();
 
 		if (getIntent() != null) {
 			intent = getIntent();
@@ -126,16 +135,28 @@ public class ScanIDActivity extends AppCompatActivity {
 			if (getUserType != null && activityData != null) {
 
 				if (activityData.equals("fromMyProfile")) {
-					binding.backBtn.setOnClickListener(v -> {
-
+					binding.backFloatingBtn.setOnClickListener(v -> {
 						if (isUserVerified) {
 							backToMyProfile();
 						} else {
 							showCancelScanIDDialog();
 						}
-
+					});
+					binding.backBtn.setOnClickListener(v -> {
+						if (isUserVerified) {
+							backToMyProfile();
+						} else {
+							showCancelScanIDDialog();
+						}
 					});
 				} else {
+					binding.backFloatingBtn.setOnClickListener(v -> {
+						if (isUserVerified) {
+							goToMainActivity();
+						} else {
+							showCancelScanIDDialog();
+						}
+					});
 					binding.backBtn.setOnClickListener(v -> {
 						if (isUserVerified) {
 							goToMainActivity();
@@ -165,6 +186,8 @@ public class ScanIDActivity extends AppCompatActivity {
 
 			}
 		}
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
 		binding.doneBtn.setOnClickListener(v -> {
 			if (idPictureUri != null) {
@@ -204,6 +227,12 @@ public class ScanIDActivity extends AppCompatActivity {
 			}
 		}
 
+	}
+
+	private void showSettingsBottomSheet() {
+		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+		settingsBottomSheet.setFontSizeChangeListener(this);
+		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -425,7 +454,6 @@ public class ScanIDActivity extends AppCompatActivity {
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot.exists()) {
 							Boolean isVerified = documentSnapshot.getBoolean("isVerified");
-
 							getUserType = documentSnapshot.getString("userType");
 
 							if (isVerified) {
@@ -489,7 +517,6 @@ public class ScanIDActivity extends AppCompatActivity {
 		startActivity(intent);
 		finish();
 	}
-
 
 	private void showCancelScanIDDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -576,6 +603,35 @@ public class ScanIDActivity extends AppCompatActivity {
 		} else {
 			Toast.makeText(this, "No gallery app found", Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	private void getUserSettings() {
+		setFontSize(fontSize);
+
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+
+		setFontSize(fontSize);
+	}
+
+	private void setFontSize(String fontSize) {
+
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.scanYourIDTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.idAlreadyScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.scanIDAgainTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void openCamera() {
@@ -766,21 +822,23 @@ public class ScanIDActivity extends AppCompatActivity {
 					binding.idAlreadyScannedLayout.setVisibility(View.GONE);
 					binding.backBtn.setVisibility(View.GONE);
 
-					switch (getUserType) {
-						case "Driver":
-							binding.scanYourIDTypeTextView.setText("Scan your Driver's License");
+					if (getUserType != null) {
+						switch (getUserType) {
+							case "Driver":
+								binding.scanYourIDTypeTextView.setText("Scan your Driver's License");
 
-							break;
+								break;
 
-						case "Senior Citizen":
-							binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
+							case "Senior Citizen":
+								binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
 
-							break;
+								break;
 
-						case "Persons with Disability (PWD)":
-							binding.scanYourIDTypeTextView.setText("Scan your valid PWD ID");
+							case "Person with Disabilities (PWD)":
+								binding.scanYourIDTypeTextView.setText("Scan your valid PWD ID");
 
-							break;
+								break;
+						}
 					}
 				}
 			}

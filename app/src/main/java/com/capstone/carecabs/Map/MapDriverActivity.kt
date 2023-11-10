@@ -792,8 +792,8 @@ class MapDriverActivity : AppCompatActivity(),
                                 .accessToken(getString(R.string.mapbox_access_token))
                                 .query(
                                     Point.fromLngLat(
-                                        StaticDataPasser.storePickupLongitude,
-                                        StaticDataPasser.storePickupLatitude
+                                        StaticDataPasser.storePingedLongitude,
+                                        StaticDataPasser.storePingedLatitude
                                     )
                                 )
                                 .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
@@ -816,9 +816,9 @@ class MapDriverActivity : AppCompatActivity(),
                                             val pingLocation = HashMap<String, Any>()
                                             pingLocation["driverPingedLocation"] = locationName
                                             pingLocation["driverPingedLongitude"] =
-                                                StaticDataPasser.storePickupLongitude
+                                                StaticDataPasser.storePingedLongitude
                                             pingLocation["driverPingedLatitude"] =
-                                                StaticDataPasser.storePickupLatitude
+                                                StaticDataPasser.storePingedLatitude
 
                                             driverReference.update(pingLocation)
                                                 .addOnSuccessListener {
@@ -836,6 +836,10 @@ class MapDriverActivity : AppCompatActivity(),
 
                                             val updateBooking = HashMap<String, Any>()
                                             updateBooking["driverPingedLocation"] = locationName
+                                            updateBooking["driverPingedLongitude"] =
+                                                StaticDataPasser.storePingedLongitude
+                                            updateBooking["driverPingedLatitude"] =
+                                                StaticDataPasser.storePingedLatitude
 
                                             bookingReference.child(getBookingID)
                                                 .updateChildren(updateBooking)
@@ -1187,8 +1191,8 @@ class MapDriverActivity : AppCompatActivity(),
     private fun createViewAnnotation(mapView: MapView, coordinate: Point) {
 
         //store the current location
-        StaticDataPasser.storePickupLatitude = coordinate.latitude()
-        StaticDataPasser.storePickupLongitude = coordinate.longitude()
+        StaticDataPasser.storePingedLatitude = coordinate.latitude()
+        StaticDataPasser.storePingedLongitude = coordinate.longitude()
 
         binding.zoomInImgBtn.setOnClickListener {
             zoomInCamera(coordinate)

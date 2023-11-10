@@ -30,7 +30,9 @@ import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
+import com.capstone.carecabs.Chat.ChatDriverActivity;
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.HelpActivity;
 import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.Map.MapDriverActivity;
@@ -51,6 +53,8 @@ import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.DialogHowToBookBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -180,6 +184,11 @@ public class HomeFragment extends Fragment implements
 			startActivity(intent);
 		});
 
+		binding.helpBtn.setOnClickListener(v -> {
+			intent = new Intent(getActivity(), HelpActivity.class);
+			startActivity(intent);
+		});
+
 //		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
 //		binding.viewPager.setAdapter(adapter);
 //
@@ -253,6 +262,8 @@ public class HomeFragment extends Fragment implements
 		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.viewOnMapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.chatDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	@SuppressLint({"DefaultLocale", "SetTextI18n"})
@@ -538,7 +549,7 @@ public class HomeFragment extends Fragment implements
 
 								binding.pickupPassengerBadge.setVisibility(View.VISIBLE);
 
-								binding.passengerNameTextView.setText(passengerBookingModel.getPassengerName());
+								binding.passengerNameTextView.setText("Passenger Name:\n" + passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
 								binding.pickupLocationTextView.setText(passengerBookingModel.getPickupLocation());
 								binding.destinationTextView.setText(passengerBookingModel.getDestination());
@@ -594,13 +605,23 @@ public class HomeFragment extends Fragment implements
 							if (passengerBookingModel.getPassengerUserID().equals(userID) &&
 									passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 
+								String fcmToken = passengerBookingModel.getFcmToken();
+								String driverID = passengerBookingModel.getDriverUserID();
+
 								binding.toDestinationLayout.setVisibility(View.GONE);
 								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
 								binding.bookARideBtn.setVisibility(View.GONE);
 
+								binding.chatDriverBtn.setOnClickListener(v -> {
+									intent = new Intent(getActivity(), ChatDriverActivity.class);
+									intent.putExtra("driverID", driverID);
+									intent.putExtra("fcmToken", fcmToken);
+									startActivity(intent);
+								});
+
 								binding.arrivalTimeTextView.setText("Arrival Time:\n" + "Estimated " +
 										passengerBookingModel.getDriverArrivalTime() + " minute(s)");
-								binding.driverNameTextView.setText("Driver name: " +
+								binding.driverNameTextView.setText("Driver name:\n" +
 										passengerBookingModel.getDriverName());
 								binding.vehicleColorTextView.setText("Vehicle color: " +
 										passengerBookingModel.getVehicleColor());
@@ -785,6 +806,19 @@ public class HomeFragment extends Fragment implements
 		});
 
 		binding.closeBtn.setOnClickListener(v -> closeHowToBookDialog());
+
+		binding.dontShowAgainBtn.setOnClickListener(v -> {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			Map<String, Object> updateUserSettings = new HashMap<>();
+			updateUserSettings.put("isFirstTimeUser", false);
+
+			documentReference.update(updateUserSettings)
+					.addOnSuccessListener(unused -> Log.i(TAG, "showHowToBookDialog - onSuccess: updated isFirstTimeUser to false"))
+					.addOnFailureListener(e -> Log.e(TAG, "showHowToBookDialog - onFailure: " + e.getMessage()));
+		});
 
 		builder.setView(dialogView);
 

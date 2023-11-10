@@ -802,7 +802,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         if (FirebaseMain.getUser() != null) {
 
             setupGesturesListener()
-            checkBookingStatus()
+//            checkBookingStatus()
 
             val bookingReference = FirebaseDatabase.getInstance()
                 .getReference(FirebaseMain.bookingCollection)
@@ -857,6 +857,11 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                         passengerBookingData.destinationLongitude
                                     val getBookingID = passengerBookingData.bookingID
 
+                                    Log.i(
+                                        TAG,
+                                        "driverCoordinates: $driverLongitude \n $driverLatitude"
+                                    )
+
                                     addDriverPingLocationToMap(driverLongitude, driverLatitude)
 
                                     addDestinationAnnotationToMap(
@@ -864,6 +869,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                         destinationLatitude,
                                         getBookingID
                                     )
+                                }
+
+                                if (hasActiveBooking) {
+                                    mapboxMap = binding.mapView.getMapboxMap().apply {
+                                        removeOnMapLongClickListener(this@MapPassengerActivity)
+                                    }
+                                } else {
+                                    mapboxMap = binding.mapView.getMapboxMap().apply {
+                                        addOnMapLongClickListener(this@MapPassengerActivity)
+                                    }
                                 }
                             }
                         }

@@ -31,6 +31,8 @@ public class StaticDataPasser {
 	public static Double storePickupLongitude = 0.0;
 	public static Double storeDestinationLatitude = 0.0;
 	public static Double storeDestinationLongitude = 0.0;
+	public static Double storePingedLatitude = 0.0;
+	public static Double storePingedLongitude = 0.0;
 	public static String storeTripID = "";
 	public static Point storePoint = Point.fromLngLat(0.0, 0.0);
 }

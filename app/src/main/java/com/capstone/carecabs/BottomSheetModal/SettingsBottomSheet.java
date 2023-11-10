@@ -1,7 +1,6 @@
 package com.capstone.carecabs.BottomSheetModal;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,10 +12,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentSettingsBottomSheetBinding;
@@ -25,7 +22,6 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	private final String TAG = "SettingsBottomSheet";
@@ -41,22 +37,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 	private static final String VOICE_ASSISTANT_DISABLED = "disabled";
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String theme = StaticDataPasser.storeTheme;
-	private String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private DocumentReference documentReference;
 	private Context context;
-	private FontSizeChangeListener fontSizeChangeListener;
-	private ThemeChangeListener themeChangeListener;
-	private VoiceAssistantToggleListener voiceAssistantToggleListener;
+	private FontSizeChangeListener mFontSizeChangeListener;
 	private VoiceAssistant voiceAssistant;
 	private FragmentSettingsBottomSheetBinding binding;
 
-	public interface VoiceAssistantToggleListener {
-		void onVoiceAssistantToggled(boolean isToggled);
-	}
-
-	public interface ThemeChangeListener {
-		void onThemeChanged(boolean isChecked);
-	}
 
 	public interface FontSizeChangeListener {
 		void onFontSizeChanged(boolean isChecked);
@@ -80,7 +67,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		binding.fontSizeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			String fontSize = isChecked ? FONT_SIZE_LARGE : FONT_SIZE_NORMAL;
 
-			if (voiceAssistantToggle.equals("enabled")) {
+			if (voiceAssistantState.equals("enabled")) {
 				voiceAssistant = VoiceAssistant.getInstance(context);
 				voiceAssistant.speak("Text size changed to " + fontSize);
 			}
@@ -88,8 +75,8 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 			setFontSize(fontSize);
 			updateFontSizeToFireStore(fontSize);
 
-			if (fontSizeChangeListener != null) {
-				fontSizeChangeListener.onFontSizeChanged(isChecked);
+			if (mFontSizeChangeListener != null) {
+				mFontSizeChangeListener.onFontSizeChanged(isChecked);
 			}
 		});
 
@@ -103,16 +90,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 			String theme = isChecked ? THEME_CONTRAST : THEME_NORMAL;
 
-			if (voiceAssistantToggle.equals("enabled")) {
+			if (voiceAssistantState.equals("enabled")) {
 				voiceAssistant = VoiceAssistant.getInstance(context);
 				voiceAssistant.speak("App theme changed to " + theme);
 			}
 
 			updateThemeToFireStore(theme);
 
-			if (themeChangeListener != null) {
-				themeChangeListener.onThemeChanged(isChecked);
-			}
 		});
 
 		binding.voiceAssistantSwitch.setOnCheckedChangeListener((buttonView, isToggled) -> {
@@ -137,16 +121,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		return view;
 	}
 
-	public void setVoiceAssistantToggleListener(VoiceAssistantToggleListener voiceAssistantToggleListener) {
-		this.voiceAssistantToggleListener = voiceAssistantToggleListener;
-	}
-
-	public void setThemeChangeListener(ThemeChangeListener themeChangeListener) {
-		this.themeChangeListener = themeChangeListener;
-	}
 
 	public void setFontSizeChangeListener(FontSizeChangeListener fontSizeChangeListener) {
-		this.fontSizeChangeListener = fontSizeChangeListener;
+		this.mFontSizeChangeListener = fontSizeChangeListener;
 	}
 
 
@@ -175,9 +152,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
 		binding.fontSizeSwitch.setChecked(FONT_SIZE_LARGE.equals(fontSize));
 		binding.contrastSwitch.setChecked(THEME_CONTRAST.equals(theme));
-		binding.voiceAssistantSwitch.setChecked(VOICE_ASSISTANT_ENABLED.equals(voiceAssistantToggle));
+		binding.voiceAssistantSwitch.setChecked(VOICE_ASSISTANT_ENABLED.equals(voiceAssistantState));
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Accessibility Settings");
 		}
