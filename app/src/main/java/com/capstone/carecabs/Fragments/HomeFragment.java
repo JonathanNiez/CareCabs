@@ -300,13 +300,7 @@ public class HomeFragment extends Fragment implements
 			hour = 12;
 		}
 
-		String formattedTime = null;
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-			formattedTime = String.format("%02d:%02d %s", hour, currentTime.getMinute(), amPm);
-		}
-
 		binding.greetTextView.setText(greeting);
-		binding.currentTimeTextView.setText("The time is " + formattedTime);
 	}
 
 //	private void startAutoSlide() {

@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityMainBinding;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
+import com.capstone.carecabs.databinding.DialogExitAppBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
 	private static final String THEME_NORMAL = "normal";
 	private static final String THEME_CONTRAST = "contrast";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Intent intent;
 	private AlertDialog.Builder builder;
 	private AlertDialog exitAppDialog, enableLocationServiceDialog;
@@ -487,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
 	private void showPassengersWaitingNotification() {
 		NotificationHelper notificationHelper = new NotificationHelper(this);
 		notificationHelper.showPassengersWaitingNotification("CareCabs",
-				"There are Passenger(s) waiting right now. Go to Map to check their location");
+				"There are Passenger(s) waiting right now.\nGo to Map to check their location");
 	}
 
 	private void showEnableLocationServiceDialog() {
@@ -518,25 +521,28 @@ public class MainActivity extends AppCompatActivity {
 	private void showExitConfirmationDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
+		DialogExitAppBinding dialogExitAppBinding = DialogExitAppBinding.inflate(getLayoutInflater());
+		View dialogView = dialogExitAppBinding.getRoot();
 
-		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		if (fontSize.equals("large")) {
+			dialogExitAppBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogExitAppBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			dialogExitAppBinding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			dialogExitAppBinding.exitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+		}
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Are you sure you want to exit the App?");
 		}
 
-		exitBtn.setOnClickListener(v -> {
+		dialogExitAppBinding.exitBtn.setOnClickListener(v -> {
 			exitApp();
 
 			closeExitConfirmationDialog();
 		});
 
-		cancelBtn.setOnClickListener(v -> {
-			closeExitConfirmationDialog();
-		});
+		dialogExitAppBinding.cancelBtn.setOnClickListener(v -> closeExitConfirmationDialog());
 
 		builder.setView(dialogView);
 

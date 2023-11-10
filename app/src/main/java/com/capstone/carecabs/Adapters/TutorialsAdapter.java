@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,10 +19,18 @@ public class TutorialsAdapter extends RecyclerView.Adapter<TutorialsAdapter.Tuto
 	private Context context;
 
 	private List<TutorialsModel> tutorialsModelList;
+	private TutorialClickListener tutorialClickListener;
 
-	public TutorialsAdapter(Context context, List<TutorialsModel> tutorialsModelList) {
+	public interface TutorialClickListener {
+		void onTutorialClick(TutorialsModel tutorialsModel);
+	}
+
+	public TutorialsAdapter(Context context,
+	                        List<TutorialsModel> tutorialsModelList,
+	                        TutorialClickListener tutorialClickListener) {
 		this.context = context;
 		this.tutorialsModelList = tutorialsModelList;
+		this.tutorialClickListener = tutorialClickListener;
 	}
 
 	@NonNull
@@ -42,7 +51,9 @@ public class TutorialsAdapter extends RecyclerView.Adapter<TutorialsAdapter.Tuto
 		holder.binding.tutorialBodyTextView.setText(tutorialsModel.getTutorialBody());
 
 		holder.itemView.setOnClickListener(v -> {
-
+			if (tutorialClickListener != null) {
+				tutorialClickListener.onTutorialClick(tutorialsModelList.get(position));
+			}
 		});
 	}
 

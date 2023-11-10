@@ -84,10 +84,29 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:text="Current Time"
+						android:text="The Time is:"
 						android:textAlignment="center"
 						android:textColor="@color/white"
 						android:textSize="20sp" />
+
+					<androidx.cardview.widget.CardView
+						style="@style/DigitalClockBackground"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						app:cardCornerRadius="10dp"
+						app:cardElevation="10dp">
+
+						<DigitalClock
+							android:id="@+id/digitalClock"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:fontFamily="@font/gabarito_bold"
+							android:padding="10dp"
+							android:textSize="30sp" />
+
+					</androidx.cardview.widget.CardView>
+
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/greetTextView"
