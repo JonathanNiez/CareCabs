@@ -1,6 +1,7 @@
 package com.capstone.carecabs.Adapters;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,12 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatDriverModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 
 import java.util.List;
 
 public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.ChatDriverViewHolder> {
-
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
 	private List<ChatDriverModel> chatDriverModelList;
 	private String profilePicture;
@@ -55,6 +57,10 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 	public void onBindViewHolder(@NonNull ChatDriverViewHolder holder, int position) {
 		ChatDriverModel chatDriverModel = chatDriverModelList.get(position);
 
+		if (fontSize.equals("large")) {
+			holder.messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+		}
+
 		holder.messageTextView.setText(chatDriverModel.getMessage());
 
 		if (!profilePicture.equals("default")) {
@@ -63,12 +69,11 @@ public class ChatDriverAdapter extends RecyclerView.Adapter<ChatDriverAdapter.Ch
 					.placeholder(R.drawable.loading_gif)
 					.into(holder.chatProfilePicture);
 		}
-
 	}
 
 	@Override
 	public int getItemCount() {
-		return chatDriverModelList == null ? 0 : chatDriverModelList.size();
+		return chatDriverModelList.size();
 	}
 
 	@Override

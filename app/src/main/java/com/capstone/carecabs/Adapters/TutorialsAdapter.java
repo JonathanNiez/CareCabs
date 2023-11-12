@@ -1,6 +1,7 @@
 package com.capstone.carecabs.Adapters;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,14 +11,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.capstone.carecabs.Model.TutorialsModel;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ItemTutorialsBinding;
 
 import java.util.List;
 
-public class TutorialsAdapter extends RecyclerView.Adapter<TutorialsAdapter.TutorialsViewHolder> {
-
+public class TutorialsAdapter extends
+		RecyclerView.Adapter<TutorialsAdapter.TutorialsViewHolder> {
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
-
 	private List<TutorialsModel> tutorialsModelList;
 	private TutorialClickListener tutorialClickListener;
 
@@ -45,6 +47,11 @@ public class TutorialsAdapter extends RecyclerView.Adapter<TutorialsAdapter.Tuto
 	@Override
 	public void onBindViewHolder(@NonNull TutorialsViewHolder holder, int position) {
 		TutorialsModel tutorialsModel = tutorialsModelList.get(position);
+
+		if (fontSize.equals("large")) {
+			holder.binding.tutorialTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			holder.binding.tutorialBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+		}
 
 		holder.binding.tutorialImageView.setImageResource(tutorialsModel.getTutorialImage());
 		holder.binding.tutorialTitleTextView.setText(tutorialsModel.getTutorialTitle());

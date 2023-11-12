@@ -53,7 +53,7 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/okBtn"
+		android:id="@+id/okayBtn"
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"

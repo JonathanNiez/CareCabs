@@ -6,41 +6,35 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.capstone.carecabs.Adapters.TripAdapter;
+import com.capstone.carecabs.Adapters.TripHistoryAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Fragments.CurrentTripFragment;
-import com.capstone.carecabs.Fragments.TripHistoryFragment;
-import com.capstone.carecabs.Model.TripModel;
+import com.capstone.carecabs.Model.TripHistoryModel;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
-import com.capstone.carecabs.databinding.ActivityTripsBinding;
+import com.capstone.carecabs.databinding.ActivityTripHistoryBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public class TripsActivity extends AppCompatActivity {
-	private final String TAG = "TripsActivity";
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+public class TripHistoryActivity extends AppCompatActivity {
+	private final String TAG = "TripHistoryActivity";
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private AlertDialog noInternetDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityTripsBinding binding;
+	private ActivityTripHistoryBinding binding;
 
 	@Override
 	protected void onStart() {
@@ -71,7 +65,7 @@ public class TripsActivity extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = ActivityTripsBinding.inflate(getLayoutInflater());
+		binding = ActivityTripHistoryBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		binding.backFloatingBtn.setOnClickListener(v -> finish());
@@ -82,8 +76,8 @@ public class TripsActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		finish();
 		super.onBackPressed();
+		finish();
 	}
 
 	@SuppressLint("NotifyDataSetChanged")
@@ -93,12 +87,12 @@ public class TripsActivity extends AppCompatActivity {
 			CollectionReference tripReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.tripCollection);
 
-			List<TripModel> tripModelList = new ArrayList<>();
-			TripAdapter tripAdapter = new TripAdapter(this, tripModelList, tripModel -> {
+			List<TripHistoryModel> tripHistoryModelList = new ArrayList<>();
+			TripHistoryAdapter tripHistoryAdapter = new TripHistoryAdapter(this, tripHistoryModelList, tripHistoryModel -> {
 				// Handle item click if needed
 			});
 			binding.tripsHistoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-			binding.tripsHistoryRecyclerView.setAdapter(tripAdapter);
+			binding.tripsHistoryRecyclerView.setAdapter(tripHistoryAdapter);
 
 			tripReference.addSnapshotListener((value, error) -> {
 				if (error != null) {
@@ -110,20 +104,20 @@ public class TripsActivity extends AppCompatActivity {
 
 				if (value != null) {
 					binding.loadingLayout.setVisibility(View.GONE);
-					tripModelList.clear();
+					tripHistoryModelList.clear();
 					boolean hasTripHistory = false;
 					String userID = FirebaseMain.getUser().getUid();
 
 					for (QueryDocumentSnapshot tripSnapshot : value) {
-						TripModel tripModel = tripSnapshot.toObject(TripModel.class);
+						TripHistoryModel tripHistoryModel = tripSnapshot.toObject(TripHistoryModel.class);
 
-						if (tripModel.getDriverUserID().equals(userID)
-								|| tripModel.getPassengerUserID().equals(userID)) {
-							tripModelList.add(tripModel);
+						if (tripHistoryModel.getDriverUserID().equals(userID)
+								|| tripHistoryModel.getPassengerUserID().equals(userID)) {
+							tripHistoryModelList.add(tripHistoryModel);
 							hasTripHistory = true;
 						}
 					}
-					tripAdapter.notifyDataSetChanged();
+					tripHistoryAdapter.notifyDataSetChanged();
 
 					if (hasTripHistory) {
 						binding.noTripHistoryTextView.setVisibility(View.GONE);
@@ -149,6 +143,10 @@ public class TripsActivity extends AppCompatActivity {
 		if (voiceAssistantState.equals("enabled")) {
 			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Trip history");
+		}
+
+		if (fontSize.equals("large")){
+			binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 		}
 	}
 

@@ -124,8 +124,10 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		getUserSettings();
-		loadUserProfileInfo();
+		if (isAdded()) {
+			getUserSettings();
+			loadUserProfileInfo();
+		}
 	}
 
 	public void onBackPressed() {

@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.capstone.carecabs.Adapters.ChatPassengerAdapter;
 import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatPassengerModel;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityChatPassengerBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,9 +38,9 @@ import retrofit2.Response;
 
 public class ChatPassengerActivity extends AppCompatActivity {
 	private final String TAG = "ChatPassengerActivity";
+	private String fonSize = StaticDataPasser.storeFontSize;
 	private ActivityChatPassengerBinding binding;
 	private List<ChatPassengerModel> chatPassengerModelList = new ArrayList<>();
-
 	private DatabaseReference databaseReference;
 
 	@SuppressLint("SetTextI18n")
@@ -67,16 +69,18 @@ public class ChatPassengerActivity extends AppCompatActivity {
 					String message = binding.messageEditText.getText().toString();
 					binding.messageEditText.setText("");
 
-					sendMessage
-							(
-									getFCMToken,
-									getCurrentTimeAndDate(),
-									FirebaseMain.getUser().getUid(),
-									getPassengerID,
-									message
-							);
+					sendMessage(getFCMToken,
+							getCurrentTimeAndDate(),
+							FirebaseMain.getUser().getUid(),
+							getPassengerID,
+							message);
 				}
 			});
+		}
+
+		if (fonSize.equals("large")) {
+			binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			binding.messageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 		}
 	}
 
@@ -105,21 +109,19 @@ public class ChatPassengerActivity extends AppCompatActivity {
 		return String.format("%02d-%02d-%04d %02d:%02d:%02d", month, day, year, hour, minute, second);
 	}
 
-	private void sendMessage(
-			String fcmToken,
-			String chatDate,
-			String sender,
-			String receiver,
-			String message
-	) {
+	private void sendMessage(String fcmToken,
+	                         String chatDate,
+	                         String sender,
+	                         String receiver,
+	                         String message) {
+
 		databaseReference = FirebaseDatabase.getInstance().getReference();
 		ChatPassengerModel chatPassengerModel = new ChatPassengerModel(
 				chatDate,
 				sender,
 				receiver,
 				message,
-				"available"
-		);
+				"available");
 		databaseReference.child(FirebaseMain.chatCollection).push().setValue(chatPassengerModel);
 		notificationData(fcmToken, message);
 	}

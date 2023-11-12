@@ -58,7 +58,7 @@
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Chat User type"
-				android:textSize="18sp" />
+				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/recentMessageTextView"
@@ -69,7 +69,7 @@
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Recent message"
 				android:textAlignment="center"
-				android:textSize="16sp" />
+				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/chatBtn"

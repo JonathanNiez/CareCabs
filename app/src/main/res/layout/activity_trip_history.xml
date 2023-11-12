@@ -5,7 +5,7 @@
 	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context=".TripsActivity">
+	tools:context=".TripHistoryActivity">
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/customActionBarLayout"
@@ -20,13 +20,16 @@
 			android:layout_height="wrap_content">
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/myProfileTextView"
+				android:id="@+id/tripHistoryTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_margin="15dp"
+				android:layout_marginStart="15dp"
+				android:layout_marginTop="15dp"
+				android:layout_marginEnd="15dp"
+				android:layout_marginBottom="15dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="TRIPS HISTORY"
+				android:text="TRIP HISTORY"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
 
@@ -39,7 +42,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout"
-		tools:listitem="@layout/item_trips" />
+		tools:listitem="@layout/item_trip_history" />
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/loadingLayout"

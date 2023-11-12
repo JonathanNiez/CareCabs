@@ -9,15 +9,20 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.Voice;
 
 import com.capstone.carecabs.Fragments.BookingHistoryFragment;
 import com.capstone.carecabs.Fragments.CurrentBookingFragment;
+import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityBookingsBinding;
 
 import java.util.ArrayList;
 
 public class BookingsActivity extends AppCompatActivity {
 	private ActivityBookingsBinding binding;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private VoiceAssistant voiceAssistant;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -25,9 +30,12 @@ public class BookingsActivity extends AppCompatActivity {
 		binding = ActivityBookingsBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		binding.backFloatingBtn.setOnClickListener(v -> {
-			finish();
-		});
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Bookings");
+		}
+
+		binding.backFloatingBtn.setOnClickListener(v -> finish());
 
 		ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 		viewPagerAdapter.addFragment(new CurrentBookingFragment(), "Current");
@@ -39,12 +47,8 @@ public class BookingsActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		boolean shouldExit = false;
-		if (shouldExit){
-			super.onBackPressed();
-		}else {
-			finish();
-		}
+		super.onBackPressed();
+		finish();
 	}
 
 

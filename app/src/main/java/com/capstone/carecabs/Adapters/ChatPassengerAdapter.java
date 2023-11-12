@@ -1,6 +1,7 @@
 package com.capstone.carecabs.Adapters;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,12 @@ import com.bumptech.glide.Glide;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatPassengerModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 
 import java.util.List;
 
 public class ChatPassengerAdapter extends RecyclerView.Adapter<ChatPassengerAdapter.ChatPassengerViewHolder> {
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
 	private List<ChatPassengerModel> chatPassengerModelList;
 	private String profilePicture;
@@ -53,15 +56,18 @@ public class ChatPassengerAdapter extends RecyclerView.Adapter<ChatPassengerAdap
 	public void onBindViewHolder(@NonNull ChatPassengerViewHolder holder, int position) {
 		ChatPassengerModel chatDriverModel = chatPassengerModelList.get(position);
 
+		if (fontSize.equals("large")) {
+			holder.messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+		}
+
 		holder.messageTextView.setText(chatDriverModel.getMessage());
 
-		if (!profilePicture.equals("default")){
+		if (!profilePicture.equals("default")) {
 			Glide.with(context)
 					.load(profilePicture)
 					.placeholder(R.drawable.loading_gif)
 					.into(holder.chatProfilePicture);
 		}
-
 	}
 
 	@Override

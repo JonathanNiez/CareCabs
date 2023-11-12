@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	tools:context=".Chat.ChatPassengerActivity">
@@ -23,7 +22,10 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_margin="15dp"
+				android:layout_marginStart="15dp"
+				android:layout_marginTop="15dp"
+				android:layout_marginEnd="15dp"
+				android:layout_marginBottom="15dp"
 				android:fontFamily="@font/opensans_bold"
 				android:text="Passenger Name"
 				android:textColor="@color/white"
@@ -35,6 +37,7 @@
 
 	<androidx.recyclerview.widget.RecyclerView
 		android:id="@+id/chatRecyclerView"
+		style="@style/ChatRecyclerBackground"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_above="@id/messageInputLayout"

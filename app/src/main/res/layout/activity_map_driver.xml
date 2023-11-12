@@ -6,6 +6,8 @@
 	android:layout_height="match_parent"
 	tools:context=".Map.MapDriverActivity">
 
+	<!--TODO:ping location -->
+
 	<com.mapbox.maps.MapView
 		android:id="@+id/mapView"
 		android:layout_width="match_parent"
@@ -29,8 +31,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
-		android:layout_centerVertical="true"
-		android:layout_marginEnd="10dp"
+		android:layout_below="@id/maneuverView"
+		android:layout_marginEnd="5dp"
 		android:gravity="center"
 		android:orientation="vertical"
 		tools:ignore="RelativeOverlap">
@@ -109,8 +111,8 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentStart="true"
-		android:layout_centerVertical="true"
-		android:layout_marginStart="10dp"
+		android:layout_marginStart="5dp"
+		android:layout_below="@id/maneuverView"
 		android:gravity="center"
 		android:orientation="vertical"
 		tools:ignore="RelativeOverlap">
@@ -150,10 +152,43 @@
 			android:scaleType="centerCrop"
 			android:src="@drawable/chat_32" />
 
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/pingLocationImgBtn2"
+			style="@style/MapButtonsBackground"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentStart="true"
+			android:layout_centerVertical="true"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="5dp"
+			android:elevation="5dp"
+			android:padding="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/location_32" />
+
+		<androidx.appcompat.widget.AppCompatImageButton
+			android:id="@+id/showTripProgressImgBtn"
+			style="@style/MapButtonsBackground"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentEnd="true"
+			android:layout_centerVertical="true"
+			android:layout_marginStart="5dp"
+			android:layout_marginTop="5dp"
+			android:layout_marginEnd="5dp"
+			android:layout_marginBottom="5dp"
+			android:elevation="5dp"
+			android:padding="10dp"
+			android:scaleType="centerCrop"
+			android:src="@drawable/show_32" />
+
 	</androidx.appcompat.widget.LinearLayoutCompat>
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/tripProgressLayout"
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_above="@id/bottomNavigationView"
@@ -193,17 +228,28 @@
 					android:id="@+id/navigationStatusTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_centerVertical="true"
-					android:layout_marginStart="5dp"
-					android:layout_marginTop="5dp"
-					android:layout_marginEnd="5dp"
-					android:layout_marginBottom="5dp"
-					android:layout_toEndOf="@id/pingLocationImgBtn"
+					android:layout_centerInParent="true"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="Navigation status"
 					android:textAlignment="center"
 					android:textColor="@color/black"
 					android:textSize="17sp" />
+
+				<androidx.appcompat.widget.AppCompatImageButton
+					android:id="@+id/hideTripProgressImgBtn"
+					style="@style/MapButtonsBackground"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_alignParentEnd="true"
+					android:layout_centerVertical="true"
+					android:layout_marginStart="5dp"
+					android:layout_marginTop="5dp"
+					android:layout_marginEnd="5dp"
+					android:layout_marginBottom="5dp"
+					android:elevation="5dp"
+					android:padding="10dp"
+					android:scaleType="centerCrop"
+					android:src="@drawable/hide_32" />
 
 			</RelativeLayout>
 
@@ -215,11 +261,11 @@
 
 				<com.mapbox.navigation.ui.tripprogress.view.MapboxTripProgressView
 					android:id="@+id/tripProgressView"
+					style="@style/TripProgressTextColor"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
-					android:layout_weight="5"
-					app:tripProgressTextColor="@color/black" />
+					android:layout_weight="5" />
 
 				<androidx.appcompat.widget.AppCompatImageButton
 					android:id="@+id/stopNavigationImgBtn"
@@ -229,7 +275,7 @@
 					android:layout_margin="10dp"
 					android:layout_weight="1"
 					android:background="@color/white"
-					app:srcCompat="@android:drawable/ic_delete" />
+					app:srcCompat="@drawable/x_48" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 

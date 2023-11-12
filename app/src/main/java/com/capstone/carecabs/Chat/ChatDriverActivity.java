@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.capstone.carecabs.Firebase.APIService;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatDriverModel;
 import com.capstone.carecabs.Utility.NotificationHelper;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityChatDriverBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +40,7 @@ import retrofit2.Response;
 
 public class ChatDriverActivity extends AppCompatActivity {
 	private final String TAG = "ChatDriverActivity";
+	private String fonSize = StaticDataPasser.storeFontSize;
 	private DatabaseReference databaseReference;
 	private Intent intent;
 	private List<ChatDriverModel> chatDriverModelList = new ArrayList<>();
@@ -57,7 +60,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 			String getProfilePicture = intent.getStringExtra("profilePicture");
 			String getFCMToken = intent.getStringExtra("fcmToken");
 
-			binding.driverFullNameTextView.setText(getFullName);
+			binding.driverNameTextView.setText(getFullName);
 
 			readMessage(FirebaseMain.getUser().getUid(), getDriverID, getProfilePicture);
 
@@ -98,12 +101,18 @@ public class ChatDriverActivity extends AppCompatActivity {
 				}
 			});
 		}
+
+		if (fonSize.equals("large")) {
+			binding.driverNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			binding.messageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+		}
+
 	}
 
 	@Override
 	public void onBackPressed() {
-		finish();
 		super.onBackPressed();
+		finish();
 	}
 
 	private String generateRandomChatID() {
@@ -136,21 +145,19 @@ public class ChatDriverActivity extends AppCompatActivity {
 						String getDriverLastname = documentSnapshot.getString("lastname");
 						String getDriverProfilePicture = documentSnapshot.getString("profilePicture");
 
-						binding.driverFullNameTextView.setText(getDriverFirstname + " " + getDriverLastname);
+						binding.driverNameTextView.setText(getDriverFirstname + " " + getDriverLastname);
 
 						readMessage(FirebaseMain.getUser().getUid(), driverID, getDriverProfilePicture);
 					}
 				})
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> Log.e(TAG, "loadDriverInfo: " + e.getMessage()));
 	}
 
-	private void sendMessage(
-			String fcmToken,
-			String chatDate,
-			String sender,
-			String receiver,
-			String message
-	) {
+	private void sendMessage(String fcmToken,
+	                         String chatDate,
+	                         String sender,
+	                         String receiver,
+	                         String message) {
 		databaseReference = FirebaseDatabase.getInstance().getReference();
 		ChatDriverModel chatDriverModel = new ChatDriverModel(
 				chatDate,
@@ -172,6 +179,7 @@ public class ChatDriverActivity extends AppCompatActivity {
 				ChatDriverActivity.this,
 				chatDriverModelList,
 				profilePicture);
+
 		binding.chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		binding.chatRecyclerView.setAdapter(chatDriverAdapter);
 		databaseReference.addValueEventListener(new ValueEventListener() {

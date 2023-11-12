@@ -17,6 +17,8 @@ import com.capstone.carecabs.Register.RegisterUserTypeActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
+import com.capstone.carecabs.databinding.DialogInvalidCredentialsBinding;
+import com.capstone.carecabs.databinding.DialogLoginUnknownErrorOccuredBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -115,26 +117,24 @@ public class LoginActivity extends AppCompatActivity {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 			binding.loginBtn.setVisibility(View.GONE);
 
-			final String stringEmail = binding.emailEditText.getText().toString().trim();
-			final String stringPassword = binding.passwordEditText.getText().toString();
+			final String email = binding.emailEditText.getText().toString().trim();
+			final String password = binding.passwordEditText.getText().toString();
 
-			if (stringEmail.isEmpty()) {
+			if (email.isEmpty()) {
 
 				binding.emailEditText.setError("Please enter your Email");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
-			} else if (stringPassword.isEmpty()) {
+			} else if (password.isEmpty()) {
 
 				binding.passwordEditText.setError("Please enter your Password");
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
 			} else {
-				showPleaseWaitDialog();
 				binding.googleLoginBtn.setVisibility(View.GONE);
-
-				loginUser(stringEmail, stringPassword);
+				loginUser(email, password);
 			}
 		});
 	}
@@ -152,6 +152,8 @@ public class LoginActivity extends AppCompatActivity {
 	}
 
 	private void loginUser(String email, String password) {
+		showPleaseWaitDialog();
+
 		FirebaseMain.getAuth().signInWithEmailAndPassword(email, password)
 				.addOnCompleteListener(task -> {
 					if (task.isSuccessful()) {
@@ -194,13 +196,11 @@ public class LoginActivity extends AppCompatActivity {
 	private void showInvalidCredentialsDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_invalid_credentials, null);
+		DialogInvalidCredentialsBinding dialogInvalidCredentialsBinding =
+				DialogInvalidCredentialsBinding.inflate(getLayoutInflater());
+		View dialogView = dialogInvalidCredentialsBinding.getRoot();
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
-
-		okBtn.setOnClickListener(v -> {
-			closeInvalidCredentialsDialog();
-		});
+		dialogInvalidCredentialsBinding.okayBtn.setOnClickListener(v -> closeInvalidCredentialsDialog());
 
 		builder.setView(dialogView);
 
@@ -217,13 +217,11 @@ public class LoginActivity extends AppCompatActivity {
 	private void showUnknownOccurredDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_login_unknown_error_occured, null);
+		DialogLoginUnknownErrorOccuredBinding dialogLoginUnknownErrorOccuredBinding =
+				DialogLoginUnknownErrorOccuredBinding.inflate(getLayoutInflater());
+		View dialogView = dialogLoginUnknownErrorOccuredBinding.getRoot();
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
-
-		okBtn.setOnClickListener(v -> {
-			closeUnknownOccurredDialog();
-		});
+		dialogLoginUnknownErrorOccuredBinding.okayBtn.setOnClickListener(v -> closeUnknownOccurredDialog());
 
 		builder.setView(dialogView);
 

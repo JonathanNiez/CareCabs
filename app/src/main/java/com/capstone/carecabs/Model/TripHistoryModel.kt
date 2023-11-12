@@ -1,6 +1,6 @@
 package com.capstone.carecabs.Model
 
-data class TripModel(
+data class TripHistoryModel(
     val tripID: String = "",
     val bookingID: String = "",
     val tripStatus: String = "",

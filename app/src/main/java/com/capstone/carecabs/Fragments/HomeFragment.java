@@ -27,7 +27,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
-import com.capstone.carecabs.Adapters.CarouselPagerAdapter;
 import com.capstone.carecabs.BookingsActivity;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Chat.ChatDriverActivity;
@@ -44,7 +43,7 @@ import com.capstone.carecabs.Register.RegisterDriverActivity;
 import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.RequestLocationPermissionActivity;
-import com.capstone.carecabs.TripsActivity;
+import com.capstone.carecabs.TripHistoryActivity;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -53,8 +52,6 @@ import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.DialogHowToBookBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -70,8 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class HomeFragment extends Fragment implements
-		SettingsBottomSheet.FontSizeChangeListener {
+public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "HomeFragment";
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private String fontSize = StaticDataPasser.storeFontSize;
@@ -164,23 +160,19 @@ public class HomeFragment extends Fragment implements
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
-		getUserSettings();
-
 //		slideFragments.add(new CarouselFragment1());
 //		slideFragments.add(new CarouselFragment2());
 //		slideFragments.add(new CarouselFragment3());
 //		slideFragments.add(new CarouselFragment4());
 
-		binding.myProfileBtn.setOnClickListener(v -> {
-			goToAccountFragment();
-		});
+		binding.myProfileBtn.setOnClickListener(v -> goToAccountFragment());
 
 		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) ->
 				updateDriverStatus(b)
 		);
 
 		binding.tripHistoryBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), TripsActivity.class);
+			intent = new Intent(getActivity(), TripHistoryActivity.class);
 			startActivity(intent);
 		});
 
@@ -193,7 +185,6 @@ public class HomeFragment extends Fragment implements
 //		binding.viewPager.setAdapter(adapter);
 //
 //		startAutoSlide();
-		getCurrentTime();
 
 		return view;
 	}
@@ -202,7 +193,11 @@ public class HomeFragment extends Fragment implements
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		checkUserIfRegisterComplete();
+		if (isAdded()) {
+			getUserSettings();
+			checkUserIfRegisterComplete();
+			getCurrentTime();
+		}
 	}
 
 	private void getUserSettings() {
@@ -622,7 +617,7 @@ public class HomeFragment extends Fragment implements
 								binding.vehiclePlateNumberTextView.setText("Vehicle plate number: " +
 										passengerBookingModel.getVehiclePlateNumber());
 								passengerBookingModel.getDriverPingedLocation();
-								binding.pingedLocationTextView.setText("Ping location: " +
+								binding.pingedLocationTextView.setText("Ping location:\n" +
 										passengerBookingModel.getDriverPingedLocation());
 
 								binding.viewOnMapBtn.setOnClickListener(v ->

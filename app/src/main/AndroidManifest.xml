@@ -53,7 +53,7 @@
 			android:name=".HelpActivity"
 			android:exported="false" />
 		<activity
-			android:name=".TripsActivity"
+			android:name=".TripHistoryActivity"
 			android:exported="false" />
 		<activity
 			android:name=".PassengerBookingsOverviewActivity"

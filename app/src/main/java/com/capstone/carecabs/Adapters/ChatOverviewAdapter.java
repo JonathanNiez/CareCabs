@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatModel;
 import com.capstone.carecabs.Model.ChatOverviewModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ItemChatOverviewBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 
 public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapter.ChatOverviewViewHolder> {
 	private final String TAG = "ChatOverviewAdapter";
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
 	private ArrayList<ChatOverviewModel> chatOverviewModelArrayList;
 	private ChatOverviewOnClickListener chatOverviewOnClickListener;
@@ -58,6 +61,12 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 	@Override
 	public void onBindViewHolder(@NonNull ChatOverviewViewHolder holder, int position) {
 		ChatOverviewModel chatOverviewModel = chatOverviewModelArrayList.get(position);
+
+		if (fontSize.equals("large")) {
+			holder.binding.chatNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			holder.binding.chatUserTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			holder.binding.recentMessageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+		}
 
 		holder.binding.chatNameTextView.setText(chatOverviewModel.getFirstname()
 				+ " " + chatOverviewModel.getLastname());
@@ -112,7 +121,7 @@ public class ChatOverviewAdapter extends RecyclerView.Adapter<ChatOverviewAdapte
 							if (chatModel.getReceiver().equals(currentUserID) && chatModel.getSender().equals(chatUserID) ||
 									chatModel.getReceiver().equals(chatUserID) && chatModel.getSender().equals(currentUserID)) {
 
-								recentMessage= chatModel.getMessage();
+								recentMessage = chatModel.getMessage();
 							}
 						}
 					}

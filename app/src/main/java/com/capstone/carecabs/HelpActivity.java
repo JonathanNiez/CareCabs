@@ -48,6 +48,15 @@ public class HelpActivity extends AppCompatActivity implements SettingsBottomShe
 		binding = ActivityHelpBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
+		if (fontSize.equals("large")){
+			binding.helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+		}
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Help");
+		}
+
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
 		binding.backFloatingBtn.setOnClickListener(v -> finish());
@@ -112,7 +121,7 @@ public class HelpActivity extends AppCompatActivity implements SettingsBottomShe
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(this);
-			voiceAssistant.speak("Are you sure you want to exit the App?");
+			voiceAssistant.speak("Nigga");
 		}
 
 		dialogTutorialBinding.tutorialImageView.setImageResource(tutorialImage);

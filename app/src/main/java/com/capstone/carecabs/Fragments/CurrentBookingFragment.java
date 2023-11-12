@@ -93,16 +93,8 @@ public class CurrentBookingFragment extends Fragment {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		loadCurrentBookingFromDatabase();
-		getUserSettings();
-
-	}
-
-	private void getUserSettings() {
-
-		if (voiceAssistantState.equals("enabled")) {
-			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Bookings");
+		if (isAdded()){
+			loadCurrentBookingFromDatabase();
 		}
 	}
 

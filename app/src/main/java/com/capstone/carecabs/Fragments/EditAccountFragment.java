@@ -8,7 +8,6 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -44,7 +44,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -55,17 +54,11 @@ import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -75,6 +68,8 @@ import java.util.Objects;
 
 public class EditAccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "EditAccountFragment";
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private float textSizeSP;
 	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
@@ -99,7 +94,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private NetworkChangeReceiver networkChangeReceiver;
 	private Context context;
 	private DocumentReference documentReference;
-	private StorageReference storageReference;
 	private StorageReference profilePicturePath;
 	private StorageReference vehiclePicturePath;
 	private RequestManager requestManager;
@@ -171,14 +165,9 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		binding.vehicleInfoLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		if (context != null) {
-			requestManager = Glide.with(context);
-			FirebaseApp.initializeApp(context);
 
-			checkPermission();
-			getUserSettings();
-			loadUserProfileInfo();
-		}
+		requestManager = Glide.with(context);
+		FirebaseApp.initializeApp(context);
 
 		binding.profilePicture.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
@@ -207,17 +196,26 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		return view;
 	}
 
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()) {
+			checkPermission();
+			getUserSettings();
+			loadUserProfileInfo();
+		}
+	}
+
 	public void onBackPressed() {
 		backToAccountFragment();
 	}
 
 	private void getUserSettings() {
-		String fontSize = StaticDataPasser.storeFontSize;
-		String voiceAssistantToggle = StaticDataPasser.storeVoiceAssistantState;
 
 		setFontSize(fontSize);
 
-		if (voiceAssistantToggle.equals("enabled")) {
+		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Edit Profile");
 		}
@@ -724,42 +722,17 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 	}
 
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
+	}
+
 	private void setFontSize(String fontSize) {
 
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
-		} else {
-			textSizeSP = DEFAULT_TEXT_SIZE_SP;
-			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
-		}
-
-		binding.editProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.firstnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
-
-		binding.tapImageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.guideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-
-		binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-	}
-
-	@Override
-	public void onFontSizeChanged(boolean isChecked) {
-		if (isChecked) {
-			textSizeSP = INCREASED_TEXT_SIZE_SP;
-			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
-
 		} else {
 			textSizeSP = DEFAULT_TEXT_SIZE_SP;
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
@@ -1497,7 +1470,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 //			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
 //			byteBuffer.order(ByteOrder.nativeOrder());
 //
-//			//TODO
 //			int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
 //			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
 //			for (int pixelValue : intValues) {

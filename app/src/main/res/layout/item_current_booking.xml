@@ -41,6 +41,7 @@
 				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/textView1"
 					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -48,7 +49,7 @@
 					android:layout_margin="5dp"
 					android:fontFamily="@font/gabarito_medium"
 					android:text="Pickup location:"
-					android:textSize="18sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/pickupLocationTextView"
@@ -68,6 +69,7 @@
 					android:src="@drawable/loading_gif" />
 
 				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/textView2"
 					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -75,7 +77,7 @@
 					android:layout_margin="5dp"
 					android:fontFamily="@font/gabarito_medium"
 					android:text="Destination:"
-					android:textSize="18sp" />
+					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/destinationTextView"
@@ -84,7 +86,7 @@
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:text="Destination Location"
+					android:text="Destination"
 					android:textAlignment="center"
 					android:textSize="20sp" />
 
@@ -95,7 +97,6 @@
 					android:src="@drawable/loading_gif" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
-
 
 		</androidx.cardview.widget.CardView>
 
@@ -172,6 +173,18 @@
 					android:text="Vehicle Plate Number"
 					android:textSize="20sp" />
 
+				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/pingedLocationTextView"
+					style="@style/TextColor"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="center"
+					android:layout_margin="5dp"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="Pinged location: "
+					android:textAlignment="center"
+					android:textSize="20sp" />
+
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/chatDriverBtn"
 					android:layout_width="200dp"
@@ -184,6 +197,7 @@
 					android:orientation="horizontal">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/chatDriverTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_gravity="start|center_vertical"
@@ -242,6 +256,7 @@
 			android:orientation="horizontal">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/rateDriverTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="start|center_vertical"

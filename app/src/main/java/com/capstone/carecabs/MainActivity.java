@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 	private Intent intent;
 	private AlertDialog.Builder builder;
 	private AlertDialog exitAppDialog, enableLocationServiceDialog;
+	private Fragment currentFragment;
 	private boolean shouldExit = false;
 	private EditAccountFragment editAccountFragment;
 	private DocumentReference documentReference;
@@ -114,9 +115,13 @@ public class MainActivity extends AppCompatActivity {
 			intent = getIntent();
 			String activityData = intent.getStringExtra("activityData");
 
-			if (activityData != null && activityData.equals("fromMyProfile")) {
-				showFragment(new AccountFragment());
+			if (activityData != null) {
+				if (activityData.equals("fromMyProfile")) {
+					showFragment(new AccountFragment());
+
+				}
 			}
+
 		} else {
 			showFragment(new HomeFragment());
 		}
@@ -128,28 +133,11 @@ public class MainActivity extends AppCompatActivity {
 
 			if (item.getItemId() == R.id.home) {
 				showFragment(new HomeFragment());
-
-			}
-//			else if (item.getItemId() == R.id.myProfile) {
-//				showFragment(new AccountFragment());
-//
-//			}
-			else if (item.getItemId() == R.id.chat) {
+			} else if (item.getItemId() == R.id.chat) {
 				intent = new Intent(MainActivity.this, ChatOverviewActivity.class);
 				startActivity(intent);
 
 			}
-//			else if (item.getItemId() == R.id.map) {
-//
-//				if (LocationPermissionChecker.isLocationPermissionGranted(this)) {
-//					checkLocationService();
-//				} else {
-//					intent = new Intent(MainActivity.this, RequestLocationPermissionActivity.class);
-//					startActivity(intent);
-//					finish();
-//				}
-//
-//			}
 			return true;
 		});
 
@@ -157,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+		currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
 		if (currentFragment instanceof AboutFragment) {
 			((AboutFragment) currentFragment).onBackPressed();
@@ -200,35 +188,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private void exitApp() {
-		shouldExit = true;
-		finishAffinity();
-		super.onBackPressed();
-	}
-
-	private void retrieveAndStoreFCMToken() {
-		FirebaseMessaging.getInstance().getToken()
-				.addOnSuccessListener(this::updateFCMTokenInFireStore)
-				.addOnFailureListener(e -> Log.e(TAG, "retrieveAndStoreFCMToken: " + e.getMessage()));
-	}
-
-	private void updateFCMTokenInFireStore(String token) {
-		DocumentReference documentReference = FirebaseFirestore.getInstance()
-				.collection(FirebaseMain.userCollection)
-				.document(FirebaseMain.getUser().getUid());
-
-		documentReference.update("fcmToken", token)
-				.addOnSuccessListener(aVoid -> {
-
-					StaticDataPasser.storeFCMToken = token;
-
-					Log.i(TAG, "Device token stored: " + StaticDataPasser.storeFCMToken);
-				})
-				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
-	}
-
 	private void showSettingsBottomSheet() {
-		Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
+		currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
 
 		SettingsBottomSheet.FontSizeChangeListener fontSizeChangeListener = null;
 		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
@@ -262,6 +223,33 @@ public class MainActivity extends AppCompatActivity {
 			settingsBottomSheet.setFontSizeChangeListener(fontSizeChangeListener);
 		}
 		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
+	}
+
+	private void exitApp() {
+		shouldExit = true;
+		finishAffinity();
+		super.onBackPressed();
+	}
+
+	private void retrieveAndStoreFCMToken() {
+		FirebaseMessaging.getInstance().getToken()
+				.addOnSuccessListener(this::updateFCMTokenInFireStore)
+				.addOnFailureListener(e -> Log.e(TAG, "retrieveAndStoreFCMToken: " + e.getMessage()));
+	}
+
+	private void updateFCMTokenInFireStore(String token) {
+		DocumentReference documentReference = FirebaseFirestore.getInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(FirebaseMain.getUser().getUid());
+
+		documentReference.update("fcmToken", token)
+				.addOnSuccessListener(aVoid -> {
+
+					StaticDataPasser.storeFCMToken = token;
+
+					Log.i(TAG, "Device token stored: " + StaticDataPasser.storeFCMToken);
+				})
+				.addOnFailureListener(e -> Log.e(TAG, "updateFCMTokenInFireStore: " + e.getMessage()));
 	}
 
 	private void getUserSettingsFromFireStore() {
@@ -599,5 +587,4 @@ public class MainActivity extends AppCompatActivity {
 			editAccountFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		}
 	}
-
 }

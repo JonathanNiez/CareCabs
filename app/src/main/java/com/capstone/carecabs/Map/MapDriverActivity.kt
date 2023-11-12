@@ -36,9 +36,9 @@ import com.capstone.carecabs.LoginActivity
 import com.capstone.carecabs.MainActivity
 import com.capstone.carecabs.Model.PassengerBookingModel
 import com.capstone.carecabs.Model.PickupPassengerBottomSheetData
-import com.capstone.carecabs.Model.TripModel
+import com.capstone.carecabs.Model.TripHistoryModel
 import com.capstone.carecabs.R
-import com.capstone.carecabs.TripsActivity
+import com.capstone.carecabs.TripHistoryActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.DialogArrivedAtDestinationBinding
@@ -422,6 +422,8 @@ class MapDriverActivity : AppCompatActivity(),
         binding.navigationStatusTextView.visibility = View.GONE
         binding.pickupBtn.visibility = View.GONE
         binding.pingLocationImgBtn.visibility = View.GONE
+        binding.pingLocationImgBtn2.visibility = View.GONE
+        binding.showTripProgressImgBtn.visibility = View.GONE
 
         checkIfUserIsVerified()
 
@@ -693,7 +695,7 @@ class MapDriverActivity : AppCompatActivity(),
         binding.bottomNavigationView.setOnItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.trips -> {
-                    intent = Intent(this, TripsActivity::class.java)
+                    intent = Intent(this, TripHistoryActivity::class.java)
                     startActivity(intent)
                 }
 
@@ -736,8 +738,7 @@ class MapDriverActivity : AppCompatActivity(),
     @SuppressLint("SetTextI18n")
     private fun checkIfCurrentlyNavigatingToDestination() {
         val userID = FirebaseMain.getUser().uid
-        var driverReference: DocumentReference
-        driverReference = FirebaseMain.getFireStoreInstance()
+        val driverReference = FirebaseMain.getFireStoreInstance()
             .collection(FirebaseMain.userCollection)
             .document(userID)
 
@@ -780,98 +781,15 @@ class MapDriverActivity : AppCompatActivity(),
 
                     } else if (getNavigationStatus == "Navigating to pickup location") {
 
-                        var locationName: String
                         binding.pingLocationImgBtn.visibility = View.VISIBLE
+                        binding.pingLocationImgBtn2.visibility = View.VISIBLE
+
+                        binding.pingLocationImgBtn2.setOnClickListener {
+                            pingCurrentLocation(getBookingID)
+                        }
+
                         binding.pingLocationImgBtn.setOnClickListener {
-                            driverReference = FirebaseMain.getFireStoreInstance()
-                                .collection(FirebaseMain.userCollection)
-                                .document(userID)
-
-                            //ping location geocode
-                            val pickupLocationGeocode = MapboxGeocoding.builder()
-                                .accessToken(getString(R.string.mapbox_access_token))
-                                .query(
-                                    Point.fromLngLat(
-                                        StaticDataPasser.storePingedLongitude,
-                                        StaticDataPasser.storePingedLatitude
-                                    )
-                                )
-                                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-                                .build()
-
-                            pickupLocationGeocode.enqueueCall(object :
-                                Callback<GeocodingResponse?> {
-                                @SuppressLint("SetTextI18n", "LongLogTag")
-                                override fun onResponse(
-                                    call: Call<GeocodingResponse?>,
-                                    response: Response<GeocodingResponse?>
-                                ) {
-                                    if (response.isSuccessful) {
-                                        val body = response.body()
-                                        if (body != null && body.features().isNotEmpty()
-                                        ) {
-                                            val feature = body.features()[0]
-                                            locationName = feature.placeName().toString()
-
-                                            val pingLocation = HashMap<String, Any>()
-                                            pingLocation["driverPingedLocation"] = locationName
-                                            pingLocation["driverPingedLongitude"] =
-                                                StaticDataPasser.storePingedLongitude
-                                            pingLocation["driverPingedLatitude"] =
-                                                StaticDataPasser.storePingedLatitude
-
-                                            driverReference.update(pingLocation)
-                                                .addOnSuccessListener {
-                                                    showToast("Location pinged")
-                                                }
-                                                .addOnFailureListener { exception ->
-                                                    Log.e(
-                                                        TAG,
-                                                        "checkIfCurrentlyNavigatingToDestination: " + exception.message
-                                                    )
-                                                }
-
-                                            val bookingReference = FirebaseDatabase.getInstance()
-                                                .getReference(FirebaseMain.bookingCollection)
-
-                                            val updateBooking = HashMap<String, Any>()
-                                            updateBooking["driverPingedLocation"] = locationName
-                                            updateBooking["driverPingedLongitude"] =
-                                                StaticDataPasser.storePingedLongitude
-                                            updateBooking["driverPingedLatitude"] =
-                                                StaticDataPasser.storePingedLatitude
-
-                                            bookingReference.child(getBookingID)
-                                                .updateChildren(updateBooking)
-                                                .addOnSuccessListener {
-                                                    Log.i(
-                                                        TAG,
-                                                        "checkIfCurrentlyNavigatingToDestination onResponse: pinged location success"
-                                                    )
-                                                }
-                                                .addOnFailureListener {
-                                                    Log.e(
-                                                        TAG,
-                                                        "checkIfCurrentlyNavigatingToDestination onResponse: " + it.message
-                                                    )
-                                                }
-
-                                        } else {
-                                            Log.e(TAG, "location not found")
-                                        }
-                                    } else {
-                                        Log.e(TAG, "Geocode error " + response.message())
-                                    }
-                                }
-
-                                @SuppressLint("SetTextI18n", "LongLogTag")
-                                override fun onFailure(
-                                    call: Call<GeocodingResponse?>,
-                                    t: Throwable
-                                ) {
-                                    Log.e(TAG, "onFailure: " + t.message)
-                                }
-                            })
+                            pingCurrentLocation(getBookingID)
                         }
 
                         binding.navigationStatusTextView.visibility = View.VISIBLE
@@ -924,6 +842,101 @@ class MapDriverActivity : AppCompatActivity(),
             .addOnFailureListener {
                 Log.e(TAG, "checkIfCurrentlyNavigatingToDestination: " + it.message)
             }
+    }
+
+    private fun pingCurrentLocation(bookingID : String) {
+        val userID = FirebaseMain.getUser().uid
+        var locationName: String
+
+        val driverReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(userID)
+
+        //ping location geocode
+        val pickupLocationGeocode = MapboxGeocoding.builder()
+            .accessToken(getString(R.string.mapbox_access_token))
+            .query(
+                Point.fromLngLat(
+                    StaticDataPasser.storePingedLongitude,
+                    StaticDataPasser.storePingedLatitude
+                )
+            )
+            .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+            .build()
+
+        pickupLocationGeocode.enqueueCall(object :
+            Callback<GeocodingResponse?> {
+            @SuppressLint("SetTextI18n", "LongLogTag")
+            override fun onResponse(
+                call: Call<GeocodingResponse?>,
+                response: Response<GeocodingResponse?>
+            ) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null && body.features().isNotEmpty()
+                    ) {
+                        val feature = body.features()[0]
+                        locationName = feature.placeName().toString()
+
+                        val pingLocation = HashMap<String, Any>()
+                        pingLocation["driverPingedLocation"] = locationName
+                        pingLocation["driverPingedLongitude"] =
+                            StaticDataPasser.storePingedLongitude
+                        pingLocation["driverPingedLatitude"] =
+                            StaticDataPasser.storePingedLatitude
+
+                        driverReference.update(pingLocation)
+                            .addOnSuccessListener {
+                                showToast("Location pinged")
+                            }
+                            .addOnFailureListener { exception ->
+                                Log.e(
+                                    TAG,
+                                    "checkIfCurrentlyNavigatingToDestination: " + exception.message
+                                )
+                            }
+
+                        val bookingReference = FirebaseDatabase.getInstance()
+                            .getReference(FirebaseMain.bookingCollection)
+
+                        val updateBooking = HashMap<String, Any>()
+                        updateBooking["driverPingedLocation"] = locationName
+                        updateBooking["driverPingedLongitude"] =
+                            StaticDataPasser.storePingedLongitude
+                        updateBooking["driverPingedLatitude"] =
+                            StaticDataPasser.storePingedLatitude
+
+                        bookingReference.child(bookingID)
+                            .updateChildren(updateBooking)
+                            .addOnSuccessListener {
+                                Log.i(
+                                    TAG,
+                                    "checkIfCurrentlyNavigatingToDestination onResponse: pinged location success"
+                                )
+                            }
+                            .addOnFailureListener {
+                                Log.e(
+                                    TAG,
+                                    "checkIfCurrentlyNavigatingToDestination onResponse: " + it.message
+                                )
+                            }
+
+                    } else {
+                        Log.e(TAG, "location not found")
+                    }
+                } else {
+                    Log.e(TAG, "Geocode error " + response.message())
+                }
+            }
+
+            @SuppressLint("SetTextI18n", "LongLogTag")
+            override fun onFailure(
+                call: Call<GeocodingResponse?>,
+                t: Throwable
+            ) {
+                Log.e(TAG, "onFailure: " + t.message)
+            }
+        })
     }
 
     private fun loadPassengerLocationToMapFromDatabase() {
@@ -1004,6 +1017,9 @@ class MapDriverActivity : AppCompatActivity(),
                     if (isNavigatingToDestination) {
                         binding.passengersInMapTextView.text =
                             "You are currently navigating to Passenger's destination"
+
+                        binding.pingLocationImgBtn2.visibility = View.VISIBLE
+
                     } else {
                         if (hasPassengersWaiting) {
                             binding.passengersInMapTextView.text =
@@ -1226,6 +1242,15 @@ class MapDriverActivity : AppCompatActivity(),
     }
 
     private fun findRoute(destination: Point) {
+
+        binding.hideTripProgressImgBtn.setOnClickListener {
+            binding.tripProgressLayout.visibility = View.GONE
+            binding.showTripProgressImgBtn.visibility = View.VISIBLE
+        }
+
+        binding.showTripProgressImgBtn.setOnClickListener {
+            binding.tripProgressLayout.visibility = View.VISIBLE
+        }
 
         binding.mapView.getMapboxMap().apply {
             loadStyleUri(Style.TRAFFIC_DAY) {
@@ -1554,7 +1579,7 @@ class MapDriverActivity : AppCompatActivity(),
             .collection(FirebaseMain.tripCollection)
             .document(generateTripID)
 
-        val tripModel = TripModel(
+        val tripHistoryModel = TripHistoryModel(
             tripID = generateTripID,
             bookingID = bookingID,
             tripStatus = "Passenger on board",
@@ -1572,7 +1597,7 @@ class MapDriverActivity : AppCompatActivity(),
             destinationLatitude = destinationCoordinate.latitude()
         )
 
-        tripReference.set(tripModel)
+        tripReference.set(tripHistoryModel)
             .addOnSuccessListener {
 
                 val driverReference = FirebaseMain.getFireStoreInstance()

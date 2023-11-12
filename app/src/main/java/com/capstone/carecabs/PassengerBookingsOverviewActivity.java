@@ -24,7 +24,6 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Map.MapDriverActivity;
 import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
-import com.capstone.carecabs.Model.TripModel;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.ParcelablePoint;
@@ -37,7 +36,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.mapbox.geojson.Point;
 
 import java.util.ArrayList;
@@ -45,7 +43,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public class PassengerBookingsOverviewActivity extends AppCompatActivity {

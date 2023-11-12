@@ -3,6 +3,7 @@ package com.capstone.carecabs.Adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,6 +15,7 @@ import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.BookingsHistoryModel;
 import com.capstone.carecabs.Model.FavoritesModel;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ItemBookingHistoryBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,9 +36,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BookingsHistoryAdapter
-		extends RecyclerView.Adapter<BookingsHistoryAdapter.BookingHistoryViewHolder> {
-	private final String TAG = "BookingsHistoryAdapter";
+public class BookingsHistoryAdapter extends
+		RecyclerView.Adapter<BookingsHistoryAdapter.BookingHistoryViewHolder> {
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
 	private List<BookingsHistoryModel> bookingsHistoryModelList;
 	private ItemBookingsHistoryClickListener itemBookingsHistoryClickListener;
@@ -66,6 +68,17 @@ public class BookingsHistoryAdapter
 	@Override
 	public void onBindViewHolder(@NonNull BookingsHistoryAdapter.BookingHistoryViewHolder holder, int position) {
 		BookingsHistoryModel bookingsHistoryModel = bookingsHistoryModelList.get(position);
+
+		if (fontSize.equals("large")) {
+			float HEADER_TEXT_SIZE = 25;
+			float TEXT_SIZE = 22;
+
+			holder.binding.bookingDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			holder.binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+			holder.binding.bookingStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+			holder.binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			holder.binding.bookingStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+		}
 
 		holder.binding.bookingDateTextView.setText("Booking Date: " + bookingsHistoryModel.getBookingDate());
 		holder.binding.destinationTextView.setText(bookingsHistoryModel.getDestination());

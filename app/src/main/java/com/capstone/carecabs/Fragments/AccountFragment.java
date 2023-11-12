@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
@@ -36,7 +35,6 @@ import com.capstone.carecabs.Register.RegisterDriverActivity;
 import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
 import com.capstone.carecabs.ScanIDActivity;
-import com.capstone.carecabs.TripsActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -131,8 +129,6 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
-		getUserSettings();
-
 		binding.personalInfoBtn.setOnClickListener(v -> goToPersonalInfoFragment());
 
 		binding.editProfileBtn.setOnClickListener(v -> goToEditAccountFragment());
@@ -167,8 +163,10 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		checkUserIfRegisterComplete();
-
+		if (isAdded()){
+			getUserSettings();
+			checkUserIfRegisterComplete();
+		}
 	}
 
 	private void getUserSettings() {
@@ -346,6 +344,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.lastnameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.verificationStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.userTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);

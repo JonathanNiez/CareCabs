@@ -9,6 +9,7 @@ import com.capstone.carecabs.Adapters.ChatOverviewAdapter;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Model.ChatModel;
 import com.capstone.carecabs.Model.ChatOverviewModel;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityChatOverviewBinding;
 import com.google.firebase.FirebaseApp;
@@ -42,6 +43,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 	private final String TAG = "ChatOverviewActivity";
 	private List<String> stringUsersList;
 	private boolean hasAvailableChats = false;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
 	private ActivityChatOverviewBinding binding;
 
@@ -53,10 +55,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 
 		FirebaseApp.initializeApp(this);
 
-		SharedPreferences preferences = getSharedPreferences("userSettings", Context.MODE_PRIVATE);
-		String voiceAssistantToggle = preferences.getString("voiceAssistant", "disabled");
-
-		if (voiceAssistantToggle.equals("enabled")){
+		if (voiceAssistantState.equals("enabled")){
 			voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Chat");
 		}
@@ -73,8 +72,8 @@ public class ChatOverviewActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		finish();
 		super.onBackPressed();
+		finish();
 	}
 
 	//TODO:recent chat

@@ -37,7 +37,7 @@
 		android:id="@+id/tripsHistoryRecyclerView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		tools:listitem="@layout/item_trips" />
+		tools:listitem="@layout/item_trip_history" />
 
 	<androidx.cardview.widget.CardView
 		android:id="@+id/loadingLayout"
