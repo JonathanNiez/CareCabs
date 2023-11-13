@@ -136,7 +136,7 @@
 					android:layout_height="wrap_content"
 					android:layout_margin="10dp"
 					android:fontFamily="@font/gabarito_bold"
-					android:text="Your Driver is on the way"
+					android:text="Your Driver is on the way!"
 					android:textAlignment="center"
 					android:textSize="25sp" />
 
@@ -235,6 +235,7 @@
 
 		<androidx.appcompat.widget.AppCompatTextView
 			android:id="@+id/rateYourDriverTextView"
+			style="@style/TextColor"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
@@ -242,7 +243,6 @@
 			android:fontFamily="@font/gabarito_semibold"
 			android:text="Rate your Driver"
 			android:textAlignment="center"
-			android:textColor="@color/black"
 			android:textSize="20sp" />
 
 		<androidx.appcompat.widget.LinearLayoutCompat

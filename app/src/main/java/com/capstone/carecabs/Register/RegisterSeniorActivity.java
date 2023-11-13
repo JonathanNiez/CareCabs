@@ -29,9 +29,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
@@ -42,7 +39,6 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
-import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
 import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -72,7 +68,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private AlertDialog.Builder builder;
 	private AlertDialog notSeniorDialog, noInternetDialog,
 			registerFailedDialog, cancelRegisterDialog,
-			idNotScannedDialog, birthdateInputChoiceDialog,
+			idNotScannedDialog, enterBirthdateDialog,
 			cameraGalleryOptionsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterSeniorBinding binding;
@@ -459,13 +455,13 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 		builder.setView(dialogView);
 
-		birthdateInputChoiceDialog = builder.create();
-		birthdateInputChoiceDialog.show();
+		enterBirthdateDialog = builder.create();
+		enterBirthdateDialog.show();
 	}
 
 	private void closeEnterBirthdateDialog() {
-		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
-			birthdateInputChoiceDialog.dismiss();
+		if (enterBirthdateDialog != null && enterBirthdateDialog.isShowing()) {
+			enterBirthdateDialog.dismiss();
 		}
 	}
 

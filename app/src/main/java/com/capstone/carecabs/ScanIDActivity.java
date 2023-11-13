@@ -117,7 +117,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 		setContentView(binding.getRoot());
 
 		binding.idAlreadyScannedLayout.setVisibility(View.GONE);
-		binding.backBtn.setVisibility(View.GONE);
+		binding.backFloatingBtn.setVisibility(View.GONE);
 		binding.doneBtn.setVisibility(View.GONE);
 		binding.verifiedText.setVisibility(View.GONE);
 
@@ -142,22 +142,8 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 							showCancelScanIDDialog();
 						}
 					});
-					binding.backBtn.setOnClickListener(v -> {
-						if (isUserVerified) {
-							backToMyProfile();
-						} else {
-							showCancelScanIDDialog();
-						}
-					});
 				} else {
 					binding.backFloatingBtn.setOnClickListener(v -> {
-						if (isUserVerified) {
-							goToMainActivity();
-						} else {
-							showCancelScanIDDialog();
-						}
-					});
-					binding.backBtn.setOnClickListener(v -> {
 						if (isUserVerified) {
 							goToMainActivity();
 						} else {
@@ -226,7 +212,6 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 				showCancelScanIDDialog();
 			}
 		}
-
 	}
 
 	private void showSettingsBottomSheet() {
@@ -460,9 +445,10 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 								isUserVerified = true;
 
 								binding.idAlreadyScannedLayout.setVisibility(View.VISIBLE);
-								binding.backBtn.setVisibility(View.VISIBLE);
+								binding.backFloatingBtn.setVisibility(View.VISIBLE);
 								binding.idScanLayout.setVisibility(View.GONE);
 								binding.scanYourIDTypeTextView.setVisibility(View.GONE);
+								binding.scanLaterBtn.setVisibility(View.GONE);
 
 								String message = "You have already scanned your ID." +
 										"Would you like to scan again?" +
@@ -478,7 +464,6 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 									voiceAssistant = VoiceAssistant.getInstance(this);
 									voiceAssistant.speak("Scan ID");
 								}
-
 							}
 						}
 					})
@@ -820,7 +805,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 					binding.scanYourIDTypeTextView.setVisibility(View.VISIBLE);
 					binding.doneBtn.setVisibility(View.VISIBLE);
 					binding.idAlreadyScannedLayout.setVisibility(View.GONE);
-					binding.backBtn.setVisibility(View.GONE);
+					binding.backFloatingBtn.setVisibility(View.GONE);
 
 					if (getUserType != null) {
 						switch (getUserType) {

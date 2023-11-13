@@ -71,6 +71,7 @@ public class PassengerBookingsAdapter extends
 		String passengerName = passengerBookingModel.getPassengerName();
 
 		holder.binding.passengerNameTextView.setText(passengerName);
+
 		if (!passengerBookingModel.getPassengerProfilePicture().equals("default")) {
 			Glide.with(context)
 					.load(passengerBookingModel.getPassengerProfilePicture())

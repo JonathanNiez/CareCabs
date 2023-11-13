@@ -39,7 +39,6 @@
 		android:layout_alignParentBottom="true"
 		app:itemIconSize="30dp"
 		app:labelVisibilityMode="labeled"
-		app:menu="@menu/menu_bottom_nav"
-		/>
+		app:menu="@menu/menu_bottom_nav" />
 
 </RelativeLayout>

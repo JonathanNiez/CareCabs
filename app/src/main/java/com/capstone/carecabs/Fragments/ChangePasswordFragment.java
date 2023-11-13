@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -35,8 +37,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Objects;
 
-public class ChangePasswordFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
+public class ChangePasswordFragment extends Fragment implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ChangePasswordFragment";
+	private VoiceAssistant voiceAssistant;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private AlertDialog.Builder builder;
 	private AlertDialog passwordResetConfirmationDialog, cancelPasswordResetDialog,
 			passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
@@ -48,8 +54,6 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
-	private VoiceAssistant voiceAssistant;
-	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private FragmentChangePasswordBinding binding;
 
 	@Override
@@ -90,13 +94,20 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		context = getContext();
-		checkUserRegisterMethod();
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+
+			binding.emailEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Email"));
+			binding.oldPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Old Password"));
+			binding.newPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("New Password"));
+		}
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
 		binding.okayBtn.setOnClickListener(v -> backToAccountFragment());
 
-		binding.resetPasswordBtn.setOnClickListener(v -> {
+		binding.changePasswordBtn.setOnClickListener(v -> {
 			String stringOldPassword = binding.oldPasswordEditText.getText().toString();
 			String stringNewPassword = binding.newPasswordEditText.getText().toString();
 			String email = binding.emailEditText.getText().toString().trim();
@@ -115,6 +126,16 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		return view;
 	}
 
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()) {
+			getUserSettings();
+			checkUserRegisterMethod();
+		}
+	}
+
 	private void checkUserRegisterMethod() {
 		if (FirebaseMain.getUser() != null) {
 			DocumentReference documentReference = FirebaseMain.getFireStoreInstance()
@@ -126,12 +147,16 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 						if (documentSnapshot != null & documentSnapshot.exists()) {
 							String getRegisterType = documentSnapshot.getString("registerType");
 
-							if (getRegisterType.equals("google")) {
-								binding.googleSignInLayout.setVisibility(View.VISIBLE);
-								binding.editTextLayout.setVisibility(View.GONE);
-								binding.resetPasswordBtn.setVisibility(View.GONE);
-							} else {
-								showPasswordWarningDialog();
+							if (getRegisterType != null) {
+								if (getRegisterType.equals("google")) {
+									binding.googleSignInLayout.setVisibility(View.VISIBLE);
+									binding.editTextLayout.setVisibility(View.GONE);
+									binding.changePasswordBtn.setVisibility(View.GONE);
+								} else {
+									if (isAdded()) {
+										showPasswordWarningDialog();
+									}
+								}
 							}
 						}
 					})
@@ -144,14 +169,13 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 	}
 
 	private void getUserSettings() {
-		String fontSize = StaticDataPasser.storeFontSize;
-
 		setFontSize(fontSize);
+	}
 
-		if (voiceAssistantState.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("About us");
-		}
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
 	}
 
 	private void setFontSize(String fontSize) {
@@ -163,8 +187,17 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 			textSizeSP = DEFAULT_TEXT_SIZE_SP;
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
 		}
-	}
+		binding.changePasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.googleSignInTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
+		binding.passwordWarningTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+		binding.emailEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.oldPasswordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.newPasswordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+	}
 
 	private void showPasswordWarningDialog() {
 		builder = new AlertDialog.Builder(context);
@@ -238,17 +271,18 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		FirebaseMain.getAuth().sendPasswordResetEmail(email)
 				.addOnSuccessListener(unused -> {
 					binding.progressBarLayout.setVisibility(View.GONE);
-					binding.resetPasswordBtn.setVisibility(View.VISIBLE);
+					binding.changePasswordBtn.setVisibility(View.VISIBLE);
 
 					showPasswordUpdateSuccessDialog(email);
 
-				}).addOnFailureListener(e -> {
+				})
+				.addOnFailureListener(e -> {
 					binding.progressBarLayout.setVisibility(View.GONE);
-					binding.resetPasswordBtn.setVisibility(View.VISIBLE);
+					binding.changePasswordBtn.setVisibility(View.VISIBLE);
 
 					showPasswordUpdateFailedDialog();
 
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, "resetPassword: " + e.getMessage());
 				});
 	}
 
@@ -257,14 +291,13 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_failed, null);
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
 
-		okBtn.setOnClickListener(v -> {
+		okayBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		});
-
 
 		builder.setView(dialogView);
 
@@ -345,8 +378,4 @@ public class ChangePasswordFragment extends Fragment implements SettingsBottomSh
 		fragmentTransaction.commit();
 	}
 
-	@Override
-	public void onFontSizeChanged(boolean isChecked) {
-
-	}
 }

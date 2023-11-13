@@ -25,6 +25,7 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
 import com.capstone.carecabs.databinding.DialogCancelBookingBinding;
+import com.capstone.carecabs.databinding.DialogCancelRegisterBinding;
 import com.capstone.carecabs.databinding.DialogEnableVoiceAssistantBinding;
 import com.capstone.carecabs.databinding.DialogYouAreRegisteringAsBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -53,13 +54,14 @@ public class RegisterActivity extends AppCompatActivity implements
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String theme = StaticDataPasser.storeTheme;
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
 	private Date date;
 	private String getUserID, registerType, userType,
-			prefixPhoneNumber, accountCreationDate,
-			theme = "normal", fontSize = "normal";
-	private String voiceAssistantState = "enabled";
+			prefixPhoneNumber, accountCreationDate;
 	private VoiceAssistant voiceAssistant;
 	private Intent intent;
 	private static final int RC_SIGN_IN = 69;
@@ -221,17 +223,7 @@ public class RegisterActivity extends AppCompatActivity implements
 			binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
 			binding.backFloatingBtn.setOnClickListener(v -> {
-				String email = binding.emailEditText.getText().toString().trim();
-				String password = binding.passwordEditText.getText().toString();
-				String confirmPassword = binding.confirmPasswordEditText.getText().toString();
-				String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
-
-				if (!email.isEmpty() ||
-						!password.isEmpty() ||
-						!confirmPassword.isEmpty() ||
-						!phoneNumber.isEmpty()) {
-					showCancelRegisterDialog();
-				}
+				checkEditTextIfNotEmpty();
 			});
 
 			binding.nextBtn.setOnClickListener(v -> {
@@ -246,6 +238,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				if (email.isEmpty() ||
 						password.isEmpty() ||
 						phoneNumber.isEmpty()) {
+
 					binding.emailEditText.setError("Please enter your Email");
 
 					if (voiceAssistantState.equals("enabled")) {
@@ -257,7 +250,7 @@ public class RegisterActivity extends AppCompatActivity implements
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
 				} else if (!confirmPassword.equals(password)) {
-					binding.confirmPasswordEditText.setError("Password did not matched");
+					binding.confirmPasswordEditText.setError("Password not match");
 
 					if (voiceAssistantState.equals("enabled")) {
 						voiceAssistant = VoiceAssistant.getInstance(this);
@@ -298,20 +291,27 @@ public class RegisterActivity extends AppCompatActivity implements
 		if (shouldExit) {
 			super.onBackPressed();
 		} else {
-			String email = binding.emailEditText.getText().toString().trim();
-			String password = binding.passwordEditText.getText().toString();
-			String confirmPassword = binding.confirmPasswordEditText.getText().toString();
-			String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
-
-			if (!email.isEmpty() ||
-					!password.isEmpty() ||
-					!confirmPassword.isEmpty() ||
-					!phoneNumber.isEmpty()) {
-				showCancelRegisterDialog();
-			}
+			checkEditTextIfNotEmpty();
 		}
 	}
 
+	private void checkEditTextIfNotEmpty(){
+		String email = binding.emailEditText.getText().toString().trim();
+		String password = binding.passwordEditText.getText().toString();
+		String confirmPassword = binding.confirmPasswordEditText.getText().toString();
+		String phoneNumber = binding.phoneNumberEditText.getText().toString().trim();
+
+		if (!email.isEmpty() ||
+				!password.isEmpty() ||
+				!confirmPassword.isEmpty() ||
+				!phoneNumber.isEmpty()) {
+			showCancelRegisterDialog();
+		}else {
+			intent = new Intent(RegisterActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
 	private void showSettingsBottomSheet() {
 		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
 		settingsBottomSheet.setFontSizeChangeListener(this);
@@ -626,16 +626,16 @@ public class RegisterActivity extends AppCompatActivity implements
 	private void showCancelRegisterDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		DialogCancelBookingBinding dialogCancelBookingBinding =
-				DialogCancelBookingBinding.inflate(getLayoutInflater());
-		View dialogView = dialogCancelBookingBinding.getRoot();
+		DialogCancelRegisterBinding dialogCancelRegisterBinding =
+				DialogCancelRegisterBinding.inflate(getLayoutInflater());
+		View dialogView = dialogCancelRegisterBinding.getRoot();
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Do you want to cancel the Registration?");
 		}
 
-		dialogCancelBookingBinding.cancelBtn.setOnClickListener(v -> {
+		dialogCancelRegisterBinding.yesBtn.setOnClickListener(v -> {
 			intent = new Intent(this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
@@ -643,7 +643,7 @@ public class RegisterActivity extends AppCompatActivity implements
 			closeCancelRegisterDialog();
 		});
 
-		dialogCancelBookingBinding.closeBtn.setOnClickListener(v -> closeCancelRegisterDialog());
+		dialogCancelRegisterBinding.noBtn.setOnClickListener(v -> closeCancelRegisterDialog());
 
 		builder.setView(dialogView);
 

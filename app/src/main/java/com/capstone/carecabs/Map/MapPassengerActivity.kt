@@ -687,14 +687,14 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         }
     }
 
-    //TODO: driver location
-    private fun addDriverPingLocationToMap(
+    //driver pinged location
+    private fun addDriverPingedLocationToMap(
         driverLongitude: Double,
         driverLatitude: Double,
     ) {
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
-            R.drawable.location_pin_128
+            R.drawable.car_100_2
         ).let {
             val annotationApi = binding.mapView.annotations
             val pointAnnotationManager = annotationApi.createPointAnnotationManager()
@@ -827,7 +827,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                     binding.searchDestinationLayout.visibility = View.GONE
                                     binding.longTapTextView.text =
                                         "You are currently waiting for a Driver"
-                                    binding.searchDestinationLayout.visibility = View.VISIBLE
 
                                     val destinationLatitude =
                                         passengerBookingData.destinationLatitude
@@ -846,6 +845,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
 
                                     hasActiveBooking = true
 
+                                    binding.searchDestinationLayout.visibility = View.GONE
                                     binding.longTapTextView.text = "Your Driver is on the way!"
 
                                     val driverLongitude = passengerBookingData.driverPingedLongitude
@@ -857,26 +857,38 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                         passengerBookingData.destinationLongitude
                                     val getBookingID = passengerBookingData.bookingID
 
-                                    Log.i(
-                                        TAG,
-                                        "driverCoordinates: $driverLongitude \n $driverLatitude"
-                                    )
-
-                                    addDriverPingLocationToMap(driverLongitude, driverLatitude)
+                                    addDriverPingedLocationToMap(driverLongitude, driverLatitude)
 
                                     addDestinationAnnotationToMap(
                                         destinationLongitude,
                                         destinationLatitude,
                                         getBookingID
                                     )
+                                } else if (passengerBookingData.bookingStatus == "Passenger Onboard"
+                                    && passengerBookingData.passengerUserID == userID
+                                ) {
+
+                                    hasActiveBooking = true
+
+                                    binding.searchDestinationLayout.visibility = View.GONE
+                                    binding.longTapTextView.text =
+                                        "You are currently Onboard"
+
+                                } else if (passengerBookingData.bookingStatus == "Transported to destination"
+                                    && passengerBookingData.passengerUserID == userID
+                                ) {
+                                    hasActiveBooking = false
+
+                                    binding.longTapTextView.text = "Long tap/click on the Map you wish to go"
+                                    binding.searchDestinationLayout.visibility = View.VISIBLE
                                 }
 
-                                if (hasActiveBooking) {
-                                    mapboxMap = binding.mapView.getMapboxMap().apply {
+                                mapboxMap = if (hasActiveBooking) {
+                                    binding.mapView.getMapboxMap().apply {
                                         removeOnMapLongClickListener(this@MapPassengerActivity)
                                     }
                                 } else {
-                                    mapboxMap = binding.mapView.getMapboxMap().apply {
+                                    binding.mapView.getMapboxMap().apply {
                                         addOnMapLongClickListener(this@MapPassengerActivity)
                                     }
                                 }

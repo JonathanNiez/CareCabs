@@ -45,19 +45,15 @@
 			android:padding="5dp">
 
 			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/textSizeLayout"
-				style="@style/LongButton"
+				style="@style/SettingsBottomSheetButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:background="@drawable/custom_card_view_1"
-				android:elevation="5dp"
 				android:gravity="center"
 				android:orientation="horizontal"
 				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
-					android:id="@+id/fontImageView"
 					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
@@ -76,28 +72,24 @@
 
 				<androidx.appcompat.widget.SwitchCompat
 					android:id="@+id/fontSizeSwitch"
+					style="@style/SwitchBackground"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:checked="false"
-					app:thumbTint="@color/sky_blue" />
+					android:checked="false" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/changeContrastLayout"
-				style="@style/LongButton"
+				style="@style/SettingsBottomSheetButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:background="@drawable/custom_card_view_1"
-				android:elevation="5dp"
 				android:gravity="center"
 				android:orientation="horizontal"
 				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
-					android:id="@+id/eyeImageView"
 					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
@@ -116,28 +108,24 @@
 
 				<androidx.appcompat.widget.SwitchCompat
 					android:id="@+id/contrastSwitch"
+					style="@style/SwitchBackground"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:checked="false"
-					app:thumbTint="@color/sky_blue" />
+					android:checked="false" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
 			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/voiceAssistantLayout"
-				style="@style/LongButton"
+				style="@style/SettingsBottomSheetButton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:background="@drawable/custom_card_view_1"
-				android:elevation="5dp"
 				android:gravity="center"
 				android:orientation="horizontal"
 				android:padding="5dp">
 
 				<androidx.appcompat.widget.AppCompatImageView
-					android:id="@+id/voiceImageView"
 					style="@style/ImageViewTint"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
@@ -156,11 +144,11 @@
 
 				<androidx.appcompat.widget.SwitchCompat
 					android:id="@+id/voiceAssistantSwitch"
+					style="@style/SwitchBackground"
 					android:layout_width="0dp"
 					android:layout_height="wrap_content"
 					android:layout_weight="1"
-					android:checked="false"
-					app:thumbTint="@color/sky_blue" />
+					android:checked="false" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 

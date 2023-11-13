@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,8 @@ import com.capstone.carecabs.Utility.DistanceCalculator;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.FragmentPickupPassengerBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -83,10 +86,17 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 		binding.closeBtn.setOnClickListener(v -> dismiss());
 
-		loadPassengerBooking();
-
 		return view;
 
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()){
+			loadPassengerBooking();
+		}
 	}
 
 	//show the bottom sheet
@@ -98,7 +108,8 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		return fragment;
 	}
 
-	public void setPickupPassengerBottomSheetListener(PickupPassengerBottomSheetListener pickupPassengerBottomSheetListener) {
+	public void setPickupPassengerBottomSheetListener(
+			PickupPassengerBottomSheetListener pickupPassengerBottomSheetListener) {
 		mPickupPassengerBottomSheetListener = pickupPassengerBottomSheetListener;
 	}
 
@@ -113,7 +124,8 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	                           String destinationLocation,
 	                           Point destinationCoordinates) {
 
-		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new PickupPassengerBottomSheetData(
+		PickupPassengerBottomSheetData pickupPassengerBottomSheetData =
+				new PickupPassengerBottomSheetData(
 				bookingID,
 				passengerID,
 				passengerName,
@@ -276,8 +288,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 						String getProfilePicture = documentSnapshot.getString("profilePicture");
 						String fullName = getFirstname + " " + getLastname;
 
-						updatePassengerBooking(
-								fcmToken,
+						updatePassengerBooking(fcmToken,
 								passengerID,
 								passengerName,
 								passengerType,
@@ -291,8 +302,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 								fullName,
 								getProfilePicture,
 								getVehicleColor,
-								getVehiclePlateNumber
-						);
+								getVehiclePlateNumber);
 					}
 				})
 				.addOnFailureListener(e -> Log.e(TAG, "onFailure: " + e.getMessage()));
@@ -383,8 +393,12 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	                                String pickupLocation,
 	                                Double pickupLatitude,
 	                                Double pickupLongitude) {
+
 		if (FirebaseMain.getUser() != null) {
 
+			DocumentReference driverReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
 			Map<String, Object> updateDriverStatus = new HashMap<>();
 			updateDriverStatus.put("isAvailable", false);
@@ -395,9 +409,10 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 			updateDriverStatus.put("passengerType", passengerType);
 			updateDriverStatus.put("bookingID", bookingID);
 
-			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid())
-					.update(updateDriverStatus);
+			driverReference.update(updateDriverStatus)
+					.addOnSuccessListener(unused -> Log.i(TAG, "updateDriverStatus: driverReference updated successfully"))
+					.addOnFailureListener(e -> Log.e(TAG, "updateDriverStatus - onFailure: " + e.getMessage()));
+
 		}
 	}
 

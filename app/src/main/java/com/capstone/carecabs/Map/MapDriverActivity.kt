@@ -41,10 +41,12 @@ import com.capstone.carecabs.R
 import com.capstone.carecabs.TripHistoryActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
-import com.capstone.carecabs.databinding.DialogArrivedAtDestinationBinding
+import com.capstone.carecabs.databinding.DialogCancelNavigationToPassengerBinding
+import com.capstone.carecabs.databinding.DialogConfirmDropoffBinding
+import com.capstone.carecabs.databinding.DialogConfirmPickupBinding
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding
 import com.capstone.carecabs.databinding.DialogExitMapBinding
-import com.capstone.carecabs.databinding.DialogPassengerOnBoardBinding
+import com.capstone.carecabs.databinding.DialogUserNotVerifiedBinding
 import com.capstone.carecabs.databinding.MapboxItemViewAnnotationBinding
 import com.capstone.carecabs.databinding.MapboxPassengerWaitingAnnotationBinding
 import com.google.android.gms.maps.model.LatLng
@@ -265,7 +267,7 @@ class MapDriverActivity : AppCompatActivity(),
 
     private val routeProgressObserver = RouteProgressObserver { routeProgress ->
 
-        val DISTANCE_THRESHOLD = 100.0
+        val DISTANCE_THRESHOLD = 50.0
 
         val remainingDistance = routeProgress.distanceRemaining
 
@@ -381,8 +383,8 @@ class MapDriverActivity : AppCompatActivity(),
     private lateinit var enableLocationServiceDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
     private lateinit var cancelNavigationDialog: AlertDialog
-    private lateinit var passengerOnBoardDialog: AlertDialog
-    private lateinit var arrivedAtDestinationDialog: AlertDialog
+    private lateinit var confirmPickupDialog: AlertDialog
+    private lateinit var confirmDropOffDialog: AlertDialog
     private lateinit var passengerTransportedSuccessDialog: AlertDialog
     private lateinit var binding: ActivityMapDriverBinding
 
@@ -417,10 +419,10 @@ class MapDriverActivity : AppCompatActivity(),
         binding.tripProgressLayout.visibility = View.INVISIBLE
         binding.soundBtn.visibility = View.INVISIBLE
         binding.maneuverView.visibility = View.INVISIBLE
-        binding.arrivedAtDestinationBtn.visibility = View.GONE
+        binding.confirmDropOffBtn.visibility = View.GONE
+        binding.confirmPickupBtn.visibility = View.GONE
         binding.bookingsImgBtn.visibility = View.GONE
         binding.navigationStatusTextView.visibility = View.GONE
-        binding.pickupBtn.visibility = View.GONE
         binding.pingLocationImgBtn.visibility = View.GONE
         binding.pingLocationImgBtn2.visibility = View.GONE
         binding.showTripProgressImgBtn.visibility = View.GONE
@@ -435,7 +437,7 @@ class MapDriverActivity : AppCompatActivity(),
         binding.mapStyleSwitch.setOnCheckedChangeListener { compoundButton, b ->
             if (b) {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.MAPBOX_STREETS) {
+                    loadStyleUri(Style.SATELLITE_STREETS) {
 
                         showToast("Changed Map style to Streets")
 
@@ -443,7 +445,7 @@ class MapDriverActivity : AppCompatActivity(),
                 }
             } else {
                 binding.mapView.getMapboxMap().apply {
-                    loadStyleUri(Style.SATELLITE_STREETS) {
+                    loadStyleUri(Style.TRAFFIC_DAY) {
 
                         showToast("Changed Map style to Satellite")
 
@@ -512,12 +514,13 @@ class MapDriverActivity : AppCompatActivity(),
     @SuppressLint("SetTextI18n")
     private fun onMapReady() {
         binding.mapView.getMapboxMap().apply {
-            loadStyleUri(Style.SATELLITE_STREETS) {
+            loadStyleUri(Style.TRAFFIC_DAY) {
 
                 setupGesturesListener()
                 initializeLocationComponent()
                 initializeNavigationComponents()
-                checkIfCurrentlyNavigatingToDestination()
+                checkNavigationStatus()
+                initializeBottomNavButtons("")
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(
@@ -546,7 +549,6 @@ class MapDriverActivity : AppCompatActivity(),
                     }
                     playAnimatorsSequentially(zoom)
                 }
-
             }
         }
 //        binding.mapView.getMapboxMap().setCamera(
@@ -736,7 +738,7 @@ class MapDriverActivity : AppCompatActivity(),
     }
 
     @SuppressLint("SetTextI18n")
-    private fun checkIfCurrentlyNavigatingToDestination() {
+    private fun checkNavigationStatus() {
         val userID = FirebaseMain.getUser().uid
         val driverReference = FirebaseMain.getFireStoreInstance()
             .collection(FirebaseMain.userCollection)
@@ -745,93 +747,104 @@ class MapDriverActivity : AppCompatActivity(),
         driverReference.get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    val getNavigationStatus: String? = it.getString("navigationStatus")
-                    val getTripID = it.getString("tripID")!!
-                    val getBookingID = it.getString("bookingID")!!
+                    val getNavigationStatus: String = it.getString("navigationStatus")!!
+                    val getBookingID: String = it.getString("bookingID")!!
 
-                    if (getNavigationStatus == "Navigating to destination") {
-                        binding.pingLocationImgBtn.visibility = View.GONE
+                    when (getNavigationStatus) {
+                        "Navigating to destination" -> {
+                            isNavigatingToDestination = true
 
-                        isNavigatingToDestination = true
+                            val getTripID: String = it.getString("tripID")!!
+                            val getPassengerID: String = it.getString("passengerID")!!
+                            val getDestinationLatitude: Double =
+                                it.getDouble("destinationLatitude")!!
+                            val getDestinationLongitude: Double =
+                                it.getDouble("destinationLongitude")!!
 
-                        binding.navigationStatusTextView.visibility = View.VISIBLE
-                        binding.navigationStatusTextView.text =
-                            "Navigating to Passenger's destination"
-                        binding.passengersInMapTextView.text =
-                            "You are currently navigating to Passenger's destination"
+                            binding.pingLocationImgBtn.visibility = View.GONE
+                            binding.pingLocationImgBtn2.visibility = View.GONE
+                            binding.navigationStatusTextView.visibility = View.VISIBLE
+                            binding.navigationStatusTextView.text =
+                                "Navigating to\nPassenger's destination"
+                            binding.passengersInMapTextView.text =
+                                "You are currently navigating to Passenger's destination"
 
-                        val getDestinationLatitude: Double = it.getDouble("destinationLatitude")!!
-                        val getDestinationLongitude: Double = it.getDouble("destinationLongitude")!!
+                            //convert to point
+                            val destinationLatLng =
+                                LatLng(getDestinationLatitude, getDestinationLongitude)
 
-                        //convert to point
-                        val destinationLatLng =
-                            LatLng(getDestinationLatitude, getDestinationLongitude)
-                        val destinationCoordinates =
-                            Point.fromLngLat(
-                                destinationLatLng.longitude,
-                                destinationLatLng.latitude
-                            )
-
-                        createDestinationAnnotationToMap(destinationCoordinates)
-
-                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
-                        binding.arrivedAtDestinationBtn.setOnClickListener {
-                            showArrivedAtDestinationDialog(getTripID, getBookingID)
-                        }
-
-                    } else if (getNavigationStatus == "Navigating to pickup location") {
-
-                        binding.pingLocationImgBtn.visibility = View.VISIBLE
-                        binding.pingLocationImgBtn2.visibility = View.VISIBLE
-
-                        binding.pingLocationImgBtn2.setOnClickListener {
-                            pingCurrentLocation(getBookingID)
-                        }
-
-                        binding.pingLocationImgBtn.setOnClickListener {
-                            pingCurrentLocation(getBookingID)
-                        }
-
-                        binding.navigationStatusTextView.visibility = View.VISIBLE
-                        binding.pickupBtn.visibility = View.VISIBLE
-
-                        binding.passengersInMapTextView.text =
-                            "You are currently navigating to Passenger's pickup location"
-                        binding.navigationStatusTextView.text =
-                            "Navigating to Passenger's pickup location"
-
-                        binding.arrivedAtDestinationBtn.visibility = View.GONE
-
-                        val getPickupLatitude = it.getDouble("pickupLatitude")!!
-                        val getPickupLongitude = it.getDouble("pickupLongitude")!!
-                        val getPassengerType = it.getString("passengerType")
-
-                        binding.bookingsImgBtn.setOnClickListener {
-                            showPassengerBookingsBottomSheet(getBookingID)
-                        }
-
-                        initializeBottomNavButtons(getBookingID)
-
-                        when (getPassengerType) {
-                            "Senior Citizen" -> {
-                                addSeniorAnnotationToMap(
-                                    getPickupLongitude,
-                                    getPickupLatitude,
-                                    getBookingID
+                            val destinationCoordinates =
+                                Point.fromLngLat(
+                                    destinationLatLng.longitude,
+                                    destinationLatLng.latitude
                                 )
-                            }
 
-                            "Person with Disabilities (PWD)" -> {
-                                addPWDAnnotationToMap(
-                                    getPickupLongitude,
-                                    getPickupLatitude,
-                                    getBookingID
+                            createDestinationAnnotationToMap(destinationCoordinates)
+
+                            binding.confirmPickupBtn.visibility = View.GONE
+                            binding.confirmDropOffBtn.visibility = View.VISIBLE
+                            binding.confirmDropOffBtn.setOnClickListener {
+
+                                showConfirmDropOffDialog(
+                                    getTripID,
+                                    getBookingID,
+                                    getPassengerID
                                 )
                             }
                         }
 
-                    } else {
-                        loadPassengerLocationToMapFromDatabase()
+                        "Navigating to pickup location" -> {
+                            val getPickupLatitude: Double = it.getDouble("pickupLatitude")!!
+                            val getPickupLongitude: Double = it.getDouble("pickupLongitude")!!
+                            val getPassengerType: String = it.getString("passengerType")!!
+
+                            binding.navigationStatusTextView.visibility = View.VISIBLE
+                            binding.confirmPickupBtn.visibility = View.VISIBLE
+                            binding.confirmDropOffBtn.visibility = View.GONE
+                            binding.pingLocationImgBtn.visibility = View.VISIBLE
+                            binding.pingLocationImgBtn2.visibility = View.VISIBLE
+
+                            binding.pingLocationImgBtn2.setOnClickListener {
+                                pingCurrentLocation(getBookingID)
+                            }
+
+                            binding.pingLocationImgBtn.setOnClickListener {
+                                pingCurrentLocation(getBookingID)
+                            }
+
+                            binding.passengersInMapTextView.text =
+                                "You are currently navigating to Passenger's pickup location"
+                            binding.navigationStatusTextView.text =
+                                "Navigating to\nPassenger's pickup location"
+
+                            binding.bookingsImgBtn.setOnClickListener {
+                                showPassengerBookingsBottomSheet(getBookingID)
+                            }
+
+                            initializeBottomNavButtons(getBookingID)
+
+                            when (getPassengerType) {
+                                "Senior Citizen" -> {
+                                    addSeniorAnnotationToMap(
+                                        getPickupLongitude,
+                                        getPickupLatitude,
+                                        getBookingID
+                                    )
+                                }
+
+                                "Person with Disabilities (PWD)" -> {
+                                    addPWDAnnotationToMap(
+                                        getPickupLongitude,
+                                        getPickupLatitude,
+                                        getBookingID
+                                    )
+                                }
+                            }
+                        }
+
+                        else -> {
+                            loadPassengerLocationToMapFromDatabase()
+                        }
                     }
                 } else {
                     loadPassengerLocationToMapFromDatabase()
@@ -844,7 +857,7 @@ class MapDriverActivity : AppCompatActivity(),
             }
     }
 
-    private fun pingCurrentLocation(bookingID : String) {
+    private fun pingCurrentLocation(bookingID: String) {
         val userID = FirebaseMain.getUser().uid
         var locationName: String
 
@@ -887,7 +900,7 @@ class MapDriverActivity : AppCompatActivity(),
 
                         driverReference.update(pingLocation)
                             .addOnSuccessListener {
-                                showToast("Location pinged")
+                                showToast("Current location pinged")
                             }
                             .addOnFailureListener { exception ->
                                 Log.e(
@@ -1018,6 +1031,7 @@ class MapDriverActivity : AppCompatActivity(),
                         binding.passengersInMapTextView.text =
                             "You are currently navigating to Passenger's destination"
 
+                        binding.pingLocationImgBtn.visibility = View.VISIBLE
                         binding.pingLocationImgBtn2.visibility = View.VISIBLE
 
                     } else {
@@ -1112,7 +1126,6 @@ class MapDriverActivity : AppCompatActivity(),
                     }
                 )
             }
-
         }
     }
 
@@ -1246,10 +1259,13 @@ class MapDriverActivity : AppCompatActivity(),
         binding.hideTripProgressImgBtn.setOnClickListener {
             binding.tripProgressLayout.visibility = View.GONE
             binding.showTripProgressImgBtn.visibility = View.VISIBLE
+            binding.pingLocationImgBtn2.visibility = View.VISIBLE
         }
 
         binding.showTripProgressImgBtn.setOnClickListener {
             binding.tripProgressLayout.visibility = View.VISIBLE
+            binding.showTripProgressImgBtn.visibility = View.GONE
+            binding.pingLocationImgBtn2.visibility = View.GONE
         }
 
         binding.mapView.getMapboxMap().apply {
@@ -1258,13 +1274,9 @@ class MapDriverActivity : AppCompatActivity(),
         }
 
         if (isNavigatingToDestination) {
-
             showToast("Navigating to Passenger's destination")
-
         } else {
-
             showToast("Navigating to Passenger's pickup location")
-
         }
 
         val originLocation = navigationLocationProvider.lastLocation
@@ -1340,7 +1352,7 @@ class MapDriverActivity : AppCompatActivity(),
         mapboxNavigation.setNavigationRoutes(listOf())
 
         binding.mapView.getMapboxMap().apply {
-            loadStyleUri(Style.SATELLITE_STREETS) {
+            loadStyleUri(Style.TRAFFIC_DAY) {
             }
         }
 
@@ -1369,36 +1381,107 @@ class MapDriverActivity : AppCompatActivity(),
         return currentTimeMillis + travelTimeMillis
     }
 
-    //updates the trip
+    //TODO: handle arrival
     private fun handleDriverArrival() {
 
-        if (!isNavigatingToDestination) {
-//            val documentReference = FirebaseMain.getFireStoreInstance()
-//                .collection(FirebaseMain.tripCollection).document()
+        val driverReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(FirebaseMain.getUser().uid)
 
-            val sharedPreferences = getSharedPreferences("tripPreferences", Context.MODE_PRIVATE)
-            val tripIDPreference = sharedPreferences.getString("tripID", null)
+        driverReference.get()
+            .addOnSuccessListener {
 
-            val documentReference = FirebaseMain.getFireStoreInstance()
-                .collection(FirebaseMain.tripCollection)
-                .document(tripIDPreference.toString())
+                if (it.exists()) {
+                    val currentPassengersTransported =
+                        it.getLong("passengersTransported") ?: 0
+                    val newPassengersTransported = currentPassengersTransported + 1
+                    val currentDriverRating = it.getDouble("driverRatings") ?: 0.0
+                    val newDriverRating = currentDriverRating + 3.0
 
-            val updateTrip = HashMap<String, Any>()
-            updateTrip["tripStatus"] = "Passenger has transported to destination"
+                    val updateDriverStatus = HashMap<String, Any>()
+                    updateDriverStatus["isAvailable"] = true
+                    updateDriverStatus["passengerID"] = "none"
+                    updateDriverStatus["navigationStatus"] = "idle"
+                    updateDriverStatus["pickupLocation"] = "none"
+                    updateDriverStatus["pickupLatitude"] = 0.0
+                    updateDriverStatus["pickupLongitude"] = 0.0
+                    updateDriverStatus["destinationLocation"] = "none"
+                    updateDriverStatus["destinationLatitude"] = 0.0
+                    updateDriverStatus["destinationLongitude"] = 0.0
+                    updateDriverStatus["driverPingedLocation"] = "none"
+                    updateDriverStatus["driverPingedLatitude"] = 0.0
+                    updateDriverStatus["driverPingedLongitude"] = 0.0
+                    updateDriverStatus["passengerType"] = "none"
+                    updateDriverStatus["passengersTransported"] = newPassengersTransported
+                    updateDriverStatus["tripID"] = "none"
+                    updateDriverStatus["bookingID"] = "none"
+                    updateDriverStatus["driverRatings"] = newDriverRating
+                }
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "handleDriverArrival: " + it.message)
+            }
 
-            documentReference.update(updateTrip)
+        val tripReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.tripCollection)
+            .document()
+
+        if (isNavigatingToDestination) {
+
+            //update driver status
+            val updateDriverStatus = HashMap<String, Any>()
+            updateDriverStatus["tripID"] = "none"
+
+            driverReference.get()
                 .addOnSuccessListener {
 
                 }
                 .addOnFailureListener {
                     Log.e(TAG, "handleDriverArrival: " + it.message)
                 }
-        } else {
 
+            //update trip
+            val updateTrip = HashMap<String, Any>()
+            updateTrip["tripStatus"] = "Passenger has transported to destination"
+
+            tripReference.update(updateTrip)
+                .addOnSuccessListener {
+
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "handleDriverArrival: " + it.message)
+                }
+
+        } else {
+            //update driver status
+            val updateDriverStatus = HashMap<String, Any>()
+            updateDriverStatus["tripID"] = ""
+
+            driverReference.get()
+                .addOnSuccessListener { }
+                .addOnFailureListener {
+                    Log.e(TAG, "handleDriverArrival: " + it.message)
+                }
+
+            //update trip
+            val updateTrip = HashMap<String, Any>()
+            updateTrip["tripStatus"] = "Passenger has transported to destination"
+
+            tripReference.update(updateTrip)
+                .addOnSuccessListener {
+                    isNavigatingToDestination = true
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "handleDriverArrival: " + it.message)
+                }
         }
     }
 
-    private fun setTripAsComplete(tripID: String, bookingID: String) {
+    private fun setTripAsComplete(
+        tripID: String,
+        bookingID: String,
+        passengerID: String
+    ) {
 
         //update current booking
         val bookingReference = FirebaseDatabase.getInstance()
@@ -1410,7 +1493,7 @@ class MapDriverActivity : AppCompatActivity(),
 
         bookingReference.child(bookingID).updateChildren(updateBooking)
             .addOnSuccessListener {
-                Log.d(TAG, "setTripAsComplete: bookingReference updated successfully ")
+                Log.i(TAG, "setTripAsComplete: bookingReference updated successfully ")
             }
             .addOnFailureListener {
                 Log.e(TAG, "setTripAsComplete - bookingReference: " + it.message)
@@ -1423,7 +1506,6 @@ class MapDriverActivity : AppCompatActivity(),
 
         val updateTrip = HashMap<String, Any>()
         updateTrip["tripStatus"] = "Passenger has transported to destination"
-        updateTrip["isComplete"] = true
 
         tripReference.update(updateTrip)
             .addOnSuccessListener {
@@ -1441,6 +1523,7 @@ class MapDriverActivity : AppCompatActivity(),
         driverReference.get()
             .addOnSuccessListener { documentSnapshot ->
                 if (documentSnapshot.exists()) {
+
                     val currentPassengersTransported =
                         documentSnapshot.getLong("passengersTransported") ?: 0
                     val newPassengersTransported = currentPassengersTransported + 1
@@ -1449,11 +1532,12 @@ class MapDriverActivity : AppCompatActivity(),
 
                     val updateDriverStatus = HashMap<String, Any>()
                     updateDriverStatus["isAvailable"] = true
+                    updateDriverStatus["passengerID"] = "none"
                     updateDriverStatus["navigationStatus"] = "idle"
                     updateDriverStatus["pickupLocation"] = "none"
                     updateDriverStatus["pickupLatitude"] = 0.0
                     updateDriverStatus["pickupLongitude"] = 0.0
-                    updateDriverStatus["destinationLocation"] = "none"
+                    updateDriverStatus["destination"] = "none"
                     updateDriverStatus["destinationLatitude"] = 0.0
                     updateDriverStatus["destinationLongitude"] = 0.0
                     updateDriverStatus["driverPingedLocation"] = "none"
@@ -1464,7 +1548,6 @@ class MapDriverActivity : AppCompatActivity(),
                     updateDriverStatus["tripID"] = "none"
                     updateDriverStatus["bookingID"] = "none"
                     updateDriverStatus["driverRatings"] = newDriverRating
-
 
                     driverReference.update(updateDriverStatus)
                         .addOnSuccessListener {
@@ -1482,8 +1565,39 @@ class MapDriverActivity : AppCompatActivity(),
                     exception
                 )
             }
-    }
 
+        val passengerReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(passengerID)
+
+        passengerReference.get()
+            .addOnSuccessListener {
+                if (it.exists()) {
+
+                    val currentTotalTrips = it.getLong("totalTrips") ?: 0
+                    val addTotalTrips = currentTotalTrips + 1
+
+                    //TODO: dili ma update
+                    val updateTotalTrips = HashMap<String, Any>()
+                    updateBooking["totalTrips"] = addTotalTrips
+
+                    passengerReference.update(updateTotalTrips)
+                        .addOnSuccessListener {
+                            Log.i(TAG, "setTripAsComplete: passengerReference updated successfully")
+                        }
+                        .addOnFailureListener {
+                            Log.e(
+                                TAG,
+                                "setTripAsComplete - passengerReference" + it.message
+                            )
+                        }
+                }
+
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "setTripAsComplete - passengerReference: " + it.message)
+            }
+    }
 
     private fun getCurrentTimeAndDate(): String {
         val calendar = Calendar.getInstance() // Get a Calendar instance
@@ -1495,11 +1609,6 @@ class MapDriverActivity : AppCompatActivity(),
         val second = calendar.get(Calendar.SECOND)
 
         return "$month-$day-$year $hour:$minute:$second"
-    }
-
-    private fun generateRandomTripID(): String {
-        val uuid = UUID.randomUUID()
-        return uuid.toString()
     }
 
     private fun updateDriverAvailabilityStatus() {
@@ -1545,6 +1654,11 @@ class MapDriverActivity : AppCompatActivity(),
             }
     }
 
+    private fun generateRandomTripID(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
+    }
+
     //start the trip when the passenger is on board
     private fun storeTripToDatabase(
         generateTripID: String,
@@ -1556,7 +1670,7 @@ class MapDriverActivity : AppCompatActivity(),
         pickupLocation: String,
         pickupCoordinate: Point,
         destination: String,
-        destinationCoordinate: Point,
+        destinationCoordinate: Point
     ) {
 
         //update current booking
@@ -1564,11 +1678,11 @@ class MapDriverActivity : AppCompatActivity(),
             .getReference(FirebaseMain.bookingCollection)
 
         val updateBooking = HashMap<String, Any>()
-        updateBooking["bookingStatus"] = "Onboard"
+        updateBooking["bookingStatus"] = "Passenger Onboard"
 
         bookingReference.child(bookingID).updateChildren(updateBooking)
             .addOnSuccessListener {
-                Log.d(TAG, "storeTripToDatabase: bookingReference updated successfully")
+                Log.i(TAG, "storeTripToDatabase: bookingReference updated successfully")
             }
             .addOnFailureListener {
                 Log.e(TAG, "storeTripToDatabase: bookingReference " + it.message)
@@ -1582,7 +1696,7 @@ class MapDriverActivity : AppCompatActivity(),
         val tripHistoryModel = TripHistoryModel(
             tripID = generateTripID,
             bookingID = bookingID,
-            tripStatus = "Passenger on board",
+            tripStatus = "Passenger Onboard",
             driverUserID = FirebaseMain.getUser().uid,
             passengerName = passengerName,
             passengerType = passengerType,
@@ -1599,41 +1713,46 @@ class MapDriverActivity : AppCompatActivity(),
 
         tripReference.set(tripHistoryModel)
             .addOnSuccessListener {
-
-                val driverReference = FirebaseMain.getFireStoreInstance()
-                    .collection(FirebaseMain.userCollection)
-                    .document(FirebaseMain.getUser().uid)
-
-                val updateDriverStatus = HashMap<String, Any>()
-                updateDriverStatus["tripID"] = generateTripID
-                updateDriverStatus["navigationStatus"] = "Navigating to destination"
-                updateDriverStatus["destination"] = destination
-                updateDriverStatus["destinationLatitude"] = destinationCoordinate.latitude()
-                updateDriverStatus["destinationLongitude"] = destinationCoordinate.longitude()
-
-                driverReference.update(updateDriverStatus)
-                    .addOnSuccessListener {
-
-                        isNavigatingToDestination = true
-
-                        createDestinationAnnotationToMap(destinationCoordinate)
-                        findRoute(destinationCoordinate)
-                        checkIfCurrentlyNavigatingToDestination()
-
-                        binding.pickupBtn.visibility = View.GONE
-                        binding.arrivedAtDestinationBtn.visibility = View.VISIBLE
-
-                        showToast("Navigating to destination")
-
-                    }
-                    .addOnFailureListener {
-                        Log.e(TAG, "storeTripToDatabase: " + it.message)
-                    }
+                showToast("Navigating to destination")
             }
             .addOnFailureListener { e ->
                 showToast("Failed to navigate to destination")
 
                 Log.e(TAG, "storeTripToDatabase: " + e.message)
+            }
+
+        //update driver status
+        val driverReference = FirebaseMain.getFireStoreInstance()
+            .collection(FirebaseMain.userCollection)
+            .document(FirebaseMain.getUser().uid)
+
+        val updateDriverStatus = HashMap<String, Any>()
+        updateDriverStatus["tripID"] = generateTripID
+        updateDriverStatus["passengerID"] = passengerID
+        updateDriverStatus["navigationStatus"] = "Navigating to destination"
+        updateDriverStatus["destination"] = destination
+        updateDriverStatus["destinationLatitude"] = destinationCoordinate.latitude()
+        updateDriverStatus["destinationLongitude"] = destinationCoordinate.longitude()
+
+        driverReference.update(updateDriverStatus)
+            .addOnSuccessListener {
+
+                isNavigatingToDestination = true
+
+                createDestinationAnnotationToMap(destinationCoordinate)
+                findRoute(destinationCoordinate)
+                checkNavigationStatus()
+
+                binding.confirmPickupBtn.visibility = View.GONE
+                binding.confirmDropOffBtn.visibility = View.VISIBLE
+                binding.pingLocationImgBtn.visibility = View.GONE
+                binding.pingLocationImgBtn2.visibility = View.GONE
+
+                showToast("Navigating to destination")
+
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "storeTripToDatabase: " + it.message)
             }
     }
 
@@ -1670,10 +1789,11 @@ class MapDriverActivity : AppCompatActivity(),
         builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
 
-        val dialogView = layoutInflater.inflate(R.layout.dialog_user_not_verified, null)
-        val okBtn = dialogView.findViewById<Button>(R.id.okBtn)
+        val binding : DialogUserNotVerifiedBinding =
+            DialogUserNotVerifiedBinding.inflate(layoutInflater)
+        val dialogView = binding.root
 
-        okBtn.setOnClickListener {
+        binding.okayBtn.setOnClickListener {
             intent = Intent(this@MapDriverActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -1692,7 +1812,7 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
-    private fun showPassengerOnBoardDialog(
+    private fun showConfirmPickupDialog(
         generateTripID: String,
         bookingID: String,
         passengerID: String,
@@ -1705,8 +1825,8 @@ class MapDriverActivity : AppCompatActivity(),
         destinationCoordinates: Point,
     ) {
         builder = AlertDialog.Builder(this)
-        val binding: DialogPassengerOnBoardBinding =
-            DialogPassengerOnBoardBinding.inflate(layoutInflater)
+        val binding: DialogConfirmPickupBinding =
+            DialogConfirmPickupBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
         binding.confirmBtn.setOnClickListener {
@@ -1732,25 +1852,34 @@ class MapDriverActivity : AppCompatActivity(),
         }
 
         builder.setView(dialogView)
-        passengerOnBoardDialog = builder.create()
-        passengerOnBoardDialog.show()
+        confirmPickupDialog = builder.create()
+        confirmPickupDialog.show()
     }
 
     private fun closePassengerOnBoardDialog() {
-        if (passengerOnBoardDialog.isShowing) {
-            passengerOnBoardDialog.dismiss()
+        if (confirmPickupDialog.isShowing) {
+            confirmPickupDialog.dismiss()
         }
     }
 
-    private fun showArrivedAtDestinationDialog(tripID: String, bookingID: String) {
+    private fun showConfirmDropOffDialog(
+        tripID: String,
+        bookingID: String,
+        passengerID: String
+    ) {
         builder = AlertDialog.Builder(this)
 
-        val binding: DialogArrivedAtDestinationBinding =
-            DialogArrivedAtDestinationBinding.inflate(layoutInflater)
+        val binding: DialogConfirmDropoffBinding =
+            DialogConfirmDropoffBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
         binding.confirmBtn.setOnClickListener {
-            setTripAsComplete(tripID, bookingID)
+
+            setTripAsComplete(
+                tripID,
+                bookingID,
+                passengerID
+            )
 
             closeArrivedAtDestinationDialog()
         }
@@ -1760,13 +1889,13 @@ class MapDriverActivity : AppCompatActivity(),
         }
 
         builder.setView(dialogView)
-        arrivedAtDestinationDialog = builder.create()
-        arrivedAtDestinationDialog.show()
+        confirmDropOffDialog = builder.create()
+        confirmDropOffDialog.show()
     }
 
     private fun closeArrivedAtDestinationDialog() {
-        if (arrivedAtDestinationDialog.isShowing) {
-            arrivedAtDestinationDialog.dismiss()
+        if (confirmDropOffDialog.isShowing) {
+            confirmDropOffDialog.dismiss()
         }
     }
 
@@ -1792,21 +1921,26 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showCancelNavigationDialog() {
         builder = AlertDialog.Builder(this)
-        val dialogView =
-            layoutInflater.inflate(R.layout.dialog_cancel_navigation_to_passenger, null)
 
-        val cancelBtn = dialogView.findViewById<Button>(R.id.cancelBtn)
-        val closeBtn = dialogView.findViewById<Button>(R.id.closeBtn)
+        val binding: DialogCancelNavigationToPassengerBinding =
+            DialogCancelNavigationToPassengerBinding.inflate(layoutInflater)
+        val dialogView = binding.root
 
-        cancelBtn.setOnClickListener {
+        if (isNavigatingToDestination) {
+            binding.titleTextView.text = "NAVIGATING TO DESTINATION"
+            binding.bodyTextView.text = "You are currently Navigating to Passenger's Destination"
+        }
+
+        binding.cancelBtn.setOnClickListener {
             clearRouteAndStopNavigation()
-            checkIfCurrentlyNavigatingToDestination()
+            checkNavigationStatus()
 
             closeCancelNavigationDialog()
         }
-        closeBtn.setOnClickListener {
+        binding.goBackBtn.setOnClickListener {
             closeCancelNavigationDialog()
         }
 
@@ -1880,19 +2014,29 @@ class MapDriverActivity : AppCompatActivity(),
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
+            binding.confirmDropOffBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.visibility = View.VISIBLE
             binding.pingLocationImgBtn.visibility = View.VISIBLE
-            binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
+            binding.navigationStatusTextView.text = "Navigating to\nPassenger's destination"
 
         } else {
             findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
 
+            binding.confirmPickupBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.visibility = View.VISIBLE
             binding.pingLocationImgBtn.visibility = View.VISIBLE
-            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
-            binding.pickupBtn.setOnClickListener {
+            binding.navigationStatusTextView.text = "Navigating to\nPassenger's pickup location"
 
-                showPassengerOnBoardDialog(
+            binding.pingLocationImgBtn.setOnClickListener {
+                pingCurrentLocation(pickupPassengerBottomSheetData.bookingID)
+            }
+            binding.pingLocationImgBtn2.setOnClickListener {
+                pingCurrentLocation(pickupPassengerBottomSheetData.bookingID)
+            }
+
+            binding.confirmPickupBtn.setOnClickListener {
+
+                showConfirmPickupDialog(
                     generateRandomTripID(),
                     pickupPassengerBottomSheetData.bookingID,
                     pickupPassengerBottomSheetData.passengerID,
@@ -1917,19 +2061,31 @@ class MapDriverActivity : AppCompatActivity(),
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
+            binding.confirmDropOffBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.visibility = View.VISIBLE
             binding.pingLocationImgBtn.visibility = View.VISIBLE
-            binding.navigationStatusTextView.text = "Navigating to Passenger's destination"
+            binding.pingLocationImgBtn2.visibility = View.VISIBLE
+            binding.navigationStatusTextView.text = "Navigating to\nPassenger's destination"
 
         } else {
             findRoute(pickupPassengerBottomSheetData.pickupCoordinates)
 
+            binding.confirmPickupBtn.visibility = View.VISIBLE
             binding.navigationStatusTextView.visibility = View.VISIBLE
             binding.pingLocationImgBtn.visibility = View.VISIBLE
-            binding.navigationStatusTextView.text = "Navigating to Passenger's pickup location"
-            binding.pickupBtn.setOnClickListener {
+            binding.pingLocationImgBtn2.visibility = View.VISIBLE
+            binding.navigationStatusTextView.text = "Navigating to\nPassenger's pickup location"
 
-                showPassengerOnBoardDialog(
+            binding.pingLocationImgBtn.setOnClickListener {
+                pingCurrentLocation(pickupPassengerBottomSheetData.bookingID)
+            }
+            binding.pingLocationImgBtn2.setOnClickListener {
+                pingCurrentLocation(pickupPassengerBottomSheetData.bookingID)
+            }
+
+            binding.confirmPickupBtn.setOnClickListener {
+
+                showConfirmPickupDialog(
                     generateRandomTripID(),
                     pickupPassengerBottomSheetData.bookingID,
                     pickupPassengerBottomSheetData.passengerID,

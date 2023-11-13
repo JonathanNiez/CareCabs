@@ -47,7 +47,6 @@ import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.ByteArrayOutputStream;
@@ -56,12 +55,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
-public class RegisterDriverActivity extends AppCompatActivity {
+public class RegisterDriverActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterDriver";
 	private final String userType = "Driver";
-	private String profilePictureURL = "default", sex, birthDate, month;
+	private String profilePictureURL = "default";
+	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
 	private String vehiclePictureURL = "none";
@@ -76,7 +76,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog noInternetDialog, registerFailedDialog,
-			idNotScannedDialog, cancelRegisterDialog, birthdateInputChoiceDialog,
+			idNotScannedDialog, cancelRegisterDialog, enterBirthdateDialog,
 			cameraGalleryOptionsDialog, pleaseWaitDialog;
 	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
@@ -123,7 +123,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		binding.progressBarLayout.setVisibility(View.GONE);
 
-		checkPermission();
+		checkCameraAndStoragePermission();
 
 		FirebaseApp.initializeApp(this);
 
@@ -147,6 +147,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
@@ -176,6 +177,10 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
+		binding.backFloatingBtn.setOnClickListener(v -> checkEditTextIfNotEmpty());
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
+
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 
@@ -184,26 +189,22 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			String plateNumber = binding.vehiclePlateNumberEditText.getText().toString().trim();
 			String vehicleColor = binding.vehicleColorEditText.getText().toString().trim();
 
-			if (firstname.isEmpty()
-					|| lastname.isEmpty()
-					|| birthDate == null
-					|| age == 0
-					|| sex == null
-			) {
+			if (firstname.isEmpty() ||
+					lastname.isEmpty() ||
+					birthDate == null ||
+					age == 0 ||
+					sex == null) {
+
 				Toast.makeText(this, "Please enter your info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else if (plateNumber.isEmpty() || vehicleColor.isEmpty()) {
 				Toast.makeText(this, "Please enter your vehicle info", Toast.LENGTH_LONG).show();
 			} else {
-				showPleaseWaitDialog();
-
-				updateUserRegisterToFireStore(
-						firstname,
+				updateUserRegistrationToFireStore(firstname,
 						lastname,
 						vehicleColor,
-						plateNumber
-				);
+						plateNumber);
 			}
 		});
 	}
@@ -218,10 +219,33 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		}
 	}
 
-	private void updateUserRegisterToFireStore(String firstname,
-	                                           String lastname,
-	                                           String vehicleColor,
-	                                           String vehiclePlateNumber) {
+	private void checkEditTextIfNotEmpty() {
+		String firstname = binding.firstnameEditText.getText().toString().trim();
+		String lastname = binding.lastnameEditText.getText().toString().trim();
+		String vehicleColor = binding.vehicleColorEditText.getText().toString();
+		String vehiclePlateNumber = binding.vehiclePlateNumberEditText.getText().toString().trim();
+
+		if (!firstname.isEmpty() ||
+				!lastname.isEmpty() ||
+				!vehicleColor.isEmpty() ||
+				!vehiclePlateNumber.isEmpty() ||
+				birthDate != null ||
+				age == 0 ||
+				sex != null) {
+			showCancelRegisterDialog();
+		} else {
+			intent = new Intent(RegisterDriverActivity.this, LoginOrRegisterActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
+
+	private void updateUserRegistrationToFireStore(String firstname,
+	                                               String lastname,
+	                                               String vehicleColor,
+	                                               String vehiclePlateNumber) {
+		showPleaseWaitDialog();
+
 		if (FirebaseMain.getUser() != null) {
 			String userID = FirebaseMain.getUser().getUid();
 
@@ -247,6 +271,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			registerUser.put("navigationStatus", "idle");
 			registerUser.put("destinationLatitude", 0.0);
 			registerUser.put("destinationLongitude", 0.0);
+			registerUser.put("bookingID", "none");
 			registerUser.put("tripID", "none");
 
 			documentReference.update(registerUser)
@@ -278,6 +303,23 @@ public class RegisterDriverActivity extends AppCompatActivity {
 			startActivity(intent);
 			finish();
 		}
+	}
+
+	private void showSettingsBottomSheet() {
+		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+		settingsBottomSheet.setFontSizeChangeListener(this);
+		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
+	}
+
+	//TODO: font size
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
+	}
+
+	private void setFontSize(String fontSize) {
+
 	}
 
 	private void updateCancelledRegister(String userID) {
@@ -342,7 +384,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			updateUserRegisterToFireStore(
+			updateUserRegistrationToFireStore(
 					firstname,
 					lastname,
 					vehicleColor,
@@ -365,7 +407,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		}
 	}
 
-	private void checkPermission() {
+	private void checkCameraAndStoragePermission() {
 		// Check for camera permission
 		if (ContextCompat.checkSelfPermission(RegisterDriverActivity.this,
 				android.Manifest.permission.CAMERA)
@@ -465,9 +507,7 @@ public class RegisterDriverActivity extends AppCompatActivity {
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
-		yesBtn.setOnClickListener(v -> {
-			updateCancelledRegister(FirebaseMain.getUser().getUid());
-		});
+		yesBtn.setOnClickListener(v -> updateCancelledRegister(FirebaseMain.getUser().getUid()));
 
 		noBtn.setOnClickListener(v -> {
 			closeCancelRegisterDialog();
@@ -629,13 +669,13 @@ public class RegisterDriverActivity extends AppCompatActivity {
 
 		builder.setView(dialogView);
 
-		birthdateInputChoiceDialog = builder.create();
-		birthdateInputChoiceDialog.show();
+		enterBirthdateDialog = builder.create();
+		enterBirthdateDialog.show();
 	}
 
 	private void closeEnterBirthdateDialog() {
-		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
-			birthdateInputChoiceDialog.dismiss();
+		if (enterBirthdateDialog != null && enterBirthdateDialog.isShowing()) {
+			enterBirthdateDialog.dismiss();
 		}
 	}
 

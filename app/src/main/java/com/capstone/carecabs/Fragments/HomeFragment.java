@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -105,6 +105,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
+		closeHowToBookDialog();
 	}
 
 	@Override
@@ -115,7 +116,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
-
+		closeHowToBookDialog();
 	}
 
 	@Override
@@ -125,6 +126,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		if (requestManager != null) {
 			requestManager.clear(binding.driverProfilePictureImageView);
 			requestManager.clear(binding.currentPassengerProfilePictureImageView);
+			requestManager.clear(binding.driverDropOffProfilePicture);
 		}
 	}
 
@@ -167,8 +169,8 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 		binding.myProfileBtn.setOnClickListener(v -> goToAccountFragment());
 
-		binding.driverStatusSwitch.setOnCheckedChangeListener((compoundButton, b) ->
-				updateDriverStatus(b)
+		binding.driverStatusSwitch.setOnCheckedChangeListener(
+				(compoundButton, isChecked) -> updateDriverAvailability(isChecked)
 		);
 
 		binding.tripHistoryBtn.setOnClickListener(v -> {
@@ -205,18 +207,15 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		setFontSize(fontSize);
 
 		if (voiceAssistantState.equals("enabled")) {
-			VoiceAssistant voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Home");
 		}
 	}
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-
 		String fontSize = isChecked ? "large" : "normal";
-
 		setFontSize(fontSize);
-
 	}
 
 	private void setFontSize(String fontSize) {
@@ -234,6 +233,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.currentTimeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.driverDropOffNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -252,7 +252,9 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.setAvailabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -325,13 +327,26 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		}
 	}
 
-	private void updateDriverStatus(boolean isAvailable) {
+	@SuppressLint("SetTextI18n")
+	private void updateDriverAvailability(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
 			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid())
-					.update("isAvailable", isAvailable);
+					.update("isAvailable", isAvailable)
+					.addOnSuccessListener(unused -> {
+						if (isAvailable) {
+							binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.green));
+							binding.driverStatusTextView2.setText("Available");
+						} else {
+							binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.light_red));
+							binding.driverStatusTextView2.setText("Busy");
+						}
 
-			getUserTypeAndLoadUserProfileInfo();
+						Log.i(TAG, "updateDriverStatus: driver status updated successfully");
+					})
+					.addOnFailureListener(e ->
+							Log.e(TAG, "updateDriverStatus: " + e.getMessage()));
+
 		}
 	}
 
@@ -405,6 +420,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								if (isAdded()) {
 									showHowToBookDialog();
 								}
+
 							} else {
 								binding.hiTextView.setText("Welcome back!");
 							}
@@ -440,17 +456,17 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 										binding.bookARideTextView.setText("Pickup Passengers");
 										binding.driverStatsLayout.setVisibility(View.VISIBLE);
 										binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
-										binding.passengerTransportedTextView.setText("Passengers\nTransported: " + getPassengerTransported);
-										binding.driverStatusTextView.setVisibility(View.VISIBLE);
+										binding.passengerTransportedTextView.setText("Passengers\nTransported: " +
+												getPassengerTransported);
 
 										if (isAvailable) {
-											binding.driverStatusTextView.setTextColor(Color.BLUE);
-											binding.driverStatusTextView.setText("Driver Availability: Available");
+											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.green));
+											binding.driverStatusTextView2.setText("Available");
 											binding.driverStatusSwitch.setChecked(true);
-
 										} else {
-											binding.driverStatusTextView.setTextColor(Color.RED);
-											binding.driverStatusTextView.setText("Driver Availability: Busy");
+											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.light_red));
+											binding.driverStatusTextView2.setText("Busy");
+											binding.driverStatusSwitch.setChecked(false);
 										}
 
 										break;
@@ -460,15 +476,15 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 										checkBookingStatus();
 
+										Long getTotalTrips = documentSnapshot.getLong("totalTrips");
+										binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+										binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
+
 										binding.bookingsTextView.setText("My Bookings");
 										binding.bookingsBtn.setOnClickListener(v -> {
 											intent = new Intent(getActivity(), BookingsActivity.class);
 											startActivity(intent);
 										});
-
-										Long getTotalTrips = documentSnapshot.getLong("totalTrips");
-										binding.passengerStatsLayout.setVisibility(View.VISIBLE);
-										binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
 
 										break;
 								}
@@ -624,7 +640,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 										checkLocationService(passengerBookingModel.getPassengerType()));
 
 							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
-									&& passengerBookingModel.getBookingStatus().equals("Onboard")) {
+									&& passengerBookingModel.getBookingStatus().equals("Passenger Onboard")) {
 
 								binding.driverOnTheWayLayout.setVisibility(View.GONE);
 								binding.toDestinationLayout.setVisibility(View.VISIBLE);
@@ -637,9 +653,16 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 								binding.driverOnTheWayLayout.setVisibility(View.GONE);
 								binding.toDestinationLayout.setVisibility(View.GONE);
+								binding.driverRatedLayout.setVisibility(View.GONE);
 								binding.bookARideBtn.setVisibility(View.VISIBLE);
 								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
-								binding.driverRatedLayout.setVisibility(View.GONE);
+
+								if (!passengerBookingModel.getDriverProfilePicture().equals("default")) {
+									Glide.with(context)
+											.load(passengerBookingModel.getDriverProfilePicture())
+											.placeholder(R.drawable.loading_gif)
+											.into(binding.driverDropOffProfilePicture);
+								}
 
 								binding.rateDriverBtn.setOnClickListener(v -> {
 									if (binding.driverRatingBar.getRating() == 0) {
@@ -766,6 +789,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void showHowToBookDialog() {
 		builder = new AlertDialog.Builder(context);
 

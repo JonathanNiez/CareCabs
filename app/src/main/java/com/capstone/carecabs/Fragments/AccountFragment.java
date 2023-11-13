@@ -18,6 +18,7 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -55,8 +56,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private String userType;
-	private final String fontSize = StaticDataPasser.storeFontSize;
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private Intent intent;
 	private AlertDialog.Builder builder;
 	private AlertDialog signOutDialog, pleaseWaitDialog,
@@ -105,7 +106,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		super.onDestroyView();
 
 		if (requestManager != null) {
-			requestManager.clear(binding.profilePic);
+			requestManager.clear(binding.profilePicture);
 		}
 	}
 
@@ -163,7 +164,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (isAdded()){
+		if (isAdded()) {
 			getUserSettings();
 			checkUserIfRegisterComplete();
 		}
@@ -189,24 +190,25 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		if (FirebaseMain.getUser() != null) {
 
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(FirebaseMain.getUser().getUid());
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot.exists()) {
-							boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+							boolean isRegisterComplete = documentSnapshot.getBoolean("isRegisterComplete");
 
-							if (!getUserRegisterStatus) {
-								showRegisterNotCompleteDialog();
-							} else {
+							if (isRegisterComplete) {
 								loadUserProfileInfo();
+							} else {
+								showRegisterNotCompleteDialog();
 							}
 						}
 					})
 					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfRegisterComplete: " + e.getMessage()));
 
 		} else {
-			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
+			intent = new Intent(context, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		}
@@ -232,29 +234,26 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 							String getUserType = documentSnapshot.getString("userType");
 							String getFirstName = documentSnapshot.getString("firstname");
 							String getLastName = documentSnapshot.getString("lastname");
-							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
-							String getFontSize = documentSnapshot.getString("fontSize");
+							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 
-							if (getUserType != null && getFontSize != null) {
+							if (getUserType != null) {
 								userType = getUserType;
-
-								setFontSize(getFontSize);
 
 								switch (userType) {
 									case "Driver":
-										boolean getDriverStatus = documentSnapshot.getBoolean("isAvailable");
+										boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
 										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
 										Long getPassengersTransported = documentSnapshot.getLong("passengersTransported");
 
 										binding.driverInfoLayout.setVisibility(View.VISIBLE);
 										binding.userTypeImageView.setImageResource(R.drawable.driver_32);
 
-										if (getDriverStatus) {
-											binding.driverStatusTextView2.setTextColor(Color.BLUE);
+										if (isAvailable) {
+											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.green));
 											binding.driverStatusTextView2.setText("Available");
 
 										} else {
-											binding.driverStatusTextView2.setTextColor(Color.RED);
+											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.light_red));
 											binding.driverStatusTextView2.setText("Busy");
 
 										}
@@ -283,10 +282,10 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 										.load(getProfilePicture)
 										.centerCrop()
 										.placeholder(R.drawable.loading_gif)
-										.into(binding.profilePic);
+										.into(binding.profilePicture);
 							}
 
-							if (!getVerificationStatus) {
+							if (!isVerified) {
 								binding.imageViewVerificationMark.setImageResource(R.drawable.x_24);
 
 								binding.verificationStatusTextView.setTextColor(
@@ -443,7 +442,10 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		voiceAssistant.speak("Are you sure you want to Sign out?");
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("Are you sure you want to Sign out?");
+		}
 
 		signOutBtn.setOnClickListener(v -> logoutUser());
 

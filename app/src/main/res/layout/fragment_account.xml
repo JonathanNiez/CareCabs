@@ -78,12 +78,12 @@
 								android:layout_weight="2">
 
 								<de.hdodenhof.circleimageview.CircleImageView
-									android:id="@+id/profilePic"
+									android:id="@+id/profilePicture"
 									style="@style/ProfilePictureBorderColor"
 									android:layout_width="150dp"
 									android:layout_height="150dp"
 									android:scaleType="centerCrop"
-									android:src="@drawable/mar" />
+									android:src="@drawable/profile_picture_100" />
 
 								<androidx.appcompat.widget.AppCompatImageView
 									android:id="@+id/userTypeImageView"
@@ -97,7 +97,6 @@
 									app:srcCompat="@drawable/pwd_32" />
 
 							</RelativeLayout>
-
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="0dp"
@@ -263,7 +262,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
-									app:srcCompat="@drawable/star" />
+									app:srcCompat="@drawable/star_48" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/driverRatingTextView"

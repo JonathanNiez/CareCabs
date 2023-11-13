@@ -36,7 +36,7 @@
 					android:elevation="5dp"
 					app:srcCompat="@drawable/logo_2_v2" />
 
-				<androidx.appcompat.widget.AppCompatImageButton
+				<androidx.appcompat.widget.AppCompatImageView
 					android:id="@+id/userTypeImageBtn"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
@@ -46,11 +46,8 @@
 					android:layout_marginTop="10dp"
 					android:layout_marginEnd="10dp"
 					android:layout_marginBottom="10dp"
-					android:background="@drawable/circular_button"
-					android:backgroundTint="@color/sky_blue"
-					android:padding="10dp"
 					android:scaleType="centerCrop"
-					android:src="@drawable/driver_64" />
+					app:srcCompat="@drawable/driver_64" />
 
 			</RelativeLayout>
 
@@ -92,9 +89,13 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
 						app:helperText="Your Email"
+						app:helperTextTextAppearance="@font/gabarito_bold"
 						app:helperTextTextColor="@color/black"
+						app:hintTextColor="@color/black"
 						app:startIconDrawable="@drawable/email_24"
 						app:startIconTint="@color/black">
 
@@ -108,7 +109,6 @@
 							android:hint="EMAIL"
 							android:inputType="textEmailAddress"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -121,6 +121,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="password_toggle"
 						app:helperText="Your Password"
 						app:helperTextTextColor="@color/black"
@@ -137,7 +138,6 @@
 							android:hint="PASSWORD"
 							android:inputType="textPassword"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -150,6 +150,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="password_toggle"
 						app:helperText="Match your Password"
 						app:helperTextTextColor="@color/black"
@@ -166,7 +167,6 @@
 							android:hint="CONFIRM PASSWORD"
 							android:inputType="textPassword"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -178,6 +178,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:counterEnabled="true"
 						app:counterMaxLength="10"
 						app:endIconMode="clear_text"
@@ -199,7 +200,6 @@
 							android:inputType="phone"
 							android:maxLength="10"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -221,9 +221,7 @@
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
-
 			</androidx.cardview.widget.CardView>
-
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/progressBarLayout"

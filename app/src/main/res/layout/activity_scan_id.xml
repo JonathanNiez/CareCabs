@@ -203,49 +203,25 @@
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"
+				style="@style/PrimaryButton"
 				android:layout_width="130dp"
 				android:layout_height="50dp"
-				android:layout_margin="5dp"
-				android:layout_marginTop="100dp"
-				android:layout_marginBottom="50dp"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/yinmn_blue"
-				android:elevation="5dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="100dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="DONE"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
-			<androidx.appcompat.widget.LinearLayoutCompat
-				android:id="@+id/backBtn"
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/scanLaterBtn"
+				style="@style/SecondaryButton"
 				android:layout_width="150dp"
 				android:layout_height="50dp"
-				android:layout_marginTop="100dp"
-				android:layout_marginBottom="50dp"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/light_gray"
-				android:elevation="5dp"
-				android:gravity="center"
-				android:orientation="horizontal">
-
-				<androidx.appcompat.widget.AppCompatImageView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_vertical"
-					app:srcCompat="@drawable/back_50_2" />
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_gravity="center_vertical"
-					android:layout_margin="5dp"
-					android:elevation="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="BACK"
-					android:textColor="@color/black"
-					android:textSize="17sp" />
-
-			</androidx.appcompat.widget.LinearLayoutCompat>
+				android:layout_marginTop="10dp"
+				android:layout_marginBottom="100dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:text="Scan Later"
+				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 

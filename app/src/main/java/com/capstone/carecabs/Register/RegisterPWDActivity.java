@@ -23,9 +23,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,6 +42,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
+import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
@@ -57,10 +55,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class RegisterPWDActivity extends AppCompatActivity {
+public class RegisterPWDActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterPWDActivity";
 	private final String userType = "Person with Disabilities (PWD)";
-	private String profilePictureURL = "default", sex, birthDate, month;
+	private String profilePictureURL = "default";
+	private String sex, birthDate, month, disability;
 	private int age;
 	private Uri profilePictureUri;
 	private DocumentReference documentReference;
@@ -73,7 +73,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerFailedDialog,
 			cancelRegisterDialog, idNotScannedDialog, idScanInfoDialog,
-			birthdateInputChoiceDialog, cameraGalleryOptionsDialog,
+			enterBirthdateDialog, cameraGalleryOptionsDialog,
 			pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterPwdBinding binding;
@@ -123,12 +123,11 @@ public class RegisterPWDActivity extends AppCompatActivity {
 					.start();
 		});
 
-		binding.backFloatingBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> showCancelRegisterDialog());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
@@ -147,8 +146,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				if (position == 0) {
 					binding.spinnerSex.setSelection(0);
 				} else {
-					String selectedSex = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedSex = selectedSex;
+					sex = parent.getItemAtPosition(position).toString();
 				}
 			}
 
@@ -164,7 +162,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerDisability.setVisibility(View.VISIBLE);
 		binding.spinnerDisability.setAdapter(disabilityAdapter);
 		binding.spinnerDisability.setSelection(0);
 		binding.spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -173,8 +170,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				if (position == 0) {
 					binding.spinnerDisability.setSelection(0);
 				} else {
-					String selectedDisability = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedDisability = selectedDisability;
+					disability = parent.getItemAtPosition(position).toString();
 				}
 			}
 
@@ -192,22 +188,22 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 			showPleaseWaitDialog();
 
-			String stringFirstname = binding.firstname.getText().toString().trim();
-			String stringLastname = binding.lastname.getText().toString().trim();
+			String firstname = binding.firstnameEditText.getText().toString().trim();
+			String lastname = binding.lastnameEditText.getText().toString().trim();
 
-			if (stringFirstname.isEmpty() || stringLastname.isEmpty()
-					|| StaticDataPasser.storeBirthdate == null
-					|| StaticDataPasser.storeCurrentAge == 0
-					|| Objects.equals(StaticDataPasser.storeSelectedSex, "Select your sex")
-					|| Objects.equals(StaticDataPasser.storeSelectedDisability, "Select your Disability")
-			) {
+			if (firstname.isEmpty() ||
+					lastname.isEmpty()
+					|| birthDate == null
+					|| age == 0
+					|| sex == null
+					|| disability == null) {
 
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else {
-				updateUserRegisterToFireStore(stringFirstname, stringLastname);
+				updateUserRegisterToFireStore(firstname, lastname);
 			}
 		});
 	}
@@ -220,6 +216,16 @@ public class RegisterPWDActivity extends AppCompatActivity {
 		} else {
 			showCancelRegisterDialog();
 		}
+	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
+	}
+
+	private void setFontSize(String fontSize) {
+
 	}
 
 	private void showIDScanInfoDialog() {
@@ -262,10 +268,10 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			Map<String, Object> registerUser = new HashMap<>();
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
-			registerUser.put("disability", StaticDataPasser.storeSelectedDisability);
-			registerUser.put("age", StaticDataPasser.storeCurrentAge);
-			registerUser.put("birthdate", StaticDataPasser.storeBirthdate);
-			registerUser.put("sex", StaticDataPasser.storeSelectedSex);
+			registerUser.put("disability", disability);
+			registerUser.put("age", age);
+			registerUser.put("birthdate", binding);
+			registerUser.put("sex", sex);
 			registerUser.put("userType", userType);
 			registerUser.put("isRegisterComplete", true);
 			registerUser.put("totalTrips", 0);
@@ -441,16 +447,9 @@ public class RegisterPWDActivity extends AppCompatActivity {
 	private void showEnterBirthdateDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_enter_birthdate, null);
-
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		Button doneBtn = dialogView.findViewById(R.id.doneBtn);
-		TextView monthTextView = dialogView.findViewById(R.id.monthTextView);
-		TextView dayTextView = dialogView.findViewById(R.id.dayTextView);
-		TextView yearTextView = dialogView.findViewById(R.id.yearTextView);
-		EditText yearEditText = dialogView.findViewById(R.id.yearEditText);
-		EditText dayEditText = dialogView.findViewById(R.id.dayEditText);
-		Spinner spinnerMonth = dialogView.findViewById(R.id.spinnerMonth);
+		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
+				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
+		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -458,28 +457,26 @@ public class RegisterPWDActivity extends AppCompatActivity {
 				android.R.layout.simple_spinner_item
 		);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerMonth.setAdapter(adapter);
-		spinnerMonth.setSelection(0);
-		spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
+		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
+		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					spinnerMonth.setSelection(0);
+					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 				} else {
-					String selectedMonth = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedMonth = selectedMonth;
-
-					monthTextView.setText(selectedMonth);
+					month = parent.getItemAtPosition(position).toString();
+					dialogEnterBirthdateBinding.monthTextView.setText(month);
 				}
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
-				spinnerMonth.setSelection(0);
+				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
 			}
 		});
 
-		dayEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -488,7 +485,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				dayTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
 			}
 
 			@Override
@@ -497,7 +494,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			}
 		});
 
-		yearEditText.addTextChangedListener(new TextWatcher() {
+		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
 			@Override
 			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 			}
@@ -505,7 +502,7 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			@Override
 			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 				String enteredText = charSequence.toString();
-				yearTextView.setText(enteredText);
+				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
 
 			}
 
@@ -515,50 +512,46 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			}
 		});
 
-		doneBtn.setOnClickListener(view -> {
-			String year = yearEditText.getText().toString();
-			String day = dayEditText.getText().toString();
+		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
+			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
+			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
-			if (StaticDataPasser.storeSelectedMonth == null
+			if (month == null
 					|| year.isEmpty()
 					|| day.isEmpty()) {
 
 				Toast.makeText(RegisterPWDActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+
 			} else {
-				String fullBirthdate = StaticDataPasser.storeSelectedMonth + "-" + day + "-" + year;
+				birthDate = month + "-" + day + "-" + year;
 
 				//Calculate age
 				Calendar today = Calendar.getInstance();
-				int age = today.get(Calendar.YEAR) - Integer.parseInt(year);
+				age = today.get(Calendar.YEAR) - Integer.parseInt(year);
 
 				// Check if the user's birthday has already happened this year or not
 				if (today.get(Calendar.DAY_OF_YEAR) < Integer.parseInt(year)) {
 					age--;
 				}
 
-				StaticDataPasser.storeBirthdate = fullBirthdate;
-				StaticDataPasser.storeCurrentAge = age;
-
-				binding.birthdateBtn.setText(fullBirthdate);
+				binding.birthdateBtn.setText(birthDate);
 				binding.ageBtn.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}
 		});
 
-		cancelBtn.setOnClickListener(v -> {
-			closeEnterBirthdateDialog();
-		});
+		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> closeEnterBirthdateDialog());
 
 		builder.setView(dialogView);
 
-		birthdateInputChoiceDialog = builder.create();
-		birthdateInputChoiceDialog.show();
+		enterBirthdateDialog = builder.create();
+		enterBirthdateDialog.show();
 	}
 
 	private void closeEnterBirthdateDialog() {
-		if (birthdateInputChoiceDialog != null && birthdateInputChoiceDialog.isShowing()) {
-			birthdateInputChoiceDialog.dismiss();
+		if (enterBirthdateDialog != null && enterBirthdateDialog.isShowing()) {
+			enterBirthdateDialog.dismiss();
 		}
 	}
 
@@ -676,7 +669,6 @@ public class RegisterPWDActivity extends AppCompatActivity {
 			pleaseWaitDialog.dismiss();
 		}
 	}
-
 
 	private void showNoInternetDialog() {
 		builder = new AlertDialog.Builder(this);

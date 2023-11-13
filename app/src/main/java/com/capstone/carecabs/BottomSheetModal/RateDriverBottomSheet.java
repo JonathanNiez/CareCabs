@@ -1,6 +1,8 @@
 package com.capstone.carecabs.BottomSheetModal;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,8 +13,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.Firebase.FirebaseMain;
+import com.capstone.carecabs.R;
 import com.capstone.carecabs.databinding.FragmentRateDriverBottomSheetBinding;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DatabaseReference;

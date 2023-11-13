@@ -6,7 +6,7 @@
 	<color name="light_red">#FF2C2C</color>
 	<color name="red">#EF0909</color>
 	<color name="dark_red">#B90000</color>
-	<color name="green">#2B942F</color>
+	<color name="green">#26B62B</color>
 	<color name="light_green">#4FFF56</color>
 	<color name="dirty_yellow">#F6CD93</color>
 	<color name="yellow">#F9EE93</color>
@@ -39,12 +39,13 @@
 	<color name="maya_blue">#51BBFE</color>
 
 	<color name="rich_black">#0E1116</color>
-	<color name="darker_gray">#303030</color>
+	<color name="darker_gray">#393939</color>
 	<color name="darker_blue">#000235</color>
 	<color name="dark_blue">#000460</color>
 	<color name="gray">#696969</color>
 	<color name="light_gray">#E4DDDD</color>
 	<color name="dark_gray">#36363A</color>
+	<color name="naughty_white">#A8A8A8</color>
 
 	<color name="lime">#abff4f</color>
 

@@ -5,12 +5,14 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Register.RegisterActivity;
 import com.capstone.carecabs.Register.RegisterUserTypeActivity;
@@ -32,18 +34,23 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "Login";
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private Intent intent;
 	private GoogleSignInAccount googleSignInAccount;
 	private GoogleSignInClient googleSignInClient;
 	private static final int RC_SIGN_IN = 69;
+	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
 			pleaseWaitDialog, loginFailedDialog, exitAppDialog,
 			idScanInfoDialog, unknownOccurredDialog, invalidCredentialsDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private AlertDialog.Builder builder;
 	private ActivityLoginBinding binding;
 
 	@Override
@@ -111,6 +118,12 @@ public class LoginActivity extends AppCompatActivity {
 			startActivityForResult(intent, RC_SIGN_IN);
 		});
 
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
+			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
+		});
+
 		binding.backFloatingBtn.setOnClickListener(v -> goToLoginOrRegisterActivity());
 
 		binding.loginBtn.setOnClickListener(v -> {
@@ -141,10 +154,38 @@ public class LoginActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
-		goToLoginOrRegisterActivity();
 		super.onBackPressed();
+		goToLoginOrRegisterActivity();
 	}
 
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		String fonSize = isChecked ? "large" : "normal";
+		setFontSize(fonSize);
+	}
+
+	private void setFontSize(String fontSize) {
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+		}
+
+		binding.loginTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
+
+		binding.emailEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.passwordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+
+		binding.neverShareYourPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.forgotPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.loginTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.loginWithGoogleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.resetPasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
 
 	public boolean isValidEmail(String email) {
 		String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}";
@@ -522,4 +563,5 @@ public class LoginActivity extends AppCompatActivity {
 		}
 
 	}
+
 }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,116 +75,121 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 		context = getContext();
 
-		if (destinationPoint != null
-				&& StaticDataPasser.storePickupLatitude != null
-				&& StaticDataPasser.storePickupLongitude != null) {
-
-			//destination geocode
-			MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
-					.accessToken(context.getString(R.string.mapbox_access_token))
-					.query(Point.fromLngLat(
-							destinationPoint.longitude(),
-							destinationPoint.latitude()))
-					.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-					.build();
-			destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-				@SuppressLint({"SetTextI18n", "LongLogTag"})
-				@Override
-				public void onResponse(@NonNull Call<GeocodingResponse> call,
-				                       @NonNull Response<GeocodingResponse> response) {
-					if (response.isSuccessful()) {
-						if (response.body() != null && !response.body().features().isEmpty()) {
-							CarmenFeature feature = response.body().features().get(0);
-							String locationName = feature.placeName();
-
-							destination = locationName;
-							binding.destinationTextView.setText(locationName);
-							destinationGeocodeResult = 1;
-						} else {
-
-							binding.destinationTextView.setText("Location not found");
-						}
-					} else {
-						Log.e(TAG, "Geocode error " + response.message());
-						binding.destinationTextView.setText("Location not found");
-
-					}
-				}
-
-				@SuppressLint({"SetTextI18n", "LongLogTag"})
-				@Override
-				public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-					Log.e(TAG, Objects.requireNonNull(t.getMessage()));
-
-					binding.destinationTextView.setText("Location not found");
-				}
-			});
-
-			//pickup location geocode
-			MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
-					.accessToken(context.getString(R.string.mapbox_access_token))
-					.query(Point.fromLngLat(
-							StaticDataPasser.storePickupLongitude,
-							StaticDataPasser.storePickupLatitude))
-					.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-					.build();
-
-			pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-				@SuppressLint({"SetTextI18n", "LongLogTag"})
-				@Override
-				public void onResponse(@NonNull Call<GeocodingResponse> call,
-				                       @NonNull Response<GeocodingResponse> response) {
-					if (response.isSuccessful()) {
-						if (response.body() != null && !response.body().features().isEmpty()) {
-							CarmenFeature feature = response.body().features().get(0);
-							String locationName = feature.placeName();
-
-							pickupLocation = locationName;
-							binding.pickupLocationTextView.setText(locationName);
-							pickupLocationGeocodeResult = 1;
-						} else {
-
-							binding.pickupLocationTextView.setText("Location not found");
-						}
-					} else {
-						Log.e(TAG, "Geocode error " + response.message());
-						binding.pickupLocationTextView.setText("Location not found");
-					}
-
-				}
-
-				@SuppressLint({"SetTextI18n", "LongLogTag"})
-				@Override
-				public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
-					Log.e(TAG, "onFailure: " + t.getMessage());
-					binding.pickupLocationTextView.setText("Location not found");
-				}
-			});
-
-			String message = "Pickup location: " + pickupLocation + "."
-					+ "Destination: " + destination;
-
-			if (voiceAssistantState.equals("enabled")) {
-				voiceAssistant = VoiceAssistant.getInstance(context);
-
-				if (pickupLocation != null && destination != null) {
-					voiceAssistant.speak(message);
-				}
-			}
-
-			binding.confirmButton.setOnClickListener(v -> storeCoordinatesInFireStore(destinationPoint));
-
-		} else {
-			binding.pickupLocationTextView.setText("Location not found");
-			binding.destinationTextView.setText("Location not found");
-		}
-
-		binding.cancelButton.setOnClickListener(v -> {
-			dismiss();
-		});
-
+		binding.cancelButton.setOnClickListener(v -> dismiss());
 
 		return view;
+	}
+
+	@SuppressLint("SetTextI18n")
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()) {
+			if (destinationPoint != null
+					&& StaticDataPasser.storePickupLatitude != null
+					&& StaticDataPasser.storePickupLongitude != null) {
+
+				//destination geocode
+				MapboxGeocoding destinationLocationGeocode = MapboxGeocoding.builder()
+						.accessToken(context.getString(R.string.mapbox_access_token))
+						.query(Point.fromLngLat(
+								destinationPoint.longitude(),
+								destinationPoint.latitude()))
+						.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+						.build();
+				destinationLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+					@SuppressLint({"SetTextI18n", "LongLogTag"})
+					@Override
+					public void onResponse(@NonNull Call<GeocodingResponse> call,
+					                       @NonNull Response<GeocodingResponse> response) {
+						if (response.isSuccessful()) {
+							if (response.body() != null && !response.body().features().isEmpty()) {
+								CarmenFeature feature = response.body().features().get(0);
+								String locationName = feature.placeName();
+
+								destination = locationName;
+								binding.destinationTextView.setText(locationName);
+								destinationGeocodeResult = 1;
+							} else {
+
+								binding.destinationTextView.setText("Location not found");
+							}
+						} else {
+							Log.e(TAG, "Geocode error " + response.message());
+							binding.destinationTextView.setText("Location not found");
+
+						}
+					}
+
+					@SuppressLint({"SetTextI18n", "LongLogTag"})
+					@Override
+					public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+						Log.e(TAG, Objects.requireNonNull(t.getMessage()));
+
+						binding.destinationTextView.setText("Location not found");
+					}
+				});
+
+				//pickup location geocode
+				MapboxGeocoding pickupLocationGeocode = MapboxGeocoding.builder()
+						.accessToken(context.getString(R.string.mapbox_access_token))
+						.query(Point.fromLngLat(
+								StaticDataPasser.storePickupLongitude,
+								StaticDataPasser.storePickupLatitude))
+						.geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+						.build();
+
+				pickupLocationGeocode.enqueueCall(new Callback<GeocodingResponse>() {
+					@SuppressLint({"SetTextI18n", "LongLogTag"})
+					@Override
+					public void onResponse(@NonNull Call<GeocodingResponse> call,
+					                       @NonNull Response<GeocodingResponse> response) {
+						if (response.isSuccessful()) {
+							if (response.body() != null && !response.body().features().isEmpty()) {
+								CarmenFeature feature = response.body().features().get(0);
+								String locationName = feature.placeName();
+
+								pickupLocation = locationName;
+								binding.pickupLocationTextView.setText(locationName);
+								pickupLocationGeocodeResult = 1;
+							} else {
+
+								binding.pickupLocationTextView.setText("Location not found");
+							}
+						} else {
+							Log.e(TAG, "Geocode error " + response.message());
+							binding.pickupLocationTextView.setText("Location not found");
+						}
+
+					}
+
+					@SuppressLint({"SetTextI18n", "LongLogTag"})
+					@Override
+					public void onFailure(@NonNull Call<GeocodingResponse> call, @NonNull Throwable t) {
+						Log.e(TAG, "onFailure: " + t.getMessage());
+						binding.pickupLocationTextView.setText("Location not found");
+					}
+				});
+
+				String message = "Pickup location: " + pickupLocation + "."
+						+ "Destination: " + destination;
+
+				if (voiceAssistantState.equals("enabled")) {
+					voiceAssistant = VoiceAssistant.getInstance(context);
+
+					if (pickupLocation != null && destination != null) {
+						voiceAssistant.speak(message);
+					}
+				}
+
+				binding.confirmButton.setOnClickListener(v -> storeCoordinatesInFireStore(destinationPoint));
+
+			} else {
+				binding.pickupLocationTextView.setText("Location not found");
+				binding.destinationTextView.setText("Location not found");
+			}
+		}
 	}
 
 	private String generateRandomBookingID() {
@@ -296,8 +302,9 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				.addOnSuccessListener(aVoid -> {
 					showToast(context, "Booking success");
 
-					openBookingsActivity();
-
+					if (!isDetached()) {
+						openBookingsActivity();
+					}
 				})
 				.addOnFailureListener(e -> {
 					showToast(context, "Booking failed");

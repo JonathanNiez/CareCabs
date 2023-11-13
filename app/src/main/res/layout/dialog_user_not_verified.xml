@@ -29,6 +29,7 @@
 				app:srcCompat="@drawable/id_not_verified_96" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/titleTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -39,6 +40,7 @@
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView1"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -49,6 +51,7 @@
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView2"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -63,7 +66,7 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/okBtn"
+		android:id="@+id/okayBtn"
 		android:layout_width="130dp"
 		android:layout_height="50dp"
 		android:layout_marginBottom="20dp"
@@ -71,7 +74,7 @@
 		android:backgroundTint="@color/yinmn_blue"
 		android:elevation="5dp"
 		android:fontFamily="@font/gabarito_semibold"
-		android:text="Ok"
+		android:text="Okay"
 		android:textColor="@color/white"
 		android:textSize="20sp" />
 

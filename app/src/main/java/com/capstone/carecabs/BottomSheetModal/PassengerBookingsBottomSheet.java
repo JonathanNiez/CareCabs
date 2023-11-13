@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -23,6 +24,9 @@ import com.capstone.carecabs.Model.PickupPassengerModel;
 import com.capstone.carecabs.Utility.DistanceCalculator;
 import com.capstone.carecabs.databinding.FragmentPassengerBookingsBottomSheetBinding;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,7 +56,8 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	private static final String ARG_DATA = "data";
 
 	public interface PassengerBookingsBottomSheetListener {
-		void onDataReceivedFromPassengerBookingsBottomSheet(PickupPassengerBottomSheetData pickupPassengerBottomSheetData);
+		void onDataReceivedFromPassengerBookingsBottomSheet(
+				PickupPassengerBottomSheetData pickupPassengerBottomSheetData);
 	}
 
 	private PassengerBookingsBottomSheetListener mPassengerBookingsBottomSheetListener;
@@ -72,9 +77,17 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 		View view = binding.getRoot();
 
 		context = getContext();
-		loadPassengerBookingsFromDatabase();
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()) {
+			loadPassengerBookingsFromDatabase();
+		}
 	}
 
 	public static PassengerBookingsBottomSheet newInstance(String data) {
@@ -86,7 +99,7 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	}
 
 	public void setPassengerBookingsBottomSheetListener(
-			PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener passengerBookingsBottomSheetListener) {
+			PassengerBookingsBottomSheetListener passengerBookingsBottomSheetListener) {
 		mPassengerBookingsBottomSheetListener = passengerBookingsBottomSheetListener;
 	}
 
@@ -99,7 +112,8 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 	                           Point pickupCoordinates,
 	                           String destinationLocation,
 	                           Point destinationCoordinates) {
-		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new PickupPassengerBottomSheetData(bookingID,
+		PickupPassengerBottomSheetData pickupPassengerBottomSheetData = new
+				PickupPassengerBottomSheetData(bookingID,
 				passengerID,
 				passengerName,
 				passengerType,
@@ -110,7 +124,8 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 				destinationCoordinates);
 
 		if (mPassengerBookingsBottomSheetListener != null) {
-			mPassengerBookingsBottomSheetListener.onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData);
+			mPassengerBookingsBottomSheetListener
+					.onDataReceivedFromPassengerBookingsBottomSheet(pickupPassengerBottomSheetData);
 		}
 	}
 
@@ -325,12 +340,17 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 				});
 	}
 
+	@SuppressLint("LongLogTag")
 	private void updateDriverStatus(String passengerType,
 	                                String bookingID,
 	                                Double pickupLatitude,
 	                                Double pickupLongitude) {
 
 		if (FirebaseMain.getUser() != null) {
+
+			DocumentReference driverReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
 
 			Map<String, Object> updateDriverStatus = new HashMap<>();
 			updateDriverStatus.put("isAvailable", false);
@@ -340,9 +360,9 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 			updateDriverStatus.put("passengerType", passengerType);
 			updateDriverStatus.put("bookingID", bookingID);
 
-			FirebaseMain.getFireStoreInstance().collection(FirebaseMain.userCollection)
-					.document(FirebaseMain.getUser().getUid())
-					.update(updateDriverStatus);
+			driverReference.update(updateDriverStatus)
+					.addOnSuccessListener(unused -> Log.i(TAG, "updateDriverStatus: driverReference updated successfully"))
+					.addOnFailureListener(e -> Log.e(TAG, "onFailure - updateDriverStatus: " + e.getMessage()));
 		}
 	}
 

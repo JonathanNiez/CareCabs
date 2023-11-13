@@ -83,7 +83,13 @@ public class CurrentBookingAdapter extends
 		holder.binding.loadingDestinationLocation.setVisibility(View.GONE);
 		holder.binding.loadingPickupLocation.setVisibility(View.GONE);
 		holder.binding.pickupLocationTextView.setText(currentBookingModel.getPickupLocation());
-		holder.binding.destinationTextView.setText(currentBookingModel.getDestination());
+
+		if (currentBookingModel.getBookingStatus().equals("Transported to destination")){
+			holder.binding.destinationTextView.setText("Your Driver safely dropped you to your Destination");
+		}else {
+			holder.binding.destinationTextView.setText(currentBookingModel.getDestination());
+		}
+
 		holder.binding.bookingStatusTextView.setText(currentBookingModel.getBookingStatus());
 
 		if (FirebaseMain.getUser() != null) {

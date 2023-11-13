@@ -112,7 +112,7 @@
 						android:id="@+id/greetTextView"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
+						android:layout_marginTop="10dp"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Good Morning"
 						android:textAlignment="center"
@@ -198,29 +198,29 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_black"
-						android:text="Your Driver has successfully transported you to your Destination"
+						android:text="Your Driver safely dropped you to your Destination"
 						android:textAlignment="center"
 						android:textSize="27sp" />
 
-					<androidx.appcompat.widget.LinearLayoutCompat
+					<de.hdodenhof.circleimageview.CircleImageView
+						android:id="@+id/driverDropOffProfilePicture"
+						style="@style/ProfilePictureBorderColor"
+						android:layout_width="120dp"
+						android:layout_height="120dp"
+						android:layout_margin="5dp"
+						android:src="@drawable/profile_picture_100" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/driverDropOffNameTextView"
+						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:gravity="center"
-						android:orientation="horizontal">
-
-						<androidx.appcompat.widget.AppCompatImageView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_margin="10dp"
-							app:srcCompat="@drawable/driver_64" />
-
-						<androidx.appcompat.widget.AppCompatImageView
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_margin="10dp"
-							app:srcCompat="@drawable/pickup_point_100" />
-
-					</androidx.appcompat.widget.LinearLayoutCompat>
+						android:layout_margin="5dp"
+						android:elevation="5dp"
+						android:fontFamily="@font/gabarito_bold"
+						android:text="Driver name"
+						android:textAlignment="center"
+						android:textSize="20sp" />
 
 					<androidx.cardview.widget.CardView
 						style="@style/BaseCardBackground"
@@ -262,7 +262,8 @@
 									android:layout_margin="5dp"
 									android:numStars="5"
 									android:rating="0.0"
-									android:stepSize=".5" />
+									android:stepSize="1"
+									android:theme="@style/RatingStars" />
 
 								<androidx.appcompat.widget.AppCompatButton
 									android:id="@+id/rateDriverBtn"
@@ -300,6 +301,7 @@
 									android:layout_margin="10dp"
 									android:fontFamily="@font/gabarito_bold"
 									android:text="Thank you for rating our Driver"
+									android:textAlignment="center"
 									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -591,7 +593,7 @@
 								android:layout_height="100dp"
 								android:layout_margin="5dp"
 								android:scaleType="centerCrop"
-								android:src="@drawable/account" />
+								android:src="@drawable/profile_picture_100" />
 
 
 							<androidx.appcompat.widget.AppCompatTextView
@@ -1088,26 +1090,47 @@
 						android:textAlignment="center"
 						android:textSize="17sp" />
 
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/driverStatusSwitch"
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/setAvailabilityTextView"
 						style="@style/TextColor"
-						android:layout_width="match_parent"
+						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						android:checked="false"
 						android:fontFamily="@font/gabarito_medium"
 						android:text="or you can set your Availability manually"
 						android:textAlignment="center"
 						android:textSize="17sp" />
 
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/driverStatusTextView"
+					<androidx.appcompat.widget.SwitchCompat
+						android:id="@+id/driverStatusSwitch"
+						style="@style/SwitchBackground"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:checked="false"
+						android:fontFamily="@font/gabarito_medium"
+						android:textAlignment="center"
+						android:textSize="17sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/driverStatusTextView1"
+						style="@style/TextColor"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Driver status:"
+						android:textAlignment="center"
+						android:textSize="17sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/driverStatusTextView2"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Driver Status"
 						android:textAlignment="center"
-						android:textColor="@color/black"
 						android:textSize="17sp" />
 
 					<androidx.cardview.widget.CardView

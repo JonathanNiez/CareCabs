@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
 	protected void onStart() {
 		super.onStart();
 
-		getUserSettingsFromFireStore();
 	}
 
 	@Override
@@ -347,15 +346,16 @@ public class MainActivity extends AppCompatActivity {
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
-							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 
-							if (!getVerificationStatus) {
-
-								showProfileNotVerifiedNotification();
-
-							} else {
+							if (isVerified) {
 								retrieveAndStoreFCMToken();
 								getUserTypeToCheckBookingStatus();
+								getUserSettingsFromFireStore();
+
+							} else {
+								showProfileNotVerifiedNotification();
+
 							}
 
 						}
@@ -447,13 +447,15 @@ public class MainActivity extends AppCompatActivity {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
 							String getUserType = documentSnapshot.getString("userType");
 
-							if (getUserType != null && getUserType.equals("Driver")) {
+							if (getUserType != null ){
+								if (getUserType.equals("Driver")) {
 
-								checkForWaitingPassengers();
+									checkForWaitingPassengers();
+								} else {
+									checkIfBookingIsAccepted();
+
+								}
 							}
-						} else {
-							checkIfBookingIsAccepted();
-
 						}
 					})
 					.addOnFailureListener(e -> Log.e(TAG, "getUserTypeToCheckBookingStatus: " + e.getMessage()));

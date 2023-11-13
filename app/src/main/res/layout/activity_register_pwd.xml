@@ -43,7 +43,7 @@
 					app:srcCompat="@drawable/pwd_64" />
 
 				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/textView"
+					android:id="@+id/textView1"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_below="@id/logo"
@@ -67,7 +67,7 @@
 					style="@style/BaseCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_below="@id/textView"
+					android:layout_below="@id/textView1"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
 					app:cardCornerRadius="10dp"
@@ -81,15 +81,15 @@
 
 						<de.hdodenhof.circleimageview.CircleImageView
 							android:id="@+id/imgBtnProfilePic"
+							style="@style/ProfilePictureBorderColor"
 							android:layout_width="150dp"
 							android:layout_height="150dp"
 							android:layout_marginTop="10dp"
 							android:scaleType="centerCrop"
-							android:src="@drawable/account"
-							app:civ_border_color="@color/black"
-							app:civ_border_width="2dp" />
+							android:src="@drawable/profile_picture_100" />
 
 						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/textView2"
 							style="@style/TextColor"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
@@ -128,12 +128,14 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
 						app:helperText="*Required"
 						app:helperTextTextColor="@color/red">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/firstname"
+							android:id="@+id/firstnameEditText"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:autofillHints="name"
@@ -141,7 +143,6 @@
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="FIRSTNAME"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -153,13 +154,15 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
 						app:helperText="*Required"
 						app:helperTextTextColor="@color/red"
 						app:hintTextColor="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
-							android:id="@+id/lastname"
+							android:id="@+id/lastnameEditText"
 							android:layout_width="match_parent"
 							android:layout_height="60dp"
 							android:autofillHints="name"
@@ -167,7 +170,6 @@
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="LASTNAME"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -243,7 +245,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerDisability"
 							android:layout_width="match_parent"
-							android:layout_height="60dp"
+							android:layout_height="wrap_content"
 							android:layout_marginBottom="10dp"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
@@ -264,7 +266,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerSex"
 							android:layout_width="150dp"
-							android:layout_height="60dp"
+							android:layout_height="wrap_content"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
 
@@ -298,16 +300,16 @@
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/nextBtn"
+				style="@style/PrimaryLongButton"
 				android:layout_width="150dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
 				android:layout_marginBottom="50dp"
-				android:background="@drawable/circular_button"
-				android:backgroundTint="@color/yinmn_blue"
 				android:gravity="center"
 				android:orientation="horizontal">
 
 				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/nextTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="start|center_vertical"

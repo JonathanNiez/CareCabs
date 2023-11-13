@@ -65,7 +65,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentStart="true"
 		android:layout_centerVertical="true"
-		android:layout_marginStart="15dp"
+		android:layout_marginStart="10dp"
 		android:gravity="center"
 		android:orientation="vertical">
 
@@ -91,11 +91,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/fullscreenImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -103,11 +102,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/zoomInImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -115,11 +113,10 @@
 
 		<androidx.appcompat.widget.AppCompatImageButton
 			android:id="@+id/zoomOutImgBtn"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:elevation="10dp"
 			android:padding="10dp"
 			android:scaleType="centerCrop"
@@ -128,11 +125,10 @@
 
 		<androidx.appcompat.widget.SwitchCompat
 			android:id="@+id/mapStyleSwitch"
+			style="@style/MapButtonsBackground"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/floating_button_background"
-			android:backgroundTint="@color/white"
 			android:checked="false"
 			android:elevation="10dp"
 			android:padding="10dp"

@@ -34,7 +34,7 @@
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:orientation="vertical">
 
 				<androidx.appcompat.widget.AppCompatSpinner
@@ -42,8 +42,8 @@
 					android:layout_width="match_parent"
 					android:layout_height="60dp"
 					android:background="@drawable/edit_text"
+					android:elevation="5dp"
 					android:theme="@style/SpinnerTextStyle" />
-
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
@@ -59,6 +59,7 @@
 						android:layout_marginEnd="5dp"
 						android:layout_weight="1"
 						android:background="@drawable/edit_text"
+						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Day"
 						android:inputType="number"
@@ -76,6 +77,7 @@
 						android:layout_marginStart="5dp"
 						android:layout_weight="1"
 						android:background="@drawable/edit_text"
+						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:hint="Year"
 						android:inputType="number"

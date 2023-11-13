@@ -51,7 +51,7 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 
 	@NonNull
 	@Override
-	public PickupPassengerAdapter.PickupPassengerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public PickupPassengerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		ItemPickupPassengerBinding binding = ItemPickupPassengerBinding
 				.inflate(LayoutInflater.from(parent.getContext()), parent, false);
 		return new PickupPassengerViewHolder(binding);
@@ -59,12 +59,13 @@ public class PickupPassengerAdapter extends RecyclerView.Adapter<PickupPassenger
 
 	@SuppressLint("SetTextI18n")
 	@Override
-	public void onBindViewHolder(@NonNull PickupPassengerAdapter.PickupPassengerViewHolder holder, int position) {
+	public void onBindViewHolder(@NonNull PickupPassengerViewHolder holder, int position) {
 		PickupPassengerModel pickupPassengerModel = pickupPassengerModelList.get(position);
 		holder.binding.renavigateBtn.setVisibility(View.GONE);
 		String fullName = pickupPassengerModel.getPassengerName();
 
 		holder.binding.passengerName.setText(fullName);
+
 		if (!pickupPassengerModel.getPassengerProfilePicture().equals("default")) {
 			Glide.with(context)
 					.load(pickupPassengerModel.getPassengerProfilePicture())

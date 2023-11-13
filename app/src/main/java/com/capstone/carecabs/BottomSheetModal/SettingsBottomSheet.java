@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import android.os.Handler;
@@ -62,7 +63,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		View view = binding.getRoot();
 
 		context = getContext();
-		getUserSettings();
 
 		binding.fontSizeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
 			String fontSize = isChecked ? FONT_SIZE_LARGE : FONT_SIZE_NORMAL;
@@ -121,6 +121,14 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 		return view;
 	}
 
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
+
+		if (isAdded()){
+			getUserSettings();
+		}
+	}
 
 	public void setFontSizeChangeListener(FontSizeChangeListener fontSizeChangeListener) {
 		this.mFontSizeChangeListener = fontSizeChangeListener;
