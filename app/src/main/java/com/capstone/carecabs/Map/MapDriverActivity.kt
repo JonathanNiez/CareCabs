@@ -16,6 +16,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -40,6 +41,7 @@ import com.capstone.carecabs.Model.TripHistoryModel
 import com.capstone.carecabs.R
 import com.capstone.carecabs.TripHistoryActivity
 import com.capstone.carecabs.Utility.StaticDataPasser
+import com.capstone.carecabs.Utility.VoiceAssistant
 import com.capstone.carecabs.databinding.ActivityMapDriverBinding
 import com.capstone.carecabs.databinding.DialogCancelNavigationToPassengerBinding
 import com.capstone.carecabs.databinding.DialogConfirmDropoffBinding
@@ -137,6 +139,7 @@ class MapDriverActivity : AppCompatActivity(),
     PickupPassengerBottomSheet.RenavigateListener {
 
     private val TAG = "MapDriverActivity"
+    private lateinit var binding: ActivityMapDriverBinding
     private val LOCATION_PERMISSION_REQUEST_CODE = 123
     private val REQUEST_ENABLE_LOCATION = 1
     private var isNavigatingToDestination = false
@@ -150,7 +153,9 @@ class MapDriverActivity : AppCompatActivity(),
     private lateinit var confirmPickupDialog: AlertDialog
     private lateinit var confirmDropOffDialog: AlertDialog
     private lateinit var passengerTransportedSuccessDialog: AlertDialog
-    private lateinit var binding: ActivityMapDriverBinding
+    private lateinit var voiceAssistant: VoiceAssistant
+    private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
+    private var fontSize = StaticDataPasser.storeFontSize
 
     //navigation
     private val mapboxReplayer = MapboxReplayer()
@@ -1862,11 +1867,11 @@ class MapDriverActivity : AppCompatActivity(),
                 destinationCoordinates
             )
 
-            closePassengerOnBoardDialog()
+            closeConfirmPickupDialog()
         }
 
         binding.closeBtn.setOnClickListener {
-            closePassengerOnBoardDialog()
+            closeConfirmPickupDialog()
         }
 
         builder.setView(dialogView)
@@ -1874,7 +1879,7 @@ class MapDriverActivity : AppCompatActivity(),
         confirmPickupDialog.show()
     }
 
-    private fun closePassengerOnBoardDialog() {
+    private fun closeConfirmPickupDialog() {
         if (confirmPickupDialog.isShowing) {
             confirmPickupDialog.dismiss()
         }
@@ -1900,11 +1905,11 @@ class MapDriverActivity : AppCompatActivity(),
                 passengerID
             )
 
-            closeArrivedAtDestinationDialog()
+            closeConfirmDropOffDialog()
         }
 
         binding.closeBtn.setOnClickListener {
-            closeArrivedAtDestinationDialog()
+            closeConfirmDropOffDialog()
         }
 
         builder.setView(dialogView)
@@ -1912,7 +1917,7 @@ class MapDriverActivity : AppCompatActivity(),
         confirmDropOffDialog.show()
     }
 
-    private fun closeArrivedAtDestinationDialog() {
+    private fun closeConfirmDropOffDialog() {
         if (confirmDropOffDialog.isShowing) {
             confirmDropOffDialog.dismiss()
         }
@@ -2001,6 +2006,21 @@ class MapDriverActivity : AppCompatActivity(),
         builder = AlertDialog.Builder(this)
         val binding: DialogExitMapBinding = DialogExitMapBinding.inflate(layoutInflater)
         val dialogView = binding.root
+
+        if (fontSize.equals("large")) {
+            val TEXT_SIZE = 22F
+
+            binding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25F)
+            binding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+            binding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+            binding.exitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+        }
+
+        if (voiceAssistantState == "enabled") {
+            voiceAssistant =
+                VoiceAssistant.getInstance(this@MapDriverActivity)
+            voiceAssistant.speak("Are you sure you want to exit Map?")
+        }
 
         binding.exitBtn.setOnClickListener {
             intent = Intent(this@MapDriverActivity, MainActivity::class.java)

@@ -24,7 +24,6 @@ import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
-import com.capstone.carecabs.databinding.DialogCancelBookingBinding;
 import com.capstone.carecabs.databinding.DialogCancelRegisterBinding;
 import com.capstone.carecabs.databinding.DialogEnableVoiceAssistantBinding;
 import com.capstone.carecabs.databinding.DialogYouAreRegisteringAsBinding;
@@ -64,10 +63,10 @@ public class RegisterActivity extends AppCompatActivity implements
 	private VoiceAssistant voiceAssistant;
 	private Intent intent;
 	private static final int RC_SIGN_IN = 69;
+	private AlertDialog.Builder builder;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
 			ageInfoDialog, registerFailedDialog, cancelRegisterDialog,
 			emailAlreadyUsedDialog, enableVoiceAssistantDialog;
-	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterBinding binding;
 
@@ -85,10 +84,11 @@ public class RegisterActivity extends AppCompatActivity implements
 		closeRegisterFailedDialog();
 		closePleaseWaitDialog();
 		closeAgeRequiredDialog();
-		closeCancelRegisterDialog();
+		closeCancelRegistrationDialog();
 		closeNoInternetDialog();
 		closeUserTypeImageDialog();
 		closeEmailIsAlreadyUsedDialog();
+		closeEnableVoiceAssistantDialog();
 	}
 
 	@Override
@@ -102,10 +102,11 @@ public class RegisterActivity extends AppCompatActivity implements
 		closeRegisterFailedDialog();
 		closePleaseWaitDialog();
 		closeAgeRequiredDialog();
-		closeCancelRegisterDialog();
+		closeCancelRegistrationDialog();
 		closeNoInternetDialog();
 		closeUserTypeImageDialog();
 		closeEmailIsAlreadyUsedDialog();
+		closeEnableVoiceAssistantDialog();
 	}
 
 	@Override
@@ -129,7 +130,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 			if (!email.isEmpty() || !password.isEmpty()
 					|| !confirmPassword.isEmpty() || !phoneNumber.isEmpty()) {
-				showCancelRegisterDialog();
+				showCancelRegistrationDialog();
 			}
 		});
 
@@ -299,7 +300,8 @@ public class RegisterActivity extends AppCompatActivity implements
 				!password.isEmpty() ||
 				!confirmPassword.isEmpty() ||
 				!phoneNumber.isEmpty()) {
-			showCancelRegisterDialog();
+			showCancelRegistrationDialog();
+
 		} else {
 			intent = new Intent(RegisterActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
@@ -312,6 +314,7 @@ public class RegisterActivity extends AppCompatActivity implements
 		settingsBottomSheet.setFontSizeChangeListener(this);
 		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 	}
+
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 		fontSize = isChecked ? "large" : "normal";
@@ -519,26 +522,25 @@ public class RegisterActivity extends AppCompatActivity implements
 	private void showEnableVoiceAssistantDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		DialogEnableVoiceAssistantBinding binding =
+		DialogEnableVoiceAssistantBinding dialogEnableVoiceAssistantBinding =
 				DialogEnableVoiceAssistantBinding.inflate(getLayoutInflater());
-		View dialogView = binding.getRoot();
+		View dialogView = dialogEnableVoiceAssistantBinding.getRoot();
 
-		String message = "Voice Assistant is helpful for visual impairments." +
-				"Do you want to enable Voice Assistant?";
-
-		if (voiceAssistantState.equals("enabled")) {
-			voiceAssistantState = "disabled";
-			voiceAssistant = VoiceAssistant.getInstance(this);
-			voiceAssistant.speak(message);
+		if (fontSize.equals("large")) {
+			dialogEnableVoiceAssistantBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogEnableVoiceAssistantBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogEnableVoiceAssistantBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogEnableVoiceAssistantBinding.yesBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogEnableVoiceAssistantBinding.noBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 		}
 
-		binding.yesBtn.setOnClickListener(v -> closeEnableVoiceAssistantDialog());
+		dialogEnableVoiceAssistantBinding.noBtn.setOnClickListener(v -> closeEnableVoiceAssistantDialog());
 
-		binding.noBtn.setOnClickListener(v -> {
-			if (voiceAssistantState.equals("enabled")) {
-				voiceAssistant = VoiceAssistant.getInstance(this);
-				voiceAssistant.shutdown();
-			}
+		dialogEnableVoiceAssistantBinding.yesBtn.setOnClickListener(v -> {
+			voiceAssistantState = "enabled";
+			StaticDataPasser.storeVoiceAssistantState = voiceAssistantState;
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Voice Assistant enabled");
 
 			closeEnableVoiceAssistantDialog();
 		});
@@ -619,12 +621,19 @@ public class RegisterActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void showCancelRegisterDialog() {
+	private void showCancelRegistrationDialog() {
 		builder = new AlertDialog.Builder(this);
 
 		DialogCancelRegisterBinding dialogCancelRegisterBinding =
 				DialogCancelRegisterBinding.inflate(getLayoutInflater());
 		View dialogView = dialogCancelRegisterBinding.getRoot();
+
+		if (fontSize.equals("large")){
+			dialogCancelRegisterBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogCancelRegisterBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogCancelRegisterBinding.yesBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogCancelRegisterBinding.noBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+		}
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(this);
@@ -636,10 +645,10 @@ public class RegisterActivity extends AppCompatActivity implements
 			startActivity(intent);
 			finish();
 
-			closeCancelRegisterDialog();
+			closeCancelRegistrationDialog();
 		});
 
-		dialogCancelRegisterBinding.noBtn.setOnClickListener(v -> closeCancelRegisterDialog());
+		dialogCancelRegisterBinding.noBtn.setOnClickListener(v -> closeCancelRegistrationDialog());
 
 		builder.setView(dialogView);
 
@@ -647,7 +656,7 @@ public class RegisterActivity extends AppCompatActivity implements
 		cancelRegisterDialog.show();
 	}
 
-	private void closeCancelRegisterDialog() {
+	private void closeCancelRegistrationDialog() {
 		if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
 			cancelRegisterDialog.dismiss();
 		}

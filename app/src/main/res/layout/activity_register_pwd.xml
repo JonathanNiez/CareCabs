@@ -217,17 +217,20 @@
 							android:background="@drawable/smooth_edit_text"
 							android:elevation="5dp"
 							android:padding="5dp"
+							android:textColorHint="@color/black"
 							app:helperText="*Required"
 							app:helperTextTextColor="@color/red"
 							app:hintTextColor="@color/black">
 
-							<androidx.appcompat.widget.AppCompatButton
-								android:id="@+id/ageBtn"
+							<com.google.android.material.textfield.TextInputEditText
+								android:id="@+id/ageEditText"
 								android:layout_width="match_parent"
-								android:layout_height="60dp"
+								android:layout_height="wrap_content"
+								android:autofillHints="name"
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_semibold"
-								android:text="Age"
+								android:hint="AGE"
+								android:maxLength="2"
 								android:textColor="@color/black"
 								android:textSize="17sp" />
 
@@ -250,7 +253,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerDisability"
 							android:layout_width="match_parent"
-							android:layout_height="50dp"
+							android:layout_height="60dp"
 							android:layout_marginBottom="10dp"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
@@ -272,7 +275,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerSex"
 							android:layout_width="150dp"
-							android:layout_height="50dp"
+							android:layout_height="60dp"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
 

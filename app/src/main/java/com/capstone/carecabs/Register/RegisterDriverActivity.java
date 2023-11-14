@@ -193,6 +193,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 
 			String firstname = binding.firstnameEditText.getText().toString().trim();
 			String lastname = binding.lastnameEditText.getText().toString().trim();
+			age = Integer.parseInt(binding.ageEditText.getText().toString());
 			String plateNumber = binding.vehiclePlateNumberEditText.getText().toString().trim();
 			String vehicleColor = binding.vehicleColorEditText.getText().toString().trim();
 
@@ -365,7 +366,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView3.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView4.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView5.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -576,6 +577,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void calculateAge() {
 		if (selectedDate != null) {
 			// Calculate the age based on the selected birthdate
@@ -588,7 +590,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 			}
 
 			// Update the ageTextView with the calculated age
-			binding.ageBtn.setText("Age: " + age);
+			binding.ageEditText.setText("Age: " + age);
 			StaticDataPasser.storeCurrentAge = age;
 		}
 	}
@@ -709,7 +711,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 				}
 
 				binding.birthdateBtn.setText(birthDate);
-				binding.ageBtn.setText(String.valueOf(age));
+				binding.ageEditText.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}

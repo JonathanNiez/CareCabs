@@ -168,6 +168,7 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 
 			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
 			String stringLastname = binding.lastnameEditText.getText().toString().trim();
+			age = Integer.parseInt(binding.ageEditText.getText().toString());
 
 			if (stringFirstname.isEmpty()
 					|| stringLastname.isEmpty()
@@ -238,7 +239,7 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void updateUserRegistrationToFireStore(String firstname, String lastname) {
@@ -263,7 +264,7 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 						closePleaseWaitDialog();
 						binding.progressBarLayout.setVisibility(View.GONE);
 
-						if (profilePictureUri != null){
+						if (profilePictureUri != null) {
 							uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
 						}
 
@@ -521,7 +522,7 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 				}
 
 				binding.birthdateBtn.setText(birthDate);
-				binding.ageBtn.setText(String.valueOf(age));
+				binding.ageEditText.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}

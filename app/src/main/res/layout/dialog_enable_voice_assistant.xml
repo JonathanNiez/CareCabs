@@ -30,6 +30,7 @@
 				android:src="@drawable/voice_50" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/titleTextView"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -40,6 +41,7 @@
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView1"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -50,6 +52,7 @@
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView2"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -71,28 +74,26 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/yesBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryButton"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/light_gray"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="5dp"
 			android:text="Yes"
-			android:textColor="@color/black"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/noBtn"
-			android:layout_width="130dp"
+			android:layout_width="150dp"
 			android:layout_height="50dp"
 			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
+			style="@style/SecondaryButton"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="5dp"
 			android:text="No"
-			android:textColor="@color/white"
 			android:textSize="17sp" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>

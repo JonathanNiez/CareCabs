@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -37,6 +38,7 @@ import com.capstone.carecabs.Utility.NotificationHelper
 import com.capstone.carecabs.Utility.StaticDataPasser
 import com.capstone.carecabs.Utility.VoiceAssistant
 import com.capstone.carecabs.databinding.ActivityMapPassengerBinding
+import com.capstone.carecabs.databinding.DialogExitMapBinding
 import com.capstone.carecabs.databinding.DialogHasActiveBookingBinding
 import com.capstone.carecabs.databinding.DialogMapInstructionsBinding
 import com.capstone.carecabs.databinding.DialogPassengerOwnBookingInfoBinding
@@ -117,11 +119,13 @@ class MapPassengerActivity : AppCompatActivity(),
     private lateinit var hasActiveBookingDialog: AlertDialog
     private lateinit var mapInstructionsDialog: AlertDialog
     private lateinit var exitMapDialog: AlertDialog
-    private val voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
-    private lateinit var voiceAssistant: VoiceAssistant
     private var hasActiveBooking = false
     private var currentLongitude: Double = 0.0
     private var currentLatitude: Double = 0.0
+    private lateinit var voiceAssistant: VoiceAssistant
+    private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
+    private var fontSize = StaticDataPasser.storeFontSize
+
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -1318,10 +1322,19 @@ class MapPassengerActivity : AppCompatActivity(),
     }
 
     private fun showExitMapDialog() {
+
         builder = AlertDialog.Builder(this)
-        val dialogView = layoutInflater.inflate(R.layout.dialog_exit_map, null)
-        val exitBtn = dialogView.findViewById<Button>(R.id.exitBtn)
-        val cancelBtn = dialogView.findViewById<Button>(R.id.cancelBtn)
+        val binding: DialogExitMapBinding = DialogExitMapBinding.inflate(layoutInflater)
+        val dialogView = binding.root
+
+        if (fontSize.equals("large")) {
+            val TEXT_SIZE = 22F
+
+            binding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25F)
+            binding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+            binding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+            binding.exitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE)
+        }
 
         if (voiceAssistantState == "enabled") {
             voiceAssistant =
@@ -1329,14 +1342,15 @@ class MapPassengerActivity : AppCompatActivity(),
             voiceAssistant.speak("Are you sure you want to exit Map?")
         }
 
-        exitBtn.setOnClickListener {
+        binding.exitBtn.setOnClickListener {
             intent = Intent(this@MapPassengerActivity, MainActivity::class.java)
             startActivity(intent)
             finish()
 
             closeExitMapDialog()
         }
-        cancelBtn.setOnClickListener {
+
+        binding.cancelBtn.setOnClickListener {
             closeExitMapDialog()
         }
 

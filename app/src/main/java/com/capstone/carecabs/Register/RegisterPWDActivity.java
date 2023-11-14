@@ -203,6 +203,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 			String firstname = binding.firstnameEditText.getText().toString().trim();
 			String lastname = binding.lastnameEditText.getText().toString().trim();
+			age = Integer.parseInt(binding.ageEditText.getText().toString());
 
 			if (firstname.isEmpty() ||
 					lastname.isEmpty()
@@ -216,7 +217,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else {
-				updateUserRegisterToFireStore(firstname, lastname);
+				updateUserRegistrationToFireStore(firstname, lastname);
 			}
 		});
 	}
@@ -268,7 +269,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showIDScanInfoDialog() {
@@ -300,7 +301,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void updateUserRegisterToFireStore(String firstname, String lastname) {
+	private void updateUserRegistrationToFireStore(String firstname, String lastname) {
 		if (FirebaseMain.getUser() != null) {
 			String userID = FirebaseMain.getUser().getUid();
 
@@ -610,7 +611,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 				}
 
 				binding.birthdateBtn.setText(birthDate);
-				binding.ageBtn.setText(String.valueOf(age));
+				binding.ageEditText.setText(String.valueOf(age));
 
 				closeEnterBirthdateDialog();
 			}
@@ -639,7 +640,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			updateUserRegisterToFireStore(firstname, lastname);
+			updateUserRegistrationToFireStore(firstname, lastname);
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -701,7 +702,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			}
 
 			// Update the ageTextView with the calculated age
-			binding.ageBtn.setText("Age: " + age);
+			binding.ageEditText.setText("Age: " + age);
 			StaticDataPasser.storeCurrentAge = age;
 		}
 	}

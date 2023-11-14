@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +47,8 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	private static final String TAG = "ConfirmBookingBottomSheet";
 	private static final String ARG_POINT = "point";
 	private String pickupLocation, destination;
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private VoiceAssistant voiceAssistant;
 	private int pickupLocationGeocodeResult = 0, destinationGeocodeResult = 0;
 	private Context context;
@@ -91,6 +93,8 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 		super.onViewCreated(view, savedInstanceState);
 
 		if (isAdded()) {
+			getUserSettings();
+
 			if (destinationPoint != null
 					&& StaticDataPasser.storePickupLatitude != null
 					&& StaticDataPasser.storePickupLongitude != null) {
@@ -205,6 +209,20 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 	public void setBookingConfirmationListener(BookingConfirmationListener bookingConfirmationListener) {
 		this.mBookingConfirmationListener = bookingConfirmationListener;
+	}
+
+	private void getUserSettings() {
+		if (fontSize.equals("large")) {
+			float HEADER_TEXT_SIZE = 25;
+			float TEXT_SIZE = 22;
+			binding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+			binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.pickupLocationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+			binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.destinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, HEADER_TEXT_SIZE);
+			binding.confirmButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.cancelButton.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+		}
 	}
 
 	private String generateRandomBookingID() {

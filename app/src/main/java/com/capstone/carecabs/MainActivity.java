@@ -516,9 +516,9 @@ public class MainActivity extends AppCompatActivity {
 
 		if (fontSize.equals("large")) {
 			dialogExitAppBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-			dialogExitAppBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			dialogExitAppBinding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			dialogExitAppBinding.exitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			dialogExitAppBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogExitAppBinding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+			dialogExitAppBinding.exitBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 		}
 
 		if (voiceAssistantState.equals("enabled")) {
