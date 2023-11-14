@@ -106,6 +106,7 @@
 
 	<style name="FloatingButtonBackground">
 		<item name="android:backgroundTint">@color/gray</item>
+		<item name="android:tint">@color/white</item>
 	</style>
 
 	<style name="HorizontalLineBackground">
@@ -147,7 +148,9 @@
 	</style>
 
 	<style name="MapboxManeuverViewBackground">
-		<item name="maneuverViewBackgroundColor">@color/darker_gray</item>
+		<item name="maneuverViewBackgroundColor">@color/lighter_gray</item>
+		<item name="subManeuverViewBackgroundColor">@color/light_gray</item>
+		<item name="upcomingManeuverViewBackgroundColor">@color/naughty_white</item>
 	</style>
 
 	<style name="SwitchBackground">
@@ -163,7 +166,7 @@
 
 	<style name="PrimaryLongButton">
 		<item name="android:background">@drawable/smooth_edge_button</item>
-		<item name="android:backgroundTint">@color/darker_gray</item>
+		<item name="android:backgroundTint">@color/naughty_white</item>
 		<item name="android:elevation">5dp</item>
 	</style>
 
@@ -178,7 +181,7 @@
 
 	<style name="PrimaryButton">
 		<item name="android:background">@drawable/smooth_edge_button</item>
-		<item name="android:backgroundTint">@color/naughty_white</item>
+		<item name="android:backgroundTint">@color/light_gray</item>
 		<item name="android:textColor">@color/black</item>
 	</style>
 

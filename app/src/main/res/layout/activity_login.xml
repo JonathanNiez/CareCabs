@@ -184,15 +184,16 @@
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/loginTextView2"
+					style="@style/PrimaryLongButtonTextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="LOGIN"
-					android:textColor="@color/white"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatImageView
+					style="@style/PrimaryLongButtonIconTint"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
@@ -240,7 +241,7 @@
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="50dp"
+				android:layout_marginBottom="100dp"
 				android:gravity="center"
 				android:orientation="vertical">
 
@@ -256,7 +257,7 @@
 
 				<androidx.appcompat.widget.AppCompatButton
 					android:id="@+id/resetPasswordBtn"
-					android:layout_width="230dp"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_margin="5dp"
 					android:background="@drawable/smooth_edge_button"
@@ -264,7 +265,7 @@
 					android:elevation="5dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:padding="15dp"
-					android:text="Click here to reset"
+					android:text="Reset Password"
 					android:textAlignment="center"
 					android:textColor="@color/white"
 					android:textSize="17sp" />
@@ -287,9 +288,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 
@@ -305,9 +308,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

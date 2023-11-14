@@ -25,6 +25,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -52,12 +53,19 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterSeniorActivity extends AppCompatActivity {
+public class RegisterSeniorActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterSeniorActivity";
 	private final String userType = "Senior Citizen";
-	private String profilePictureURL = "default", sex, birthDate, month;
+	private String profilePictureURL = "default";
+	private String fontSize = "normal";
+	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
+	private static final float DEFAULT_TEXT_SIZE_SP = 20;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 25;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -69,7 +77,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	private AlertDialog notSeniorDialog, noInternetDialog,
 			registerFailedDialog, cancelRegisterDialog,
 			idNotScannedDialog, enterBirthdateDialog,
-			cameraGalleryOptionsDialog;
+			cameraGalleryOptionsDialog, pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterSeniorBinding binding;
 
@@ -77,6 +85,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 	protected void onPause() {
 		super.onPause();
 
+		closePleaseWaitDialog();
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
@@ -91,6 +100,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
+		closePleaseWaitDialog();
 		closeCancelRegisterDialog();
 		closeIDNotScannedDialog();
 		closeRegisterFailedDialog();
@@ -106,7 +116,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		initializeNetworkChecker();
-		checkPermission();
+		checkCameraAndStoragePermission();
 
 		FirebaseApp.initializeApp(this);
 
@@ -118,12 +128,11 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 					.start();
 		});
 
-		binding.backFloatingBtn.setOnClickListener(v -> {
-			showCancelRegisterDialog();
-		});
+		binding.backFloatingBtn.setOnClickListener(v -> showCancelRegisterDialog());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
@@ -154,6 +163,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
 		binding.nextBtn.setOnClickListener(v -> {
+			showPleaseWaitDialog();
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 
 			String stringFirstname = binding.firstnameEditText.getText().toString().trim();
@@ -165,16 +175,17 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 					|| age == 0
 					|| sex == null) {
 
+				closePleaseWaitDialog();
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
-
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else if (age <= 60) {
 				showNotSeniorDialog();
+				closePleaseWaitDialog();
 
 				binding.progressBarLayout.setVisibility(View.GONE);
 			} else {
-				updateUserRegisterToFireStore(stringFirstname, stringLastname);
+				updateUserRegistrationToFireStore(stringFirstname, stringLastname);
 			}
 		});
 	}
@@ -189,7 +200,48 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		}
 	}
 
-	private void updateUserRegisterToFireStore(String firstname, String lastname) {
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		fontSize = isChecked ? "large" : "normal";
+		setFontSize(fontSize);
+
+	}
+
+	private void setFontSize(String fontSize) {
+
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+		}
+
+		binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+
+	private void updateUserRegistrationToFireStore(String firstname, String lastname) {
 		if (FirebaseMain.getUser() != null) {
 			String userID = FirebaseMain.getUser().getUid();
 
@@ -208,9 +260,12 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 			documentReference.update(registerUser)
 					.addOnSuccessListener(unused -> {
+						closePleaseWaitDialog();
 						binding.progressBarLayout.setVisibility(View.GONE);
 
-						uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+						if (profilePictureUri != null){
+							uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+						}
 
 						intent = new Intent(RegisterSeniorActivity.this, ScanIDActivity.class);
 						intent.putExtra("userType", userType);
@@ -219,6 +274,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 					})
 					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 						showRegisterFailedDialog();
 
 						binding.progressBarLayout.setVisibility(View.GONE);
@@ -227,12 +283,14 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 
 					});
 		} else {
-			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
+			closePleaseWaitDialog();
+			showRegisterFailedDialog();
 
 			intent = new Intent(RegisterSeniorActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 
+			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
 		}
 	}
 
@@ -263,7 +321,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		});
 	}
 
-	private void checkPermission() {
+	private void checkCameraAndStoragePermission() {
 		// Check for camera permission
 		if (ContextCompat.checkSelfPermission(RegisterSeniorActivity.this,
 				android.Manifest.permission.CAMERA)
@@ -319,6 +377,24 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 		String path = MediaStore.Images.Media.insertImage(this.getContentResolver(), bitmap, "Title", null);
 		return Uri.parse(path);
+	}
+
+	private void showPleaseWaitDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+
+		builder.setView(dialogView);
+
+		pleaseWaitDialog = builder.create();
+		pleaseWaitDialog.show();
+	}
+
+	private void closePleaseWaitDialog() {
+		if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+			pleaseWaitDialog.dismiss();
+		}
 	}
 
 	private void showCameraOrGalleryOptionsDialog() {
@@ -474,7 +550,7 @@ public class RegisterSeniorActivity extends AppCompatActivity {
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			updateUserRegisterToFireStore(firstname, lastname);
+			updateUserRegistrationToFireStore(firstname, lastname);
 		});
 
 		noBtn.setOnClickListener(v -> {

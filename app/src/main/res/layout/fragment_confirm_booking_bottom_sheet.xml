@@ -86,26 +86,26 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/confirmButton"
-			android:layout_width="150dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="15dp"
 			android:text="Confirm"
-			android:textColor="@color/white"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/cancelButton"
-			android:layout_width="150dp"
-			android:layout_height="50dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
 			android:layout_marginBottom="20dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/red"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="15dp"
 			android:text="Cancel"
 			android:textColor="@color/white"
 			android:textSize="17sp" />

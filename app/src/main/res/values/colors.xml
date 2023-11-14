@@ -43,7 +43,8 @@
 	<color name="darker_blue">#000235</color>
 	<color name="dark_blue">#000460</color>
 	<color name="gray">#696969</color>
-	<color name="light_gray">#E4DDDD</color>
+	<color name="light_gray">#DDDCDC</color>
+	<color name="lighter_gray">#EFEFEF</color>
 	<color name="dark_gray">#36363A</color>
 	<color name="naughty_white">#A8A8A8</color>
 

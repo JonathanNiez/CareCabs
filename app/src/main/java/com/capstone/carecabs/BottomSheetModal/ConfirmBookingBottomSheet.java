@@ -54,6 +54,11 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 	private FirebaseDatabase firebaseDatabase;
 	private DatabaseReference bookingReference;
 	private FragmentConfirmBookingBottomSheetBinding binding;
+	private BookingConfirmationListener mBookingConfirmationListener;
+
+	public interface BookingConfirmationListener {
+		void onBookingConfirmed(boolean isBookingConfirmed);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -183,13 +188,23 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 					}
 				}
 
-				binding.confirmButton.setOnClickListener(v -> storeCoordinatesInFireStore(destinationPoint));
+				binding.confirmButton.setOnClickListener(v -> {
+
+					if (mBookingConfirmationListener != null) {
+						mBookingConfirmationListener.onBookingConfirmed(true);
+						storeCoordinatesInFireStore(destinationPoint);
+					}
+				});
 
 			} else {
 				binding.pickupLocationTextView.setText("Location not found");
 				binding.destinationTextView.setText("Location not found");
 			}
 		}
+	}
+
+	public void setBookingConfirmationListener(BookingConfirmationListener bookingConfirmationListener) {
+		this.mBookingConfirmationListener = bookingConfirmationListener;
 	}
 
 	private String generateRandomBookingID() {
@@ -239,8 +254,8 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 											fullName,
 											getUserType,
 											getProfilePicture,
-											generateRandomBookingID()
-									);
+											generateRandomBookingID());
+
 								} else if (getUserType.equals("Person with Disabilities (PWD)")) {
 									String getDisability = documentSnapshot.getString("disability");
 
@@ -252,8 +267,7 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 											getUserType,
 											getProfilePicture,
 											getDisability,
-											generateRandomBookingID()
-									);
+											generateRandomBookingID());
 								}
 							} else {
 								showToast(context, "Try again");
@@ -324,7 +338,8 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 		firebaseDatabase = FirebaseDatabase.getInstance();
 		bookingReference = firebaseDatabase
-				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
+				.getReference(FirebaseMain.bookingCollection)
+				.child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
 		booking.put("fcmToken", StaticDataPasser.storeFCMToken);

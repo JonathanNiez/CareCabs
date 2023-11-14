@@ -447,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
 							String getUserType = documentSnapshot.getString("userType");
 
-							if (getUserType != null ){
+							if (getUserType != null) {
 								if (getUserType.equals("Driver")) {
 
 									checkForWaitingPassengers();
@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
 	private void showProfileNotVerifiedNotification() {
 		NotificationHelper notificationHelper = new NotificationHelper(this);
 		notificationHelper.showProfileNotVerifiedNotification("CareCabs",
-				"Your Profile is not Verified. Please scan your ID to Verify");
+				"Your Profile is not Verified.\nPlease scan your ID to Verify");
 	}
 
 	private void showPassengersWaitingNotification() {

@@ -23,20 +23,17 @@
 				android:id="@+id/closeImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentTop="true"
-				android:layout_alignParentEnd="true"
 				android:layout_margin="5dp"
-				app:srcCompat="@drawable/x_48" />
+				app:srcCompat="@drawable/x_48"
+				android:layout_alignParentTop="true"
+				android:layout_alignParentEnd="true"/>
 
 			<androidx.appcompat.widget.AppCompatImageView
 				android:id="@+id/instructionImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerHorizontal="true"
-				android:layout_marginStart="5dp"
-				android:layout_marginTop="5dp"
-				android:layout_marginEnd="5dp"
-				android:layout_marginBottom="5dp"
+				android:layout_margin="5dp"
 				app:srcCompat="@drawable/help_64_2" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -44,21 +41,21 @@
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:layout_below="@id/instructionImageView"
 				android:layout_centerHorizontal="true"
 				android:layout_margin="10dp"
-				android:layout_below="@id/instructionImageView"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="HOW TO BOOK A RIDE?"
+				android:text="HOW TO USE THE APP?"
 				android:textAlignment="center"
 				android:textSize="20sp" />
 
 			<pl.droidsonroids.gif.GifImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_centerHorizontal="true"
 				android:layout_below="@id/titleTextView"
+				android:layout_centerHorizontal="true"
 				android:layout_margin="5dp"
-				android:src="@drawable/cat" />
+				android:src="@drawable/elmo" />
 
 		</RelativeLayout>
 

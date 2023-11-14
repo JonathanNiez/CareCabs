@@ -1,77 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
-
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
-		android:src="@drawable/failed_64" />
 
 	<androidx.cardview.widget.CardView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
+		android:layout_margin="10dp"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
+			style="@style/BaseCardBackground"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_bold"
-				android:text="REGISTER"
-				android:textColor="@color/black"
-				android:textSize="20sp" />
-
-			<TextView
+			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:src="@drawable/failed_64" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="REGISTER"
+				style="@style/TextColor"
+				android:textSize="20sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Register Failed"
 				android:textColor="@color/red"
 				android:textSize="17sp" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:layout_marginTop="20dp"
-				android:fontFamily="@font/opensans_semibold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="The Email you entered is already Used"
 				android:textAlignment="center"
-				android:textColor="@color/black"
+				style="@style/TextColor"
 				android:textSize="17sp" />
 
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
+		style="@style/PrimaryButton"
 		android:layout_width="130dp"
-		android:layout_height="50dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
-		android:fontFamily="@font/opensans_bold"
-		android:text="Ok"
-		android:textColor="@color/white"
+		android:fontFamily="@font/opensans_semibold"
+		android:text="Okay"
 		android:textSize="17sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

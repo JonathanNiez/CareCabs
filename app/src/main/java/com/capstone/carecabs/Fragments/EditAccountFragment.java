@@ -490,7 +490,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 								.addOnFailureListener(e -> {
 									Toast.makeText(context, "Vehicle color failed to update", Toast.LENGTH_LONG).show();
 
-									Log.e(TAG, e.getMessage());
+									Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 								});
 					}
 				});
@@ -560,10 +560,11 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		showPleaseWaitDialog();
 
 		if (FirebaseMain.getUser() != null) {
-
 			String userID = FirebaseMain.getUser().getUid();
+
 			userReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection)
+					.document(userID);
 
 			userReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
@@ -581,7 +582,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							String getEmail = documentSnapshot.getString("email");
 							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 							String getSex = documentSnapshot.getString("sex");
-							boolean getVerificationStatus = documentSnapshot.getBoolean("isVerified");
+							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 							String getBirthdate = documentSnapshot.getString("birthdate");
 
 							if (getUserType != null) {
@@ -634,7 +635,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 										.into(binding.profilePicture);
 							}
 
-							if (!getVerificationStatus) {
+							if (!isVerified) {
 								binding.idNotScannedTextView.setVisibility(View.VISIBLE);
 
 							}
@@ -833,10 +834,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
-		okBtn.setOnClickListener(v -> {
-			closeProfilePicUpdateSuccess();
-		});
-
+		okBtn.setOnClickListener(v -> closeProfilePicUpdateSuccess());
 
 		builder.setView(dialogView);
 
@@ -854,7 +852,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private void showProfilePicUpdateFailed() {
 		builder = new AlertDialog.Builder(getContext());
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_pic_update_success, null);
+		View dialogView = getLayoutInflater().inflate(R.layout.dialog_profile_pic_update_failed, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 
@@ -1184,10 +1182,14 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private void uploadProfileImageToFirebaseStorage(String userID, Uri profilePictureUri) {
 
 		StorageReference profilePictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
-		profilePicturePath = profilePictureReference.child("images/profilePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		profilePicturePath = profilePictureReference.child("images/profilePictures/"
+				+ System.currentTimeMillis() + "_" + userID + ".jpg");
 
 		profilePicturePath.putFile(profilePictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
+
+					closePleaseWaitDialog();
+					showProfilePicUpdateSuccess();
 
 					profilePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
@@ -1195,6 +1197,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 								binding.profilePicture.setImageURI(profilePictureUri);
 								String profilePictureURL = uri.toString();
 								storeProfileImageURLInFireStore(userID, profilePictureURL);
+
 							})
 							.addOnFailureListener(e -> {
 								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
@@ -1202,7 +1205,12 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 								Log.e(TAG, "uploadProfileImageToFirebaseStorage: " + e.getMessage());
 							});
 				})
-				.addOnFailureListener(e -> Log.e(TAG, "uploadProfileImageToFirebaseStorage: addOnFailureListener " + e.getMessage()));
+				.addOnFailureListener(e -> {
+					closePleaseWaitDialog();
+					showProfilePicUpdateFailed();
+
+					Log.e(TAG, "uploadProfileImageToFirebaseStorage: " + e.getMessage());
+				});
 	}
 
 	private void uploadVehicleImageToFirebaseStorage(String userID, Bitmap bitmap) {
@@ -1453,6 +1461,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 		if (resultCode == Activity.RESULT_OK && data != null) {
 
+			showPleaseWaitDialog();
+
 			Uri imageUri = data.getData();
 
 			Bitmap bitmap = null;
@@ -1463,7 +1473,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			}
 			int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
 			bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
-
 
 			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
 

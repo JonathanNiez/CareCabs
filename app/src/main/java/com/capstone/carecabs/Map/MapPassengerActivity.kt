@@ -71,6 +71,7 @@ import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
+import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
 import com.mapbox.maps.plugin.gestures.removeOnMapLongClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
@@ -104,9 +105,10 @@ import java.util.Calendar
 import java.util.UUID
 
 
-class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongClickListener {
+class MapPassengerActivity : AppCompatActivity(),
+    ConfirmBookingBottomSheet.BookingConfirmationListener {
 
-    private val TAG: String = "MapPassengerActivity"
+    private val TAG = "MapPassengerActivity"
     private lateinit var binding: ActivityMapPassengerBinding
     private lateinit var documentReference: DocumentReference
     private lateinit var builder: AlertDialog.Builder
@@ -760,35 +762,62 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             )
             val canvas = Canvas(bitmap)
             drawable.setBounds(0, 0, canvas.width, canvas.height)
-            drawable.draw(canvas)
             bitmap
         }
     }
 
+    override fun onBookingConfirmed(isBookingConfirmed: Boolean) {
+        if (isBookingConfirmed) {
+            hasActiveBooking = true
+        }
+    }
 
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
-    }
+        binding.mapView.gestures.addOnMapLongClickListener {
 
-    @SuppressLint("SetTextI18n")
-    override fun onMapClick(point: Point): Boolean {
+            if (hasActiveBooking) {
 
-        return false
-    }
+                showHasActiveBookingDialog()
 
-    override fun onMapLongClick(point: Point): Boolean {
+                false
+            } else {
 
-        return if (hasActiveBooking) {
-            showHasActiveBookingDialog()
+                showConfirmBookingBottomSheet(it)
 
-            true
-        } else {
-            showConfirmBookingBottomSheet(point)
-
-            false
+                true
+            }
         }
     }
+
+//    @SuppressLint("SetTextI18n")
+//    override fun onMapClick(point: Point): Boolean {
+//
+//        Log.d(TAG, "onMapClick: $hasActiveBooking")
+//        showConfirmBookingBottomSheet(point)
+//
+//        return true
+//    }
+//
+//    override fun onMapLongClick(point: Point): Boolean {
+//
+//        Log.d(TAG, "onMapLongClick: $hasActiveBooking")
+//        showConfirmBookingBottomSheet(point)
+//
+//        return true
+//
+////        return if (hasActiveBooking) {
+////
+////            showHasActiveBookingDialog()
+////            true
+////        } else {
+////            showConfirmBookingBottomSheet(point)
+////
+////            false
+////        }
+//
+//    }
 
     private fun onCameraTrackingDismissed() {
         binding.mapView.location
@@ -821,7 +850,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 if (passengerBookingData.bookingStatus == "Waiting"
                                     && passengerBookingData.passengerUserID == userID
                                 ) {
-
                                     hasActiveBooking = true
 
                                     binding.searchDestinationLayout.visibility = View.GONE
@@ -839,6 +867,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                         destinationLatitude,
                                         getBookingID
                                     )
+
                                 } else if (passengerBookingData.bookingStatus == "Driver on the way"
                                     && passengerBookingData.passengerUserID == userID
                                 ) {
@@ -879,18 +908,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                 ) {
                                     hasActiveBooking = false
 
-                                    binding.longTapTextView.text = "Long tap/click on the Map you wish to go"
+                                    binding.longTapTextView.text =
+                                        "Long tap/click on the Map you wish to go"
                                     binding.searchDestinationLayout.visibility = View.VISIBLE
-                                }
-
-                                mapboxMap = if (hasActiveBooking) {
-                                    binding.mapView.getMapboxMap().apply {
-                                        removeOnMapLongClickListener(this@MapPassengerActivity)
-                                    }
-                                } else {
-                                    binding.mapView.getMapboxMap().apply {
-                                        addOnMapLongClickListener(this@MapPassengerActivity)
-                                    }
                                 }
                             }
                         }
@@ -912,7 +932,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             startActivity(intent)
             finish()
         }
-
     }
 
     private fun getCurrentTimeAndDate(): String {
@@ -997,7 +1016,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                         val fullName = "$getFirstName $getLastName"
 
                         intent = Intent(this@MapPassengerActivity, BookingsActivity::class.java)
-                        intent.putExtra("dataSent", "dummy")
                         startActivity(intent)
 
                         when (getUserType) {
@@ -1122,61 +1140,6 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             }
     }
 
-    private fun checkBookingStatus() {
-        val bookingReference = FirebaseDatabase.getInstance()
-            .getReference(FirebaseMain.bookingCollection)
-
-        bookingReference.addValueEventListener(object : ValueEventListener {
-            @SuppressLint("SetTextI18n")
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-
-                    val userID = FirebaseMain.getUser().uid
-                    for (locationSnapshot in snapshot.children) {
-                        val passengerBookingData =
-                            locationSnapshot.getValue(PassengerBookingModel::class.java)
-                        if (passengerBookingData != null) {
-
-                            if (passengerBookingData.passengerUserID == userID &&
-                                passengerBookingData.bookingStatus == "Waiting"
-                            ) {
-                                hasActiveBooking = true
-
-                            } else if (passengerBookingData.passengerUserID == userID &&
-                                passengerBookingData.bookingStatus == "Driver on the way"
-                            ) {
-                                hasActiveBooking = true
-
-                                binding.longTapTextView.text = "Your Driver on the way!"
-                            }
-                        }
-                    }
-
-                    if (hasActiveBooking) {
-                        mapboxMap = binding.mapView.getMapboxMap().apply {
-                            removeOnMapLongClickListener(this@MapPassengerActivity)
-                        }
-                    } else {
-                        mapboxMap = binding.mapView.getMapboxMap().apply {
-                            addOnMapLongClickListener(this@MapPassengerActivity)
-                        }
-                    }
-                } else {
-                    mapboxMap = binding.mapView.getMapboxMap().apply {
-                        addOnMapLongClickListener(this@MapPassengerActivity)
-                    }
-
-                    Log.e(TAG, "checkBookingStatus: addValueEventListener is null")
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(TAG, "checkBookingStatus: " + error.message)
-            }
-        }
-        )
-    }
-
     private fun showBookingIsAcceptedNotification() {
         val notificationHelper = NotificationHelper(this)
         notificationHelper.showBookingIsAcceptedNotificationNotification(
@@ -1212,6 +1175,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     }
 
     private fun showHasActiveBookingDialog() {
+
         val binding: DialogHasActiveBookingBinding =
             DialogHasActiveBookingBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
@@ -1255,6 +1219,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                             if (passengerBookingModel.bookingID == bookingID &&
                                 passengerBookingModel.passengerUserID == FirebaseMain.getUser().uid
                             ) {
+
                                 val destination = passengerBookingModel.destination
                                 val pickupLocation = passengerBookingModel.pickupLocation
 
@@ -1268,14 +1233,16 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
                                         " Destination: $destination"
 
                                 if (voiceAssistantState == "enabled") {
-                                    voiceAssistant =
-                                        VoiceAssistant.getInstance(this@MapPassengerActivity)
+                                    voiceAssistant = VoiceAssistant
+                                        .getInstance(this@MapPassengerActivity)
                                     voiceAssistant.speak(message)
                                 }
 
                                 if (passengerBookingModel.bookingStatus == "Driver on the way") {
+
                                     isDriverOnTheWay = true
                                     binding.cancelBookingBtn.visibility = View.GONE
+
                                 }
                             }
                         }
@@ -1286,18 +1253,19 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             override fun onCancelled(error: DatabaseError) {
                 Log.e(TAG, "onCancelled: " + error.message)
             }
-
         })
 
         binding.cancelBookingBtn.setOnClickListener {
-            if (isDriverOnTheWay) {
+            if (!isDriverOnTheWay) {
                 val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
-                bookingReference.child(bookingID).updateChildren(updateBookingStatus)
+                bookingReference.child(bookingID)
+                    .updateChildren(updateBookingStatus)
                     .addOnSuccessListener {
                         showToast("Booking cancelled")
 
                         hasActiveBooking = false
                         loadBookingsToMapFromDatabase()
+
                         closeOwnBookingInfoDialog()
                     }
                     .addOnFailureListener {
@@ -1328,9 +1296,9 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
         builder.setCancelable(false)
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_user_not_verified, null)
-        val okBtn = dialogView.findViewById<Button>(R.id.okBtn)
+        val okayBtn = dialogView.findViewById<Button>(R.id.okayBtn)
 
-        okBtn.setOnClickListener {
+        okayBtn.setOnClickListener {
             intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
@@ -1386,6 +1354,7 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
     private fun showConfirmBookingBottomSheet(destination: Point) {
         val destinationJson = destination.toJson()
         val confirmBookingBottomSheet = ConfirmBookingBottomSheet.newInstance(destinationJson)
+        confirmBookingBottomSheet.setBookingConfirmationListener(this@MapPassengerActivity)
         confirmBookingBottomSheet.show(supportFragmentManager, confirmBookingBottomSheet.tag)
     }
 
@@ -1516,5 +1485,4 @@ class MapPassengerActivity : AppCompatActivity(), OnMapClickListener, OnMapLongC
             PlaceAutocompleteType.AdministrativeUnit.Address,
         )
     }
-
 }

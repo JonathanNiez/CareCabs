@@ -49,9 +49,8 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "Register";
-	private float textSizeSP, textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
-	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 25;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private String fontSize = StaticDataPasser.storeFontSize;
@@ -136,6 +135,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
 			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
 			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 		});
 
@@ -143,6 +143,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				.requestIdToken(getString(R.string.default_web_client_id))
 				.requestEmail()
 				.build();
+
 		GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -200,21 +201,14 @@ public class RegisterActivity extends AppCompatActivity implements
 				if (voiceAssistantState.equals("enabled")) {
 					voiceAssistant = VoiceAssistant.getInstance(this);
 
-					binding.emailEditText.setOnClickListener(v -> {
-						voiceAssistant.speak("Email");
-					});
-
-					binding.passwordEditText.setOnClickListener(v -> {
-						voiceAssistant.speak("Password");
-					});
-
-					binding.confirmPasswordEditText.setOnClickListener(v -> {
-						voiceAssistant.speak("Confirm password");
-					});
-
-					binding.phoneNumberEditText.setOnClickListener(v -> {
-						voiceAssistant.speak("Phone number");
-					});
+					binding.emailEditText.setOnFocusChangeListener((v, hasFocus) ->
+							voiceAssistant.speak("Email"));
+					binding.passwordEditText.setOnFocusChangeListener((v, hasFocus) ->
+							voiceAssistant.speak("Password"));
+					binding.confirmPasswordEditText.setOnFocusChangeListener((v, hasFocus) ->
+							voiceAssistant.speak("Confirm password"));
+					binding.phoneNumberEditText.setOnFocusChangeListener((v, hasFocus) ->
+							voiceAssistant.speak("Phone number"));
 				}
 			}
 
@@ -295,7 +289,7 @@ public class RegisterActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void checkEditTextIfNotEmpty(){
+	private void checkEditTextIfNotEmpty() {
 		String email = binding.emailEditText.getText().toString().trim();
 		String password = binding.passwordEditText.getText().toString();
 		String confirmPassword = binding.confirmPasswordEditText.getText().toString();
@@ -306,18 +300,18 @@ public class RegisterActivity extends AppCompatActivity implements
 				!confirmPassword.isEmpty() ||
 				!phoneNumber.isEmpty()) {
 			showCancelRegisterDialog();
-		}else {
+		} else {
 			intent = new Intent(RegisterActivity.this, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			finish();
 		}
 	}
+
 	private void showSettingsBottomSheet() {
 		SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
 		settingsBottomSheet.setFontSizeChangeListener(this);
 		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 	}
-
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 		fontSize = isChecked ? "large" : "normal";
@@ -326,6 +320,8 @@ public class RegisterActivity extends AppCompatActivity implements
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -343,7 +339,6 @@ public class RegisterActivity extends AppCompatActivity implements
 			binding.passwordLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
 			binding.confirmPasswordLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
 			binding.phoneNumberLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
-
 		}
 
 		binding.registerTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
@@ -465,7 +460,8 @@ public class RegisterActivity extends AppCompatActivity implements
 	}
 
 	private void storeUserDataToFireStore(String userID, String email) {
-		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat =
+				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		accountCreationDate = dateFormat.format(date);
 		theme = StaticDataPasser.storeTheme;
 
@@ -789,14 +785,14 @@ public class RegisterActivity extends AppCompatActivity implements
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
-			Log.e(TAG, "googleRegisterDriver: " + e.getMessage());
-
 			binding.progressBarLayout.setVisibility(View.GONE);
 			binding.nextBtn.setVisibility(View.VISIBLE);
 
 			FirebaseMain.signOutUser();
 
 			showRegisterFailedDialog();
+
+			Log.e(TAG, "googleRegisterDriver: " + e.getMessage());
 		});
 	}
 
@@ -805,6 +801,7 @@ public class RegisterActivity extends AppCompatActivity implements
 			getUserID = authResult.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection).document(getUserID);
+
 			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
 
 		}).addOnFailureListener(e -> {
@@ -840,7 +837,8 @@ public class RegisterActivity extends AppCompatActivity implements
 	}
 
 	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
-		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat =
+				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		accountCreationDate = dateFormat.format(date);
 		theme = StaticDataPasser.storeTheme;
 

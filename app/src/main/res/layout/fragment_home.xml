@@ -267,14 +267,13 @@
 
 								<androidx.appcompat.widget.AppCompatButton
 									android:id="@+id/rateDriverBtn"
-									android:layout_width="150dp"
-									android:layout_height="50dp"
-									android:background="@drawable/smooth_edge_button"
-									android:backgroundTint="@color/yinmn_blue"
+									style="@style/PrimaryButton"
+									android:layout_width="170dp"
+									android:layout_height="wrap_content"
 									android:elevation="5dp"
 									android:fontFamily="@font/gabarito_semibold"
+									android:padding="5dp"
 									android:text="Rate Driver"
-									android:textColor="@color/white"
 									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -483,26 +482,27 @@
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/viewPassengerOnMapBtn"
+								style="@style/PrimaryLongButton"
 								android:layout_width="230dp"
-								android:layout_height="50dp"
+								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
-								android:background="@drawable/smooth_edge_button"
-								android:backgroundTint="@color/yinmn_blue"
 								android:elevation="5dp"
 								android:gravity="center"
-								android:orientation="horizontal">
+								android:orientation="horizontal"
+								android:padding="5dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
+									style="@style/PrimaryLongButtonTextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="VIEW ON MAP"
-									android:textColor="@color/white"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatImageView
+									style="@style/PrimaryLongButtonIconTint"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
@@ -643,27 +643,28 @@
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/viewOnMapBtn"
+								style="@style/PrimaryLongButton"
 								android:layout_width="230dp"
-								android:layout_height="50dp"
+								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
-								android:background="@drawable/smooth_edge_button"
-								android:backgroundTint="@color/yinmn_blue"
 								android:elevation="5dp"
 								android:gravity="center"
-								android:orientation="horizontal">
+								android:orientation="horizontal"
+								android:padding="5dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/viewOnMapTextView"
+									style="@style/PrimaryLongButtonTextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="VIEW ON MAP"
-									android:textColor="@color/white"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatImageView
+									style="@style/PrimaryLongButtonIconTint"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
@@ -674,27 +675,27 @@
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/chatDriverBtn"
+								style="@style/PrimaryLongButton"
 								android:layout_width="200dp"
 								android:layout_height="50dp"
 								android:layout_margin="10dp"
-								android:background="@drawable/smooth_edge_button"
-								android:backgroundTint="@color/yinmn_blue"
 								android:elevation="5dp"
 								android:gravity="center"
 								android:orientation="horizontal">
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/chatDriverTextView"
+									style="@style/PrimaryLongButtonTextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="CHAT DRIVER"
-									android:textColor="@color/white"
 									android:textSize="17sp" />
 
 								<androidx.appcompat.widget.AppCompatImageView
+									style="@style/PrimaryLongButtonIconTint"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
@@ -1055,18 +1056,28 @@
 					android:orientation="vertical"
 					android:padding="5dp">
 
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/driverDashBoardTextView"
-						style="@style/TextColor"
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:drawableEnd="@drawable/driver_32"
-						android:fontFamily="@font/gabarito_semibold"
-						android:padding="10dp"
-						android:text="Driver Dashboard"
-						android:textAlignment="center"
-						android:textSize="17sp" />
+						android:gravity="center"
+						android:orientation="horizontal">
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/driverDashBoardTextView"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Driver Dashboard"
+							android:textAlignment="center"
+							android:textSize="20sp" />
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:src="@drawable/driver_32" />
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.AppCompatTextView
 						android:id="@+id/driverRatingTextView"

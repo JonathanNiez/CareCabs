@@ -98,10 +98,12 @@ public class LoginActivity extends AppCompatActivity implements
 
 		FirebaseApp.initializeApp(this);
 
-		GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+		GoogleSignInOptions googleSignInOptions =
+				new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(getString(R.string.default_web_client_id))
 				.requestEmail()
 				.build();
+
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -221,8 +223,8 @@ public class LoginActivity extends AppCompatActivity implements
 						} else {
 							showUnknownOccurredDialog();
 						}
-						Log.e(TAG, String.valueOf(task.getException()));
-						Log.e(TAG, "Login Failed");
+
+						Log.e(TAG, "loginUser: " + task.getException());
 					}
 				});
 	}
@@ -512,7 +514,7 @@ public class LoginActivity extends AppCompatActivity implements
 				firebaseAuthWithGoogle(googleSignInAccount);
 
 			} catch (Exception e) {
-				Log.e(TAG, e.getMessage());
+				Log.e(TAG, "onActivityResult: " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -534,21 +536,24 @@ public class LoginActivity extends AppCompatActivity implements
 						SignInMethodQueryResult signInMethodQueryResult = task.getResult();
 						if (!signInMethodQueryResult.getSignInMethods().isEmpty()) {
 
-							FirebaseMain.getAuth().signInWithCredential(authCredential).addOnCompleteListener(task1 -> {
-								if (task1.isSuccessful()) {
+							FirebaseMain.getAuth().signInWithCredential(authCredential)
+									.addOnCompleteListener(task1 -> {
+										if (task1.isSuccessful()) {
 
-									closePleaseWaitDialog();
+											closePleaseWaitDialog();
 
-									intent = new Intent(LoginActivity.this, LoggingInActivity.class);
-									startActivity(intent);
-									finish();
+											intent = new Intent(LoginActivity.this, LoggingInActivity.class);
+											startActivity(intent);
+											finish();
 
-								} else {
-									closePleaseWaitDialog();
-									showLoginFailedDialog();
-								}
+										} else {
+											closePleaseWaitDialog();
+											showLoginFailedDialog();
 
-							});
+											Log.e(TAG, "firebaseAuthWithGoogle: " + task1.getException());
+										}
+
+									});
 						} else {
 							closePleaseWaitDialog();
 
@@ -561,7 +566,5 @@ public class LoginActivity extends AppCompatActivity implements
 						}
 					});
 		}
-
 	}
-
 }

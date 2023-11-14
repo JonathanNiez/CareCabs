@@ -222,13 +222,14 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/cancelBookingBtn"
-			android:layout_width="200dp"
+			android:layout_width="wrap_content"
 			android:layout_height="50dp"
-			android:layout_margin="10dp"
+			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/red"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="15dp"
 			android:text="Cancel Booking"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
@@ -247,26 +248,26 @@
 
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:id="@+id/rateDriverBtn"
+			style="@style/PrimaryLongButton"
 			android:layout_width="200dp"
 			android:layout_height="50dp"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:gravity="center"
 			android:orientation="horizontal">
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/rateDriverTextView"
+				style="@style/PrimaryLongButtonTextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="start|center_vertical"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="RATE DRIVER"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/PrimaryLongButtonIconTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"

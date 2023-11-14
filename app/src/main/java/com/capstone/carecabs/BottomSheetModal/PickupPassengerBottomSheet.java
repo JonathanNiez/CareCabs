@@ -63,6 +63,11 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 				(PickupPassengerBottomSheetData pickupPassengerBottomSheetData);
 	}
 
+	public interface RenavigateListener {
+		void onRenavigateClick(boolean isClicked);
+	}
+
+	private RenavigateListener mRenavigateListener;
 	private PickupPassengerBottomSheetListener mPickupPassengerBottomSheetListener;
 	private Context context;
 	private FragmentPickupPassengerBottomSheetBinding binding;
@@ -94,7 +99,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		if (isAdded()){
+		if (isAdded()) {
 			loadPassengerBooking();
 		}
 	}
@@ -113,6 +118,9 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		mPickupPassengerBottomSheetListener = pickupPassengerBottomSheetListener;
 	}
 
+	public void setRenavigateListener(RenavigateListener renavigateListener) {
+		this.mRenavigateListener = renavigateListener;
+	}
 
 	private void sendDataToMap(String bookingID,
 	                           String passengerID,
@@ -126,15 +134,15 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 		PickupPassengerBottomSheetData pickupPassengerBottomSheetData =
 				new PickupPassengerBottomSheetData(
-				bookingID,
-				passengerID,
-				passengerName,
-				passengerType,
-				driverName,
-				pickupLocation,
-				pickupCoordinates,
-				destinationLocation,
-				destinationCoordinates);
+						bookingID,
+						passengerID,
+						passengerName,
+						passengerType,
+						driverName,
+						pickupLocation,
+						pickupCoordinates,
+						destinationLocation,
+						destinationCoordinates);
 
 		if (mPickupPassengerBottomSheetListener != null) {
 			mPickupPassengerBottomSheetListener.onDataReceivedFromPickupPassengerBottomSheet(pickupPassengerBottomSheetData);
@@ -216,24 +224,34 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 										binding.renavigateBtn.setOnClickListener(v -> {
 
 											//convert to point
-											LatLng pickupLatLng = new LatLng(getPickupLatitude, getPickupLongitude);
-											Point pickupCoordinates = Point.fromLngLat(pickupLatLng.longitude, pickupLatLng.latitude);
+											LatLng pickupLatLng =
+													new LatLng(getPickupLatitude, getPickupLongitude);
+											Point pickupCoordinates =
+													Point.fromLngLat(pickupLatLng.longitude,
+															pickupLatLng.latitude);
 
-											LatLng destinationLatLng = new LatLng(getDestinationLatitude, getDestinationLongitude);
-											Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
+											LatLng destinationLatLng =
+													new LatLng(getDestinationLatitude, getDestinationLongitude);
+											Point destinationCoordinates =
+													Point.fromLngLat(destinationLatLng.longitude,
+															destinationLatLng.latitude);
 
 											//renavigate
-											sendDataToMap(bookingID,
-													getPassengerID,
-													getPassengerName,
-													getPassengerType,
-													"none",
-													getPickupLocation,
-													pickupCoordinates,
-													getDestination,
-													destinationCoordinates);
+											if (mRenavigateListener != null) {
+												mRenavigateListener.onRenavigateClick(true);
 
-											dismiss();
+												sendDataToMap(bookingID,
+														getPassengerID,
+														getPassengerName,
+														getPassengerType,
+														"none",
+														getPickupLocation,
+														pickupCoordinates,
+														getDestination,
+														destinationCoordinates);
+
+												dismiss();
+											}
 										});
 										break;
 								}
@@ -331,6 +349,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 		LatLng destinationLatLng = new LatLng(destinationLatitude, destinationLongitude);
 		Point destinationCoordinates = Point.fromLngLat(destinationLatLng.longitude, destinationLatLng.latitude);
 
+		//calculate driver arrival time
 		double distance = DistanceCalculator.calculateDistance(
 				pickupLatLng.latitude, pickupLatLng.longitude,
 				destinationLatLng.latitude, destinationLatLng.longitude

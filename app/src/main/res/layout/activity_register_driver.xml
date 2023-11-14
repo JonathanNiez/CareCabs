@@ -45,7 +45,7 @@
 					app:srcCompat="@drawable/driver_64" />
 
 				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/textView"
+					android:id="@+id/textView1"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_below="@id/logo"
@@ -69,7 +69,7 @@
 					style="@style/BaseCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_below="@id/textView"
+					android:layout_below="@id/textView1"
 					android:layout_centerHorizontal="true"
 					android:layout_margin="10dp"
 					app:cardCornerRadius="10dp"
@@ -88,10 +88,10 @@
 							android:layout_height="150dp"
 							android:layout_margin="10dp"
 							android:scaleType="centerCrop"
-							android:src="@drawable/account" />
+							android:src="@drawable/profile_picture_100" />
 
 						<androidx.appcompat.widget.AppCompatTextView
-							android:id="@+id/textView4"
+							android:id="@+id/textView2"
 							style="@style/TextColor"
 							android:layout_width="wrap_content"
 							android:layout_height="wrap_content"
@@ -123,6 +123,7 @@
 					android:padding="8dp">
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/firstnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -130,6 +131,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
 						app:endIconTint="@color/black"
 						app:helperText="*Required"
@@ -145,18 +147,19 @@
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="FIRSTNAME"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/lastnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
 						app:endIconTint="@color/black"
 						app:helperText="*Required"
@@ -171,7 +174,6 @@
 							android:fontFamily="@font/gabarito_semibold"
 							android:hint="LASTNAME"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -184,6 +186,7 @@
 						android:orientation="horizontal">
 
 						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/birthdateLayout"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_marginEnd="5dp"
@@ -198,7 +201,7 @@
 							<androidx.appcompat.widget.AppCompatButton
 								android:id="@+id/birthdateBtn"
 								android:layout_width="match_parent"
-								android:layout_height="60dp"
+								android:layout_height="wrap_content"
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Date of Birth"
@@ -208,6 +211,7 @@
 						</com.google.android.material.textfield.TextInputLayout>
 
 						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/ageLayout"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_marginStart="5dp"
@@ -222,7 +226,7 @@
 							<androidx.appcompat.widget.AppCompatButton
 								android:id="@+id/ageBtn"
 								android:layout_width="match_parent"
-								android:layout_height="60dp"
+								android:layout_height="wrap_content"
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Age"
@@ -234,6 +238,7 @@
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/sexLayout"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -280,6 +285,7 @@
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView3"
 						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -312,6 +318,7 @@
 								app:srcCompat="@drawable/car_100" />
 
 							<androidx.appcompat.widget.AppCompatTextView
+								android:id="@+id/textView4"
 								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
@@ -326,6 +333,7 @@
 					</androidx.cardview.widget.CardView>
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView5"
 						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -344,6 +352,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text">
 
 						<com.google.android.material.textfield.TextInputEditText
@@ -354,7 +363,6 @@
 							android:fontFamily="@font/opensans_bold"
 							android:hint="Vehicle color"
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -366,6 +374,7 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:endIconMode="clear_text">
 
 						<com.google.android.material.textfield.TextInputEditText
@@ -376,7 +385,6 @@
 							android:fontFamily="@font/opensans_bold"
 							android:hint="Vehicle Plate No."
 							android:textColor="@color/black"
-							android:textColorHint="@color/black"
 							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
@@ -414,13 +422,14 @@
 				android:layout_width="150dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
-				android:layout_marginBottom="50dp"
+				android:layout_marginBottom="100dp"
 				android:background="@drawable/circular_button"
 				android:backgroundTint="@color/yinmn_blue"
 				android:gravity="center"
 				android:orientation="horizontal">
 
 				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/nextTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="start|center_vertical"
@@ -455,9 +464,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 
@@ -473,9 +484,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

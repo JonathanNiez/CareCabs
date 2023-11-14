@@ -51,6 +51,7 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.DialogEnableLocationServiceBinding;
 import com.capstone.carecabs.databinding.DialogHowToBookBinding;
+import com.capstone.carecabs.databinding.DialogHowToUseAppBinding;
 import com.capstone.carecabs.databinding.FragmentHomeBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
@@ -85,7 +86,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	private List<Fragment> slideFragments = new ArrayList<>();
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerNotCompleteDialog,
-			enableLocationServiceDialog, howToBookDialog;
+			enableLocationServiceDialog, howToBookDialog, howToUseAppDialog;
 	private Context context;
 	private Intent intent;
 	private VoiceAssistant voiceAssistant;
@@ -106,6 +107,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
 		closeHowToBookDialog();
+		closeHowToUseAppDialog();
 	}
 
 	@Override
@@ -117,6 +119,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
 		closeHowToBookDialog();
+		closeHowToUseAppDialog();
 	}
 
 	@Override
@@ -214,7 +217,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		String fontSize = isChecked ? "large" : "normal";
+		fontSize = isChecked ? "large" : "normal";
 		setFontSize(fontSize);
 	}
 
@@ -234,6 +237,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.greetTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.driverDropOffNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -250,7 +254,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.bookARideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.myProfileTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.tripHistoryTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.availabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.setAvailabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.driverStatusTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -375,14 +378,14 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
-							boolean getUserRegisterStatus = documentSnapshot.getBoolean("isRegisterComplete");
+							boolean isRegisterComplete = documentSnapshot.getBoolean("isRegisterComplete");
+							String getUserType = documentSnapshot.getString("userType");
 
-							if (getUserRegisterStatus) {
-								getUserTypeAndLoadUserProfileInfo();
+							if (isRegisterComplete) {
+								getUserTypeAndLoadUserProfileInfo(getUserType);
 
 							} else {
-								String getRegisterUserType = documentSnapshot.getString("userType");
-								showRegisterNotCompleteDialog(getRegisterUserType);
+								showRegisterNotCompleteDialog(getUserType);
 							}
 						}
 					})
@@ -396,7 +399,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	}
 
 	@SuppressLint("SetTextI18n")
-	private void getUserTypeAndLoadUserProfileInfo() {
+	private void getUserTypeAndLoadUserProfileInfo(String userType) {
 		if (FirebaseMain.getUser() != null) {
 
 			documentReference = FirebaseMain.getFireStoreInstance()
@@ -409,96 +412,103 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 							binding.progressBarLayout1.setVisibility(View.GONE);
 							binding.progressBarLayout2.setVisibility(View.GONE);
 
-							String getUserType = documentSnapshot.getString("userType");
 							String getFirstname = documentSnapshot.getString("firstname");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 							boolean isFirstTimeUser = documentSnapshot.getBoolean("isFirstTimeUser");
 
 							binding.firstnameTextView.setText(getFirstname);
 
-							if (isFirstTimeUser) {
-								if (isAdded()) {
-									showHowToBookDialog();
-								}
-
-							} else {
-								binding.hiTextView.setText("Welcome back!");
-							}
-
 							if (!isVerified) {
 								binding.myProfileBadge.setVisibility(View.VISIBLE);
 							}
 
-							if (getUserType != null) {
-								switch (getUserType) {
-									case "Driver":
-										Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
-										Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
-										boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
-										String getNavigationStatus = documentSnapshot.getString("navigationStatus");
+							switch (userType) {
+								case "Driver":
+									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
+									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
+									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
+									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 
-										if (getNavigationStatus.equals("Navigating to destination")) {
-											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
-											binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
-											showNavigationStatusLayout();
-
-										} else if (getNavigationStatus.equals("Navigating to pickup location")) {
-											binding.currentPassengerLayout.setVisibility(View.VISIBLE);
-											showNavigationStatusLayout();
+									if (isFirstTimeUser) {
+										if (isAdded()) {
+											showHowToUseAppDialog();
 										}
 
-										binding.bookingsTextView.setText("Passenger Bookings");
-										binding.bookingsBtn.setOnClickListener(v -> {
-											intent = new Intent(getActivity(), PassengerBookingsOverviewActivity.class);
-											startActivity(intent);
-										});
-
-										binding.bookARideTextView.setText("Pickup Passengers");
-										binding.driverStatsLayout.setVisibility(View.VISIBLE);
-										binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
-										binding.passengerTransportedTextView.setText("Passengers\nTransported: " +
-												getPassengerTransported);
-
-										if (isAvailable) {
-											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.green));
-											binding.driverStatusTextView2.setText("Available");
-											binding.driverStatusSwitch.setChecked(true);
-										} else {
-											binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.light_red));
-											binding.driverStatusTextView2.setText("Busy");
-											binding.driverStatusSwitch.setChecked(false);
-										}
-
-										break;
-
-									case "Person with Disabilities (PWD)":
-									case "Senior Citizen":
-
-										checkBookingStatus();
-
-										Long getTotalTrips = documentSnapshot.getLong("totalTrips");
-										binding.passengerStatsLayout.setVisibility(View.VISIBLE);
-										binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
-
-										binding.bookingsTextView.setText("My Bookings");
-										binding.bookingsBtn.setOnClickListener(v -> {
-											intent = new Intent(getActivity(), BookingsActivity.class);
-											startActivity(intent);
-										});
-
-										break;
-								}
-
-								binding.bookARideBtn.setOnClickListener(v -> {
-									if (LocationPermissionChecker.isLocationPermissionGranted(context)) {
-										checkLocationService(getUserType);
 									} else {
-										intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
-										startActivity(intent);
-										Objects.requireNonNull(getActivity()).finish();
+										binding.hiTextView.setText("Welcome back!");
 									}
-								});
+
+									if (getNavigationStatus.equals("Navigating to destination")) {
+										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+										binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
+										showNavigationStatusLayout();
+
+									} else if (getNavigationStatus.equals("Navigating to pickup location")) {
+										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+										showNavigationStatusLayout();
+									}
+
+									binding.bookingsTextView.setText("Passenger Bookings");
+									binding.bookingsBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), PassengerBookingsOverviewActivity.class);
+										startActivity(intent);
+									});
+
+									binding.bookARideTextView.setText("Pickup Passengers");
+									binding.driverStatsLayout.setVisibility(View.VISIBLE);
+									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
+									binding.passengerTransportedTextView.setText("Passengers\nTransported: " +
+											getPassengerTransported);
+
+									if (isAvailable) {
+										binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.green));
+										binding.driverStatusTextView2.setText("Available");
+										binding.driverStatusSwitch.setChecked(true);
+									} else {
+										binding.driverStatusTextView2.setTextColor(ContextCompat.getColor(context, R.color.light_red));
+										binding.driverStatusTextView2.setText("Busy");
+										binding.driverStatusSwitch.setChecked(false);
+									}
+
+									break;
+
+								case "Person with Disabilities (PWD)":
+								case "Senior Citizen":
+
+									if (isFirstTimeUser) {
+										if (isAdded()) {
+											showHowToBookDialog();
+										}
+
+									} else {
+										binding.hiTextView.setText("Welcome back!");
+									}
+
+									checkBookingStatus();
+
+									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
+									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
+
+									binding.bookingsTextView.setText("My Bookings");
+									binding.bookingsBtn.setOnClickListener(v -> {
+										intent = new Intent(getActivity(), BookingsActivity.class);
+										startActivity(intent);
+									});
+
+									break;
 							}
+
+							binding.bookARideBtn.setOnClickListener(v -> {
+								if (LocationPermissionChecker.isLocationPermissionGranted(context)) {
+									checkLocationService(userType);
+								} else {
+									intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+									startActivity(intent);
+									Objects.requireNonNull(getActivity()).finish();
+								}
+							});
+
 						}
 					})
 					.addOnFailureListener(e -> {
@@ -767,7 +777,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 					break;
 
-				case "Persons with Disabilities (PWD)":
+				case "Person with Disabilities (PWD)":
 					intent = new Intent(getActivity(), RegisterPWDActivity.class);
 
 					break;
@@ -775,6 +785,8 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 			}
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
+
+			closeRegisterNotCompleteDialog();
 		});
 
 		builder.setView(dialogView);
@@ -793,34 +805,37 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	private void showHowToBookDialog() {
 		builder = new AlertDialog.Builder(context);
 
-		DialogHowToBookBinding binding =
+		DialogHowToBookBinding dialogHowToBookBinding =
 				DialogHowToBookBinding.inflate(getLayoutInflater());
-		View dialogView = binding.getRoot();
+		View dialogView = dialogHowToBookBinding.getRoot();
+
+		if (fontSize.equals("large")) {
+			float TEXT_SIZE = 23;
+
+			dialogHowToBookBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+
+			dialogHowToBookBinding.nextBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogHowToBookBinding.previousBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogHowToBookBinding.dontShowAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+		}
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("Do you need help?");
+			voiceAssistant.speak("How to book a ride?");
 		}
+		dialogHowToBookBinding.closeImageView.setOnClickListener(v -> closeHowToBookDialog());
 
-		binding.nextBtn.setOnClickListener(v -> {
-			binding.instructionImageView.setImageResource(R.drawable.book_a_ride_ss);
-			binding.titleTextView.setText("Go to Book a Ride");
-			binding.bodyTextView.setText("Yeah body");
-			binding.previousBtn.setVisibility(View.VISIBLE);
-			binding.nextBtn.setVisibility(View.GONE);
+		dialogHowToBookBinding.nextBtn.setOnClickListener(v -> {
+			dialogHowToBookBinding.previousBtn.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.nextBtn.setVisibility(View.GONE);
 		});
 
-		binding.previousBtn.setOnClickListener(v -> {
-			binding.instructionImageView.setImageResource(R.drawable.mar);
-			binding.titleTextView.setText("HOW TO BOOK A RIDE");
-			binding.bodyTextView.setText("Yeah body");
-			binding.previousBtn.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
+		dialogHowToBookBinding.previousBtn.setOnClickListener(v -> {
+			dialogHowToBookBinding.previousBtn.setVisibility(View.GONE);
+			dialogHowToBookBinding.nextBtn.setVisibility(View.VISIBLE);
 		});
 
-		binding.closeBtn.setOnClickListener(v -> closeHowToBookDialog());
-
-		binding.dontShowAgainBtn.setOnClickListener(v -> {
+		dialogHowToBookBinding.dontShowAgainBtn.setOnClickListener(v -> {
 			documentReference = FirebaseMain.getFireStoreInstance()
 					.collection(FirebaseMain.userCollection)
 					.document(FirebaseMain.getUser().getUid());
@@ -829,7 +844,11 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 			updateUserSettings.put("isFirstTimeUser", false);
 
 			documentReference.update(updateUserSettings)
-					.addOnSuccessListener(unused -> Log.i(TAG, "showHowToBookDialog - onSuccess: updated isFirstTimeUser to false"))
+					.addOnSuccessListener(unused ->
+					{
+						closeHowToBookDialog();
+						Log.i(TAG, "showHowToBookDialog - onSuccess: updated isFirstTimeUser to false");
+					})
 					.addOnFailureListener(e -> Log.e(TAG, "showHowToBookDialog - onFailure: " + e.getMessage()));
 		});
 
@@ -842,6 +861,70 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	private void closeHowToBookDialog() {
 		if (howToBookDialog != null && howToBookDialog.isShowing()) {
 			howToBookDialog.dismiss();
+		}
+	}
+
+	@SuppressLint("SetTextI18n")
+	private void showHowToUseAppDialog() {
+		builder = new AlertDialog.Builder(context);
+
+		DialogHowToUseAppBinding dialogHowToUseAppBinding =
+				DialogHowToUseAppBinding.inflate(getLayoutInflater());
+		View dialogView = dialogHowToUseAppBinding.getRoot();
+
+		if (fontSize.equals("large")) {
+			float TEXT_SIZE = 23;
+
+			dialogHowToUseAppBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+
+			dialogHowToUseAppBinding.nextBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogHowToUseAppBinding.previousBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogHowToUseAppBinding.dontShowAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+		}
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(context);
+			voiceAssistant.speak("How to use the App?");
+		}
+
+		dialogHowToUseAppBinding.closeImageView.setOnClickListener(v -> closeHowToUseAppDialog());
+
+		dialogHowToUseAppBinding.nextBtn.setOnClickListener(v -> {
+			dialogHowToUseAppBinding.previousBtn.setVisibility(View.VISIBLE);
+			dialogHowToUseAppBinding.nextBtn.setVisibility(View.GONE);
+		});
+
+		dialogHowToUseAppBinding.previousBtn.setOnClickListener(v -> {
+			dialogHowToUseAppBinding.previousBtn.setVisibility(View.GONE);
+			dialogHowToUseAppBinding.nextBtn.setVisibility(View.VISIBLE);
+		});
+
+		dialogHowToUseAppBinding.dontShowAgainBtn.setOnClickListener(v -> {
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(FirebaseMain.getUser().getUid());
+
+			Map<String, Object> updateUserSettings = new HashMap<>();
+			updateUserSettings.put("isFirstTimeUser", false);
+
+			documentReference.update(updateUserSettings)
+					.addOnSuccessListener(unused -> {
+
+						closeHowToUseAppDialog();
+						Log.i(TAG, "showHowToUseAppDialog - onSuccess: updated isFirstTimeUser to false");
+					})
+					.addOnFailureListener(e -> Log.e(TAG, "showHowToUseAppDialog - onFailure: " + e.getMessage()));
+		});
+
+		builder.setView(dialogView);
+
+		howToUseAppDialog = builder.create();
+		howToUseAppDialog.show();
+	}
+
+	private void closeHowToUseAppDialog() {
+		if (howToUseAppDialog != null && howToUseAppDialog.isShowing()) {
+			howToUseAppDialog.dismiss();
 		}
 	}
 

@@ -97,6 +97,7 @@
 
 	<style name="FloatingButtonBackground">
 		<item name="android:backgroundTint">@color/maya_blue</item>
+		<item name="android:tint">@color/black</item>
 	</style>
 
 	<style name="HorizontalLineBackground">
@@ -138,7 +139,9 @@
 	</style>
 
 	<style name="MapboxManeuverViewBackground">
-		<item name="maneuverViewBackgroundColor">@color/sky_blue</item>
+		<item name="maneuverViewBackgroundColor">@color/dark_cyan</item>
+		<item name="subManeuverViewBackgroundColor">@color/cyan</item>
+		<item name="upcomingManeuverViewBackgroundColor">@color/blue</item>
 	</style>
 
 	<style name="EditTextLayoutBackground">

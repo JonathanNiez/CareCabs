@@ -133,7 +133,24 @@ import java.util.UUID
 
 class MapDriverActivity : AppCompatActivity(),
     PickupPassengerBottomSheet.PickupPassengerBottomSheetListener,
-    PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener {
+    PassengerBookingsBottomSheet.PassengerBookingsBottomSheetListener,
+    PickupPassengerBottomSheet.RenavigateListener {
+
+    private val TAG = "MapDriverActivity"
+    private val LOCATION_PERMISSION_REQUEST_CODE = 123
+    private val REQUEST_ENABLE_LOCATION = 1
+    private var isNavigatingToDestination = false
+    private var isRenavigating = false
+    private lateinit var documentReference: DocumentReference
+    private lateinit var builder: AlertDialog.Builder
+    private lateinit var userNotVerifiedDialog: AlertDialog
+    private lateinit var enableLocationServiceDialog: AlertDialog
+    private lateinit var exitMapDialog: AlertDialog
+    private lateinit var cancelNavigationDialog: AlertDialog
+    private lateinit var confirmPickupDialog: AlertDialog
+    private lateinit var confirmDropOffDialog: AlertDialog
+    private lateinit var passengerTransportedSuccessDialog: AlertDialog
+    private lateinit var binding: ActivityMapDriverBinding
 
     //navigation
     private val mapboxReplayer = MapboxReplayer()
@@ -372,21 +389,6 @@ class MapDriverActivity : AppCompatActivity(),
     private companion object {
         private const val BUTTON_ANIMATION_DURATION = 1500L
     }
-
-    private val TAG: String = "MapDriverActivity"
-    private val LOCATION_PERMISSION_REQUEST_CODE = 123
-    private val REQUEST_ENABLE_LOCATION = 1
-    private var isNavigatingToDestination = false
-    private lateinit var documentReference: DocumentReference
-    private lateinit var builder: AlertDialog.Builder
-    private lateinit var userNotVerifiedDialog: AlertDialog
-    private lateinit var enableLocationServiceDialog: AlertDialog
-    private lateinit var exitMapDialog: AlertDialog
-    private lateinit var cancelNavigationDialog: AlertDialog
-    private lateinit var confirmPickupDialog: AlertDialog
-    private lateinit var confirmDropOffDialog: AlertDialog
-    private lateinit var passengerTransportedSuccessDialog: AlertDialog
-    private lateinit var binding: ActivityMapDriverBinding
 
     override fun onDestroy() {
         super.onDestroy()
@@ -747,19 +749,19 @@ class MapDriverActivity : AppCompatActivity(),
         driverReference.get()
             .addOnSuccessListener {
                 if (it.exists()) {
-                    val getNavigationStatus: String = it.getString("navigationStatus")!!
-                    val getBookingID: String = it.getString("bookingID")!!
+                    val getNavigationStatus: String = it.getString("navigationStatus") ?: "idle"
+                    val getBookingID: String = it.getString("bookingID") ?: "none"
 
                     when (getNavigationStatus) {
                         "Navigating to destination" -> {
                             isNavigatingToDestination = true
 
-                            val getTripID: String = it.getString("tripID")!!
-                            val getPassengerID: String = it.getString("passengerID")!!
+                            val getTripID: String = it.getString("tripID") ?: "none"
+                            val getPassengerID: String = it.getString("passengerID") ?: "none"
                             val getDestinationLatitude: Double =
-                                it.getDouble("destinationLatitude")!!
+                                it.getDouble("destinationLatitude") ?: 0.0
                             val getDestinationLongitude: Double =
-                                it.getDouble("destinationLongitude")!!
+                                it.getDouble("destinationLongitude") ?: 0.0
 
                             binding.pingLocationImgBtn.visibility = View.GONE
                             binding.pingLocationImgBtn2.visibility = View.GONE
@@ -794,9 +796,9 @@ class MapDriverActivity : AppCompatActivity(),
                         }
 
                         "Navigating to pickup location" -> {
-                            val getPickupLatitude: Double = it.getDouble("pickupLatitude")!!
-                            val getPickupLongitude: Double = it.getDouble("pickupLongitude")!!
-                            val getPassengerType: String = it.getString("passengerType")!!
+                            val getPickupLatitude: Double = it.getDouble("pickupLatitude") ?: 0.0
+                            val getPickupLongitude: Double = it.getDouble("pickupLongitude") ?: 0.0
+                            val getPassengerType: String = it.getString("passengerType") ?: "none"
 
                             binding.navigationStatusTextView.visibility = View.VISIBLE
                             binding.confirmPickupBtn.visibility = View.VISIBLE
@@ -858,98 +860,102 @@ class MapDriverActivity : AppCompatActivity(),
     }
 
     private fun pingCurrentLocation(bookingID: String) {
-        val userID = FirebaseMain.getUser().uid
-        var locationName: String
+        if (isRenavigating) {
+            showToast("Can't ping current location because you are not picking up a Passenger")
+        } else {
+            val userID = FirebaseMain.getUser().uid
+            var locationName: String
 
-        val driverReference = FirebaseMain.getFireStoreInstance()
-            .collection(FirebaseMain.userCollection)
-            .document(userID)
+            val driverReference = FirebaseMain.getFireStoreInstance()
+                .collection(FirebaseMain.userCollection)
+                .document(userID)
 
-        //ping location geocode
-        val pickupLocationGeocode = MapboxGeocoding.builder()
-            .accessToken(getString(R.string.mapbox_access_token))
-            .query(
-                Point.fromLngLat(
-                    StaticDataPasser.storePingedLongitude,
-                    StaticDataPasser.storePingedLatitude
+            //ping location geocode
+            val pickupLocationGeocode = MapboxGeocoding.builder()
+                .accessToken(getString(R.string.mapbox_access_token))
+                .query(
+                    Point.fromLngLat(
+                        StaticDataPasser.storePingedLongitude,
+                        StaticDataPasser.storePingedLatitude
+                    )
                 )
-            )
-            .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-            .build()
+                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
+                .build()
 
-        pickupLocationGeocode.enqueueCall(object :
-            Callback<GeocodingResponse?> {
-            @SuppressLint("SetTextI18n", "LongLogTag")
-            override fun onResponse(
-                call: Call<GeocodingResponse?>,
-                response: Response<GeocodingResponse?>
-            ) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null && body.features().isNotEmpty()
-                    ) {
-                        val feature = body.features()[0]
-                        locationName = feature.placeName().toString()
+            pickupLocationGeocode.enqueueCall(object :
+                Callback<GeocodingResponse?> {
+                @SuppressLint("SetTextI18n", "LongLogTag")
+                override fun onResponse(
+                    call: Call<GeocodingResponse?>,
+                    response: Response<GeocodingResponse?>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        if (body != null && body.features().isNotEmpty()
+                        ) {
+                            val feature = body.features()[0]
+                            locationName = feature.placeName().toString()
 
-                        val pingLocation = HashMap<String, Any>()
-                        pingLocation["driverPingedLocation"] = locationName
-                        pingLocation["driverPingedLongitude"] =
-                            StaticDataPasser.storePingedLongitude
-                        pingLocation["driverPingedLatitude"] =
-                            StaticDataPasser.storePingedLatitude
+                            val pingLocation = HashMap<String, Any>()
+                            pingLocation["driverPingedLocation"] = locationName
+                            pingLocation["driverPingedLongitude"] =
+                                StaticDataPasser.storePingedLongitude
+                            pingLocation["driverPingedLatitude"] =
+                                StaticDataPasser.storePingedLatitude
 
-                        driverReference.update(pingLocation)
-                            .addOnSuccessListener {
-                                showToast("Current location pinged")
-                            }
-                            .addOnFailureListener { exception ->
-                                Log.e(
-                                    TAG,
-                                    "checkIfCurrentlyNavigatingToDestination: " + exception.message
-                                )
-                            }
+                            driverReference.update(pingLocation)
+                                .addOnSuccessListener {
+                                    showToast("Current location pinged")
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e(
+                                        TAG,
+                                        "checkIfCurrentlyNavigatingToDestination: " + exception.message
+                                    )
+                                }
 
-                        val bookingReference = FirebaseDatabase.getInstance()
-                            .getReference(FirebaseMain.bookingCollection)
+                            val bookingReference = FirebaseDatabase.getInstance()
+                                .getReference(FirebaseMain.bookingCollection)
 
-                        val updateBooking = HashMap<String, Any>()
-                        updateBooking["driverPingedLocation"] = locationName
-                        updateBooking["driverPingedLongitude"] =
-                            StaticDataPasser.storePingedLongitude
-                        updateBooking["driverPingedLatitude"] =
-                            StaticDataPasser.storePingedLatitude
+                            val updateBooking = HashMap<String, Any>()
+                            updateBooking["driverPingedLocation"] = locationName
+                            updateBooking["driverPingedLongitude"] =
+                                StaticDataPasser.storePingedLongitude
+                            updateBooking["driverPingedLatitude"] =
+                                StaticDataPasser.storePingedLatitude
 
-                        bookingReference.child(bookingID)
-                            .updateChildren(updateBooking)
-                            .addOnSuccessListener {
-                                Log.i(
-                                    TAG,
-                                    "checkIfCurrentlyNavigatingToDestination onResponse: pinged location success"
-                                )
-                            }
-                            .addOnFailureListener {
-                                Log.e(
-                                    TAG,
-                                    "checkIfCurrentlyNavigatingToDestination onResponse: " + it.message
-                                )
-                            }
+                            bookingReference.child(bookingID)
+                                .updateChildren(updateBooking)
+                                .addOnSuccessListener {
+                                    Log.i(
+                                        TAG,
+                                        "checkIfCurrentlyNavigatingToDestination onResponse: pinged location success"
+                                    )
+                                }
+                                .addOnFailureListener {
+                                    Log.e(
+                                        TAG,
+                                        "checkIfCurrentlyNavigatingToDestination onResponse: " + it.message
+                                    )
+                                }
 
+                        } else {
+                            Log.e(TAG, "location not found")
+                        }
                     } else {
-                        Log.e(TAG, "location not found")
+                        Log.e(TAG, "Geocode error " + response.message())
                     }
-                } else {
-                    Log.e(TAG, "Geocode error " + response.message())
                 }
-            }
 
-            @SuppressLint("SetTextI18n", "LongLogTag")
-            override fun onFailure(
-                call: Call<GeocodingResponse?>,
-                t: Throwable
-            ) {
-                Log.e(TAG, "onFailure: " + t.message)
-            }
-        })
+                @SuppressLint("SetTextI18n", "LongLogTag")
+                override fun onFailure(
+                    call: Call<GeocodingResponse?>,
+                    t: Throwable
+                ) {
+                    Log.e(TAG, "onFailure: " + t.message)
+                }
+            })
+        }
     }
 
     private fun loadPassengerLocationToMapFromDatabase() {
@@ -1254,6 +1260,12 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
+    override fun onRenavigateClick(isClicked: Boolean) {
+        if (isClicked) {
+            isRenavigating = true
+        }
+    }
+
     private fun findRoute(destination: Point) {
 
         binding.hideTripProgressImgBtn.setOnClickListener {
@@ -1271,6 +1283,10 @@ class MapDriverActivity : AppCompatActivity(),
         binding.mapView.getMapboxMap().apply {
             loadStyleUri(Style.TRAFFIC_DAY) {
             }
+        }
+
+        if (!isRenavigating) {
+            binding.confirmPickupBtn.visibility = View.GONE
         }
 
         if (isNavigatingToDestination) {
@@ -1592,7 +1608,6 @@ class MapDriverActivity : AppCompatActivity(),
                             )
                         }
                 }
-
             }
             .addOnFailureListener {
                 Log.e(TAG, "setTripAsComplete - passengerReference: " + it.message)
@@ -1641,7 +1656,6 @@ class MapDriverActivity : AppCompatActivity(),
         bookingReference.child(bookingID)
             .updateChildren(updateBooking)
             .addOnSuccessListener {
-
 
                 showToast("Booking Accepted")
 
@@ -1765,12 +1779,16 @@ class MapDriverActivity : AppCompatActivity(),
             documentReference.get()
                 .addOnSuccessListener {
                     if (it != null && it.exists()) {
-                        val getVerificationStatus = it.getBoolean("isVerified")
+                        val isVerified = it.getBoolean("isVerified")
 
-                        if (!getVerificationStatus!!) {
-                            showUserNotVerifiedDialog()
-                        } else {
-                            checkLocationPermission()
+                        if (isVerified != null) {
+                            if (isVerified) {
+                                checkLocationPermission()
+
+                            } else {
+                                showUserNotVerifiedDialog()
+
+                            }
                         }
                     }
                 }
@@ -1789,7 +1807,7 @@ class MapDriverActivity : AppCompatActivity(),
         builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
 
-        val binding : DialogUserNotVerifiedBinding =
+        val binding: DialogUserNotVerifiedBinding =
             DialogUserNotVerifiedBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
@@ -1873,8 +1891,9 @@ class MapDriverActivity : AppCompatActivity(),
             DialogConfirmDropoffBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
-        binding.confirmBtn.setOnClickListener {
+        Log.d(TAG, "showConfirmDropOffDialog: $passengerID")
 
+        binding.confirmBtn.setOnClickListener {
             setTripAsComplete(
                 tripID,
                 bookingID,
@@ -1958,15 +1977,15 @@ class MapDriverActivity : AppCompatActivity(),
     private fun showEnableLocationServiceDialog() {
         builder = AlertDialog.Builder(this)
         val binding: DialogEnableLocationServiceBinding =
-            DialogEnableLocationServiceBinding.inflate(
-                layoutInflater
-            )
-        val dialogView: View = binding.getRoot()
+            DialogEnableLocationServiceBinding.inflate(layoutInflater)
+        val dialogView: View = binding.root
+
         binding.enableLocationServiceBtn.setOnClickListener { v ->
             intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
             startActivityForResult(intent, REQUEST_ENABLE_LOCATION)
             closeEnableLocationServiceDialog()
         }
+
         builder.setView(dialogView)
         enableLocationServiceDialog = builder.create()
         enableLocationServiceDialog.show()
@@ -2105,6 +2124,7 @@ class MapDriverActivity : AppCompatActivity(),
     private fun showPickupPassengerBottomSheet(bookingID: String) {
         val pickupPassengerBottomSheet = PickupPassengerBottomSheet.newInstance(bookingID)
         pickupPassengerBottomSheet.setPickupPassengerBottomSheetListener(this)
+        pickupPassengerBottomSheet.setRenavigateListener(this)
         pickupPassengerBottomSheet.show(supportFragmentManager, PickupPassengerBottomSheet.TAG)
     }
 
@@ -2171,5 +2191,6 @@ class MapDriverActivity : AppCompatActivity(),
             }
         }
     }
+
 
 }

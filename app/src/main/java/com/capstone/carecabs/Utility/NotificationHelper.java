@@ -100,7 +100,8 @@ public class NotificationHelper {
 		Intent intent = new Intent(context, BookingsActivity.class); // Replace YourActivity with the target activity
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Optional flags
 
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+				PendingIntent.FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
 				.setSmallIcon(R.drawable.logo_2_v2)
@@ -132,7 +133,8 @@ public class NotificationHelper {
 		intent.putExtra("userType", "From Main");
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Optional flags
 
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+				PendingIntent.FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
 				.setSmallIcon(R.drawable.logo_2_v2)
@@ -163,7 +165,8 @@ public class NotificationHelper {
 		Intent intent = new Intent(context, MapDriverActivity.class); // Replace YourActivity with the target activity
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Optional flags
 
-		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
+				PendingIntent.FLAG_IMMUTABLE);
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
 				.setSmallIcon(R.drawable.logo_2_v2)

@@ -121,6 +121,7 @@
 					android:padding="8dp">
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/firstnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
@@ -148,6 +149,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/lastnameLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="20dp"
@@ -182,6 +184,7 @@
 						android:orientation="horizontal">
 
 						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/birthdateLayout"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_marginEnd="5dp"
@@ -206,6 +209,7 @@
 						</com.google.android.material.textfield.TextInputLayout>
 
 						<com.google.android.material.textfield.TextInputLayout
+							android:id="@+id/ageLayout"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_marginStart="5dp"
@@ -232,6 +236,7 @@
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/disabilityLayout"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="20dp"
@@ -245,7 +250,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerDisability"
 							android:layout_width="match_parent"
-							android:layout_height="wrap_content"
+							android:layout_height="50dp"
 							android:layout_marginBottom="10dp"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
@@ -253,6 +258,7 @@
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/sexLayout"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
@@ -266,7 +272,7 @@
 						<androidx.appcompat.widget.AppCompatSpinner
 							android:id="@+id/spinnerSex"
 							android:layout_width="150dp"
-							android:layout_height="wrap_content"
+							android:layout_height="50dp"
 							android:background="@drawable/smooth_edit_text_2"
 							android:theme="@style/SpinnerTextStyle" />
 
@@ -304,22 +310,23 @@
 				android:layout_width="150dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="20dp"
-				android:layout_marginBottom="50dp"
+				android:layout_marginBottom="100dp"
 				android:gravity="center"
 				android:orientation="horizontal">
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/nextTextView"
+					style="@style/PrimaryLongButtonTextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="start|center_vertical"
 					android:layout_margin="5dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="NEXT"
-					android:textColor="@color/white"
 					android:textSize="17sp" />
 
 				<androidx.appcompat.widget.AppCompatImageView
+					style="@style/PrimaryLongButtonIconTint"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="end|center_vertical"
@@ -344,9 +351,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 
@@ -362,9 +371,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

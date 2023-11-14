@@ -9,7 +9,9 @@ android {
     namespace 'com.capstone.carecabs'
     compileSdk 34
 
-
+    viewBinding{
+        enabled = true
+    }
 
     packagingOptions {
         exclude 'path/to/conflicting/classes'
@@ -41,8 +43,6 @@ android {
     }
     buildFeatures {
         mlModelBinding true
-
-        viewBinding true
     }
 }
 
@@ -83,6 +83,7 @@ dependencies {
 
     implementation 'org.mindrot:jbcrypt:0.4'
 
+    //firebase
     implementation 'com.google.firebase:firebase-crashlytics:18.5.1'
     implementation 'com.google.firebase:firebase-analytics:21.5.0'
     implementation 'com.google.firebase:firebase-auth:22.2.0'

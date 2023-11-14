@@ -49,7 +49,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ScanIDActivity extends AppCompatActivity implements SettingsBottomSheet.FontSizeChangeListener {
+public class ScanIDActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ScanID";
 	private String idPictureURL = "none";
 	private float textSizeSP;
@@ -74,7 +75,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 	private NetworkChangeReceiver networkChangeReceiver;
 	private DocumentReference documentReference;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
-	private final String fontSize = StaticDataPasser.storeFontSize;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private VoiceAssistant voiceAssistant;
 	private ActivityScanIdBinding binding;
 
@@ -172,6 +173,8 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 
 			}
 		}
+
+		binding.scanLaterBtn.setOnClickListener(v -> updateUserToNotVerified());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
@@ -304,6 +307,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
+				binding.scanLaterBtn.setVisibility(View.GONE);
 
 				break;
 			case "Senior Citizen ID":
@@ -330,6 +334,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
+				binding.scanLaterBtn.setVisibility(View.GONE);
 
 				break;
 		}
@@ -349,6 +354,7 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
+				binding.scanLaterBtn.setVisibility(View.GONE);
 
 				break;
 		}
@@ -592,12 +598,11 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 
 	private void getUserSettings() {
 		setFontSize(fontSize);
-
 	}
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		String fontSize = isChecked ? "large" : "normal";
+		fontSize = isChecked ? "large" : "normal";
 
 		setFontSize(fontSize);
 	}
@@ -612,11 +617,13 @@ public class ScanIDActivity extends AppCompatActivity implements SettingsBottomS
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
 		}
 
+		binding.scanIDTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.scanYourIDTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.idAlreadyScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.scanIDAgainTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.tapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tapTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tapTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void openCamera() {

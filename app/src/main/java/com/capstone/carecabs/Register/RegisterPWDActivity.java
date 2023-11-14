@@ -19,6 +19,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,13 +35,13 @@ import androidx.core.content.ContextCompat;
 
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
+import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityRegisterPwdBinding;
 import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -53,23 +54,29 @@ import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class RegisterPWDActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterPWDActivity";
 	private final String userType = "Person with Disabilities (PWD)";
 	private String profilePictureURL = "default";
+	private String fontSize = StaticDataPasser.storeFontSize;
+	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private String sex, birthDate, month, disability;
 	private int age;
 	private Uri profilePictureUri;
-	private DocumentReference documentReference;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
+	private DocumentReference userReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private Intent intent, galleryIntent, cameraIntent;
 	private Calendar selectedDate;
+	private VoiceAssistant voiceAssistant;
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerFailedDialog,
 			cancelRegisterDialog, idNotScannedDialog, idScanInfoDialog,
@@ -111,7 +118,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		initializeNetworkChecker();
-		checkPermission();
+		checkCameraAndStoregePermission();
 
 		FirebaseApp.initializeApp(this);
 
@@ -130,7 +137,6 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			settingsBottomSheet.setFontSizeChangeListener(this);
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
-
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -180,9 +186,16 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			}
 		});
 
-		binding.birthdateBtn.setOnClickListener(v -> {
-			showEnterBirthdateDialog();
-		});
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+
+			binding.firstnameEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Firstname"));
+			binding.lastnameEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Lastname"));
+		}
+
+		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
 		binding.nextBtn.setOnClickListener(v -> {
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
@@ -198,8 +211,8 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 					|| sex == null
 					|| disability == null) {
 
+				closePleaseWaitDialog();
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
-
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else {
@@ -220,12 +233,42 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		String fontSize = isChecked ? "large" : "normal";
+		fontSize = isChecked ? "large" : "normal";
 		setFontSize(fontSize);
 	}
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
+
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+		}
+
+		binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showIDScanInfoDialog() {
@@ -259,45 +302,46 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 	private void updateUserRegisterToFireStore(String firstname, String lastname) {
 		if (FirebaseMain.getUser() != null) {
-
 			String userID = FirebaseMain.getUser().getUid();
 
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(userID);
+			userReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection)
+					.document(userID);
 
 			Map<String, Object> registerUser = new HashMap<>();
 			registerUser.put("firstname", firstname);
 			registerUser.put("lastname", lastname);
 			registerUser.put("disability", disability);
 			registerUser.put("age", age);
-			registerUser.put("birthdate", binding);
+			registerUser.put("birthdate", birthDate);
 			registerUser.put("sex", sex);
 			registerUser.put("userType", userType);
 			registerUser.put("isRegisterComplete", true);
 			registerUser.put("totalTrips", 0);
 
-			documentReference.update(registerUser).addOnSuccessListener(unused -> {
-				binding.progressBarLayout.setVisibility(View.GONE);
+			userReference.update(registerUser)
+					.addOnSuccessListener(unused -> {
+						closePleaseWaitDialog();
+						binding.progressBarLayout.setVisibility(View.GONE);
 
-				closePleaseWaitDialog();
-				if (profilePictureUri != null) {
-					uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
-				}
+						if (profilePictureUri != null) {
+							uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+						}
 
-				intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
-				intent.putExtra("userType", userType);
-				startActivity(intent);
-				finish();
+						intent = new Intent(RegisterPWDActivity.this, ScanIDActivity.class);
+						intent.putExtra("userType", userType);
+						startActivity(intent);
+						finish();
 
-			}).addOnFailureListener(e -> {
-				closePleaseWaitDialog();
-				showRegisterFailedDialog();
+					})
+					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
 
-				binding.progressBarLayout.setVisibility(View.GONE);
+						binding.progressBarLayout.setVisibility(View.GONE);
 
-				Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
-			});
-
+						Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
+					});
 		} else {
 			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
 
@@ -307,53 +351,58 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void updateCancelledRegister(String userID) {
+	private void updateCancelledRegistration(String userID) {
 
-		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
-
-		Map<String, Object> updateRegister = new HashMap<>();
-		updateRegister.put("isRegisterComplete", false);
-		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
-
-			FirebaseMain.signOutUser();
-
-			intent = new Intent(RegisterPWDActivity.this, LoginOrRegisterActivity.class);
-			startActivity(intent);
-			finish();
-
-		}).addOnFailureListener(e -> {
-
-			FirebaseMain.signOutUser();
-
-			Log.e(TAG, e.getMessage());
-
-			intent = new Intent(getApplicationContext(), LoginActivity.class);
-			startActivity(intent);
-			finish();
-		});
-	}
-
-	private void updateInterruptedCancelledRegister(String userID) {
-		documentReference = FirebaseMain.getFireStoreInstance()
+		userReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection)
 				.document(userID);
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
-		documentReference.update(updateRegister).addOnSuccessListener(unused -> {
+		userReference.update(updateRegister)
+				.addOnSuccessListener(unused -> {
 
-			FirebaseMain.signOutUser();
+					FirebaseMain.signOutUser();
 
-		}).addOnFailureListener(e -> {
+					intent = new Intent(RegisterPWDActivity.this, LoginOrRegisterActivity.class);
+					startActivity(intent);
+					finish();
 
-			FirebaseMain.signOutUser();
+				})
+				.addOnFailureListener(e -> {
 
-			Log.e(TAG, e.getMessage());
-		});
+					FirebaseMain.signOutUser();
+
+					intent = new Intent(RegisterPWDActivity.this, LoginOrRegisterActivity.class);
+					startActivity(intent);
+					finish();
+
+					Log.e(TAG, "updateCancelledRegistration: " + e.getMessage());
+				});
 	}
 
-	private void checkPermission() {
+	private void updateInterruptedCancelledRegister(String userID) {
+		userReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(userID);
+
+		Map<String, Object> updateRegister = new HashMap<>();
+		updateRegister.put("isRegisterComplete", false);
+		userReference.update(updateRegister)
+				.addOnSuccessListener(unused -> {
+
+					FirebaseMain.signOutUser();
+
+				})
+				.addOnFailureListener(e -> {
+
+					FirebaseMain.signOutUser();
+
+					Log.e(TAG, e.getMessage());
+				});
+	}
+
+	private void checkCameraAndStoregePermission() {
 		// Check for camera permission
 		if (ContextCompat.checkSelfPermission(RegisterPWDActivity.this,
 				android.Manifest.permission.CAMERA)
@@ -450,6 +499,32 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		DialogEnterBirthdateBinding dialogEnterBirthdateBinding =
 				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		View dialogView = dialogEnterBirthdateBinding.getRoot();
+
+		if (fontSize.equals("large")) {
+			float TEXT_SIZE = 20;
+			dialogEnterBirthdateBinding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogEnterBirthdateBinding.dayEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.yearEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.monthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.dayTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.yearTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			dialogEnterBirthdateBinding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+		}
+
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+
+			voiceAssistant.speak("Enter you Birthdate");
+
+			dialogEnterBirthdateBinding.dayEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Day"));
+			dialogEnterBirthdateBinding.monthTextView.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Month"));
+			dialogEnterBirthdateBinding.yearEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Year"));
+
+		}
 
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
 				this,
@@ -593,7 +668,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
 		yesBtn.setOnClickListener(v -> {
-			updateCancelledRegister(FirebaseMain.getUser().getUid());
+			updateCancelledRegistration(FirebaseMain.getUser().getUid());
 		});
 
 		noBtn.setOnClickListener(v -> {
@@ -775,13 +850,13 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 	}
 
 	private void storeProfilePictureUrlInFireStore(String userID, String profilePictureURL) {
-		documentReference = FirebaseMain.getFireStoreInstance()
+		userReference = FirebaseMain.getFireStoreInstance()
 				.collection(FirebaseMain.userCollection).document(userID);
 
 		Map<String, Object> profilePicture = new HashMap<>();
 		profilePicture.put("profilePicture", profilePictureURL);
 
-		documentReference.update(profilePicture)
+		userReference.update(profilePicture)
 				.addOnSuccessListener(unused ->
 						Log.i(TAG, "storeProfilePictureUrlInFireStore: addOnSuccessListener"))
 				.addOnFailureListener(e -> {

@@ -20,11 +20,14 @@
 			android:layout_height="wrap_content">
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView"
+				android:id="@+id/scanIDTextView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
-				android:layout_margin="15dp"
+				android:layout_marginStart="15dp"
+				android:layout_marginTop="15dp"
+				android:layout_marginEnd="15dp"
+				android:layout_marginBottom="15dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="SCAN ID"
 				android:textColor="@color/white"
@@ -86,6 +89,18 @@
 							android:layout_height="300dp"
 							app:srcCompat="@drawable/face_id_100" />
 
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/tapTextView1"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							android:elevation="5dp"
+							android:fontFamily="@font/gabarito_medium"
+							android:text="Tap/Click the white area to scan your ID"
+							android:textAlignment="center"
+							android:textSize="17sp" />
+
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
@@ -129,14 +144,14 @@
 								android:textSize="17sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
-								android:id="@+id/tapTextView"
+								android:id="@+id/tapTextView2"
 								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_margin="5dp"
 								android:elevation="5dp"
 								android:fontFamily="@font/gabarito_medium"
-								android:text="Tap/Click the white are to scan your ID"
+								android:text="Tap/Click the white area to scan your ID"
 								android:textAlignment="center"
 								android:textSize="17sp" />
 
@@ -180,6 +195,8 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:background="@drawable/custom_card_view_1"
+				android:backgroundTint="@color/white"
+				android:elevation="10dp"
 				android:gravity="center"
 				android:orientation="horizontal"
 				android:padding="5dp">
@@ -207,7 +224,7 @@
 				android:layout_width="130dp"
 				android:layout_height="50dp"
 				android:layout_marginTop="10dp"
-				android:layout_marginBottom="100dp"
+				android:layout_marginBottom="50dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="DONE"
 				android:textSize="17sp" />
@@ -239,9 +256,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 
@@ -257,9 +276,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

@@ -20,6 +20,7 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -61,11 +62,16 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 	private final String TAG = "RegisterDriver";
 	private final String userType = "Driver";
 	private String profilePictureURL = "default";
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
 	private String vehiclePictureURL = "none";
 	private Uri vehiclePictureUri;
+	private static final float DEFAULT_TEXT_SIZE_SP = 17;
+	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
+	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
+	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private DocumentReference documentReference;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
@@ -75,10 +81,10 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 	private static final int VEHICLE_PICTURE_REQUEST_CODE = 104;
 	private Intent intent;
 	private Calendar selectedDate;
+	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerFailedDialog,
 			idNotScannedDialog, cancelRegisterDialog, enterBirthdateDialog,
 			cameraGalleryOptionsDialog, pleaseWaitDialog;
-	private AlertDialog.Builder builder;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityRegisterDriverBinding binding;
 
@@ -182,6 +188,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
 		binding.nextBtn.setOnClickListener(v -> {
+			showPleaseWaitDialog();
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 
 			String firstname = binding.firstnameEditText.getText().toString().trim();
@@ -195,11 +202,16 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 					age == 0 ||
 					sex == null) {
 
-				Toast.makeText(this, "Please enter your info", Toast.LENGTH_LONG).show();
+				closePleaseWaitDialog();
 				binding.progressBarLayout.setVisibility(View.GONE);
+				Toast.makeText(this, "Please enter your info", Toast.LENGTH_LONG).show();
 
 			} else if (plateNumber.isEmpty() || vehicleColor.isEmpty()) {
+
+				closePleaseWaitDialog();
+				binding.progressBarLayout.setVisibility(View.GONE);
 				Toast.makeText(this, "Please enter your vehicle info", Toast.LENGTH_LONG).show();
+
 			} else {
 				updateUserRegistrationToFireStore(firstname,
 						lastname,
@@ -244,8 +256,6 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 	                                               String lastname,
 	                                               String vehicleColor,
 	                                               String vehiclePlateNumber) {
-		showPleaseWaitDialog();
-
 		if (FirebaseMain.getUser() != null) {
 			String userID = FirebaseMain.getUser().getUid();
 
@@ -279,8 +289,12 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 						binding.progressBarLayout.setVisibility(View.GONE);
 						closePleaseWaitDialog();
 
-						uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
-						uploadVehiclePictureToFirebaseStorage(userID, vehiclePictureUri);
+						if (profilePictureUri != null) {
+							uploadProfilePictureToFirebaseStorage(userID, profilePictureUri);
+
+						} else if (vehiclePictureUri != null) {
+							uploadVehiclePictureToFirebaseStorage(userID, vehiclePictureUri);
+						}
 
 						intent = new Intent(RegisterDriverActivity.this, ScanIDActivity.class);
 						intent.putExtra("userType", userType);
@@ -289,6 +303,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 
 					})
 					.addOnFailureListener(e -> {
+						closePleaseWaitDialog();
 						showRegisterFailedDialog();
 
 						binding.progressBarLayout.setVisibility(View.GONE);
@@ -296,12 +311,15 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 						Log.e(TAG, "updateUserRegisterToFireStore: " + e.getMessage());
 					});
 		} else {
-			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
+			closePleaseWaitDialog();
+			showRegisterFailedDialog();
 
 			intent = new Intent(RegisterDriverActivity.this, LoginOrRegisterActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(intent);
 			finish();
+
+			Log.e(TAG, "updateUserRegisterToFireStore: user in null");
 		}
 	}
 
@@ -311,21 +329,55 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 	}
 
-	//TODO: font size
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		String fontSize = isChecked ? "large" : "normal";
+		fontSize = isChecked ? "large" : "normal";
 		setFontSize(fontSize);
 	}
 
 	private void setFontSize(String fontSize) {
+		float textSizeSP;
+		float textHeaderSizeSP;
+		if (fontSize.equals("large")) {
+			textSizeSP = INCREASED_TEXT_SIZE_SP;
+			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
 
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+
+		} else {
+			textSizeSP = DEFAULT_TEXT_SIZE_SP;
+			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
+
+			binding.firstnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.lastnameLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.birthdateLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.ageLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.sexLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+		}
+
+		binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+
+		binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.firstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.ageBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView3.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView4.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView5.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
-	private void updateCancelledRegister(String userID) {
+	private void updateCancelledRegistration(String userID) {
 
 		documentReference = FirebaseMain.getFireStoreInstance()
-				.collection(FirebaseMain.userCollection).document(userID);
+				.collection(FirebaseMain.userCollection)
+				.document(userID);
 
 		Map<String, Object> updateRegister = new HashMap<>();
 		updateRegister.put("isRegisterComplete", false);
@@ -334,7 +386,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 
 					FirebaseMain.signOutUser();
 
-					intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
+					intent = new Intent(RegisterDriverActivity.this, LoginOrRegisterActivity.class);
 					startActivity(intent);
 					finish();
 
@@ -343,11 +395,11 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 
 					FirebaseMain.signOutUser();
 
-					Log.e(TAG, e.getMessage());
-
-					intent = new Intent(RegisterDriverActivity.this, LoginActivity.class);
+					intent = new Intent(RegisterDriverActivity.this, LoginOrRegisterActivity.class);
 					startActivity(intent);
 					finish();
+
+					Log.e(TAG, "updateCancelledRegister: " + e.getMessage());
 				});
 	}
 
@@ -507,11 +559,9 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 
-		yesBtn.setOnClickListener(v -> updateCancelledRegister(FirebaseMain.getUser().getUid()));
+		yesBtn.setOnClickListener(v -> updateCancelledRegistration(FirebaseMain.getUser().getUid()));
 
-		noBtn.setOnClickListener(v -> {
-			closeCancelRegisterDialog();
-		});
+		noBtn.setOnClickListener(v -> closeCancelRegisterDialog());
 
 
 		builder.setView(dialogView);
@@ -717,7 +767,6 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 			pleaseWaitDialog.dismiss();
 		}
 	}
-
 
 	private void showNoInternetDialog() {
 		builder = new AlertDialog.Builder(this);

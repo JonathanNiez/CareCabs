@@ -78,12 +78,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
-
-		if (networkChangeReceiver != null) {
-			Objects.requireNonNull(getContext()).unregisterReceiver(networkChangeReceiver);
-		}
+	public void onPause() {
+		super.onPause();
 
 		closeSignOutDialog();
 		closePleaseWaitDialog();
@@ -92,8 +88,12 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
+	public void onDestroy() {
+		super.onDestroy();
+
+		if (networkChangeReceiver != null) {
+			Objects.requireNonNull(getContext()).unregisterReceiver(networkChangeReceiver);
+		}
 
 		closeSignOutDialog();
 		closePleaseWaitDialog();
@@ -467,7 +467,8 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = requireActivity().getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+		View dialogView = requireActivity().getLayoutInflater()
+				.inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
