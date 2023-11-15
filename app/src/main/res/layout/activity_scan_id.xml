@@ -104,6 +104,66 @@
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
+						android:id="@+id/selfieLayout"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="vertical">
+
+						<FrameLayout
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:gravity="center"
+							android:orientation="vertical">
+
+							<androidx.camera.view.PreviewView
+								android:id="@+id/facePreviewView"
+								android:layout_width="300dp"
+								android:layout_height="300dp"
+								android:backgroundTint="@color/light_gray" />
+
+							<androidx.appcompat.widget.AppCompatImageView
+								android:id="@+id/switchCameraBtn"
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_gravity="end|bottom"
+								app:srcCompat="@drawable/switch_camera_64" />
+
+							<androidx.appcompat.widget.AppCompatImageView
+								android:id="@+id/facePreviewImageView"
+								android:layout_width="70dp"
+								android:layout_height="70dp"
+								android:backgroundTint="@color/white"
+								android:elevation="5dp" />
+
+						</FrameLayout>
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/alignYourTextView"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Align your face"
+							android:textAlignment="center"
+							android:textSize="20sp" />
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/faceRecognitionStatusTextView"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Face recognition status"
+							android:textAlignment="center"
+							android:textSize="20sp" />
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
+
+					<androidx.appcompat.widget.LinearLayoutCompat
 						android:id="@+id/idAlreadyScannedLayout"
 						android:layout_width="match_parent"
 						android:layout_height="300dp"
