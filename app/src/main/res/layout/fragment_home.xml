@@ -272,7 +272,7 @@
 									android:layout_height="wrap_content"
 									android:elevation="5dp"
 									android:fontFamily="@font/gabarito_semibold"
-									android:padding="5dp"
+									android:padding="10dp"
 									android:text="Rate Driver"
 									android:textSize="17sp" />
 
@@ -382,7 +382,7 @@
 								android:layout_height="100dp"
 								android:layout_margin="5dp"
 								android:scaleType="centerCrop"
-								android:src="@drawable/account" />
+								android:src="@drawable/profile_picture_100" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/passengerNameTextView"
@@ -475,7 +475,6 @@
 										android:textAlignment="center"
 										android:textSize="18sp" />
 
-
 								</androidx.appcompat.widget.LinearLayoutCompat>
 
 							</androidx.cardview.widget.CardView>
@@ -489,14 +488,15 @@
 								android:elevation="5dp"
 								android:gravity="center"
 								android:orientation="horizontal"
-								android:padding="5dp">
+								android:padding="10dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/viewPassengerOnMapTextView"
 									style="@style/PrimaryLongButtonTextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
-									android:layout_margin="5dp"
+									android:layout_marginEnd="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="VIEW ON MAP"
 									android:textSize="17sp" />
@@ -506,7 +506,6 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
-									android:layout_margin="5dp"
 									android:src="@drawable/map_32_white" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -605,7 +604,7 @@
 								android:fontFamily="@font/gabarito_bold"
 								android:text="Driver name:"
 								android:textAlignment="center"
-								android:textSize="17sp" />
+								android:textSize="20sp" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/vehicleColorTextView"
@@ -639,7 +638,7 @@
 								android:fontFamily="@font/gabarito_semibold"
 								android:text="Ping location: "
 								android:textAlignment="center"
-								android:textSize="17sp" />
+								android:textSize="20sp" />
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:id="@+id/viewOnMapBtn"
@@ -650,7 +649,7 @@
 								android:elevation="5dp"
 								android:gravity="center"
 								android:orientation="horizontal"
-								android:padding="5dp">
+								android:padding="10dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/viewOnMapTextView"
@@ -658,7 +657,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
-									android:layout_margin="5dp"
+									android:layout_marginEnd="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="VIEW ON MAP"
 									android:textSize="17sp" />
@@ -668,7 +667,6 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
-									android:layout_margin="5dp"
 									android:src="@drawable/map_32_white" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -677,11 +675,12 @@
 								android:id="@+id/chatDriverBtn"
 								style="@style/PrimaryLongButton"
 								android:layout_width="200dp"
-								android:layout_height="50dp"
+								android:layout_height="wrap_content"
 								android:layout_margin="10dp"
 								android:elevation="5dp"
 								android:gravity="center"
-								android:orientation="horizontal">
+								android:orientation="horizontal"
+								android:padding="10dp">
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/chatDriverTextView"
@@ -689,7 +688,7 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="start|center_vertical"
-									android:layout_margin="5dp"
+									android:layout_marginEnd="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="CHAT DRIVER"
 									android:textSize="17sp" />
@@ -699,7 +698,6 @@
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_gravity="end|center_vertical"
-									android:layout_margin="5dp"
 									app:srcCompat="@drawable/chat_32_white" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>

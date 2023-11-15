@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import java.lang.reflect.Type;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +59,7 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 	public static final String TAG = "ModalBottomSheet";
 	private static final String ARG_DATA = "data";
+	private String fontSize = StaticDataPasser.storeFontSize;
 
 	public interface PickupPassengerBottomSheetListener {
 		void onDataReceivedFromPickupPassengerBottomSheet
@@ -101,6 +104,23 @@ public class PickupPassengerBottomSheet extends BottomSheetDialogFragment {
 
 		if (isAdded()) {
 			loadPassengerBooking();
+
+			if (fontSize.equals("large")) {
+				float TEXT_SIZE = 22;
+
+				binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+				binding.passengerNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+				binding.passengerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+
+				binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.pickupLocationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.textView3.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.destinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.renavigateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.pickupBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+				binding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			}
 		}
 	}
 

@@ -907,8 +907,6 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 								storeVehiclePictureURLInFireStore(userID, vehiclePictureURL);
 							})
 							.addOnFailureListener(e -> {
-								Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-
 								Log.e(TAG, "uploadVehiclePictureToFirebaseStorage: " + e.getMessage());
 							});
 				})
@@ -925,13 +923,10 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		vehiclePicture.put("vehiclePicture", vehiclePictureURL);
 
 		documentReference.update(vehiclePicture)
-				.addOnSuccessListener(unused ->
-
-						Toast.makeText(RegisterDriverActivity.this, "Profile picture added successfully", Toast.LENGTH_SHORT).show())
-
+				.addOnSuccessListener(unused -> {
+					Log.i(TAG, "storeVehiclePictureURLInFireStore: vehicle picture uploaded successfully");
+				})
 				.addOnFailureListener(e -> {
-
-					Toast.makeText(RegisterDriverActivity.this, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
 					Log.e(TAG, "storeVehiclePictureURLInFireStore: " + e.getMessage());
 				});
 	}

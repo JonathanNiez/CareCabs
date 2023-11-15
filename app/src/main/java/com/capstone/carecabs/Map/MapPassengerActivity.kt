@@ -65,6 +65,8 @@ import com.mapbox.maps.plugin.animation.camera
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.CircleAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
@@ -125,7 +127,8 @@ class MapPassengerActivity : AppCompatActivity(),
     private lateinit var voiceAssistant: VoiceAssistant
     private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
     private var fontSize = StaticDataPasser.storeFontSize
-
+    private var pointAnnotation: PointAnnotation? = null
+    private lateinit var pointAnnotationManager: PointAnnotationManager
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -182,20 +185,20 @@ class MapPassengerActivity : AppCompatActivity(),
             if (isChecked) {
                 binding.mapView.getMapboxMap().apply {
                     loadStyleUri(Style.SATELLITE_STREETS) {
-                        showToast("Changed Map style to Streets")
+                        showToast("Changed Map style to Streets", 0)
                     }
                 }
             } else {
                 binding.mapView.getMapboxMap().apply {
                     loadStyleUri(Style.MAPBOX_STREETS) {
-                        showToast("Changed Map style to Satellite")
+                        showToast("Changed Map style to Satellite", 0)
                     }
                 }
             }
         }
 
         binding.fullscreenImgBtn.setOnClickListener {
-            showToast("Entered fullscreen")
+            showToast("Entered fullscreen", 0)
 
             if (voiceAssistantState.equals("enabled")) {
                 voiceAssistant = VoiceAssistant.getInstance(this)
@@ -209,7 +212,7 @@ class MapPassengerActivity : AppCompatActivity(),
         }
 
         binding.minimizeScreenImgBtn.setOnClickListener {
-            showToast("Exited fullscreen")
+            showToast("Exited fullscreen", 0)
 
             if (voiceAssistantState.equals("enabled")) {
                 voiceAssistant = VoiceAssistant.getInstance(this)
@@ -673,24 +676,26 @@ class MapPassengerActivity : AppCompatActivity(),
             R.drawable.location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+            pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(destinationLongitude, destinationLatitude))
                 .withIconImage(it)
 
-            pointAnnotationManager.create(pointAnnotationOptions)
+            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
 
             pointAnnotationManager.apply {
                 addClickListener(
                     OnPointAnnotationClickListener {
-
                         showOwnBookingInfoDialog(bookingID)
-
                         true
                     }
                 )
             }
         }
+    }
+
+    private fun removeDestinationAnnotationFromMap() {
+        pointAnnotation?.let { pointAnnotationManager.delete(it) }
     }
 
     //driver pinged location
@@ -703,12 +708,21 @@ class MapPassengerActivity : AppCompatActivity(),
             R.drawable.car_100_2
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager()
+            pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(driverLongitude, driverLatitude))
                 .withIconImage(it)
 
-            pointAnnotationManager.create(pointAnnotationOptions)
+            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotationManager.apply {
+                addClickListener {
+
+                    showToast("Your Driver's current location", 1)
+
+                    true
+                }
+            }
         }
     }
 
@@ -773,6 +787,8 @@ class MapPassengerActivity : AppCompatActivity(),
     override fun onBookingConfirmed(isBookingConfirmed: Boolean) {
         if (isBookingConfirmed) {
             hasActiveBooking = true
+
+
         }
     }
 
@@ -1093,11 +1109,11 @@ class MapPassengerActivity : AppCompatActivity(),
         locationReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
 
-                showToast("Booking success")
+                showToast("Booking success", 1)
                 loadBookingsToMapFromDatabase()
 
             }.addOnFailureListener {
-                showToast("Booking failed")
+                showToast("Booking failed", 1)
                 Log.e(TAG, "storePWDBookingToDatabase: " + it.message)
             }
     }
@@ -1138,7 +1154,7 @@ class MapPassengerActivity : AppCompatActivity(),
 
             }.addOnFailureListener {
 
-                showToast("Booking failed")
+                showToast("Booking failed", 1)
                 Log.e(TAG, "storeSeniorCitizenBookingToDatabase: " + it.message)
 
             }
@@ -1202,16 +1218,16 @@ class MapPassengerActivity : AppCompatActivity(),
 
     private fun showOwnBookingInfoDialog(bookingID: String) {
 
-        val binding: DialogPassengerOwnBookingInfoBinding =
+        val binding2: DialogPassengerOwnBookingInfoBinding =
             DialogPassengerOwnBookingInfoBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
-        val dialogView = binding.root
+        val dialogView = binding2.root
 
         var isDriverOnTheWay = false
         val bookingReference = FirebaseDatabase.getInstance()
             .getReference(FirebaseMain.bookingCollection)
 
-        bookingReference.addListenerForSingleValueEvent(object : ValueEventListener {
+        bookingReference.addValueEventListener(object : ValueEventListener {
             @SuppressLint("SetTextI18n")
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -1227,11 +1243,11 @@ class MapPassengerActivity : AppCompatActivity(),
                                 val destination = passengerBookingModel.destination
                                 val pickupLocation = passengerBookingModel.pickupLocation
 
-                                binding.loading1.visibility = View.GONE
-                                binding.loading2.visibility = View.GONE
+                                binding2.loading1.visibility = View.GONE
+                                binding2.loading2.visibility = View.GONE
 
-                                binding.pickupLocationTextView.text = pickupLocation
-                                binding.destinationTextView.text = destination
+                                binding2.pickupLocationTextView.text = pickupLocation
+                                binding2.destinationTextView.text = destination
 
                                 val message = "Pickup location: $pickupLocation." +
                                         " Destination: $destination"
@@ -1245,7 +1261,7 @@ class MapPassengerActivity : AppCompatActivity(),
                                 if (passengerBookingModel.bookingStatus == "Driver on the way") {
 
                                     isDriverOnTheWay = true
-                                    binding.cancelBookingBtn.visibility = View.GONE
+                                    binding2.cancelBookingBtn.visibility = View.GONE
 
                                 }
                             }
@@ -1259,28 +1275,28 @@ class MapPassengerActivity : AppCompatActivity(),
             }
         })
 
-        binding.cancelBookingBtn.setOnClickListener {
+        binding2.cancelBookingBtn.setOnClickListener {
             if (!isDriverOnTheWay) {
                 val updateBookingStatus = mapOf("bookingStatus" to "Cancelled")
                 bookingReference.child(bookingID)
                     .updateChildren(updateBookingStatus)
                     .addOnSuccessListener {
-                        showToast("Booking cancelled")
+                        showToast("Booking cancelled", 1)
 
                         hasActiveBooking = false
                         loadBookingsToMapFromDatabase()
-
+                        removeDestinationAnnotationFromMap()
                         closeOwnBookingInfoDialog()
                     }
                     .addOnFailureListener {
-                        showToast("Booking failed to cancel")
+                        showToast("Booking failed to cancel", 1)
 
                         Log.e(TAG, "showPassengerOwnBookingInfoDialog: " + it.message)
                     }
             }
         }
 
-        binding.closeBtn.setOnClickListener {
+        binding2.closeBtn.setOnClickListener {
             closeOwnBookingInfoDialog()
         }
 
@@ -1453,7 +1469,7 @@ class MapPassengerActivity : AppCompatActivity(),
         }
     }
 
-    private fun Context.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
+    private fun Context.showToast(message: String, duration: Int) {
         Toast.makeText(this, message, duration).show()
     }
 

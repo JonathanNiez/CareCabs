@@ -60,6 +60,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -424,10 +427,11 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 							switch (userType) {
 								case "Driver":
-									Double getDriverRatings = documentSnapshot.getDouble("driverRatings");
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
 									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
+
+									getDriverRatings();
 
 									if (isFirstTimeUser) {
 										if (isAdded()) {
@@ -456,7 +460,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 									binding.bookARideTextView.setText("Pickup Passengers");
 									binding.driverStatsLayout.setVisibility(View.VISIBLE);
-									binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
 									binding.passengerTransportedTextView.setText("Passengers\nTransported: " +
 											getPassengerTransported);
 
@@ -536,6 +539,27 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		Objects.requireNonNull(getActivity()).finish();
 	}
 
+	@SuppressLint("SetTextI18n")
+	private void getDriverRatings() {
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(FirebaseMain.getUser().getUid());
+
+		documentReference.addSnapshotListener((value, error) -> {
+			if (error != null) {
+				Log.e(TAG, "getDriverRatings: " + error.getMessage());
+
+				return;
+			}
+
+			if (value != null) {
+				double getDriverRatings = value.getDouble("driverRatings");
+
+				binding.driverRatingTextView.setText("Your Ratings: " + getDriverRatings);
+			}
+		});
+	}
+
 	private void showNavigationStatusLayout() {
 		databaseReference = FirebaseDatabase
 				.getInstance().getReference(FirebaseMain.bookingCollection);
@@ -556,10 +580,12 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									.equals(FirebaseMain.getUser().getUid())) {
 
 								if (isAdded()) {
-									Glide.with(context)
-											.load(passengerBookingModel.getPassengerProfilePicture())
-											.placeholder(R.drawable.loading_gif)
-											.into(binding.currentPassengerProfilePictureImageView);
+									if (!passengerBookingModel.getPassengerProfilePicture().equals("default")) {
+										Glide.with(context)
+												.load(passengerBookingModel.getPassengerProfilePicture())
+												.placeholder(R.drawable.loading_gif)
+												.into(binding.currentPassengerProfilePictureImageView);
+									}
 								}
 
 								binding.pickupPassengerBadge.setVisibility(View.VISIBLE);
@@ -610,18 +636,20 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								bookingSnapshot.getValue(PassengerBookingModel.class);
 						if (passengerBookingModel != null) {
 
-							if (isAdded()) {
-								Glide.with(context)
-										.load(passengerBookingModel.getDriverProfilePicture())
-										.placeholder(R.drawable.loading_gif)
-										.into(binding.driverProfilePictureImageView);
-							}
-
 							if (passengerBookingModel.getPassengerUserID().equals(userID) &&
 									passengerBookingModel.getBookingStatus().equals("Driver on the way")) {
 
 								String fcmToken = passengerBookingModel.getFcmToken();
 								String driverID = passengerBookingModel.getDriverUserID();
+
+								if (isAdded()) {
+									if (!passengerBookingModel.getDriverProfilePicture().equals("default")) {
+										Glide.with(context)
+												.load(passengerBookingModel.getDriverProfilePicture())
+												.placeholder(R.drawable.loading_gif)
+												.into(binding.driverProfilePictureImageView);
+									}
+								}
 
 								binding.toDestinationLayout.setVisibility(View.GONE);
 								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
@@ -667,12 +695,16 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								binding.bookARideBtn.setVisibility(View.VISIBLE);
 								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
 
-								if (!passengerBookingModel.getDriverProfilePicture().equals("default")) {
-									Glide.with(context)
-											.load(passengerBookingModel.getDriverProfilePicture())
-											.placeholder(R.drawable.loading_gif)
-											.into(binding.driverDropOffProfilePicture);
+								if (isAdded()) {
+									if (!passengerBookingModel.getDriverProfilePicture().equals("default")) {
+										Glide.with(context)
+												.load(passengerBookingModel.getDriverProfilePicture())
+												.placeholder(R.drawable.loading_gif)
+												.into(binding.driverDropOffProfilePicture);
+									}
 								}
+
+								binding.driverDropOffNameTextView.setText(passengerBookingModel.getDriverName());
 
 								binding.rateDriverBtn.setOnClickListener(v -> {
 									if (binding.driverRatingBar.getRating() == 0) {

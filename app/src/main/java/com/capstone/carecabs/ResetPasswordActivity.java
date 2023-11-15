@@ -10,13 +10,16 @@ import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityResetPasswordBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
@@ -24,12 +27,14 @@ import com.google.firebase.firestore.DocumentReference;
 import java.util.Calendar;
 import java.util.Date;
 
-public class ResetPasswordActivity extends AppCompatActivity {
+public class ResetPasswordActivity extends AppCompatActivity implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ResetPasswordActivity";
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, cancelPasswordResetDialog, passwordUpdateFailedDialog,
 			passwordUpdateSuccessDialog, passwordResetConfirmationDialog, passwordWarningDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private Intent intent;
 	private Calendar calendar;
 	private Date date;
@@ -85,8 +90,12 @@ public class ResetPasswordActivity extends AppCompatActivity {
 		calendar = Calendar.getInstance();
 		date = calendar.getTime();
 
-		binding.backBtn.setOnClickListener(view -> {
-			backToLoginActivity();
+		binding.backFloatingBtn.setOnClickListener(view -> backToLoginActivity());
+
+		binding.settingsFloatingBtn.setOnClickListener(v -> {
+			SettingsBottomSheet settingsBottomSheet = new SettingsBottomSheet();
+			settingsBottomSheet.setFontSizeChangeListener(this);
+			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
 		binding.resetPasswordBtn.setOnClickListener(view -> {
@@ -117,8 +126,25 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {
+		super.onBackPressed();
 		backToLoginActivity();
 	}
+
+	@Override
+	public void onFontSizeChanged(boolean isChecked) {
+		fontSize = isChecked ? "large" : "normal";
+
+		if (fontSize.equals("large")) {
+			float TEXT_SIZE = 22;
+			binding.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			binding.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+			binding.textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
+
+		}
+	}
+
 
 	private void backToLoginActivity() {
 		intent = new Intent(ResetPasswordActivity.this, LoginActivity.class);
@@ -238,14 +264,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_failed, null);
 
-		Button okBtn = dialogView.findViewById(R.id.okBtn);
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
 
-		okBtn.setOnClickListener(v -> {
-			intent = new Intent(ResetPasswordActivity.this, LoginActivity.class);
-			startActivity(intent);
-			finish();
-		});
-
+		okayBtn.setOnClickListener(v -> closePasswordUpdateFailedDialog());
 
 		builder.setView(dialogView);
 
@@ -343,4 +364,5 @@ public class ResetPasswordActivity extends AppCompatActivity {
 			showNoInternetDialog();
 		}
 	}
+
 }

@@ -193,57 +193,56 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/pickupBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryButton"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Pickup"
-			android:textColor="@color/white"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/renavigateBtn"
+			style="@style/PrimaryButton"
 			android:layout_width="150dp"
-			android:layout_height="50dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Renavigate"
-			android:textColor="@color/white"
 			android:textSize="17sp" />
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:id="@+id/chatPassengerBtn"
-			android:layout_width="230dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryLongButton"
+			android:layout_width="240dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:gravity="center"
-			android:orientation="horizontal">
+			android:orientation="horizontal"
+			android:padding="10dp">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/chatPassengerTextView"
+				style="@style/PrimaryLongButtonTextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="start|center_vertical"
-				android:layout_margin="5dp"
+				android:layout_marginEnd="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="CHAT PASSENGER"
 				android:textAlignment="textStart"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/PrimaryLongButtonIconTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:layout_margin="5dp"
 				android:src="@drawable/chat_32_white" />
 
-		</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -201,6 +201,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 							if (isRegisterComplete) {
 								loadUserProfileInfo();
 							} else {
+								closePleaseWaitDialog();
 								showRegisterNotCompleteDialog();
 							}
 						}

@@ -299,11 +299,25 @@
 						android:text="Vehicle Info"
 						android:textSize="20sp" />
 
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView5"
+						style="@style/RoundedTextColor"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:elevation="5dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:padding="10dp"
+						android:text="Fill up the vehicle info below so that passengers can easily spot you"
+						android:textAlignment="center"
+						android:textSize="17sp" />
+
 					<androidx.cardview.widget.CardView
 						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						app:cardCornerRadius="10dp"
+						android:layout_marginBottom="10dp"
 						app:cardElevation="5dp">
 
 						<androidx.appcompat.widget.LinearLayoutCompat
@@ -325,7 +339,7 @@
 								style="@style/TextColor"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
-								android:layout_margin="10dp"
+								android:layout_margin="5dp"
 								android:fontFamily="@font/gabarito_medium"
 								android:text="Tap/Click on the picture icon to upload the image of your vehicle"
 								android:textAlignment="center"
@@ -335,19 +349,6 @@
 
 					</androidx.cardview.widget.CardView>
 
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/textView5"
-						style="@style/RoundedTextColor"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
-						android:elevation="5dp"
-						android:fontFamily="@font/gabarito_medium"
-						android:padding="10dp"
-						android:text="Fill up the vehicle info below so that passengers can easily spot you"
-						android:textAlignment="center"
-						android:textSize="17sp" />
-
 					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
@@ -356,7 +357,10 @@
 						android:elevation="5dp"
 						android:padding="5dp"
 						android:textColorHint="@color/black"
-						app:endIconMode="clear_text">
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
+						app:helperText="*Required"
+						app:helperTextTextColor="@color/red">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/vehicleColorEditText"
@@ -378,7 +382,10 @@
 						android:elevation="5dp"
 						android:padding="5dp"
 						android:textColorHint="@color/black"
-						app:endIconMode="clear_text">
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
+						app:helperText="*Required"
+						app:helperTextTextColor="@color/red">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/vehiclePlateNumberEditText"

@@ -31,11 +31,11 @@
 					style="@style/TextColor"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
-					android:layout_margin="5dp"
+					android:layout_margin="10dp"
 					android:fontFamily="@font/gabarito_bold"
 					android:text="YOUR CURRENT BOOKING"
 					android:textAlignment="center"
-					android:textSize="20sp" />
+					android:textSize="25sp" />
 
 				<androidx.appcompat.widget.AppCompatTextView
 					style="@style/TextColor"
@@ -120,27 +120,27 @@
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/cancelBookingBtn"
 				android:layout_width="190dp"
-				android:layout_height="50dp"
+				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/light_red"
 				android:elevation="5dp"
 				android:fontFamily="@font/gabarito_semibold"
+				android:padding="15dp"
 				android:text="Cancel Booking"
 				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/closeBtn"
-				android:layout_width="130dp"
-				android:layout_height="50dp"
+				style="@style/PrimaryButton"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:background="@drawable/smooth_edge_button"
-				android:backgroundTint="@color/yinmn_blue"
 				android:elevation="5dp"
 				android:fontFamily="@font/gabarito_semibold"
+				android:padding="15dp"
 				android:text="Close"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>

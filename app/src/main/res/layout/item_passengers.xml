@@ -94,7 +94,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_semibold"
 				android:text="Disability"
 				android:textAlignment="center"
 				android:textSize="17sp" />
@@ -197,59 +197,62 @@
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:id="@+id/viewOnMapBtn"
 			android:layout_width="230dp"
-			android:layout_height="50dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:gravity="center"
-			android:orientation="horizontal">
+			android:orientation="horizontal"
+			android:padding="15dp">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/viewOnMapTextView"
+				style="@style/PrimaryLongButtonTextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="start|center_vertical"
-				android:layout_margin="5dp"
+				android:layout_marginEnd="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="VIEW ON MAP"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/PrimaryLongButtonIconTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:layout_margin="5dp"
 				android:src="@drawable/map_32_white" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
 
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:id="@+id/chatPassengerBtn"
-			android:layout_width="240dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryLongButton"
+			android:layout_width="250dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="10dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
 			android:elevation="5dp"
 			android:gravity="center"
-			android:orientation="horizontal">
+			android:orientation="horizontal"
+			android:padding="15dp">
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/chatPassengerTextView"
+				style="@style/PrimaryLongButtonTextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="start|center_vertical"
-				android:layout_margin="5dp"
+				android:layout_marginEnd="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="CHAT PASSENGER"
-				android:textColor="@color/white"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatImageView
+				style="@style/PrimaryLongButtonIconTint"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_gravity="end|center_vertical"
-				android:layout_margin="5dp"
 				android:src="@drawable/chat_32_white" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>

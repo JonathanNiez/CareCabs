@@ -25,7 +25,7 @@
 			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				android:src="@drawable/failed_64" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -43,9 +43,19 @@
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="An Unknown error occurred\nPlease try again later"
+				android:text="An Unknown error occurred"
 				android:textAlignment="center"
 				android:textColor="@color/red"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Please try again later"
+				android:textAlignment="center"
 				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>
@@ -54,14 +64,13 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okayBtn"
-		android:layout_width="130dp"
-		android:layout_height="50dp"
+		android:layout_width="150dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
 		android:fontFamily="@font/gabarito_semibold"
+		android:padding="15dp"
 		android:text="Okay"
-		android:textColor="@color/white"
+		style="@style/PrimaryButton"
 		android:textSize="17sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

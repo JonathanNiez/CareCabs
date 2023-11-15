@@ -4,10 +4,10 @@
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/sky_blue"
+	android:background="@color/light_blue"
 	tools:context=".SplashScreenActivity">
 
-	<ImageView
+	<androidx.appcompat.widget.AppCompatImageView
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_centerInParent="true"

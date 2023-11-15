@@ -122,6 +122,23 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 		FirebaseApp.initializeApp(this);
 
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+
+			binding.firstnameEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Firstname"));
+			binding.lastnameEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Lastname"));
+			binding.birthdateBtn.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Birthdate"));
+			binding.ageEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Age"));
+			binding.spinnerSex.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Sex"));
+			binding.spinnerDisability.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Disability"));
+		}
+
 		binding.imgBtnProfilePic.setOnClickListener(view -> {
 			ImagePicker.with(RegisterPWDActivity.this)
 					.crop()                    //Crop image(Optional), Check Customization for more option
@@ -731,6 +748,11 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
+
+		if (voiceAssistantState.equals("enabled")){
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak("Please wait");
+		}
 
 		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
 

@@ -183,13 +183,15 @@ public class PassengerBookingsBottomSheet extends BottomSheetDialogFragment {
 								}
 							}
 						}
+						pickupPassengerAdapter.notifyDataSetChanged();
+
 						if (hasPassengersBookings) {
 							binding.noPassengerBookingsTextView.setVisibility(View.GONE);
 						} else {
 							binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 							binding.loadingLayout.setVisibility(View.GONE);
 						}
-						pickupPassengerAdapter.notifyDataSetChanged();
+
 					} else {
 						binding.noPassengerBookingsTextView.setVisibility(View.VISIBLE);
 					}

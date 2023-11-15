@@ -1,33 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginTop="20dp"
-		android:src="@drawable/no_internet_128" />
-
 	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
+		android:layout_margin="10dp"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<LinearLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			android:orientation="vertical"
 			android:padding="5dp">
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				app:srcCompat="@drawable/no_internet_64" />
+
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
@@ -37,32 +38,38 @@
 				android:textColor="@color/red"
 				android:textSize="20sp" />
 
-			<TextView
+			<androidx.appcompat.widget.AppCompatTextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
-				android:text="Slow or no internet connection\nPlease check your Internet settings."
+				android:text="Slow or no Internet connection"
 				android:textAlignment="center"
 				android:textColor="@color/black"
 				android:textSize="17sp" />
 
-		</LinearLayout>
+			<androidx.appcompat.widget.AppCompatTextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Please check your Internet settings"
+				android:textAlignment="center"
+				android:textColor="@color/black"
+				android:textSize="17sp" />
 
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
-
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/tryAgainBtn"
-		android:layout_width="130dp"
-		android:layout_height="50dp"
+		style="@style/PrimaryButton"
+		android:layout_width="150dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
 		android:fontFamily="@font/gabarito_semibold"
 		android:text="Try Again"
-		android:textColor="@color/white"
 		android:textSize="17sp" />
 
-</LinearLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

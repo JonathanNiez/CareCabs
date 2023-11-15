@@ -28,6 +28,7 @@
 		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
 		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />

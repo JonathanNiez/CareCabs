@@ -73,6 +73,8 @@ import com.mapbox.maps.plugin.animation.CameraAnimatorOptions
 import com.mapbox.maps.plugin.animation.camera
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.gestures
@@ -144,6 +146,7 @@ class MapDriverActivity : AppCompatActivity(),
     private val REQUEST_ENABLE_LOCATION = 1
     private var isNavigatingToDestination = false
     private var isRenavigating = false
+    private var isAcceptedABooking = false
     private lateinit var documentReference: DocumentReference
     private lateinit var builder: AlertDialog.Builder
     private lateinit var userNotVerifiedDialog: AlertDialog
@@ -156,6 +159,9 @@ class MapDriverActivity : AppCompatActivity(),
     private lateinit var voiceAssistant: VoiceAssistant
     private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
     private var fontSize = StaticDataPasser.storeFontSize
+    private var pointAnnotation: PointAnnotation? = null
+    private var lastInteractedAnnotationOptions: PointAnnotationOptions? = null
+    private lateinit var pointAnnotationManager: PointAnnotationManager
 
     //navigation
     private val mapboxReplayer = MapboxReplayer()
@@ -1083,24 +1089,22 @@ class MapDriverActivity : AppCompatActivity(),
             R.drawable.senior_location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(longitude, latitude))
                 .withIconImage(it)
-            pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
 
             pointAnnotationManager.apply {
                 addClickListener(
                     OnPointAnnotationClickListener {
-
-//                        showPassengerBookingLocationInfoDialog(bookingID)
+                        lastInteractedAnnotationOptions = pointAnnotationOptions
                         showPickupPassengerBottomSheet(bookingID)
-
                         true
                     }
                 )
             }
-
         }
     }
 
@@ -1121,18 +1125,18 @@ class MapDriverActivity : AppCompatActivity(),
             R.drawable.pwd_location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(longitude, latitude))
                 .withIconImage(it)
-            pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
 
             pointAnnotationManager.apply {
                 addClickListener(
                     OnPointAnnotationClickListener {
-
+                        lastInteractedAnnotationOptions = pointAnnotationOptions
                         showPickupPassengerBottomSheet(bookingID)
-
                         true
                     }
                 )
@@ -1140,29 +1144,30 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
-    private fun createDestinationAnnotationToMap(destinationCoordinate: Point) {
+    private fun createDestinationAnnotationToMap(destination: Point) {
         bitmapFromDrawableRes(
             this@MapDriverActivity,
             R.drawable.location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            val pointAnnotationManager = annotationApi.createPointAnnotationManager(binding.mapView)
+            pointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(
                     Point.fromLngLat(
-                        destinationCoordinate.longitude(),
-                        destinationCoordinate.latitude()
+                        destination.longitude(),
+                        destination.latitude()
                     )
                 )
                 .withIconImage(it)
-            pointAnnotationManager.create(pointAnnotationOptions)
+
+            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
 
             if (isNavigatingToDestination) {
                 pointAnnotationManager.apply {
                     addClickListener(
                         OnPointAnnotationClickListener {
 
-                            findRoute(destinationCoordinate)
+                            findRoute(destination)
 
                             true
                         }
@@ -1170,6 +1175,12 @@ class MapDriverActivity : AppCompatActivity(),
                 }
             }
         }
+    }
+
+    private fun removeAllAnnotationsExceptLastInteracted() {
+        val lastInteracted = lastInteractedAnnotationOptions
+        pointAnnotationManager.deleteAll()
+        lastInteracted?.let { pointAnnotationManager.create(it) }
     }
 
     private fun bitmapFromDrawableRes(context: Context, @DrawableRes resourceId: Int) =
@@ -1265,6 +1276,7 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
+    //triggers renavigate
     override fun onRenavigateClick(isClicked: Boolean) {
         if (isClicked) {
             isRenavigating = true
@@ -1572,6 +1584,7 @@ class MapDriverActivity : AppCompatActivity(),
 
                     driverReference.update(updateDriverStatus)
                         .addOnSuccessListener {
+
                             showPassengerTransportedSuccessDialog()
                         }
                         .addOnFailureListener {
@@ -2049,7 +2062,8 @@ class MapDriverActivity : AppCompatActivity(),
     override fun onDataReceivedFromPickupPassengerBottomSheet(
         pickupPassengerBottomSheetData: PickupPassengerBottomSheetData
     ) {
-
+        isAcceptedABooking = true
+        removeAllAnnotationsExceptLastInteracted()
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)
 
@@ -2096,6 +2110,8 @@ class MapDriverActivity : AppCompatActivity(),
     override fun onDataReceivedFromPassengerBookingsBottomSheet(
         pickupPassengerBottomSheetData: PickupPassengerBottomSheetData
     ) {
+        isAcceptedABooking = true
+        removeAllAnnotationsExceptLastInteracted()
 
         if (isNavigatingToDestination) {
             findRoute(pickupPassengerBottomSheetData.destinationCoordinates)

@@ -375,19 +375,15 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public void onDataChange(@NonNull DataSnapshot snapshot) {
 				if (snapshot.exists()) {
-					int waitingPassengersCount = 0;
 
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingData =
 								bookingSnapshot.getValue(PassengerBookingModel.class);
+
 						if (passengerBookingData != null) {
-
 							if (passengerBookingData.getBookingStatus().equals("Waiting")) {
+
 								showPassengersWaitingNotification();
-								waitingPassengersCount++;
-
-							} else {
-
 							}
 						}
 					}
@@ -449,11 +445,20 @@ public class MainActivity extends AppCompatActivity {
 
 							if (getUserType != null) {
 								if (getUserType.equals("Driver")) {
+									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
+									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 
-									checkForWaitingPassengers();
+									if (isAvailable) {
+										checkForWaitingPassengers();
+									} else {
+										if (getNavigationStatus.equals("Navigating to pickup location") ||
+												getNavigationStatus.equals("Navigating to destination")) {
+
+											showNavigatingNotification();
+										}
+									}
 								} else {
 									checkIfBookingIsAccepted();
-
 								}
 							}
 						}
@@ -482,6 +487,13 @@ public class MainActivity extends AppCompatActivity {
 		notificationHelper.showPassengersWaitingNotification("CareCabs",
 				"There are Passenger(s) waiting right now.\nGo to Map to check their location");
 	}
+
+	private void showNavigatingNotification() {
+		NotificationHelper notificationHelper = new NotificationHelper(this);
+		notificationHelper.showPassengersWaitingNotification("CareCabs",
+				"You are currently navigating in Map");
+	}
+
 
 	private void showEnableLocationServiceDialog() {
 		builder = new AlertDialog.Builder(this);
