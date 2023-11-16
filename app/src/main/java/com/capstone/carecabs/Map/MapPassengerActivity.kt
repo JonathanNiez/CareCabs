@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
@@ -70,13 +71,8 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createCircleAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
-import com.mapbox.maps.plugin.gestures.OnMapClickListener
-import com.mapbox.maps.plugin.gestures.OnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.OnMoveListener
-import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.gestures
-import com.mapbox.maps.plugin.gestures.removeOnMapClickListener
-import com.mapbox.maps.plugin.gestures.removeOnMapLongClickListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -127,8 +123,12 @@ class MapPassengerActivity : AppCompatActivity(),
     private lateinit var voiceAssistant: VoiceAssistant
     private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
     private var fontSize = StaticDataPasser.storeFontSize
-    private var pointAnnotation: PointAnnotation? = null
-    private lateinit var pointAnnotationManager: PointAnnotationManager
+
+    private lateinit var destinationAnnotationManager: PointAnnotationManager
+    private lateinit var driverPointAnnotationManager: PointAnnotationManager
+    private lateinit var destinationPointAnnotation: PointAnnotation
+    private lateinit var driverPointAnnotation: PointAnnotation
+    private val pointAnnotationList: MutableList<PointAnnotation> = mutableListOf()
 
     private val onIndicatorBearingChangedListener = OnIndicatorBearingChangedListener {
         binding.mapView.getMapboxMap().setCamera(CameraOptions.Builder().bearing(it).build())
@@ -239,12 +239,11 @@ class MapPassengerActivity : AppCompatActivity(),
     }
 
     private fun onMapReady() {
-
         mapboxMap = binding.mapView.getMapboxMap().apply {
             loadStyleUri(Style.MAPBOX_STREETS) {
 
                 initializeLocationComponent()
-                initializeSearchEngine()
+//                initializeSearchEngine()
                 loadBookingsToMapFromDatabase()
 
 //                binding.searchDestinationEditText.addTextChangedListener(object : TextWatcher {
@@ -297,8 +296,6 @@ class MapPassengerActivity : AppCompatActivity(),
                     }
                     playAnimatorsSequentially(zoom)
                 }
-
-
             }
         }
     }
@@ -513,89 +510,89 @@ class MapPassengerActivity : AppCompatActivity(),
         }
     }
 
-    private fun initializeSearchEngine() {
-        binding.searchResultsView.initialize(
-            SearchResultsView.Configuration(
-                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
-            )
-        )
-        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
-            SearchEngineSettings(getString(R.string.mapbox_access_token))
-        )
-
-        val offlineSearchEngine = OfflineSearchEngine.create(
-            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
-        )
-
-        val searchEngineUiAdapter = SearchEngineUiAdapter(
-            view = binding.searchResultsView,
-            searchEngine = searchEngine,
-            offlineSearchEngine = offlineSearchEngine,
-        )
-
-        searchEngineUiAdapter.addSearchListener(object : SearchEngineUiAdapter.SearchListener {
-            override fun onError(e: Exception) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onFeedbackItemClick(responseInfo: ResponseInfo) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onHistoryItemClick(historyRecord: HistoryRecord) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onOfflineSearchResultSelected(
-                searchResult: OfflineSearchResult,
-                responseInfo: OfflineResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onOfflineSearchResultsShown(
-                results: List<OfflineSearchResult>,
-                responseInfo: OfflineResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onPopulateQueryClick(
-                suggestion: SearchSuggestion,
-                responseInfo: ResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSearchResultSelected(
-                searchResult: SearchResult,
-                responseInfo: ResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSearchResultsShown(
-                suggestion: SearchSuggestion,
-                results: List<SearchResult>,
-                responseInfo: ResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSuggestionSelected(searchSuggestion: SearchSuggestion): Boolean {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSuggestionsShown(
-                suggestions: List<SearchSuggestion>,
-                responseInfo: ResponseInfo
-            ) {
-                TODO("Not yet implemented")
-            }
-        })
-
-        showSearchHistory()
-    }
+//    private fun initializeSearchEngine() {
+//        binding.searchResultsView.initialize(
+//            SearchResultsView.Configuration(
+//                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
+//            )
+//        )
+//        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
+//            SearchEngineSettings(getString(R.string.mapbox_access_token))
+//        )
+//
+//        val offlineSearchEngine = OfflineSearchEngine.create(
+//            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
+//        )
+//
+//        val searchEngineUiAdapter = SearchEngineUiAdapter(
+//            view = binding.searchResultsView,
+//            searchEngine = searchEngine,
+//            offlineSearchEngine = offlineSearchEngine,
+//        )
+//
+//        searchEngineUiAdapter.addSearchListener(object : SearchEngineUiAdapter.SearchListener {
+//            override fun onError(e: Exception) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onFeedbackItemClick(responseInfo: ResponseInfo) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onHistoryItemClick(historyRecord: HistoryRecord) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onOfflineSearchResultSelected(
+//                searchResult: OfflineSearchResult,
+//                responseInfo: OfflineResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onOfflineSearchResultsShown(
+//                results: List<OfflineSearchResult>,
+//                responseInfo: OfflineResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onPopulateQueryClick(
+//                suggestion: SearchSuggestion,
+//                responseInfo: ResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onSearchResultSelected(
+//                searchResult: SearchResult,
+//                responseInfo: ResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onSearchResultsShown(
+//                suggestion: SearchSuggestion,
+//                results: List<SearchResult>,
+//                responseInfo: ResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onSuggestionSelected(searchSuggestion: SearchSuggestion): Boolean {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onSuggestionsShown(
+//                suggestions: List<SearchSuggestion>,
+//                responseInfo: ResponseInfo
+//            ) {
+//                TODO("Not yet implemented")
+//            }
+//        })
+//
+//        showSearchHistory()
+//    }
 
     private fun showSearchHistory() {
         val historyDataProvider = ServiceProvider.INSTANCE.historyDataProvider()
@@ -647,7 +644,7 @@ class MapPassengerActivity : AppCompatActivity(),
                 Log.i("SearchApiExample", "Place Autocomplete suggestions: $suggestions")
 
                 if (suggestions.isNotEmpty()) {
-// Supposing that a user has selected (clicked in UI) the first suggestion
+                    // Supposing that a user has selected (clicked in UI) the first suggestion
                     val selectedSuggestion = suggestions.first()
 
                     Log.i("SearchApiExample", "Selecting first suggestion...")
@@ -671,22 +668,24 @@ class MapPassengerActivity : AppCompatActivity(),
         destinationLatitude: Double,
         bookingID: String
     ) {
+
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
             R.drawable.location_pin_128
         ).let {
             val annotationApi = binding.mapView.annotations
-            pointAnnotationManager = annotationApi.createPointAnnotationManager()
+            destinationAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(destinationLongitude, destinationLatitude))
                 .withIconImage(it)
 
-            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
+            destinationPointAnnotation = destinationAnnotationManager.create(pointAnnotationOptions)
+            pointAnnotationList.add(destinationPointAnnotation)
 
-            pointAnnotationManager.apply {
+            destinationAnnotationManager.apply {
                 addClickListener(
                     OnPointAnnotationClickListener {
-                        showOwnBookingInfoDialog(bookingID)
+                        showOwnBookingInfoDialog(bookingID, it)
                         true
                     }
                 )
@@ -694,35 +693,47 @@ class MapPassengerActivity : AppCompatActivity(),
         }
     }
 
-    private fun removeDestinationAnnotationFromMap() {
-        pointAnnotation?.let { pointAnnotationManager.delete(it) }
+    private fun removeDestinationAnnotationFromMap(pointAnnotation: PointAnnotation) {
+        pointAnnotation.let {
+            destinationAnnotationManager.delete(it)
+            pointAnnotationList.remove(it)
+        }
     }
 
     //driver pinged location
-    private fun addDriverPingedLocationToMap(
+    private fun addDriverPingedLocationAnnotationToMap(
         driverLongitude: Double,
         driverLatitude: Double,
     ) {
+
+        updateDriverPingAnnotationFromMap()
+
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
             R.drawable.car_100_2
         ).let {
             val annotationApi = binding.mapView.annotations
-            pointAnnotationManager = annotationApi.createPointAnnotationManager()
+            driverPointAnnotationManager = annotationApi.createPointAnnotationManager()
             val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
                 .withPoint(Point.fromLngLat(driverLongitude, driverLatitude))
                 .withIconImage(it)
 
-            pointAnnotation = pointAnnotationManager.create(pointAnnotationOptions)
+            driverPointAnnotation = driverPointAnnotationManager.create(pointAnnotationOptions)
+            pointAnnotationList.add(driverPointAnnotation)
 
-            pointAnnotationManager.apply {
+            driverPointAnnotationManager.apply {
                 addClickListener {
-
                     showToast("Your Driver's current location", 1)
-
                     true
                 }
             }
+        }
+    }
+
+    private fun updateDriverPingAnnotationFromMap() {
+        driverPointAnnotation.let {
+            driverPointAnnotationManager.delete(it)
+            pointAnnotationList.remove(it)
         }
     }
 
@@ -785,59 +796,32 @@ class MapPassengerActivity : AppCompatActivity(),
     }
 
     override fun onBookingConfirmed(isBookingConfirmed: Boolean) {
-        if (isBookingConfirmed) {
+        if (isBookingConfirmed)
             hasActiveBooking = true
 
-
-        }
+        mapboxMap.triggerRepaint()
     }
 
+    //TODO: bugged
     private fun setupGesturesListener() {
         binding.mapView.gestures.addOnMoveListener(onMoveListener)
 
         binding.mapView.gestures.addOnMapLongClickListener {
-
             if (hasActiveBooking) {
-
                 showHasActiveBookingDialog()
+
+                Handler().postDelayed({
+                   closeHasActiveBookingDialog()
+                }, 2000)
 
                 false
             } else {
-
                 showConfirmBookingBottomSheet(it)
 
                 true
             }
         }
     }
-
-//    @SuppressLint("SetTextI18n")
-//    override fun onMapClick(point: Point): Boolean {
-//
-//        Log.d(TAG, "onMapClick: $hasActiveBooking")
-//        showConfirmBookingBottomSheet(point)
-//
-//        return true
-//    }
-//
-//    override fun onMapLongClick(point: Point): Boolean {
-//
-//        Log.d(TAG, "onMapLongClick: $hasActiveBooking")
-//        showConfirmBookingBottomSheet(point)
-//
-//        return true
-//
-////        return if (hasActiveBooking) {
-////
-////            showHasActiveBookingDialog()
-////            true
-////        } else {
-////            showConfirmBookingBottomSheet(point)
-////
-////            false
-////        }
-//
-//    }
 
     private fun onCameraTrackingDismissed() {
         binding.mapView.location
@@ -891,7 +875,6 @@ class MapPassengerActivity : AppCompatActivity(),
                                 } else if (passengerBookingData.bookingStatus == "Driver on the way"
                                     && passengerBookingData.passengerUserID == userID
                                 ) {
-
                                     hasActiveBooking = true
 
                                     binding.searchDestinationLayout.visibility = View.GONE
@@ -906,7 +889,10 @@ class MapPassengerActivity : AppCompatActivity(),
                                         passengerBookingData.destinationLongitude
                                     val getBookingID = passengerBookingData.bookingID
 
-                                    addDriverPingedLocationToMap(driverLongitude, driverLatitude)
+                                    addDriverPingedLocationAnnotationToMap(
+                                        driverLongitude,
+                                        driverLatitude
+                                    )
 
                                     addDestinationAnnotationToMap(
                                         destinationLongitude,
@@ -916,7 +902,6 @@ class MapPassengerActivity : AppCompatActivity(),
                                 } else if (passengerBookingData.bookingStatus == "Passenger Onboard"
                                     && passengerBookingData.passengerUserID == userID
                                 ) {
-
                                     hasActiveBooking = true
 
                                     binding.searchDestinationLayout.visibility = View.GONE
@@ -954,23 +939,6 @@ class MapPassengerActivity : AppCompatActivity(),
         }
     }
 
-    private fun getCurrentTimeAndDate(): String {
-        val calendar = Calendar.getInstance() // Get a Calendar instance
-        val year = calendar.get(Calendar.YEAR)
-        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
-        val day = calendar.get(Calendar.DAY_OF_MONTH)
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        val second = calendar.get(Calendar.SECOND)
-
-        return "$month-$day-$year $hour:$minute:$second"
-    }
-
-    private fun generateRandomBookingID(): String {
-        val uuid = UUID.randomUUID()
-        return uuid.toString()
-    }
-
     private fun checkIfUserIsVerified() {
         if (FirebaseMain.getUser() != null) {
             documentReference = FirebaseMain.getFireStoreInstance()
@@ -1003,6 +971,23 @@ class MapPassengerActivity : AppCompatActivity(),
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun getCurrentTimeAndDate(): String {
+        val calendar = Calendar.getInstance() // Get a Calendar instance
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+
+        return "$month-$day-$year $hour:$minute:$second"
+    }
+
+    private fun generateRandomBookingID(): String {
+        val uuid = UUID.randomUUID()
+        return uuid.toString()
     }
 
     private fun retrieveAndStoreFCMToken(point: Point) {
@@ -1216,8 +1201,10 @@ class MapPassengerActivity : AppCompatActivity(),
         }
     }
 
-    private fun showOwnBookingInfoDialog(bookingID: String) {
-
+    private fun showOwnBookingInfoDialog(
+        bookingID: String,
+        pointAnnotation: PointAnnotation
+    ) {
         val binding2: DialogPassengerOwnBookingInfoBinding =
             DialogPassengerOwnBookingInfoBinding.inflate(layoutInflater)
         builder = AlertDialog.Builder(this)
@@ -1239,7 +1226,6 @@ class MapPassengerActivity : AppCompatActivity(),
                             if (passengerBookingModel.bookingID == bookingID &&
                                 passengerBookingModel.passengerUserID == FirebaseMain.getUser().uid
                             ) {
-
                                 val destination = passengerBookingModel.destination
                                 val pickupLocation = passengerBookingModel.pickupLocation
 
@@ -1281,12 +1267,17 @@ class MapPassengerActivity : AppCompatActivity(),
                 bookingReference.child(bookingID)
                     .updateChildren(updateBookingStatus)
                     .addOnSuccessListener {
+
                         showToast("Booking cancelled", 1)
+
+                        binding.mapView.invalidate()
+                        mapboxMap.triggerRepaint()
 
                         hasActiveBooking = false
                         loadBookingsToMapFromDatabase()
-                        removeDestinationAnnotationFromMap()
+                        removeDestinationAnnotationFromMap(pointAnnotation)
                         closeOwnBookingInfoDialog()
+
                     }
                     .addOnFailureListener {
                         showToast("Booking failed to cancel", 1)

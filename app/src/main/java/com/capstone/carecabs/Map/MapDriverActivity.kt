@@ -1176,6 +1176,9 @@ class MapDriverActivity : AppCompatActivity(),
             }
         }
     }
+    private fun removeDestinationAnnotationFromMap() {
+        pointAnnotation?.let { pointAnnotationManager.delete(it) }
+    }
 
     private fun removeAllAnnotationsExceptLastInteracted() {
         val lastInteracted = lastInteractedAnnotationOptions
@@ -1586,6 +1589,7 @@ class MapDriverActivity : AppCompatActivity(),
                         .addOnSuccessListener {
 
                             showPassengerTransportedSuccessDialog()
+                            removeDestinationAnnotationFromMap()
                         }
                         .addOnFailureListener {
                             Log.e(TAG, "setTripAsComplete - driverReference: " + it.message)

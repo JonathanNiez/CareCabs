@@ -104,66 +104,6 @@
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
-						android:id="@+id/selfieLayout"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:gravity="center"
-						android:orientation="vertical">
-
-						<FrameLayout
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_margin="5dp"
-							android:gravity="center"
-							android:orientation="vertical">
-
-							<androidx.camera.view.PreviewView
-								android:id="@+id/facePreviewView"
-								android:layout_width="300dp"
-								android:layout_height="300dp"
-								android:backgroundTint="@color/light_gray" />
-
-							<androidx.appcompat.widget.AppCompatImageView
-								android:id="@+id/switchCameraBtn"
-								android:layout_width="wrap_content"
-								android:layout_height="wrap_content"
-								android:layout_gravity="end|bottom"
-								app:srcCompat="@drawable/switch_camera_64" />
-
-							<androidx.appcompat.widget.AppCompatImageView
-								android:id="@+id/facePreviewImageView"
-								android:layout_width="70dp"
-								android:layout_height="70dp"
-								android:backgroundTint="@color/white"
-								android:elevation="5dp" />
-
-						</FrameLayout>
-
-						<androidx.appcompat.widget.AppCompatTextView
-							android:id="@+id/alignYourTextView"
-							style="@style/TextColor"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_margin="5dp"
-							android:fontFamily="@font/gabarito_semibold"
-							android:text="Align your face"
-							android:textAlignment="center"
-							android:textSize="20sp" />
-
-						<androidx.appcompat.widget.AppCompatTextView
-							android:id="@+id/faceRecognitionStatusTextView"
-							style="@style/TextColor"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content"
-							android:layout_margin="5dp"
-							android:fontFamily="@font/gabarito_semibold"
-							android:text="Face recognition status"
-							android:textAlignment="center"
-							android:textSize="20sp" />
-
-					</androidx.appcompat.widget.LinearLayoutCompat>
-
-					<androidx.appcompat.widget.LinearLayoutCompat
 						android:id="@+id/idAlreadyScannedLayout"
 						android:layout_width="match_parent"
 						android:layout_height="300dp"
@@ -223,6 +163,78 @@
 
 			</androidx.cardview.widget.CardView>
 
+			<androidx.cardview.widget.CardView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_margin="10dp"
+				app:cardCornerRadius="10dp"
+				app:cardElevation="5dp">
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:id="@+id/faceRecognitionLayout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="vertical">
+
+					<FrameLayout
+						android:layout_width="match_parent"
+						android:layout_height="350dp"
+						android:gravity="center"
+						android:orientation="vertical">
+
+						<androidx.camera.view.PreviewView
+							android:id="@+id/facePreviewView"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:backgroundTint="@color/light_gray" />
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/switchCameraBtn"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_gravity="end|bottom"
+							android:layout_margin="5dp"
+							app:srcCompat="@drawable/switch_camera_64" />
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/facePreviewImageView"
+							android:layout_width="70dp"
+							android:layout_height="70dp"
+							android:layout_gravity="start|bottom"
+							android:layout_margin="5dp"
+							app:srcCompat="@color/white"
+							android:scaleType="centerCrop" />
+
+					</FrameLayout>
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/alignYourTextView"
+						style="@style/TextColor"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Align your face"
+						android:textAlignment="center"
+						android:textSize="20sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/faceRecognitionStatusTextView"
+						style="@style/TextColor"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:fontFamily="@font/gabarito_semibold"
+						android:text="Face recognition status"
+						android:textAlignment="center"
+						android:textSize="20sp" />
+
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+			</androidx.cardview.widget.CardView>
+
+
 			<!--			<androidx.appcompat.widget.AppCompatTextView-->
 			<!--				android:id="@+id/resultTextView"-->
 			<!--				android:layout_width="wrap_content"-->
@@ -248,6 +260,40 @@
 			<!--				android:textAlignment="center"-->
 			<!--				android:textColor="@color/black"-->
 			<!--				android:textSize="20sp" />-->
+
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/addFaceBtn"
+				style="@style/SecondaryButton"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="50dp"
+				android:layout_marginBottom="10dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
+				android:text="Add Face"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/tryAgainBtn"
+				style="@style/SecondaryButton"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="10dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
+				android:text="Try Again"
+				android:textSize="17sp" />
+
+			<androidx.appcompat.widget.AppCompatButton
+				android:id="@+id/matchBtn"
+				style="@style/SecondaryButton"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="100dp"
+				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
+				android:text="Match"
+				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/verifiedText"
@@ -281,11 +327,12 @@
 			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/doneBtn"
 				style="@style/PrimaryButton"
-				android:layout_width="130dp"
-				android:layout_height="50dp"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
 				android:layout_marginTop="10dp"
-				android:layout_marginBottom="50dp"
+				android:layout_marginBottom="100dp"
 				android:fontFamily="@font/gabarito_semibold"
+				android:padding="10dp"
 				android:text="DONE"
 				android:textSize="17sp" />
 
@@ -294,7 +341,7 @@
 				style="@style/SecondaryButton"
 				android:layout_width="150dp"
 				android:layout_height="50dp"
-				android:layout_marginTop="10dp"
+				android:layout_marginTop="50dp"
 				android:layout_marginBottom="100dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="Scan Later"

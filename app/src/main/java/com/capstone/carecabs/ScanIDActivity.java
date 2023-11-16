@@ -3,8 +3,10 @@ package com.capstone.carecabs;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
@@ -39,12 +41,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
-import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
@@ -56,12 +56,13 @@ import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.capstone.carecabs.ml.IdScanV2;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.face.Face;
 import com.google.mlkit.vision.face.FaceDetection;
@@ -97,8 +98,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private final String TAG = "ScanID";
 	private ActivityScanIdBinding binding;
 	private String idPictureURL = "none";
-	private float textSizeSP;
-	private float textHeaderSizeSP;
 	private Uri idPictureUri;
 	private String getUserType;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
@@ -124,19 +123,21 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private ProcessCameraProvider cameraProvider;
 	int CAMERA_FACING = CameraSelector.LENS_FACING_FRONT; //default front cam
 	private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-	private HashMap<String, SimilarityClassifier.Recognition> registered = new HashMap<>(); //saved Faces
-	boolean start = true, flipX = false;
-	int[] intValues;
-	int inputSize = 112;  //Input size for model
-	float[][] embeddings;
-	float IMAGE_MEAN = 128.0f;
-	float IMAGE_STD = 128.0f;
-	int OUTPUT_SIZE = 192; //Output size of model
+	private HashMap<String, SimilarityClassifier.Recognition> registeredFace = new HashMap<>(); //saved Faces
+	private boolean startFaceDetecting = true, flipX = false,
+			isFaceDetected = false, isFaceMatched = false;
+	private int[] intValues;
+	private float distance = 1.0f;
+	private int inputSize = 112;  //Input size for model
+	private float[][] embeddings;
+	private float IMAGE_MEAN = 128.0f;
+	private float IMAGE_STD = 128.0f;
+	private int OUTPUT_SIZE = 192; //Output size of model
 	private CameraSelector cameraSelector;
 	private Interpreter tfLite;
-	String modelFile = "mobile_face_net.tflite"; //model name
+	private String modelFile = "mobile_face_net.tflite"; //model name
 	private FaceDetector faceDetector;
-	boolean isModelQuantized = false;
+	private boolean isModelQuantized = false;
 
 	@Override
 	protected void onPause() {
@@ -177,42 +178,51 @@ public class ScanIDActivity extends AppCompatActivity implements
 		setContentView(binding.getRoot());
 
 		binding.idAlreadyScannedLayout.setVisibility(View.GONE);
+		binding.faceRecognitionLayout.setVisibility(View.GONE);
 		binding.backFloatingBtn.setVisibility(View.GONE);
 		binding.doneBtn.setVisibility(View.GONE);
 		binding.verifiedText.setVisibility(View.GONE);
+		binding.matchBtn.setVisibility(View.GONE);
+		binding.addFaceBtn.setVisibility(View.GONE);
+		binding.tryAgainBtn.setVisibility(View.GONE);
 
 		FirebaseApp.initializeApp(this);
 
+		registeredFace = readFromSP();
 		checkIfUserIsVerified();
 		checkCameraAndStoragePermission();
 		initializeFaceDetector();
 		getUserSettings();
+
+		SharedPreferences sharedPref = getSharedPreferences("Distance", Context.MODE_PRIVATE);
+		distance = sharedPref.getFloat("distance", 1.00f);
 
 		if (getIntent() != null) {
 			intent = getIntent();
 			getUserType = intent.getStringExtra("userType");
 			String activityData = intent.getStringExtra("activityData");
 
-			if (getUserType != null && activityData != null) {
+			if (getUserType != null) {
 
-				if (activityData.equals("fromMyProfile")) {
-					binding.backFloatingBtn.setOnClickListener(v -> {
-						if (isUserVerified) {
-							backToMyProfile();
-						} else {
-							showCancelScanIDDialog();
-						}
-					});
-				} else {
-					binding.backFloatingBtn.setOnClickListener(v -> {
-						if (isUserVerified) {
-							goToMainActivity();
-						} else {
-							showCancelScanIDDialog();
-						}
-					});
+				if (activityData != null) {
+					if (activityData.equals("fromMyProfile")) {
+						binding.backFloatingBtn.setOnClickListener(v -> {
+							if (isUserVerified) {
+								backToMyProfile();
+							} else {
+								showCancelScanIDDialog();
+							}
+						});
+					} else {
+						binding.backFloatingBtn.setOnClickListener(v -> {
+							if (isUserVerified) {
+								goToMainActivity();
+							} else {
+								showCancelScanIDDialog();
+							}
+						});
+					}
 				}
-
 
 				switch (getUserType) {
 					case "Driver":
@@ -246,6 +256,15 @@ public class ScanIDActivity extends AppCompatActivity implements
 			bindCamera();
 		});
 
+		binding.addFaceBtn.setOnClickListener(v -> getDetectedFace());
+
+		binding.tryAgainBtn.setOnClickListener(v -> {
+			binding.facePreviewImageView.setImageResource(R.color.white);
+			binding.faceRecognitionStatusTextView.setText("Align your Face");
+			clearRegisteredFace();
+			getDetectedFace();
+		});
+
 		binding.scanLaterBtn.setOnClickListener(v -> updateUserToNotVerified());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
@@ -255,7 +274,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 				updateVerificationStatus(idPictureUri);
 			}
 		});
-
 
 		binding.idScanLayout.setOnClickListener(v -> {
 			ImagePicker.with(ScanIDActivity.this)
@@ -380,6 +398,9 @@ public class ScanIDActivity extends AppCompatActivity implements
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
 				binding.scanLaterBtn.setVisibility(View.GONE);
+				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
+				binding.addFaceBtn.setVisibility(View.VISIBLE);
+				binding.tryAgainBtn.setVisibility(View.VISIBLE);
 
 				break;
 			case "Senior Citizen ID":
@@ -407,6 +428,9 @@ public class ScanIDActivity extends AppCompatActivity implements
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
 				binding.scanLaterBtn.setVisibility(View.GONE);
+				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
+				binding.addFaceBtn.setVisibility(View.VISIBLE);
+				binding.tryAgainBtn.setVisibility(View.VISIBLE);
 
 				break;
 		}
@@ -427,10 +451,14 @@ public class ScanIDActivity extends AppCompatActivity implements
 				binding.doneBtn.setVisibility(View.VISIBLE);
 				binding.verifiedText.setVisibility(View.VISIBLE);
 				binding.scanLaterBtn.setVisibility(View.GONE);
+				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
+				binding.addFaceBtn.setVisibility(View.VISIBLE);
+				binding.tryAgainBtn.setVisibility(View.VISIBLE);
 
 				break;
 		}
 	}
+
 	private void initializeFaceDetector() {
 		//Load model
 		try {
@@ -447,6 +475,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		bindCamera();
 	}
+
 	private MappedByteBuffer loadModelFile(Activity activity, String MODEL_FILE) throws IOException {
 		AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(MODEL_FILE);
 		FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -470,6 +499,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}, ContextCompat.getMainExecutor(this));
 	}
 
+	@OptIn(markerClass = ExperimentalGetImage.class)
 	void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
 		Preview preview = new Preview.Builder()
 				.build();
@@ -486,39 +516,33 @@ public class ScanIDActivity extends AppCompatActivity implements
 						.build();
 
 		Executor executor = Executors.newSingleThreadExecutor();
-		imageAnalysis.setAnalyzer(executor, new ImageAnalysis.Analyzer() {
-			@OptIn(markerClass = ExperimentalGetImage.class)
-			@Override
-			public void analyze(@NonNull ImageProxy imageProxy) {
-				try {
-					Thread.sleep(0);  //Camera preview refreshed every 10 millisec(adjust as required)
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				InputImage image = null;
+		imageAnalysis.setAnalyzer(executor, imageProxy -> {
+			try {
+				Thread.sleep(0);  //Camera preview refreshed every 10 millisec(adjust as required)
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			InputImage image = null;
 
-				@SuppressLint("UnsafeExperimentalUsageError")
-				// Camera Feed-->Analyzer-->ImageProxy-->mediaImage-->InputImage(needed for ML kit face detection)
+			@SuppressLint("UnsafeExperimentalUsageError")
+			// Camera Feed-->Analyzer-->ImageProxy-->mediaImage-->InputImage(needed for ML kit face detection)
 
-				Image mediaImage = imageProxy.getImage();
+			Image mediaImage = imageProxy.getImage();
 
-				if (mediaImage != null) {
-					image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-//                    System.out.println("Rotation "+imageProxy.getImageInfo().getRotationDegrees());
-				}
+			if (mediaImage != null) {
+				image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+				Log.i(TAG, "bindPreview - Rotation: " + imageProxy.getImageInfo().getRotationDegrees());
 
-//                System.out.println("ANALYSIS");
-
-//                Process acquired image to detect faces
+				//Process acquired image to detect faces
 				@SuppressLint("SetTextI18n") Task<List<Face>> result =
-
 						faceDetector.process(image)
 								.addOnSuccessListener(
 										faces -> {
 											if (faces.size() != 0) {
 
+												isFaceDetected = true;
 												Face face = faces.get(0); //Get first face from detected faces
-//                                                    System.out.println(face);
+												Log.i(TAG, "bindPreview: " + face.toString());
 
 												//mediaImage to Bitmap
 												Bitmap frame_bmp = toBitmap(mediaImage);
@@ -527,7 +551,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 												//Adjust orientation of Face
 												Bitmap frame_bmp1 = rotateBitmap(frame_bmp, rot, false, false);
-
 
 												//Get bounding box of face
 												RectF boundingBox = new RectF(face.getBoundingBox());
@@ -540,124 +563,190 @@ public class ScanIDActivity extends AppCompatActivity implements
 												//Scale the acquired Face to 112*112 which is required input for model
 												Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
 
-												if (start)
-													detectFace(scaled); //Send scaled bitmap to create face embeddings.
-//                                                    System.out.println(boundingBox);
+												if (startFaceDetecting) {
+													recognizeImage(scaled);
+												}
+
+//												Log.i(TAG, "bindPreview: " + boundingBox);
 
 											} else {
-												if (registered.isEmpty())
-													binding.faceRecognitionStatusTextView.setText("Yeah");
-												else
+												isFaceDetected = false;
+												if (registeredFace.isEmpty()) {
+													binding.faceRecognitionStatusTextView.setText("Register a Face first");
+
+												} else {
 													binding.faceRecognitionStatusTextView.setText("No Face Detected");
+												}
 											}
 
 										})
 								.addOnFailureListener(
 										e -> {
-											// Task failed with an exception
-											// ...
+											Log.e(TAG, "bindPreview: " + e.getMessage());
 										})
-								.addOnCompleteListener(new OnCompleteListener<List<Face>>() {
-									@Override
-									public void onComplete(@NonNull Task<List<Face>> task) {
+								.addOnCompleteListener(task -> {
 
-										imageProxy.close(); //v.important to acquire next frame for analysis
-									}
+									imageProxy.close(); //v.important to acquire next frame for analysis
 								});
 			}
 		});
 
-		cameraProvider.bindToLifecycle((LifecycleOwner) this, cameraSelector, imageAnalysis, preview);
+		cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
 	}
 
-	public void detectFace(final Bitmap bitmap) {
+	//addFace
+	private void getDetectedFace() {
 
-		// set Face to Preview
-		binding.facePreviewImageView.setImageBitmap(bitmap);
+		if (isFaceDetected) {
+			startFaceDetecting = true;
+			showToast("Face Registered", 0);
+			SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+					"0", "", -1f);
+			result.setExtra(embeddings);
 
-		//Create ByteBuffer to store normalized image
+			registeredFace.put("registeredFace", result);
+		} else
+			startFaceDetecting = true;
+	}
 
-		ByteBuffer imgData = ByteBuffer.allocateDirect(inputSize * inputSize * 3 * 4);
+	@SuppressLint("SetTextI18n")
+	public void recognizeImage(final Bitmap bitmap) {
 
-		imgData.order(ByteOrder.nativeOrder());
+		if (isFaceDetected) {
 
-		intValues = new int[inputSize * inputSize];
+			// set Face to Preview
+//			binding.matchBtn.setVisibility(View.VISIBLE);
+			binding.facePreviewImageView.setImageBitmap(bitmap);
 
-		//get pixel values from Bitmap to normalize
-		bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+			//Create ByteBuffer to store normalized image
+			ByteBuffer imgData = ByteBuffer.allocateDirect(inputSize * inputSize * 3 * 4);
+			imgData.order(ByteOrder.nativeOrder());
+			intValues = new int[inputSize * inputSize];
 
-		imgData.rewind();
+			//get pixel values from Bitmap to normalize
+			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+			imgData.rewind();
 
-		for (int i = 0; i < inputSize; ++i) {
-			for (int j = 0; j < inputSize; ++j) {
-				int pixelValue = intValues[i * inputSize + j];
-				if (isModelQuantized) {
-					// Quantized model
-					imgData.put((byte) ((pixelValue >> 16) & 0xFF));
-					imgData.put((byte) ((pixelValue >> 8) & 0xFF));
-					imgData.put((byte) (pixelValue & 0xFF));
-				} else { // Float model
-					imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-					imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-					imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+			for (int i = 0; i < inputSize; ++i) {
+				for (int j = 0; j < inputSize; ++j) {
+					int pixelValue = intValues[i * inputSize + j];
+					if (isModelQuantized) {
+						// Quantized model
+						imgData.put((byte) ((pixelValue >> 16) & 0xFF));
+						imgData.put((byte) ((pixelValue >> 8) & 0xFF));
+						imgData.put((byte) (pixelValue & 0xFF));
+					} else { // Float model
+						imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+						imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+						imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
 
+					}
 				}
 			}
-		}
 
-		//imgData is input to our model
-		Object[] inputArray = {imgData};
+			//imgData is input to our model
+			Object[] inputArray = {imgData};
+			Map<Integer, Object> outputMap = new HashMap<>();
 
-		Map<Integer, Object> outputMap = new HashMap<>();
+			embeddings = new float[1][OUTPUT_SIZE]; //output of model will be stored in this variable
+			outputMap.put(0, embeddings);
 
-		embeddings = new float[1][OUTPUT_SIZE]; //output of model will be stored in this variable
+			tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
 
-		outputMap.put(0, embeddings);
+			float distance_local;
+			String id = "0";
+			String label = "?";
 
-		tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
+			//Compare new face with saved Faces.
+			if (registeredFace.size() > 0) {
 
-		float distance_local = Float.MAX_VALUE;
-		String id = "0";
-		String label = "?";
+				final List<Pair<String, Float>> nearest = findNearest(embeddings[0]);//Find 2 closest matching face
 
-		//Compare new face with saved Faces.
-		if (registered.size() > 0) {
+				if (nearest.get(0) != null) {
 
-			final List<Pair<String, Float>> nearest = findNearest(embeddings[0]);//Find 2 closest matching face
+					final String name = nearest.get(0).first; //get name and distance of closest matching face
+					// label = name;
+					distance_local = nearest.get(0).second;
+					if (distance_local < distance) {
+						if (name.equals("registeredFace"))
+							binding.faceRecognitionStatusTextView.setText("Face Matched");
 
-			if (nearest.get(0) != null) {
+						isFaceMatched = true;
 
-				final String name = nearest.get(0).first; //get name and distance of closest matching face
-				// label = name;
-				distance_local = nearest.get(0).second;
-//                if (developerMode) {
-//                    if (distance_local < distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-//                        reco_name.setText("Nearest: " + name + "\nDist: " + String.format("%.3f", distance_local) + "\n2nd Nearest: " + nearest.get(1).first + "\nDist: " + String.format("%.3f", nearest.get(1).second));
-//                    else
-//                        reco_name.setText("Unknown " + "\nDist: " + String.format("%.3f", distance_local) + "\nNearest: " + name + "\nDist: " + String.format("%.3f", distance_local) + "\n2nd Nearest: " + nearest.get(1).first + "\nDist: " + String.format("%.3f", nearest.get(1).second));
-//
-////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-//                } else {
-//                    if (distance_local < distance) //If distance between Closest found face is more than 1.000 ,then output UNKNOWN face.
-//                        reco_name.setText(name);
-//                    else
-//                        reco_name.setText("Unknown");
-////                    System.out.println("nearest: " + name + " - distance: " + distance_local);
-//                }
+					} else {
+						binding.faceRecognitionStatusTextView.setText("Unknown");
+						isFaceMatched = false;
+					}
+
+					Log.i(TAG, "recognizeImage - nearest: " + name + " - distance: " + distance_local);
+				}
 			}
+
+			final int numDetectionsOutput = 1;
+			final ArrayList<SimilarityClassifier.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
+			SimilarityClassifier.Recognition rec = new SimilarityClassifier.Recognition(
+					id,
+					label,
+					distance);
+
+			recognitions.add(rec);
 		}
-
-
-//            final int numDetectionsOutput = 1;
-//            final ArrayList<SimilarityClassifier.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
-//            SimilarityClassifier.Recognition rec = new SimilarityClassifier.Recognition(
-//                    id,
-//                    label,
-//                    distance);
-//
-//            recognitions.add( rec );
 
 	}
+
+	private void clearRegisteredFace() {
+		isFaceDetected = false;
+		registeredFace.clear();
+		insertToSP(registeredFace, 1);
+	}
+
+	private void insertToSP(HashMap<String, SimilarityClassifier.Recognition> jsonMap, int mode) {
+		if (mode == 1)  //mode: 0:save all, 1:clear all, 2:update all
+			jsonMap.clear();
+		else if (mode == 0)
+			jsonMap.putAll(readFromSP());
+		String jsonString = new Gson().toJson(jsonMap);
+//        for (Map.Entry<String, SimilarityClassifier.Recognition> entry : jsonMap.entrySet())
+//        {
+//            System.out.println("Entry Input "+entry.getKey()+" "+  entry.getValue().getExtra());
+//        }
+		SharedPreferences sharedPreferences = getSharedPreferences("HashMap", MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putString("map", jsonString);
+		//System.out.println("Input josn"+jsonString.toString());
+		editor.apply();
+		Toast.makeText(this, "Recognitions Saved", Toast.LENGTH_SHORT).show();
+	}
+
+	private HashMap<String, SimilarityClassifier.Recognition> readFromSP() {
+		SharedPreferences sharedPreferences = getSharedPreferences("HashMap", MODE_PRIVATE);
+		String defValue = new Gson().toJson(new HashMap<String, SimilarityClassifier.Recognition>());
+		String json = sharedPreferences.getString("map", defValue);
+		// System.out.println("Output json"+json.toString());
+
+		TypeToken<HashMap<String, SimilarityClassifier.Recognition>> token = new TypeToken<HashMap<String, SimilarityClassifier.Recognition>>() {
+		};
+		HashMap<String, SimilarityClassifier.Recognition> retrievedMap = new Gson().fromJson(json, token.getType());
+		// System.out.println("Output map"+retrievedMap.toString());
+
+		//During type conversion and save/load procedure,format changes(eg float converted to double).
+		//So embeddings need to be extracted from it in required format(eg.double to float).
+		for (Map.Entry<String, SimilarityClassifier.Recognition> entry : retrievedMap.entrySet()) {
+			float[][] output = new float[1][OUTPUT_SIZE];
+			ArrayList arrayList = (ArrayList) entry.getValue().getExtra();
+			arrayList = (ArrayList) arrayList.get(0);
+			for (int counter = 0; counter < arrayList.size(); counter++) {
+				output[0][counter] = ((Double) arrayList.get(counter)).floatValue();
+			}
+			entry.getValue().setExtra(output);
+
+			Log.i(TAG, "readFromSP - Entry output: " + entry.getKey() + " " + entry.getValue().getExtra());
+		}
+		Log.i(TAG, "readFromSP: Recognitions Loaded");
+		return retrievedMap;
+	}
+
+	@SuppressLint("SetTextI18n")
 
 	public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
 		int width = bm.getWidth();
@@ -679,19 +768,19 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private static Bitmap getCropBitmapByCPU(Bitmap source, RectF cropRectF) {
 		Bitmap resultBitmap = Bitmap.createBitmap((int) cropRectF.width(),
 				(int) cropRectF.height(), Bitmap.Config.ARGB_8888);
-		Canvas cavas = new Canvas(resultBitmap);
+		Canvas canvas = new Canvas(resultBitmap);
 
 		// draw background
 		Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
 		paint.setColor(Color.WHITE);
-		cavas.drawRect(
+		canvas.drawRect(
 				new RectF(0, 0, cropRectF.width(), cropRectF.height()),
 				paint);
 
 		Matrix matrix = new Matrix();
 		matrix.postTranslate(-cropRectF.left, -cropRectF.top);
 
-		cavas.drawBitmap(source, matrix, paint);
+		canvas.drawBitmap(source, matrix, paint);
 
 		if (source != null && !source.isRecycled()) {
 			source.recycle();
@@ -723,7 +812,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		List<Pair<String, Float>> neighbour_list = new ArrayList<Pair<String, Float>>();
 		Pair<String, Float> ret = null; //to get closest match
 		Pair<String, Float> prev_ret = null; //to get second closest match
-		for (Map.Entry<String, SimilarityClassifier.Recognition> entry : registered.entrySet()) {
+		for (Map.Entry<String, SimilarityClassifier.Recognition> entry : registeredFace.entrySet()) {
 
 			final String name = entry.getKey();
 			final float[] knownEmb = ((float[][]) entry.getValue().getExtra())[0];
@@ -808,7 +897,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		// other optimizations could check if (pixelStride == 1) or (pixelStride == 2),
 		// but performance gain would be less significant
-
 		for (int row = 0; row < height / 2; row++) {
 			for (int col = 0; col < width / 2; col++) {
 				int vuPos = col * pixelStride + row * rowStride;
@@ -841,9 +929,14 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private Bitmap getBitmapFromUri(Uri uri) throws IOException {
 		ParcelFileDescriptor parcelFileDescriptor =
 				getContentResolver().openFileDescriptor(uri, "r");
-		FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+		FileDescriptor fileDescriptor = null;
+		if (parcelFileDescriptor != null) {
+			fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+		}
 		Bitmap image = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-		parcelFileDescriptor.close();
+		if (parcelFileDescriptor != null) {
+			parcelFileDescriptor.close();
+		}
 		return image;
 	}
 
@@ -931,7 +1024,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot.exists()) {
-							Boolean isVerified = documentSnapshot.getBoolean("isVerified");
+							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 							getUserType = documentSnapshot.getString("userType");
 
 							if (isVerified) {
@@ -1083,6 +1176,10 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
+	private void showToast(String message, int duration) {
+		Toast.makeText(this, message, duration).show();
+	}
+
 	private void getUserSettings() {
 		setFontSize(fontSize);
 	}
@@ -1096,6 +1193,8 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;

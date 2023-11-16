@@ -193,7 +193,6 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				}
 
 				binding.confirmButton.setOnClickListener(v -> {
-
 					if (mBookingConfirmationListener != null) {
 						mBookingConfirmationListener.onBookingConfirmed(true);
 						storeCoordinatesInFireStore(destinationPoint);

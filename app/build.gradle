@@ -83,7 +83,8 @@ dependencies {
     implementation "com.mapbox.search:mapbox-search-android-ui:1.0.0-rc.6"
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation 'com.mapbox.maps:android:10.16.0'
-    implementation('com.mapbox.maps:android:10.16.0') { exclude group: 'group_name', module: 'module_name' }
+    implementation('com.mapbox.maps:android:10.16.0')
+            { exclude group: 'group_name', module: 'module_name' }
     implementation "com.mapbox.navigation:android:2.10.3"
     implementation "com.mapbox.navigation:ui-dropin:2.10.3"
 
@@ -96,6 +97,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:24.9.1'
     implementation 'com.google.firebase:firebase-messaging:23.3.1'
 
+    //others
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
     implementation 'org.mindrot:jbcrypt:0.4'
