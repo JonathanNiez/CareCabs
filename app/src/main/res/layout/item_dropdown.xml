@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:ellipsize="end"
+	android:fontFamily="@font/gabarito_medium"
+	android:maxLines="1"
+	android:padding="10dp"
+	android:textColor="@color/black"
+	android:textSize="20sp">
+
+
+</androidx.appcompat.widget.AppCompatTextView>

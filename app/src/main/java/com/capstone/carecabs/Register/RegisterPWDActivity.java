@@ -63,6 +63,18 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private final String[] disabilityItem = {
+			"Communication Disability",
+			"Vision Impairment",
+			"Deaf or hard of hearing",
+			"Mental health conditions",
+			"Intellectual disability",
+			"Acquired brain injury",
+			"Autism spectrum disorder",
+			"Physical disability"
+	};
+
+	private final String[] sexItem = {"Male", "Female"};
 	private String sex, birthDate, month, disability;
 	private int age;
 	private Uri profilePictureUri;
@@ -133,9 +145,9 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 					voiceAssistant.speak("Birthdate"));
 			binding.ageEditText.setOnFocusChangeListener((v, hasFocus) ->
 					voiceAssistant.speak("Age"));
-			binding.spinnerSex.setOnFocusChangeListener((v, hasFocus) ->
+			binding.sexDropDownMenu.setOnFocusChangeListener((v, hasFocus) ->
 					voiceAssistant.speak("Sex"));
-			binding.spinnerDisability.setOnFocusChangeListener((v, hasFocus) ->
+			binding.disabilityDropDownMenu.setOnFocusChangeListener((v, hasFocus) ->
 					voiceAssistant.speak("Disability"));
 		}
 
@@ -155,62 +167,17 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this,
-				R.array.sex_options,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerSex.setAdapter(adapter);
-		binding.spinnerSex.setSelection(0);
-		binding.spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					binding.spinnerSex.setSelection(0);
-				} else {
-					sex = parent.getItemAtPosition(position).toString();
-				}
-			}
+		ArrayAdapter<String> disabilityAdapter =
+				new ArrayAdapter<>(this, R.layout.item_dropdown, disabilityItem);
+		binding.disabilityDropDownMenu.setAdapter(disabilityAdapter);
+		binding.disabilityDropDownMenu.setOnItemClickListener((parent, view, position, id) ->
+				disability = parent.getItemAtPosition(position).toString());
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerSex.setSelection(0);
-			}
-		});
-
-		ArrayAdapter<CharSequence> disabilityAdapter = ArrayAdapter.createFromResource(
-				this,
-				R.array.disability_type,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerDisability.setAdapter(disabilityAdapter);
-		binding.spinnerDisability.setSelection(0);
-		binding.spinnerDisability.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					binding.spinnerDisability.setSelection(0);
-				} else {
-					disability = parent.getItemAtPosition(position).toString();
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerDisability.setSelection(0);
-			}
-		});
-
-		if (voiceAssistantState.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(this);
-
-			binding.firstnameEditText.setOnFocusChangeListener((v, hasFocus) ->
-					voiceAssistant.speak("Firstname"));
-			binding.lastnameEditText.setOnFocusChangeListener((v, hasFocus) ->
-					voiceAssistant.speak("Lastname"));
-		}
+		ArrayAdapter<String> sexAdapter =
+				new ArrayAdapter<>(this, R.layout.item_dropdown, sexItem);
+		binding.sexDropDownMenu.setAdapter(sexAdapter);
+		binding.sexDropDownMenu.setOnItemClickListener((parent, view, position, id) ->
+				sex = parent.getItemAtPosition(position).toString());
 
 		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
@@ -230,7 +197,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 					|| disability == null) {
 
 				closePleaseWaitDialog();
-				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "Please complete your Info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
 
 			} else {
@@ -268,6 +235,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			binding.birthdateLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
 			binding.ageLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
 			binding.sexLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+			binding.disabilityLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
 
 		} else {
 			textSizeSP = DEFAULT_TEXT_SIZE_SP;
@@ -278,6 +246,8 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			binding.birthdateLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
 			binding.ageLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
 			binding.sexLayout.setHelperTextTextAppearance(R.style.NormalHelperText);
+			binding.disabilityLayout.setHelperTextTextAppearance(R.style.LargeHelperText);
+
 		}
 
 		binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
@@ -287,6 +257,8 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.ageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexDropDownMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.disabilityDropDownMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void showIDScanInfoDialog() {
@@ -749,7 +721,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 
-		if (voiceAssistantState.equals("enabled")){
+		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(this);
 			voiceAssistant.speak("Please wait");
 		}

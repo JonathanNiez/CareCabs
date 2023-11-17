@@ -230,6 +230,7 @@
 								android:background="@drawable/smooth_edit_text_2"
 								android:fontFamily="@font/gabarito_semibold"
 								android:hint="AGE"
+								android:inputType="number"
 								android:maxLength="2"
 								android:textColor="@color/black"
 								android:textSize="17sp" />
@@ -240,44 +241,53 @@
 
 					<com.google.android.material.textfield.TextInputLayout
 						android:id="@+id/disabilityLayout"
+						style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="20dp"
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
+						android:hint="SELECT DISABILITY"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:helperText="*Required"
 						app:helperTextTextColor="@color/red"
 						app:hintTextColor="@color/black">
 
-						<androidx.appcompat.widget.AppCompatSpinner
-							android:id="@+id/spinnerDisability"
+						<AutoCompleteTextView
+							android:id="@+id/disabilityDropDownMenu"
 							android:layout_width="match_parent"
-							android:layout_height="60dp"
-							android:layout_marginBottom="10dp"
+							android:layout_height="wrap_content"
 							android:background="@drawable/smooth_edit_text_2"
-							android:theme="@style/SpinnerTextStyle" />
+							android:fontFamily="@font/gabarito_semibold"
+							android:inputType="none"
+							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
 
 					<com.google.android.material.textfield.TextInputLayout
 						android:id="@+id/sexLayout"
-						android:layout_width="wrap_content"
+						style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_marginBottom="10dp"
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
+						android:hint="SELECT SEX"
 						android:padding="5dp"
+						android:textColorHint="@color/black"
 						app:helperText="*Required"
 						app:helperTextTextColor="@color/red"
 						app:hintTextColor="@color/black">
 
-						<androidx.appcompat.widget.AppCompatSpinner
-							android:id="@+id/spinnerSex"
-							android:layout_width="150dp"
-							android:layout_height="60dp"
+						<AutoCompleteTextView
+							android:id="@+id/sexDropDownMenu"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
 							android:background="@drawable/smooth_edit_text_2"
-							android:theme="@style/SpinnerTextStyle" />
+							android:fontFamily="@font/gabarito_semibold"
+							android:inputType="none"
+							android:textSize="17sp" />
 
 					</com.google.android.material.textfield.TextInputLayout>
 

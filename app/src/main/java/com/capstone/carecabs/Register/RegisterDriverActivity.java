@@ -64,6 +64,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 	private final String userType = "Driver";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
+	private final String[] sexItem = {"Male", "Female"};
 	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
@@ -157,29 +158,11 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 			settingsBottomSheet.show(getSupportFragmentManager(), TAG);
 		});
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this,
-				R.array.sex_options,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		binding.spinnerSex.setAdapter(adapter);
-		binding.spinnerSex.setSelection(0);
-		binding.spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					binding.spinnerSex.setSelection(0);
-				} else {
-					sex = parent.getItemAtPosition(position).toString();
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				binding.spinnerSex.setSelection(0);
-			}
-		});
+		ArrayAdapter<String> sexAdapter =
+				new ArrayAdapter<>(this, R.layout.item_dropdown, sexItem);
+		binding.sexDropDownMenu.setAdapter(sexAdapter);
+		binding.sexDropDownMenu.setOnItemClickListener((parent, view, position, id) ->
+				sex = parent.getItemAtPosition(position).toString());
 
 		binding.birthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
@@ -367,6 +350,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 		binding.lastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.birthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.ageEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.sexDropDownMenu.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView3.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView4.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.textView5.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);

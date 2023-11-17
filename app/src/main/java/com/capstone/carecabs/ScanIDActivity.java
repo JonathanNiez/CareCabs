@@ -1,6 +1,7 @@
 package com.capstone.carecabs;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -24,6 +25,7 @@ import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -31,6 +33,8 @@ import android.util.Pair;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -57,6 +61,8 @@ import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.capstone.carecabs.databinding.DialogNotAnIdBinding;
 import com.capstone.carecabs.ml.IdScanV2;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.FirebaseApp;
@@ -122,7 +128,9 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private VoiceAssistant voiceAssistant;
 	private ProcessCameraProvider cameraProvider;
-	int CAMERA_FACING = CameraSelector.LENS_FACING_FRONT; //default front cam
+	private int CAMERA_FACING = CameraSelector.LENS_FACING_FRONT; //default front cam
+	private int RECOGNIZE_FACE_IN_ID = 69;
+	private int UPLOAD_ID_FROM_GALLERY = 420;
 	private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 	private HashMap<String, SimilarityClassifier.Recognition> registeredFace = new HashMap<>(); //saved Faces
 	private boolean startFaceDetecting = true, flipX = false,
@@ -182,7 +190,8 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.faceRecognitionLayout.setVisibility(View.GONE);
 		binding.backFloatingBtn.setVisibility(View.GONE);
 		binding.doneBtn.setVisibility(View.GONE);
-		binding.verifiedText.setVisibility(View.GONE);
+		binding.idVerifiedLayout.setVisibility(View.GONE);
+		binding.matchYourFaceTextView.setVisibility(View.GONE);
 		binding.matchBtn.setVisibility(View.GONE);
 		binding.addFaceBtn.setVisibility(View.GONE);
 		binding.tryAgainBtn.setVisibility(View.GONE);
@@ -281,7 +290,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 					.crop()                    //Crop image(Optional), Check Customization for more option
 					.compress(1024)            //Final image size will be less than 1 MB(Optional)
 					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start();
+					.start(UPLOAD_ID_FROM_GALLERY);
 		});
 
 		binding.idAlreadyScannedLayout.setOnClickListener(v -> {
@@ -289,7 +298,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 					.crop()                    //Crop image(Optional), Check Customization for more option
 					.compress(1024)            //Final image size will be less than 1 MB(Optional)
 					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
-					.start();
+					.start(UPLOAD_ID_FROM_GALLERY);
 		});
 	}
 
@@ -392,18 +401,21 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
+	@SuppressLint("SetTextI18n")
 	private void handleDriverLicense(String predictedClass) {
 		switch (predictedClass) {
 			case "Driver's License":
 
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.verifiedText.setVisibility(View.VISIBLE);
-				binding.scanLaterBtn.setVisibility(View.GONE);
-				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
-				binding.addFaceBtn.setVisibility(View.VISIBLE);
-				binding.tryAgainBtn.setVisibility(View.VISIBLE);
+				showPleaseWaitDialog();
+				new Handler().postDelayed(() -> {
+					closePleaseWaitDialog();
+					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					showIDVerifiedLayout();
+					binding.idVerifiedTextView.setText("Driver's License Verified");
+				}, 2000);
 
 				break;
+
 			case "Senior Citizen ID":
 			case "PWD ID":
 			case "Not an ID":
@@ -426,12 +438,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 			case "Senior Citizen ID":
 
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.verifiedText.setVisibility(View.VISIBLE);
-				binding.scanLaterBtn.setVisibility(View.GONE);
-				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
-				binding.addFaceBtn.setVisibility(View.VISIBLE);
-				binding.tryAgainBtn.setVisibility(View.VISIBLE);
+				showPleaseWaitDialog();
+				new Handler().postDelayed(() -> {
+					closePleaseWaitDialog();
+					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					showIDVerifiedLayout();
+				}, 2000);
 
 				break;
 		}
@@ -449,12 +461,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 			case "PWD ID":
 
-				binding.doneBtn.setVisibility(View.VISIBLE);
-				binding.verifiedText.setVisibility(View.VISIBLE);
-				binding.scanLaterBtn.setVisibility(View.GONE);
-				binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
-				binding.addFaceBtn.setVisibility(View.VISIBLE);
-				binding.tryAgainBtn.setVisibility(View.VISIBLE);
+				showPleaseWaitDialog();
+				new Handler().postDelayed(() -> {
+					closePleaseWaitDialog();
+					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					showIDVerifiedLayout();
+				}, 2000);
 
 				break;
 		}
@@ -1005,16 +1017,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 	}
 
-	private void resetImageViewAndShowDialog() {
-		binding.idImageView.setImageResource(R.drawable.face_id_100);
-		binding.doneBtn.setVisibility(View.GONE);
-		binding.verifiedText.setVisibility(View.GONE);
-		binding.faceRecognitionLayout.setVisibility(View.GONE);
-
-		idPictureUri = null;
-		showNotAnIDDialog();
-	}
-
 	private void checkIfUserIsVerified() {
 		if (FirebaseMain.getUser() != null) {
 			String userID = FirebaseMain.getUser().getUid();
@@ -1082,6 +1084,60 @@ public class ScanIDActivity extends AppCompatActivity implements
 		intent = new Intent(ScanIDActivity.this, MainActivity.class);
 		startActivity(intent);
 		finish();
+	}
+
+	private void resetImageViewAndShowDialog() {
+		binding.idImageView.setImageResource(R.drawable.face_id_100);
+		binding.doneBtn.setVisibility(View.GONE);
+		binding.idVerifiedLayout.setVisibility(View.GONE);
+		binding.faceRecognitionLayout.setVisibility(View.GONE);
+
+		idPictureUri = null;
+		showNotAnIDDialog();
+	}
+
+	private void showIDVerifiedLayout() {
+		binding.scanLaterBtn.setVisibility(View.GONE);
+
+		binding.doneBtn.setVisibility(View.VISIBLE);
+		binding.idVerifiedLayout.setVisibility(View.VISIBLE);
+		binding.matchYourFaceTextView.setVisibility(View.VISIBLE);
+		binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
+		binding.addFaceBtn.setVisibility(View.VISIBLE);
+		binding.tryAgainBtn.setVisibility(View.VISIBLE);
+
+		fadeInAnimation(binding.matchYourFaceTextView);
+		fadeInAnimation(binding.faceRecognitionLayout);
+	}
+
+	private void fadeInAnimation(final View view) {
+		AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
+		fadeIn.setDuration(1500);
+
+		view.startAnimation(fadeIn);
+		view.setVisibility(View.VISIBLE);
+	}
+
+	private void animateLayoutSize(final View view, final int targetWidth, final int targetHeight) {
+		ValueAnimator animator = ValueAnimator.ofInt(view.getMeasuredWidth(), targetWidth);
+
+		animator.addUpdateListener(valueAnimator -> {
+			int animatedValue = (int) valueAnimator.getAnimatedValue();
+
+			ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+			layoutParams.width = animatedValue;
+			layoutParams.height = targetHeight; // Set the desired height
+
+			// Set gravity to top-left
+			if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+				((ViewGroup.MarginLayoutParams) layoutParams).setMargins(0, 0, 0, 0);
+			}
+
+			view.setLayoutParams(layoutParams);
+		});
+
+		animator.setDuration(1000); // You can customize the duration of the animation
+		animator.start();
 	}
 
 	private void backToMyProfile() {
@@ -1195,7 +1251,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
 		fontSize = isChecked ? "large" : "normal";
-
 		setFontSize(fontSize);
 	}
 
@@ -1218,6 +1273,14 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.scanIDAgainTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.tapTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.tapTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.idVerifiedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.alignYourFaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.faceRecognitionStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.addFaceBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.matchBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.tryAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.scanLaterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
 	private void openCamera() {
@@ -1412,23 +1475,74 @@ public class ScanIDActivity extends AppCompatActivity implements
 		super.onActivityResult(requestCode, resultCode, data);
 		try {
 			if (resultCode == Activity.RESULT_OK && data != null) {
+				if (requestCode == UPLOAD_ID_FROM_GALLERY) {
+					idPictureUri = data.getData();
+					binding.idImageView.setImageURI(idPictureUri);
 
+					Bitmap bitmap;
+					try {
+						bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), idPictureUri);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+					int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
+					bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
+					bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
 
-				idPictureUri = data.getData();
-				binding.idImageView.setImageURI(idPictureUri);
+					classifyID(bitmap);
 
-				Bitmap bitmap;
-				try {
-					bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), idPictureUri);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
+				} else if (requestCode == RECOGNIZE_FACE_IN_ID) {
+					Uri selectedImageUri = data.getData();
+					try {
+						InputImage inputImage = InputImage
+								.fromBitmap(getBitmapFromUri(selectedImageUri), 0);
+						faceDetector.process(inputImage)
+								.addOnSuccessListener(faces -> {
+
+									if (faces.size() != 0) {
+										binding.idScanLayout.setVisibility(View.VISIBLE);
+										Face face = faces.get(0);
+
+										Log.i(TAG, "onActivityResult - onSuccess: " + face.toString());
+
+										//write code to recreate bitmap from source
+										//Write code to show bitmap to canvas
+										Bitmap frame_bmp = null;
+										try {
+											frame_bmp = getBitmapFromUri(selectedImageUri);
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+										Bitmap frame_bmp1 = rotateBitmap(frame_bmp, 0, flipX, false);
+
+										//face_preview.setImageBitmap(frame_bmp1);
+										RectF boundingBox = new RectF(face.getBoundingBox());
+
+										Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
+
+										Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
+										// face_preview.setImageBitmap(scaled);
+
+										recognizeImage(scaled);
+										getDetectedFace();
+
+										try {
+											Thread.sleep(100);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+								})
+								.addOnFailureListener(e -> {
+									startFaceDetecting = true;
+									showToast("Image failed to add", 1);
+									Log.e(TAG, "onActivityResult: " + e.getMessage());
+								});
+						binding.facePreviewImageView.setImageBitmap(getBitmapFromUri(selectedImageUri));
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-				int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
-				bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
-				bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
-
-				classifyID(bitmap);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

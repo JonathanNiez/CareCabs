@@ -15,6 +15,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -156,7 +158,9 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding = FragmentHomeBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
+		binding.greetingLayout.setVisibility(View.GONE);
 		binding.driverStatsLayout.setVisibility(View.GONE);
+		binding.quickButtonsLayout.setVisibility(View.GONE);
 		binding.passengerStatsLayout.setVisibility(View.GONE);
 		binding.driverOnTheWayLayout.setVisibility(View.GONE);
 		binding.currentPassengerLayout.setVisibility(View.GONE);
@@ -431,8 +435,11 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
-							binding.progressBarLayout1.setVisibility(View.GONE);
-							binding.progressBarLayout2.setVisibility(View.GONE);
+
+							fadeInAnimation(binding.greetingLayout);
+							fadeInAnimation(binding.quickButtonsLayout);
+							fadeOutAnimation(binding.progressBarLayout1);
+							fadeOutAnimation(binding.progressBarLayout2);
 
 							String getFirstname = documentSnapshot.getString("firstname");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
@@ -446,9 +453,9 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 							switch (userType) {
 								case "Driver":
+									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 									Long getPassengerTransported = documentSnapshot.getLong("passengersTransported");
 									boolean isAvailable = documentSnapshot.getBoolean("isAvailable");
-									String getNavigationStatus = documentSnapshot.getString("navigationStatus");
 
 									getDriverRatings();
 
@@ -462,12 +469,12 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									}
 
 									if (getNavigationStatus.equals("Navigating to destination")) {
-										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
 										binding.navigationStatusTextView.setText("You are currently navigating to Passenger's Destination");
+										fadeInAnimation(binding.currentPassengerLayout);
 										showNavigationStatusLayout();
 
 									} else if (getNavigationStatus.equals("Navigating to pickup location")) {
-										binding.currentPassengerLayout.setVisibility(View.VISIBLE);
+										fadeInAnimation(binding.currentPassengerLayout);
 										showNavigationStatusLayout();
 									}
 
@@ -509,7 +516,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									checkBookingStatus();
 
 									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
-									binding.passengerStatsLayout.setVisibility(View.VISIBLE);
+									fadeInAnimation(binding.passengerStatsLayout);
 									binding.totalTripsTextView.setText("Total Trips: " + getTotalTrips);
 
 									binding.bookingsTextView.setText("My Bookings");
@@ -541,7 +548,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 					});
 
 		} else {
-			Intent intent = new Intent(context, LoginOrRegisterActivity.class);
+			intent = new Intent(context, LoginOrRegisterActivity.class);
 			startActivity(intent);
 			Objects.requireNonNull(getActivity()).finish();
 		}
@@ -556,6 +563,22 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		}
 		startActivity(intent);
 		Objects.requireNonNull(getActivity()).finish();
+	}
+
+	private void fadeInAnimation(final View view) {
+		AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
+		fadeIn.setDuration(2000);
+
+		view.startAnimation(fadeIn);
+		view.setVisibility(View.VISIBLE);
+	}
+
+	private void fadeOutAnimation(final View view) {
+		AlphaAnimation fadeOut = new AlphaAnimation(1, 0);
+		fadeOut.setDuration(2000);
+
+		view.startAnimation(fadeOut);
+		view.setVisibility(View.GONE);
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -608,14 +631,12 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								}
 
 								binding.pickupPassengerBadge.setVisibility(View.VISIBLE);
-
 								binding.passengerNameTextView.setText("Passenger Name:\n" + passengerBookingModel.getPassengerName());
 								binding.passengerTypeTextView.setText(passengerBookingModel.getPassengerType());
 								binding.pickupLocationTextView.setText(passengerBookingModel.getPickupLocation());
 								binding.destinationTextView.setText(passengerBookingModel.getDestination());
 
 								binding.viewPassengerOnMapBtn.setOnClickListener(v -> checkLocationService("Driver"));
-
 								if (passengerBookingModel.getPassengerType().equals("Senior Citizen")) {
 									binding.passengerDisabilityTextView.setVisibility(View.GONE);
 									binding.currentPassengerTypeImageView.setImageResource(R.drawable.senior_64_2);
@@ -670,9 +691,9 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									}
 								}
 
-								binding.toDestinationLayout.setVisibility(View.GONE);
-								binding.driverOnTheWayLayout.setVisibility(View.VISIBLE);
-								binding.bookARideBtn.setVisibility(View.GONE);
+								fadeOutAnimation(binding.toDestinationLayout);
+								fadeInAnimation(binding.driverOnTheWayLayout);
+								fadeOutAnimation(binding.bookARideBtn);
 
 								binding.chatDriverBtn.setOnClickListener(v -> {
 									intent = new Intent(getActivity(), ChatDriverActivity.class);
@@ -699,20 +720,21 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
 									&& passengerBookingModel.getBookingStatus().equals("Passenger Onboard")) {
 
-								binding.driverOnTheWayLayout.setVisibility(View.GONE);
-								binding.toDestinationLayout.setVisibility(View.VISIBLE);
+								fadeOutAnimation(binding.toDestinationLayout);
+								fadeInAnimation(binding.driverOnTheWayLayout);
+								fadeOutAnimation(binding.bookARideBtn);
+
 								binding.onBoardDestinationTextView.setText(passengerBookingModel.getDestination());
-								binding.bookARideBtn.setVisibility(View.GONE);
 
 							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
 									&& passengerBookingModel.getRatingStatus().equals("Driver not rated")
 									&& passengerBookingModel.getBookingStatus().equals("Transported to destination")) {
 
-								binding.driverOnTheWayLayout.setVisibility(View.GONE);
-								binding.toDestinationLayout.setVisibility(View.GONE);
-								binding.driverRatedLayout.setVisibility(View.GONE);
-								binding.bookARideBtn.setVisibility(View.VISIBLE);
-								binding.transportedToDestinationLayout.setVisibility(View.VISIBLE);
+								fadeOutAnimation(binding.driverOnTheWayLayout);
+								fadeOutAnimation(binding.toDestinationLayout);
+								fadeOutAnimation(binding.driverOnTheWayLayout);
+								fadeInAnimation(binding.bookARideBtn);
+								fadeInAnimation(binding.transportedToDestinationLayout);
 
 								if (isAdded()) {
 									if (!passengerBookingModel.getDriverProfilePicture().equals("default")) {
@@ -777,19 +799,13 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 						driverReference.update(updatedData)
 								.addOnSuccessListener(unused -> {
-									binding.driverRatedLayout.setVisibility(View.VISIBLE);
-									binding.rateDriverLayout.setVisibility(View.GONE);
+									fadeInAnimation(binding.driverRatedLayout);
+									fadeOutAnimation(binding.rateDriverLayout);
 
 									Handler handler = new Handler();
-									Runnable dismissRunnable = new Runnable() {
-										@Override
-										public void run() {
+									Runnable dismissRunnable = () -> fadeOutAnimation(binding.transportedToDestinationLayout);
+									handler.postDelayed(dismissRunnable, 2000);
 
-											binding.transportedToDestinationLayout.setVisibility(View.GONE);
-										}
-									};
-
-									handler.postDelayed(dismissRunnable, 2500);
 								})
 								.addOnFailureListener(e -> {
 									showToast("Failed to rate Driver");

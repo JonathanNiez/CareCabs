@@ -27,7 +27,7 @@
 				android:layout_marginTop="15dp"
 				android:layout_marginEnd="15dp"
 				android:layout_marginBottom="15dp"
-				android:fontFamily="@font/opensans_bold"
+				android:fontFamily="@font/gabarito_medium"
 				android:text="ABOUT US"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
@@ -280,9 +280,11 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

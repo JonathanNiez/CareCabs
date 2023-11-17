@@ -460,7 +460,6 @@ public class RegisterActivity extends AppCompatActivity implements
 
 					getUserID = authResult.getUser().getUid();
 					sendEmailVerification(getUserID, email);
-
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -494,6 +493,102 @@ public class RegisterActivity extends AppCompatActivity implements
 
 					getUserID = authResult.getUser().getUid();
 					sendEmailVerification(getUserID, email);
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
+
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
+
+						Log.e(TAG, "registerPWD: " + collisionException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+
+						Log.e(TAG, "registerPWD: " + otherException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+					}
+				});
+
+	}
+
+	private void registerDriverWithoutEmailVerification(String email, String password) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+
+					getUserID = authResult.getUser().getUid();
+					storeUserDataToFireStore(getUserID, email);
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
+
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+						Log.e(TAG, "registerDriver: " + collisionException.getMessage());
+
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+						Log.e(TAG, "registerDriver: " + otherException.getMessage());
+					}
+				});
+	}
+
+	private void registerSeniorWithoutEmailVerification(String email, String password) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+
+					getUserID = authResult.getUser().getUid();
+					storeUserDataToFireStore(getUserID, email);
+				})
+				.addOnFailureListener(e -> {
+					try {
+						throw e;
+					} catch (FirebaseAuthUserCollisionException collisionException) {
+
+						closePleaseWaitDialog();
+						showEmailIsAlreadyUsedDialog();
+
+						Log.e(TAG, "registerSenior: " + collisionException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+
+					} catch (Exception otherException) {
+						closePleaseWaitDialog();
+						showRegisterFailedDialog();
+
+						Log.e(TAG, "registerSenior: " + otherException.getMessage());
+
+						binding.progressBarLayout.setVisibility(View.GONE);
+						binding.nextBtn.setVisibility(View.VISIBLE);
+					}
+				});
+
+	}
+
+	private void registerPWDWithoutEmailVerification(String email, String password) {
+		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
+				.addOnSuccessListener(authResult -> {
+
+					getUserID = authResult.getUser().getUid();
+					storeUserDataToFireStore(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -769,20 +864,38 @@ public class RegisterActivity extends AppCompatActivity implements
 			dialogVerifiedEmailBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 			dialogVerifiedEmailBinding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 			dialogVerifiedEmailBinding.sendBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogVerifiedEmailBinding.sendVerificationLaterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 		}
 
+		dialogVerifiedEmailBinding.sendVerificationLaterBtn.setOnClickListener(v -> {
+			dialogVerifiedEmailBinding.closeBtn.setVisibility(View.GONE);
+			dialogVerifiedEmailBinding.sendBtn.setVisibility(View.GONE);
+			dialogVerifiedEmailBinding.sendVerificationLaterBtn.setVisibility(View.GONE);
+			dialogVerifiedEmailBinding.loadingGif.setVisibility(View.VISIBLE);
 
-		dialogVerifiedEmailBinding.closeBtn
-				.setOnClickListener(v -> {
-					binding.progressBarLayout.setVisibility(View.GONE);
-					binding.nextBtn.setVisibility(View.VISIBLE);
-					closeVerifiedEmailDialog();
-				});
+			switch (userType) {
+				case "Driver":
+					registerDriverWithoutEmailVerification(email, password);
+
+					break;
+
+				case "Person with Disabilities (PWD)":
+					registerPWDWithoutEmailVerification(email, password);
+
+					break;
+
+				case "Senior Citizen":
+					registerSeniorWithoutEmailVerification(email, password);
+
+					break;
+			}
+		});
 
 		dialogVerifiedEmailBinding.sendBtn
 				.setOnClickListener(v -> {
 					dialogVerifiedEmailBinding.closeBtn.setVisibility(View.GONE);
 					dialogVerifiedEmailBinding.sendBtn.setVisibility(View.GONE);
+					dialogVerifiedEmailBinding.sendVerificationLaterBtn.setVisibility(View.GONE);
 					dialogVerifiedEmailBinding.loadingGif.setVisibility(View.VISIBLE);
 
 					switch (userType) {
@@ -801,6 +914,13 @@ public class RegisterActivity extends AppCompatActivity implements
 
 							break;
 					}
+				});
+
+		dialogVerifiedEmailBinding.closeBtn
+				.setOnClickListener(v -> {
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+					closeVerifiedEmailDialog();
 				});
 
 		builder.setView(dialogView);

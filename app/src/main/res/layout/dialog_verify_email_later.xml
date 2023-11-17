@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	style="@style/MainBackground"
 	android:gravity="center"
 	android:orientation="vertical">
 
@@ -27,7 +27,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				app:srcCompat="@drawable/email_64" />
+				app:srcCompat="@drawable/help_64_2" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/titleTextView"
@@ -69,54 +69,34 @@
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
 		android:gravity="center"
-		android:layout_marginBottom="15dp"
 		android:orientation="horizontal">
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/closeBtn"
+			android:id="@+id/yesBtn"
 			style="@style/SecondaryButton"
-			android:layout_width="150dp"
+			android:layout_width="120dp"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:padding="10dp"
-			android:text="Close"
+			android:text="Yes"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/sendBtn"
+			android:id="@+id/noBtn"
 			style="@style/PrimaryButton"
-			android:layout_width="150dp"
+			android:layout_width="120dp"
 			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
 			android:padding="10dp"
-			android:text="Send"
+			android:text="No"
 			android:textSize="17sp" />
 
-		<pl.droidsonroids.gif.GifImageView
-			android:id="@+id/loadingGif"
-			android:layout_width="70dp"
-			android:layout_height="70dp"
-			android:src="@drawable/loading_gif"/>
-
 	</androidx.appcompat.widget.LinearLayoutCompat>
-
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/sendVerificationLaterBtn"
-		android:backgroundTint="@color/dark_gray"
-		android:background="@drawable/smooth_edge_button"
-		android:textColor="@color/white"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="20dp"
-		android:elevation="5dp"
-		android:fontFamily="@font/gabarito_semibold"
-		android:padding="10dp"
-		android:text="Send Verification Later"
-		android:textSize="17sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>
