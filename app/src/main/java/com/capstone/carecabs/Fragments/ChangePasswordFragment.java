@@ -40,6 +40,7 @@ import java.util.Objects;
 public class ChangePasswordFragment extends Fragment implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "ChangePasswordFragment";
+	private FragmentChangePasswordBinding binding;
 	private VoiceAssistant voiceAssistant;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private String fontSize = StaticDataPasser.storeFontSize;
@@ -48,13 +49,10 @@ public class ChangePasswordFragment extends Fragment implements
 			passwordUpdateSuccessDialog, passwordUpdateFailedDialog, passwordWarningDialog;
 	private Intent intent;
 	private Context context;
-	private float textSizeSP;
-	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
-	private FragmentChangePasswordBinding binding;
 
 	@Override
 	public void onPause() {
@@ -90,8 +88,9 @@ public class ChangePasswordFragment extends Fragment implements
 		binding = FragmentChangePasswordBinding.inflate(inflater, container, false);
 		View view = binding.getRoot();
 
-		binding.googleSignInLayout.setVisibility(View.GONE);
 		binding.progressBarLayout.setVisibility(View.GONE);
+		binding.googleSignInLayout.setVisibility(View.GONE);
+		binding.emailNotVerifiedLayout.setVisibility(View.GONE);
 
 		context = getContext();
 
@@ -105,7 +104,9 @@ public class ChangePasswordFragment extends Fragment implements
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
 
-		binding.okayBtn.setOnClickListener(v -> backToAccountFragment());
+		binding.okayBtn1.setOnClickListener(v -> backToAccountFragment());
+
+		binding.okayBtn2.setOnClickListener(v -> backToAccountFragment());
 
 		binding.changePasswordBtn.setOnClickListener(v -> {
 			String stringOldPassword = binding.oldPasswordEditText.getText().toString();
@@ -150,11 +151,18 @@ public class ChangePasswordFragment extends Fragment implements
 							if (getRegisterType != null) {
 								if (getRegisterType.equals("google")) {
 									binding.googleSignInLayout.setVisibility(View.VISIBLE);
-									binding.editTextLayout.setVisibility(View.GONE);
+									binding.changePasswordLayout.setVisibility(View.GONE);
 									binding.changePasswordBtn.setVisibility(View.GONE);
 								} else {
-									if (isAdded()) {
-										showPasswordWarningDialog();
+									if (FirebaseMain.getUser().isEmailVerified()) {
+										if (isAdded()) {
+											showPasswordWarningDialog();
+										}
+									} else {
+										binding.emailNotVerifiedLayout.setVisibility(View.VISIBLE);
+										binding.changePasswordLayout.setVisibility(View.GONE);
+										binding.changePasswordBtn.setVisibility(View.GONE);
+										binding.passwordWarningTextView.setVisibility(View.GONE);
 									}
 								}
 							}
@@ -180,6 +188,8 @@ public class ChangePasswordFragment extends Fragment implements
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -189,13 +199,16 @@ public class ChangePasswordFragment extends Fragment implements
 		}
 		binding.changePasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.googleSignInTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.emailNotVerifiedTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.passwordWarningTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-
+		binding.emailNotVerifiedBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.emailEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.oldPasswordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.newPasswordEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.changePasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.okayBtn1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.okayBtn1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 
 	}
 

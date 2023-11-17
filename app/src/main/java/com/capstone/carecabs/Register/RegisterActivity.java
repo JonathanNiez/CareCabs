@@ -5,18 +5,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.LoginActivity;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -25,16 +27,21 @@ import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityRegisterBinding;
 import com.capstone.carecabs.databinding.DialogCancelRegisterBinding;
+import com.capstone.carecabs.databinding.DialogEmailVerficationSuccessBinding;
+import com.capstone.carecabs.databinding.DialogEmailVerificationLinkSentBinding;
 import com.capstone.carecabs.databinding.DialogEnableVoiceAssistantBinding;
+import com.capstone.carecabs.databinding.DialogVerifiedEmailBinding;
 import com.capstone.carecabs.databinding.DialogYouAreRegisteringAsBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
@@ -48,6 +55,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "Register";
+	private ActivityRegisterBinding binding;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 25;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
@@ -57,18 +65,19 @@ public class RegisterActivity extends AppCompatActivity implements
 	private String theme = StaticDataPasser.storeTheme;
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
+	private boolean isEmailVerified = false;
 	private Date date;
 	private String getUserID, registerType, userType,
 			prefixPhoneNumber, accountCreationDate;
 	private VoiceAssistant voiceAssistant;
 	private Intent intent;
-	private static final int RC_SIGN_IN = 69;
+	private static final int GOOGLE_SIGNIN_REQUEST = 69;
 	private AlertDialog.Builder builder;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
 			ageInfoDialog, registerFailedDialog, cancelRegisterDialog,
-			emailAlreadyUsedDialog, enableVoiceAssistantDialog;
+			emailAlreadyUsedDialog, enableVoiceAssistantDialog, verifiedEmailDialog,
+			emailVerificationSentDialog, emailVerifiedSuccess;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterBinding binding;
 
 	@Override
 	protected void onStart() {
@@ -89,6 +98,9 @@ public class RegisterActivity extends AppCompatActivity implements
 		closeUserTypeImageDialog();
 		closeEmailIsAlreadyUsedDialog();
 		closeEnableVoiceAssistantDialog();
+		closeVerifiedEmailDialog();
+		closeEmailVerificationSentDialog();
+		closeEmailVerifiedSuccessDialog();
 	}
 
 	@Override
@@ -107,6 +119,17 @@ public class RegisterActivity extends AppCompatActivity implements
 		closeUserTypeImageDialog();
 		closeEmailIsAlreadyUsedDialog();
 		closeEnableVoiceAssistantDialog();
+		closeVerifiedEmailDialog();
+		closeEmailVerificationSentDialog();
+		closeEmailVerifiedSuccessDialog();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		binding.progressBarLayout.setVisibility(View.GONE);
+		binding.nextBtn.setVisibility(View.VISIBLE);
 	}
 
 	@Override
@@ -118,6 +141,18 @@ public class RegisterActivity extends AppCompatActivity implements
 		binding.progressBarLayout.setVisibility(View.GONE);
 
 		FirebaseApp.initializeApp(this);
+		if (FirebaseMain.getUser() != null) {
+			FirebaseMain.getUser().reload()
+					.addOnCompleteListener(task -> {
+						if (task.isSuccessful()) {
+							if (FirebaseMain.getUser().isEmailVerified()) {
+								isEmailVerified = true;
+							}
+						} else {
+							Log.e(TAG, "onCreate: ", task.getException());
+						}
+					});
+		}
 
 		Calendar calendar = Calendar.getInstance();
 		date = calendar.getTime();
@@ -175,7 +210,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 			if (registerType.equals("Google")) {
 				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, RC_SIGN_IN);
+				startActivityForResult(intent, GOOGLE_SIGNIN_REQUEST);
 
 			} else if (userType.equals("Senior Citizen")) {
 				showAgeRequiredDialog();
@@ -193,7 +228,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				setFontSize(fontSize);
 
 				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, RC_SIGN_IN);
+				startActivityForResult(intent, GOOGLE_SIGNIN_REQUEST);
 
 			} else if (userType.equals("Person with Disabilities (PWD)")) {
 
@@ -217,11 +252,10 @@ public class RegisterActivity extends AppCompatActivity implements
 
 			binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
-			binding.backFloatingBtn.setOnClickListener(v -> {
-				checkEditTextIfNotEmpty();
-			});
+			binding.backFloatingBtn.setOnClickListener(v -> checkEditTextIfNotEmpty());
 
 			binding.nextBtn.setOnClickListener(v -> {
+				showPleaseWaitDialog();
 				binding.progressBarLayout.setVisibility(View.VISIBLE);
 				binding.nextBtn.setVisibility(View.GONE);
 
@@ -232,6 +266,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 				if (email.isEmpty() ||
 						password.isEmpty() ||
+						confirmPassword.isEmpty() ||
 						phoneNumber.isEmpty()) {
 
 					binding.emailEditText.setError("Please enter your Email");
@@ -241,6 +276,7 @@ public class RegisterActivity extends AppCompatActivity implements
 						voiceAssistant.speak("Please enter your Email");
 					}
 
+					closePleaseWaitDialog();
 					binding.progressBarLayout.setVisibility(View.GONE);
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
@@ -251,29 +287,43 @@ public class RegisterActivity extends AppCompatActivity implements
 						voiceAssistant = VoiceAssistant.getInstance(this);
 						voiceAssistant.speak("Password did not matched");
 					}
+
+					closePleaseWaitDialog();
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+
+				} else if (phoneNumber.length() < 10) {
+					binding.phoneNumberEditText.setError("Phone number must be 11 digits");
+
+					closePleaseWaitDialog();
 					binding.progressBarLayout.setVisibility(View.GONE);
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
 				} else {
+					closePleaseWaitDialog();
 					prefixPhoneNumber = "+63" + phoneNumber;
 
-					showPleaseWaitDialog();
+					if (FirebaseMain.getUser() != null) {
+						FirebaseMain.getUser().reload()
+								.addOnCompleteListener(task -> {
+									if (task.isSuccessful()) {
+										if (FirebaseMain.getUser().isEmailVerified()) {
+											getUserID = FirebaseMain.getUser().getUid();
+											storeUserDataToFireStore(getUserID, email);
+										} else {
+											showToast("Your Email is not Verified", 0);
+											binding.progressBarLayout.setVisibility(View.GONE);
+											binding.nextBtn.setVisibility(View.VISIBLE);
+										}
+									} else {
+										showToast("Unknown error occurred", 1);
 
-					switch (userType) {
-						case "Driver":
-
-							registerDriver(email, password);
-							break;
-
-						case "Person with Disabilities (PWD)":
-							registerPWD(email, password);
-
-							break;
-
-						case "Senior Citizen":
-							registerSenior(email, password);
-
-							break;
+										binding.progressBarLayout.setVisibility(View.GONE);
+										binding.nextBtn.setVisibility(View.VISIBLE);
+									}
+								});
+					} else {
+						showVerifiedEmailDialog(userType, email, password);
 					}
 				}
 			});
@@ -282,11 +332,29 @@ public class RegisterActivity extends AppCompatActivity implements
 
 	@Override
 	public void onBackPressed() {
-		boolean shouldExit = false;
-		if (shouldExit) {
-			super.onBackPressed();
+		super.onBackPressed();
+		checkEditTextIfNotEmpty();
+	}
+
+	private void sendEmailVerification(String userID, String email) {
+		if (FirebaseMain.getUser() != null) {
+			if (FirebaseMain.getUser().isEmailVerified()) {
+				storeUserDataToFireStore(userID, email);
+			} else {
+				FirebaseMain.getUser().sendEmailVerification()
+						.addOnSuccessListener(unused -> {
+							closeVerifiedEmailDialog();
+							showEmailVerificationSentDialog(userID, email);
+						})
+						.addOnFailureListener(e -> {
+							showToast("Failed to send an Email Verification Link", 1);
+							Log.e(TAG, "sendEmailVerification - onFailure: " + e.getMessage());
+						});
+			}
 		} else {
-			checkEditTextIfNotEmpty();
+			closeVerifiedEmailDialog();
+			showToast("Failed to send an Email Verification Link", 1);
+			Log.e(TAG, "sendEmailVerification: current user is null");
 		}
 	}
 
@@ -300,6 +368,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				!password.isEmpty() ||
 				!confirmPassword.isEmpty() ||
 				!phoneNumber.isEmpty()) {
+
 			showCancelRegistrationDialog();
 
 		} else {
@@ -358,12 +427,9 @@ public class RegisterActivity extends AppCompatActivity implements
 	private void registerDriver(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
+
 					getUserID = authResult.getUser().getUid();
-
-					documentReference = FirebaseMain.getFireStoreInstance()
-							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email);
-
+					sendEmailVerification(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -372,20 +438,18 @@ public class RegisterActivity extends AppCompatActivity implements
 
 						closePleaseWaitDialog();
 						showEmailIsAlreadyUsedDialog();
-
-						Log.e(TAG, "registerDriver: " + collisionException.getMessage());
-
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
+
+						Log.e(TAG, "registerDriver: " + collisionException.getMessage());
 
 					} catch (Exception otherException) {
 						closePleaseWaitDialog();
 						showRegisterFailedDialog();
-
-						Log.e(TAG, "registerDriver: " + otherException.getMessage());
-
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.nextBtn.setVisibility(View.VISIBLE);
+
+						Log.e(TAG, "registerDriver: " + otherException.getMessage());
 					}
 				});
 	}
@@ -393,11 +457,9 @@ public class RegisterActivity extends AppCompatActivity implements
 	private void registerSenior(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
-					getUserID = authResult.getUser().getUid();
 
-					documentReference = FirebaseMain.getFireStoreInstance()
-							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email);
+					getUserID = authResult.getUser().getUid();
+					sendEmailVerification(getUserID, email);
 
 				})
 				.addOnFailureListener(e -> {
@@ -429,12 +491,9 @@ public class RegisterActivity extends AppCompatActivity implements
 	private void registerPWD(String email, String password) {
 		FirebaseMain.getAuth().createUserWithEmailAndPassword(email, password)
 				.addOnSuccessListener(authResult -> {
+
 					getUserID = authResult.getUser().getUid();
-
-					documentReference = FirebaseMain.getFireStoreInstance()
-							.collection(FirebaseMain.userCollection).document(getUserID);
-					storeUserDataToFireStore(getUserID, email);
-
+					sendEmailVerification(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -467,6 +526,10 @@ public class RegisterActivity extends AppCompatActivity implements
 				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 		accountCreationDate = dateFormat.format(date);
 		theme = StaticDataPasser.storeTheme;
+
+		documentReference = FirebaseMain.getFireStoreInstance()
+				.collection(FirebaseMain.userCollection)
+				.document(userID);
 
 		Map<String, Object> registerUser = new HashMap<>();
 		registerUser.put("userID", userID);
@@ -506,17 +569,22 @@ public class RegisterActivity extends AppCompatActivity implements
 				.addOnFailureListener(e -> {
 					Log.e(TAG, "storeUserDataToFireStore: " + e.getMessage());
 
+					closePleaseWaitDialog();
 					binding.progressBarLayout.setVisibility(View.GONE);
 					binding.nextBtn.setVisibility(View.VISIBLE);
 
 					FirebaseMain.signOutUser();
 
-					intent = new Intent(RegisterActivity.this, LoginActivity.class);
+					intent = new Intent(RegisterActivity.this, LoginOrRegisterActivity.class);
 					startActivity(intent);
 					finish();
 
 					showRegisterFailedDialog();
 				});
+	}
+
+	private void showToast(String message, int duration) {
+		Toast.makeText(this, message, duration).show();
 	}
 
 	private void showEnableVoiceAssistantDialog() {
@@ -628,7 +696,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				DialogCancelRegisterBinding.inflate(getLayoutInflater());
 		View dialogView = dialogCancelRegisterBinding.getRoot();
 
-		if (fontSize.equals("large")){
+		if (fontSize.equals("large")) {
 			dialogCancelRegisterBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 			dialogCancelRegisterBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 			dialogCancelRegisterBinding.yesBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
@@ -685,6 +753,142 @@ public class RegisterActivity extends AppCompatActivity implements
 		}
 	}
 
+	private void showVerifiedEmailDialog(String userType, String email, String password) {
+		builder = new AlertDialog.Builder(this);
+
+		DialogVerifiedEmailBinding dialogVerifiedEmailBinding =
+				DialogVerifiedEmailBinding.inflate(getLayoutInflater());
+		View dialogView = dialogVerifiedEmailBinding.getRoot();
+
+		dialogVerifiedEmailBinding.loadingGif.setVisibility(View.GONE);
+
+		if (fontSize.equals("large")) {
+			float textSize = 22;
+			dialogVerifiedEmailBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogVerifiedEmailBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogVerifiedEmailBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogVerifiedEmailBinding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogVerifiedEmailBinding.sendBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
+
+
+		dialogVerifiedEmailBinding.closeBtn
+				.setOnClickListener(v -> {
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+					closeVerifiedEmailDialog();
+				});
+
+		dialogVerifiedEmailBinding.sendBtn
+				.setOnClickListener(v -> {
+					dialogVerifiedEmailBinding.closeBtn.setVisibility(View.GONE);
+					dialogVerifiedEmailBinding.sendBtn.setVisibility(View.GONE);
+					dialogVerifiedEmailBinding.loadingGif.setVisibility(View.VISIBLE);
+
+					switch (userType) {
+						case "Driver":
+							registerDriver(email, password);
+
+							break;
+
+						case "Person with Disabilities (PWD)":
+							registerPWD(email, password);
+
+							break;
+
+						case "Senior Citizen":
+							registerSenior(email, password);
+
+							break;
+					}
+				});
+
+		builder.setView(dialogView);
+
+		verifiedEmailDialog = builder.create();
+		verifiedEmailDialog.show();
+	}
+
+	private void closeVerifiedEmailDialog() {
+		if (verifiedEmailDialog != null && verifiedEmailDialog.isShowing()) {
+			verifiedEmailDialog.dismiss();
+		}
+	}
+
+	@SuppressLint("SetTextI18n")
+	private void showEmailVerificationSentDialog(String userID, String email) {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		DialogEmailVerificationLinkSentBinding sentBinding =
+				DialogEmailVerificationLinkSentBinding.inflate(getLayoutInflater());
+		View dialogView = sentBinding.getRoot();
+
+		if (fontSize.equals("large")) {
+			float textSize = 22;
+			sentBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			sentBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			sentBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			sentBinding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
+
+		sentBinding.emailTextView.setText(email);
+
+		sentBinding.okayBtn.setOnClickListener(v -> {
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+			closeEmailVerificationSentDialog();
+		});
+
+		builder.setView(dialogView);
+
+		emailVerificationSentDialog = builder.create();
+		emailVerificationSentDialog.show();
+	}
+
+	private void closeEmailVerificationSentDialog() {
+		if (emailVerificationSentDialog != null && emailVerificationSentDialog.isShowing()) {
+			emailVerificationSentDialog.dismiss();
+		}
+	}
+
+	private void showEmailVerifiedSuccessDialog(String userID, String email) {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		DialogEmailVerficationSuccessBinding successBinding =
+				DialogEmailVerficationSuccessBinding.inflate(getLayoutInflater());
+		View dialogView = successBinding.getRoot();
+
+		if (fontSize.equals("large")) {
+			float textSize = 22;
+			successBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			successBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			successBinding.pleaseWaitTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
+
+		FirebaseMain.getAuth()
+				.addAuthStateListener(firebaseAuth -> {
+					if (FirebaseMain.getUser() != null) {
+						if (FirebaseMain.getUser().isEmailVerified()) {
+							new Handler().postDelayed(() -> {
+								storeUserDataToFireStore(userID, email);
+							}, 2500);
+						}
+					}
+				});
+
+		builder.setView(dialogView);
+		emailVerifiedSuccess = builder.create();
+		emailVerifiedSuccess.show();
+	}
+
+	private void closeEmailVerifiedSuccessDialog() {
+		if (emailVerifiedSuccess != null && emailVerifiedSuccess.isShowing()) {
+			emailVerifiedSuccess.dismiss();
+		}
+	}
+
 	private void showNoInternetDialog() {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
@@ -693,9 +897,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-		tryAgainBtn.setOnClickListener(v -> {
-			closeNoInternetDialog();
-		});
+		tryAgainBtn.setOnClickListener(v -> closeNoInternetDialog());
 
 		builder.setView(dialogView);
 
@@ -930,7 +1132,7 @@ public class RegisterActivity extends AppCompatActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == RC_SIGN_IN) {
+		if (requestCode == GOOGLE_SIGNIN_REQUEST) {
 			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
 			try {
 				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);

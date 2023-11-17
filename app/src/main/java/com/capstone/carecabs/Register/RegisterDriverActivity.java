@@ -60,6 +60,7 @@ import java.util.Map;
 public class RegisterDriverActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterDriver";
+	private ActivityRegisterDriverBinding binding;
 	private final String userType = "Driver";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
@@ -86,7 +87,6 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 			idNotScannedDialog, cancelRegisterDialog, enterBirthdateDialog,
 			cameraGalleryOptionsDialog, pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterDriverBinding binding;
 
 	@Override
 	protected void onStart() {
@@ -415,13 +415,14 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 				.addOnSuccessListener(unused -> {
 
 					FirebaseMain.signOutUser();
+					Log.i(TAG, "updateInterruptedCancelledRegister: success");
 
 				})
 				.addOnFailureListener(e -> {
 
 					FirebaseMain.signOutUser();
 
-					Log.e(TAG, e.getMessage());
+					Log.e(TAG, "updateInterruptedCancelledRegister: " + e.getMessage());
 				});
 	}
 

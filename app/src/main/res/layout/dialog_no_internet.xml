@@ -45,7 +45,7 @@
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Slow or no Internet connection"
 				android:textAlignment="center"
-				android:textColor="@color/black"
+				style="@style/TextColor"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -55,7 +55,7 @@
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Please check your Internet settings"
 				android:textAlignment="center"
-				android:textColor="@color/black"
+				style="@style/TextColor"
 				android:textSize="17sp" />
 
 		</androidx.appcompat.widget.LinearLayoutCompat>

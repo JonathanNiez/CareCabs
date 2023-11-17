@@ -19,13 +19,13 @@ import com.capstone.carecabs.databinding.ActivityRegisterUserTypeBinding;
 import com.capstone.carecabs.databinding.DialogUserTypeBinding;
 
 public class RegisterUserTypeActivity extends AppCompatActivity {
+	private ActivityRegisterUserTypeBinding binding;
 	private Intent intent;
 	private String userType, registerType;
 	private AlertDialog.Builder builder;
 	private AlertDialog userTypeDialog, emailAlreadyRegisteredDialog,
 			noInternetDialog, cancelRegisterDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterUserTypeBinding binding;
 
 	@Override
 	protected void onStart() {
@@ -38,7 +38,6 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 	protected void onPause() {
 		super.onPause();
 
-		closeCancelRegisterDialog();
 		closeUserTypeDialog();
 		closeNoInternetDialog();
 	}
@@ -49,7 +48,6 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 			unregisterReceiver(networkChangeReceiver);
 		}
 
-		closeCancelRegisterDialog();
 		closeUserTypeDialog();
 		closeNoInternetDialog();
 	}
@@ -82,47 +80,20 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 
 			binding.passengerBtn.setOnClickListener(v -> showUserTypeDialog());
 
-			binding.cancelBtn.setOnClickListener(v -> showCancelRegisterDialog());
+			binding.cancelBtn.setOnClickListener(v -> goToLoginOrRegisterAcivity());
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		showCancelRegisterDialog();
+		goToLoginOrRegisterAcivity();
 		super.onBackPressed();
 	}
 
-	private void showCancelRegisterDialog() {
-
-		builder = new AlertDialog.Builder(this);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_cancel_register, null);
-
-		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
-		Button noBtn = dialogView.findViewById(R.id.noBtn);
-
-		yesBtn.setOnClickListener(v -> {
-			intent = new Intent(RegisterUserTypeActivity.this, LoginOrRegisterActivity.class);
-			startActivity(intent);
-			finish();
-
-			closeCancelRegisterDialog();
-		});
-
-		noBtn.setOnClickListener(v -> {
-			closeCancelRegisterDialog();
-		});
-
-		builder.setView(dialogView);
-
-		cancelRegisterDialog = builder.create();
-		cancelRegisterDialog.show();
-	}
-
-	private void closeCancelRegisterDialog() {
-		if (cancelRegisterDialog != null && cancelRegisterDialog.isShowing()) {
-			cancelRegisterDialog.dismiss();
-		}
+	private void goToLoginOrRegisterAcivity() {
+		intent = new Intent(this, LoginOrRegisterActivity.class);
+		startActivity(intent);
+		finish();
 	}
 
 	private void closeUserTypeDialog() {

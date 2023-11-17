@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/orange"
 	android:gravity="center"
 	android:orientation="vertical">
 
 	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_margin="20dp"
+		android:layout_margin="10dp"
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
@@ -24,20 +25,22 @@
 			<androidx.appcompat.widget.AppCompatImageView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
+				android:layout_margin="5dp"
 				app:srcCompat="@drawable/id_not_verified_96" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/titleTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="ID SCANNING"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView1"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
@@ -48,14 +51,14 @@
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView"
+				android:id="@+id/bodyTextView2"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_medium"
 				android:text="Please upload a valid ID or upload a clearer picture to try again"
 				android:textAlignment="center"
-				android:textColor="@color/black"
 				android:textSize="17sp" />
 
 
@@ -65,15 +68,14 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okayBtn"
-		android:layout_width="130dp"
-		android:layout_height="50dp"
+		style="@style/PrimaryButton"
+		android:layout_width="150dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
 		android:elevation="5dp"
 		android:fontFamily="@font/gabarito_semibold"
+		android:padding="10dp"
 		android:text="Okay"
-		android:textColor="@color/white"
 		android:textSize="17sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,16 +22,22 @@ import com.capstone.carecabs.Register.RegisterUserTypeActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.databinding.ActivityLoginBinding;
+import com.capstone.carecabs.databinding.DialogEmailNotVerifiedBinding;
+import com.capstone.carecabs.databinding.DialogEmailVerificationLinkSentBinding;
 import com.capstone.carecabs.databinding.DialogInvalidCredentialsBinding;
 import com.capstone.carecabs.databinding.DialogLoginUnknownErrorOccuredBinding;
+import com.capstone.carecabs.databinding.DialogVerifiedEmailBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -49,7 +58,8 @@ public class LoginActivity extends AppCompatActivity implements
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
 			pleaseWaitDialog, loginFailedDialog, exitAppDialog,
-			idScanInfoDialog, unknownOccurredDialog, invalidCredentialsDialog;
+			idScanInfoDialog, unknownOccurredDialog, invalidCredentialsDialog,
+			emailVerificationSentDialog, emailNotVerifiedDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private ActivityLoginBinding binding;
 
@@ -100,9 +110,9 @@ public class LoginActivity extends AppCompatActivity implements
 
 		GoogleSignInOptions googleSignInOptions =
 				new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-				.requestIdToken(getString(R.string.default_web_client_id))
-				.requestEmail()
-				.build();
+						.requestIdToken(getString(R.string.default_web_client_id))
+						.requestEmail()
+						.build();
 
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -129,6 +139,7 @@ public class LoginActivity extends AppCompatActivity implements
 		binding.backFloatingBtn.setOnClickListener(v -> goToLoginOrRegisterActivity());
 
 		binding.loginBtn.setOnClickListener(v -> {
+			showPleaseWaitDialog();
 			binding.progressBarLayout.setVisibility(View.VISIBLE);
 			binding.loginBtn.setVisibility(View.GONE);
 
@@ -138,12 +149,16 @@ public class LoginActivity extends AppCompatActivity implements
 			if (email.isEmpty()) {
 
 				binding.emailEditText.setError("Please enter your Email");
+
+				closePleaseWaitDialog();
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
 			} else if (password.isEmpty()) {
 
 				binding.passwordEditText.setError("Please enter your Password");
+
+				closePleaseWaitDialog();
 				binding.progressBarLayout.setVisibility(View.GONE);
 				binding.loginBtn.setVisibility(View.VISIBLE);
 
@@ -195,27 +210,27 @@ public class LoginActivity extends AppCompatActivity implements
 	}
 
 	private void loginUser(String email, String password) {
-		showPleaseWaitDialog();
-
 		FirebaseMain.getAuth().signInWithEmailAndPassword(email, password)
 				.addOnCompleteListener(task -> {
 					if (task.isSuccessful()) {
+
 						closePleaseWaitDialog();
 
-						binding.progressBarLayout.setVisibility(View.GONE);
-						binding.loginBtn.setVisibility(View.VISIBLE);
+						if (FirebaseMain.getUser().isEmailVerified()) {
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.loginBtn.setVisibility(View.VISIBLE);
 
-						intent = new Intent(LoginActivity.this, LoggingInActivity.class);
-						startActivity(intent);
-						finish();
+							goToLoggingInActivity();
 
-						Log.i(TAG, "Login Success");
+							Log.i(TAG, "Login Success");
+						} else {
+							showEmailNotVerifiedDialog(email, password);
+						}
 
 					} else {
+						closePleaseWaitDialog();
 						binding.progressBarLayout.setVisibility(View.GONE);
 						binding.loginBtn.setVisibility(View.VISIBLE);
-
-						closePleaseWaitDialog();
 
 						Exception exception = task.getException();
 						if (exception instanceof FirebaseAuthInvalidCredentialsException) {
@@ -229,11 +244,31 @@ public class LoginActivity extends AppCompatActivity implements
 				});
 	}
 
+	private void goToLoggingInActivity() {
+		intent = new Intent(LoginActivity.this, LoggingInActivity.class);
+		startActivity(intent);
+		finish();
+	}
+
+	private void sendEmailVerification(String email) {
+		if (FirebaseMain.getUser() != null) {
+			FirebaseMain.getUser().sendEmailVerification()
+					.addOnSuccessListener(unused -> showEmailVerificationSentDialog(email))
+					.addOnFailureListener(e -> {
+						showToast("Failed to send an Email Verification Link", 1);
+						Log.e(TAG, "sendEmailVerification - onFailure: " + e.getMessage());
+					});
+		}
+	}
 
 	private void goToLoginOrRegisterActivity() {
 		intent = new Intent(LoginActivity.this, LoginOrRegisterActivity.class);
 		startActivity(intent);
 		finish();
+	}
+
+	private void showToast(String message, int duration) {
+		Toast.makeText(this, message, duration).show();
 	}
 
 	private void showInvalidCredentialsDialog() {
@@ -254,6 +289,81 @@ public class LoginActivity extends AppCompatActivity implements
 	private void closeInvalidCredentialsDialog() {
 		if (invalidCredentialsDialog != null && invalidCredentialsDialog.isShowing()) {
 			invalidCredentialsDialog.dismiss();
+		}
+	}
+
+	private void showEmailNotVerifiedDialog(String email, String password) {
+		builder = new AlertDialog.Builder(this);
+
+		DialogEmailNotVerifiedBinding dialogEmailNotVerifiedBinding =
+				DialogEmailNotVerifiedBinding.inflate(getLayoutInflater());
+		View dialogView = dialogEmailNotVerifiedBinding.getRoot();
+
+		dialogEmailNotVerifiedBinding.emailTextView.setText(email);
+
+		dialogEmailNotVerifiedBinding.laterBtn
+				.setOnClickListener(v -> {
+					FirebaseMain.getAuth()
+							.signInWithEmailAndPassword(email, password)
+							.addOnCompleteListener(task -> {
+								if (task.isSuccessful()) {
+									goToLoggingInActivity();
+									binding.progressBarLayout.setVisibility(View.GONE);
+									binding.loginBtn.setVisibility(View.VISIBLE);
+									binding.googleLoginBtn.setVisibility(View.VISIBLE);
+									closeEmailNotVerifiedDialog();
+
+								} else {
+									Exception exception = task.getException();
+									if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+										closeEmailNotVerifiedDialog();
+										showInvalidCredentialsDialog();
+									} else {
+										closeEmailNotVerifiedDialog();
+										showUnknownOccurredDialog();
+									}
+
+									Log.e(TAG, "showEmailNotVerifiedDialog - onFailure: " + task.getException());
+								}
+							});
+				});
+
+		dialogEmailNotVerifiedBinding.sendBtn
+				.setOnClickListener(v -> {
+					closeEmailNotVerifiedDialog();
+					sendEmailVerification(email);
+				});
+
+		builder.setView(dialogView);
+
+		emailNotVerifiedDialog = builder.create();
+		emailNotVerifiedDialog.show();
+	}
+
+	private void closeEmailNotVerifiedDialog() {
+		if (emailNotVerifiedDialog != null && emailNotVerifiedDialog.isShowing()) {
+			emailNotVerifiedDialog.dismiss();
+		}
+	}
+
+	private void showEmailVerificationSentDialog(String email) {
+		builder = new AlertDialog.Builder(this);
+
+		DialogEmailVerificationLinkSentBinding sentBinding =
+				DialogEmailVerificationLinkSentBinding.inflate(getLayoutInflater());
+		View dialogView = sentBinding.getRoot();
+
+		sentBinding.emailTextView.setText(email);
+
+		builder.setView(dialogView);
+
+		emailVerificationSentDialog = builder.create();
+		emailVerificationSentDialog.show();
+	}
+
+	private void closeEmailVerificationSentDialog() {
+		if (emailVerificationSentDialog != null && emailVerificationSentDialog.isShowing()) {
+			emailVerificationSentDialog.dismiss();
 		}
 	}
 

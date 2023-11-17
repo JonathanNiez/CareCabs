@@ -39,6 +39,7 @@ import com.capstone.carecabs.Map.MapPassengerActivity;
 import com.capstone.carecabs.Model.PassengerBookingModel;
 import com.capstone.carecabs.PassengerBookingsOverviewActivity;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Register.RegisterActivity;
 import com.capstone.carecabs.Register.RegisterDriverActivity;
 import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
@@ -380,16 +381,34 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 					.document(getUserID);
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
-						if (documentSnapshot != null && documentSnapshot.exists()) {
-							boolean isRegisterComplete = documentSnapshot.getBoolean("isRegisterComplete");
-							String getUserType = documentSnapshot.getString("userType");
 
-							if (isRegisterComplete) {
-								getUserTypeAndLoadUserProfileInfo(getUserType);
+						if (documentSnapshot != null && documentSnapshot.exists()) {
+
+							if (documentSnapshot.contains("isRegisterComplete") &&
+									documentSnapshot.contains("userType")) {
+								boolean isRegisterComplete = documentSnapshot.getBoolean("isRegisterComplete");
+								String getUserType = documentSnapshot.getString("userType");
+
+								if (isRegisterComplete) {
+									getUserTypeAndLoadUserProfileInfo(getUserType);
+
+								} else {
+									showRegisterNotCompleteDialog(getUserType);
+								}
 
 							} else {
-								showRegisterNotCompleteDialog(getUserType);
+								FirebaseMain.getAuth().signOut();
+
+								intent = new Intent(getActivity(), RegisterActivity.class);
+								startActivity(intent);
+								Objects.requireNonNull(getActivity()).finish();
 							}
+						} else {
+							FirebaseMain.getAuth().signOut();
+
+							intent = new Intent(getActivity(), RegisterActivity.class);
+							startActivity(intent);
+							Objects.requireNonNull(getActivity()).finish();
 						}
 					})
 					.addOnFailureListener(e -> Log.e(TAG, "checkUserIfRegisterComplete: " + e.getMessage()));

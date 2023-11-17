@@ -125,6 +125,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		binding.disabilityTextView.setVisibility(View.GONE);
 		binding.driverInfoLayout.setVisibility(View.GONE);
 		binding.idNotScannedTextView.setVisibility(View.GONE);
+		binding.emailNotVerifiedTextView.setVisibility(View.GONE);
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
@@ -223,12 +224,12 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 			String userID = FirebaseMain.getUser().getUid();
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection)
+					.document(userID);
 
 			documentReference.get()
 					.addOnSuccessListener(documentSnapshot -> {
 						if (documentSnapshot != null && documentSnapshot.exists()) {
-
 							closePleaseWaitDialog();
 
 							String getProfilePicture = documentSnapshot.getString("profilePicture");
@@ -236,6 +237,10 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 							String getFirstName = documentSnapshot.getString("firstname");
 							String getLastName = documentSnapshot.getString("lastname");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
+
+							if (!FirebaseMain.getUser().isEmailVerified()) {
+								binding.emailNotVerifiedTextView.setVisibility(View.VISIBLE);
+							}
 
 							if (getUserType != null) {
 								userType = getUserType;

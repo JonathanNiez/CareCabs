@@ -197,14 +197,15 @@
 							android:layout_margin="5dp"
 							app:srcCompat="@drawable/switch_camera_64" />
 
-						<androidx.appcompat.widget.AppCompatImageView
+						<de.hdodenhof.circleimageview.CircleImageView
 							android:id="@+id/facePreviewImageView"
 							android:layout_width="70dp"
 							android:layout_height="70dp"
 							android:layout_gravity="start|bottom"
 							android:layout_margin="5dp"
-							app:srcCompat="@color/white"
-							android:scaleType="centerCrop" />
+							android:scaleType="centerCrop"
+							app:civ_border_color="@color/white"
+							app:civ_border_width="2dp" />
 
 					</FrameLayout>
 

@@ -261,8 +261,7 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 
 	@Override
 	public void onFontSizeChanged(boolean isChecked) {
-		String fontSize = isChecked ? "large" : "normal";
-
+		fontSize = isChecked ? "large" : "normal";
 		setFontSize(fontSize);
 	}
 
@@ -290,7 +289,6 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 		binding.registerTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.accountCreationDateTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.idTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.idNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehicleColorTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehiclePlateNumberTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}

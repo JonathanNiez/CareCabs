@@ -54,6 +54,7 @@ import com.capstone.carecabs.Utility.SimilarityClassifier;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityScanIdBinding;
+import com.capstone.carecabs.databinding.DialogNotAnIdBinding;
 import com.capstone.carecabs.ml.IdScanV2;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.Task;
@@ -1008,6 +1009,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.idImageView.setImageResource(R.drawable.face_id_100);
 		binding.doneBtn.setVisibility(View.GONE);
 		binding.verifiedText.setVisibility(View.GONE);
+		binding.faceRecognitionLayout.setVisibility(View.GONE);
 
 		idPictureUri = null;
 		showNotAnIDDialog();
@@ -1119,13 +1121,19 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private void showNotAnIDDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_not_an_id, null);
+		DialogNotAnIdBinding dialogNotAnIdBinding =
+				DialogNotAnIdBinding.inflate(getLayoutInflater());
+		View dialogView = dialogNotAnIdBinding.getRoot();
 
-		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+		if (fontSize.equals("large")) {
+			float textSize = 22;
+			dialogNotAnIdBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogNotAnIdBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogNotAnIdBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogNotAnIdBinding.okayBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
 
-		okayBtn.setOnClickListener(v -> {
-			closeNotAnIDDialog();
-		});
+		dialogNotAnIdBinding.okayBtn.setOnClickListener(v -> closeNotAnIDDialog());
 
 		builder.setView(dialogView);
 
@@ -1371,12 +1379,40 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
+	private void initializeNetworkChecker() {
+		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
+			@Override
+			public void onNetworkChanged(boolean isConnected) {
+				updateConnectionStatus(isConnected);
+			}
+		});
+
+		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+		registerReceiver(networkChangeReceiver, intentFilter);
+
+		// Initial network status check
+		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
+		updateConnectionStatus(isConnected);
+
+	}
+
+	private void updateConnectionStatus(boolean isConnected) {
+		if (isConnected) {
+			if (noInternetDialog != null && noInternetDialog.isShowing()) {
+				noInternetDialog.dismiss();
+			}
+		} else {
+			showNoInternetDialog();
+		}
+	}
+
 	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		try {
 			if (resultCode == Activity.RESULT_OK && data != null) {
+
 
 				idPictureUri = data.getData();
 				binding.idImageView.setImageURI(idPictureUri);
@@ -1393,32 +1429,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 				classifyID(bitmap);
 
-				if (isUserVerified) {
-					binding.idScanLayout.setVisibility(View.VISIBLE);
-					binding.scanYourIDTypeTextView.setVisibility(View.VISIBLE);
-					binding.doneBtn.setVisibility(View.VISIBLE);
-					binding.idAlreadyScannedLayout.setVisibility(View.GONE);
-					binding.backFloatingBtn.setVisibility(View.GONE);
-
-					if (getUserType != null) {
-						switch (getUserType) {
-							case "Driver":
-								binding.scanYourIDTypeTextView.setText("Scan your Driver's License");
-
-								break;
-
-							case "Senior Citizen":
-								binding.scanYourIDTypeTextView.setText("Scan your Senior Citizen ID that is validated by OSCA");
-
-								break;
-
-							case "Person with Disabilities (PWD)":
-								binding.scanYourIDTypeTextView.setText("Scan your valid PWD ID");
-
-								break;
-						}
-					}
-				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1444,33 +1454,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 		} else {
 			Log.e(TAG, "Permission Denied");
 
-		}
-	}
-
-	private void initializeNetworkChecker() {
-		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-			@Override
-			public void onNetworkChanged(boolean isConnected) {
-				updateConnectionStatus(isConnected);
-			}
-		});
-
-		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-		registerReceiver(networkChangeReceiver, intentFilter);
-
-		// Initial network status check
-		boolean isConnected = NetworkConnectivityChecker.isNetworkConnected(this);
-		updateConnectionStatus(isConnected);
-
-	}
-
-	private void updateConnectionStatus(boolean isConnected) {
-		if (isConnected) {
-			if (noInternetDialog != null && noInternetDialog.isShowing()) {
-				noInternetDialog.dismiss();
-			}
-		} else {
-			showNoInternetDialog();
 		}
 	}
 }

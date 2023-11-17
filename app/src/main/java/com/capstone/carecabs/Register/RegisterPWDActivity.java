@@ -58,6 +58,7 @@ import java.util.Map;
 public class RegisterPWDActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterPWDActivity";
+	private ActivityRegisterPwdBinding binding;
 	private final String userType = "Person with Disabilities (PWD)";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
@@ -83,7 +84,6 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			enterBirthdateDialog, cameraGalleryOptionsDialog,
 			pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterPwdBinding binding;
 
 	@Override
 	protected void onPause() {

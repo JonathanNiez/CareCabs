@@ -40,6 +40,7 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.ScanIDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
+import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ActivityRegisterSeniorBinding;
 import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -56,9 +57,10 @@ import java.util.Map;
 public class RegisterSeniorActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "RegisterSeniorActivity";
+	private ActivityRegisterSeniorBinding binding;
 	private final String userType = "Senior Citizen";
 	private String profilePictureURL = "default";
-	private String fontSize = "normal";
+	private String fontSize = StaticDataPasser.storeFontSize;
 	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
@@ -79,7 +81,6 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 			idNotScannedDialog, enterBirthdateDialog,
 			cameraGalleryOptionsDialog, pleaseWaitDialog;
 	private NetworkChangeReceiver networkChangeReceiver;
-	private ActivityRegisterSeniorBinding binding;
 
 	@Override
 	protected void onPause() {
