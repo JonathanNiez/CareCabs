@@ -22,7 +22,7 @@
 			android:orientation="vertical">
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView1"
+				android:id="@+id/titleTextView"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -35,59 +35,99 @@
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
 				android:orientation="vertical">
 
-				<androidx.appcompat.widget.AppCompatSpinner
-					android:id="@+id/spinnerMonth"
+				<com.google.android.material.textfield.TextInputLayout
+					android:id="@+id/monthLayout"
+					style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
 					android:layout_width="match_parent"
-					android:layout_height="60dp"
-					android:background="@drawable/edit_text"
+					android:layout_height="wrap_content"
+					android:layout_margin="5dp"
+					android:background="@drawable/smooth_edit_text"
 					android:elevation="5dp"
-					android:theme="@style/SpinnerTextStyle" />
+					android:hint="MONTH"
+					android:padding="5dp"
+					android:textColorHint="@color/black"
+					app:helperText="*Required"
+					app:helperTextTextColor="@color/red"
+					app:hintTextColor="@color/black">
+
+					<AutoCompleteTextView
+						android:id="@+id/monthDropDownMenu"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:background="@drawable/smooth_edit_text_2"
+						android:fontFamily="@font/gabarito_semibold"
+						android:inputType="none"
+						android:textSize="17sp" />
+
+				</com.google.android.material.textfield.TextInputLayout>
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="10dp"
 					android:gravity="center"
 					android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatEditText
-						android:id="@+id/dayEditText"
+					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="0dp"
-						android:layout_height="60dp"
-						android:layout_marginEnd="5dp"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:layout_weight="1"
-						android:background="@drawable/edit_text"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:fontFamily="@font/gabarito_semibold"
-						android:hint="Day"
-						android:inputType="number"
-						android:maxLength="2"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textColor="@color/black"
+						android:padding="5dp"
 						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
+						app:helperText="*Required"
+						app:helperTextEnabled="true"
+						app:helperTextTextAppearance="@font/gabarito_bold"
+						app:helperTextTextColor="@color/red">
 
-					<androidx.appcompat.widget.AppCompatEditText
-						android:id="@+id/yearEditText"
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/dayEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="DAY"
+							android:maxLength="2"
+							android:inputType="number"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<com.google.android.material.textfield.TextInputLayout
 						android:layout_width="0dp"
-						android:layout_height="60dp"
-						android:layout_marginStart="5dp"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:layout_weight="1"
-						android:background="@drawable/edit_text"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:fontFamily="@font/gabarito_semibold"
-						android:hint="Year"
-						android:inputType="number"
-						android:maxLength="4"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textColor="@color/black"
+						android:padding="5dp"
 						android:textColorHint="@color/black"
-						android:textSize="17sp" />
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black"
+						app:helperText="*Required"
+						app:helperTextEnabled="true"
+						app:helperTextTextAppearance="@font/gabarito_bold"
+						app:helperTextTextColor="@color/red">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/yearEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="YEAR"
+							android:maxLength="4"
+							android:inputType="number"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -148,13 +188,14 @@
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/cancelBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:background="@drawable/smooth_edge_button"
 			android:backgroundTint="@color/red"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Cancel"
 			android:textColor="@color/white"
 			android:textSize="17sp" />
@@ -162,11 +203,12 @@
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/doneBtn"
 			style="@style/PrimaryButton"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Done"
 			android:textSize="17sp" />
 

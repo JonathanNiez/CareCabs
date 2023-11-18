@@ -60,7 +60,8 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 
 		binding.googleRegisterLayout.setVisibility(View.GONE);
 
-		if (getIntent() != null || getIntent().hasExtra("registerType")) {
+		if (getIntent() != null &&
+				getIntent().hasExtra("registerType")) {
 
 			intent = getIntent();
 			registerType = intent.getStringExtra("registerType");
@@ -77,11 +78,12 @@ public class RegisterUserTypeActivity extends AppCompatActivity {
 				startActivity(intent);
 				finish();
 			});
-
-			binding.passengerBtn.setOnClickListener(v -> showUserTypeDialog());
-
-			binding.cancelBtn.setOnClickListener(v -> goToLoginOrRegisterAcivity());
 		}
+
+		binding.passengerBtn.setOnClickListener(v -> showUserTypeDialog());
+
+		binding.cancelBtn.setOnClickListener(v -> goToLoginOrRegisterAcivity());
+
 	}
 
 	@Override

@@ -36,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -61,8 +62,6 @@ import com.capstone.carecabs.databinding.ActivityScanIdBinding;
 import com.capstone.carecabs.databinding.DialogNotAnIdBinding;
 import com.capstone.carecabs.ml.IdScanV2;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.FirebaseApp;
@@ -118,7 +117,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog;
 	private TextRecognizer textRecognizer;
 	private static final int CAMERA_REQUEST_CODE = 1;
-	private static final int GALLERY_REQUEST_CODE = 2;
+	private static final int STORAGE_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
 	private static final int STORAGE_PERMISSION_REQUEST = 102;
 	private Intent intent;
@@ -133,8 +132,9 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private int UPLOAD_ID_FROM_GALLERY = 420;
 	private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 	private HashMap<String, SimilarityClassifier.Recognition> registeredFace = new HashMap<>(); //saved Faces
-	private boolean startFaceDetecting = true, flipX = false,
-			isFaceDetected = false, isFaceMatched = false;
+	private boolean startFaceDetecting = true, flipX = false, isFaceMatched = false;
+	private int faceRecognizedThreshold = 0;
+	private int faceNotRecognizedThreshold = 0;
 	private int[] intValues;
 	private float distance = 1.0f;
 	private int inputSize = 112;  //Input size for model
@@ -154,7 +154,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
-		closeOptionsDialog();
 		closePleaseWaitDialog();
 	}
 
@@ -168,7 +167,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
-		closeOptionsDialog();
 		closePleaseWaitDialog();
 	}
 
@@ -192,8 +190,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.doneBtn.setVisibility(View.GONE);
 		binding.idVerifiedLayout.setVisibility(View.GONE);
 		binding.matchYourFaceTextView.setVisibility(View.GONE);
-		binding.matchBtn.setVisibility(View.GONE);
-		binding.addFaceBtn.setVisibility(View.GONE);
 		binding.tryAgainBtn.setVisibility(View.GONE);
 
 		FirebaseApp.initializeApp(this);
@@ -201,7 +197,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 		registeredFace = readFromSP();
 		checkIfUserIsVerified();
 		checkCameraAndStoragePermission();
-		initializeFaceDetector();
 		getUserSettings();
 
 		SharedPreferences sharedPref = getSharedPreferences("Distance", Context.MODE_PRIVATE);
@@ -254,6 +249,10 @@ public class ScanIDActivity extends AppCompatActivity implements
 			}
 		}
 
+		binding.idFaceImageView.setOnClickListener(v -> {
+			showRegisteredFaceList();
+		});
+
 		binding.switchCameraBtn.setOnClickListener(v -> {
 			if (CAMERA_FACING == CameraSelector.LENS_FACING_BACK) {
 				CAMERA_FACING = CameraSelector.LENS_FACING_FRONT;
@@ -266,26 +265,44 @@ public class ScanIDActivity extends AppCompatActivity implements
 			bindCamera();
 		});
 
-		binding.addFaceBtn.setOnClickListener(v -> getDetectedFace());
-
 		binding.tryAgainBtn.setOnClickListener(v -> {
-			binding.facePreviewImageView.setImageResource(R.color.white);
-			binding.faceRecognitionStatusTextView.setText("Align your Face");
+			binding.facePreviewImageView.setImageResource(0);
+			binding.idFaceImageView.setImageResource(0);
+			binding.idImageView.setImageResource(0);
+			binding.idVerifiedLayout.setVisibility(View.GONE);
+			binding.matchYourFaceTextView.setVisibility(View.GONE);
+
+			fadeOutAnimation(binding.faceRecognitionLayout);
+
+			if (isUserVerified)
+				reverseAnimateLayoutSize(binding.idAlreadyScannedLayout);
+
+			else
+				reverseAnimateLayoutSize(binding.idScanLayout);
+
 			clearRegisteredFace();
-			getDetectedFace();
 		});
 
 		binding.scanLaterBtn.setOnClickListener(v -> updateUserToNotVerified());
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
-		binding.doneBtn.setOnClickListener(v -> {
-			if (idPictureUri != null) {
-				updateVerificationStatus(idPictureUri);
-			}
-		});
+		binding.facePreviewImageView.setOnClickListener(v -> getDetectedFace());
+
+//		if (isFaceMatched) {
+//			startFaceDetecting = false;
+//
+//			binding.doneBtn.setVisibility(View.VISIBLE);
+//			binding.doneBtn.setOnClickListener(v -> {
+//				if (idPictureUri != null) {
+//					updateVerificationStatus(idPictureUri);
+//				}
+//			});
+//		}
+
 
 		binding.idScanLayout.setOnClickListener(v -> {
+			startFaceDetecting = false;
 			ImagePicker.with(ScanIDActivity.this)
 					.crop()                    //Crop image(Optional), Check Customization for more option
 					.compress(1024)            //Final image size will be less than 1 MB(Optional)
@@ -294,10 +311,11 @@ public class ScanIDActivity extends AppCompatActivity implements
 		});
 
 		binding.idAlreadyScannedLayout.setOnClickListener(v -> {
+			startFaceDetecting = false;
 			ImagePicker.with(ScanIDActivity.this)
-					.crop()                    //Crop image(Optional), Check Customization for more option
-					.compress(1024)            //Final image size will be less than 1 MB(Optional)
-					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.crop()
+					.compress(1024)
+					.maxResultSize(1080, 1080)
 					.start(UPLOAD_ID_FROM_GALLERY);
 		});
 	}
@@ -324,7 +342,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 	}
 
 	@SuppressLint("DefaultLocale")
-	private void classifyID(Bitmap bitmap) {
+	private void classifyID(Bitmap bitmap, Uri selectedImageUri) {
 		try {
 			IdScanV2 model = IdScanV2.newInstance(ScanIDActivity.this);
 
@@ -368,17 +386,17 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 				switch (getUserType) {
 					case "Driver":
-						handleDriverLicense(predictedClass);
+						handleDriverLicense(predictedClass, selectedImageUri);
 
 						break;
 
 					case "Senior Citizen":
-						handleSeniorCitizenID(predictedClass);
+						handleSeniorCitizenID(predictedClass, selectedImageUri);
 
 						break;
 
 					case "Person with Disabilities (PWD)":
-						handlePWDID(predictedClass);
+						handlePWDID(predictedClass, selectedImageUri);
 
 						break;
 				}
@@ -402,15 +420,17 @@ public class ScanIDActivity extends AppCompatActivity implements
 	}
 
 	@SuppressLint("SetTextI18n")
-	private void handleDriverLicense(String predictedClass) {
+	private void handleDriverLicense(String predictedClass, Uri selectedImageUri) {
 		switch (predictedClass) {
 			case "Driver's License":
 
 				showPleaseWaitDialog();
 				new Handler().postDelayed(() -> {
 					closePleaseWaitDialog();
-					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					initializeFaceDetector();
+					animateLayoutSize(binding.idScanParentLayout, 300, 300);
 					showIDVerifiedLayout();
+					registerTheFaceInID(selectedImageUri);
 					binding.idVerifiedTextView.setText("Driver's License Verified");
 				}, 2000);
 
@@ -426,7 +446,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void handleSeniorCitizenID(String predictedClass) {
+	private void handleSeniorCitizenID(String predictedClass, Uri selectedImageUri) {
 		switch (predictedClass) {
 			case "Driver's License":
 			case "PWD ID":
@@ -441,15 +461,17 @@ public class ScanIDActivity extends AppCompatActivity implements
 				showPleaseWaitDialog();
 				new Handler().postDelayed(() -> {
 					closePleaseWaitDialog();
-					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					initializeFaceDetector();
+					animateLayoutSize(binding.idScanParentLayout, 300, 300);
 					showIDVerifiedLayout();
+					registerTheFaceInID(selectedImageUri);
 				}, 2000);
 
 				break;
 		}
 	}
 
-	private void handlePWDID(String predictedClass) {
+	private void handlePWDID(String predictedClass, Uri selectedImageUri) {
 		switch (predictedClass) {
 			case "Driver's License":
 			case "Senior Citizen ID":
@@ -464,11 +486,66 @@ public class ScanIDActivity extends AppCompatActivity implements
 				showPleaseWaitDialog();
 				new Handler().postDelayed(() -> {
 					closePleaseWaitDialog();
-					animateLayoutSize(binding.idScanParentLayout, 250, 250);
+					initializeFaceDetector();
+					animateLayoutSize(binding.idScanParentLayout, 300, 300);
 					showIDVerifiedLayout();
+					registerTheFaceInID(selectedImageUri);
 				}, 2000);
 
 				break;
+		}
+	}
+
+	private void registerTheFaceInID(Uri selectedImageUri) {
+		//recognize face
+		try {
+			InputImage inputImage = InputImage
+					.fromBitmap(getBitmapFromUri(selectedImageUri), 0);
+			faceDetector.process(inputImage)
+					.addOnSuccessListener(faces -> {
+
+						if (faces.size() != 0) {
+							fadeInAnimation(binding.idScanLayout);
+							Face face = faces.get(0);
+
+							Log.i(TAG, "onActivityResult - onSuccess: " + face.toString());
+
+							//write code to recreate bitmap from source
+							//Write code to show bitmap to canvas
+							Bitmap frame_bmp = null;
+							try {
+								frame_bmp = getBitmapFromUri(selectedImageUri);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							Bitmap frame_bmp1 = rotateBitmap(frame_bmp, 0, flipX, false);
+							RectF boundingBox = new RectF(face.getBoundingBox());
+							Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
+							Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
+
+							binding.idFaceImageView.setImageBitmap(scaled);
+							recognizeImage(scaled);
+							getDetectedIDFace();
+//							getDetectedFace();
+
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+								Log.e(TAG, "onActivityResult: " + e.getMessage());
+							}
+						}
+					})
+					.addOnFailureListener(e -> {
+						startFaceDetecting = true;
+						showToast("Image failed to add", 1);
+						Log.e(TAG, "onActivityResult: " + e.getMessage());
+					});
+
+			binding.facePreviewImageView.setImageBitmap(getBitmapFromUri(selectedImageUri));
+
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -479,7 +556,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//Initialize Face Detector
+
 		FaceDetectorOptions highAccuracyOpts =
 				new FaceDetectorOptions.Builder()
 						.setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
@@ -553,9 +630,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 										faces -> {
 											if (faces.size() != 0) {
 
-												isFaceDetected = true;
 												Face face = faces.get(0); //Get first face from detected faces
-												Log.i(TAG, "bindPreview: " + face.toString());
 
 												//mediaImage to Bitmap
 												Bitmap frame_bmp = toBitmap(mediaImage);
@@ -573,32 +648,30 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 												if (flipX)
 													cropped_face = rotateBitmap(cropped_face, 0, flipX, false);
+
 												//Scale the acquired Face to 112*112 which is required input for model
 												Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
 
-												if (startFaceDetecting) {
+												if (startFaceDetecting)
 													recognizeImage(scaled);
-												}
+
 
 //												Log.i(TAG, "bindPreview: " + boundingBox);
 
 											} else {
-												isFaceDetected = false;
-												if (registeredFace.isEmpty()) {
-													binding.faceRecognitionStatusTextView.setText("Register a Face first");
+												if (registeredFace.isEmpty())
+													binding.faceRecognitionStatusTextView.setText("No Face Registered");
 
-												} else {
+												else {
 													binding.faceRecognitionStatusTextView.setText("No Face Detected");
 												}
+												binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.light_red));
 											}
-
 										})
 								.addOnFailureListener(
-										e -> {
-											Log.e(TAG, "bindPreview: " + e.getMessage());
-										})
-								.addOnCompleteListener(task -> {
+										e -> Log.e(TAG, "bindPreview: " + e.getMessage()))
 
+								.addOnCompleteListener(task -> {
 									imageProxy.close(); //v.important to acquire next frame for analysis
 								});
 			}
@@ -607,108 +680,159 @@ public class ScanIDActivity extends AppCompatActivity implements
 		cameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis, preview);
 	}
 
-	//addFace
-	private void getDetectedFace() {
+	private void showRegisteredFaceList() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		if (isFaceDetected) {
-			startFaceDetecting = true;
-			showToast("Face Registered", 0);
-			SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
-					"0", "", -1f);
-			result.setExtra(embeddings);
+		// System.out.println("Registered"+registered);
+		if (registeredFace.isEmpty())
+			builder.setTitle("No Faces Added");
+		else
+			builder.setTitle("Recognitions:");
 
-			registeredFace.put("registeredFace", result);
-		} else
-			startFaceDetecting = true;
+		// add a checkbox list
+		String[] names = new String[registeredFace.size()];
+		boolean[] checkedItems = new boolean[registeredFace.size()];
+		int i = 0;
+		for (Map.Entry<String, SimilarityClassifier.Recognition> entry : registeredFace.entrySet()) {
+			//System.out.println("NAME"+entry.getKey());
+			names[i] = entry.getKey();
+			checkedItems[i] = false;
+			i = i + 1;
+
+		}
+		builder.setItems(names, null);
+
+		builder.setPositiveButton("OK", (dialog, which) -> {
+
+		});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 
-	@SuppressLint("SetTextI18n")
+	//addFace
+	private void getDetectedIDFace() {
+		startFaceDetecting = false;
+		SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+				"0", "", -1f);
+		result.setExtra(embeddings);
+
+		registeredFace.put("registeredIDFace", result);
+		startFaceDetecting = true;
+		showToast("ID Face Registered", 0);
+	}
+
+	private void getDetectedFace() {
+		startFaceDetecting = true;
+		SimilarityClassifier.Recognition result = new SimilarityClassifier.Recognition(
+				"0", "", -1f);
+		result.setExtra(embeddings);
+
+		registeredFace.put("registeredFace", result);
+		showToast("Face Registered", 0);
+	}
+
+	@SuppressLint({"SetTextI18n", "DefaultLocale"})
 	public void recognizeImage(final Bitmap bitmap) {
 
-		if (isFaceDetected) {
+		// set Face to Preview
+		binding.facePreviewImageView.setImageBitmap(bitmap);
+//			binding.idFaceImageView.setImageBitmap(bitmap);
 
-			// set Face to Preview
-//			binding.matchBtn.setVisibility(View.VISIBLE);
-			binding.facePreviewImageView.setImageBitmap(bitmap);
+		//Create ByteBuffer to store normalized image
+		ByteBuffer imgData = ByteBuffer.allocateDirect(inputSize * inputSize * 3 * 4);
+		imgData.order(ByteOrder.nativeOrder());
+		intValues = new int[inputSize * inputSize];
 
-			//Create ByteBuffer to store normalized image
-			ByteBuffer imgData = ByteBuffer.allocateDirect(inputSize * inputSize * 3 * 4);
-			imgData.order(ByteOrder.nativeOrder());
-			intValues = new int[inputSize * inputSize];
+		//get pixel values from Bitmap to normalize
+		bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+		imgData.rewind();
 
-			//get pixel values from Bitmap to normalize
-			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-			imgData.rewind();
-
-			for (int i = 0; i < inputSize; ++i) {
-				for (int j = 0; j < inputSize; ++j) {
-					int pixelValue = intValues[i * inputSize + j];
-					if (isModelQuantized) {
-						// Quantized model
-						imgData.put((byte) ((pixelValue >> 16) & 0xFF));
-						imgData.put((byte) ((pixelValue >> 8) & 0xFF));
-						imgData.put((byte) (pixelValue & 0xFF));
-					} else { // Float model
-						imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-						imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-						imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
-
-					}
+		for (int i = 0; i < inputSize; ++i) {
+			for (int j = 0; j < inputSize; ++j) {
+				int pixelValue = intValues[i * inputSize + j];
+				if (isModelQuantized) {
+					// Quantized model
+					imgData.put((byte) ((pixelValue >> 16) & 0xFF));
+					imgData.put((byte) ((pixelValue >> 8) & 0xFF));
+					imgData.put((byte) (pixelValue & 0xFF));
+				} else { // Float model
+					imgData.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+					imgData.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
+					imgData.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN) / IMAGE_STD);
 				}
 			}
-
-			//imgData is input to our model
-			Object[] inputArray = {imgData};
-			Map<Integer, Object> outputMap = new HashMap<>();
-
-			embeddings = new float[1][OUTPUT_SIZE]; //output of model will be stored in this variable
-			outputMap.put(0, embeddings);
-
-			tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
-
-			float distance_local;
-			String id = "0";
-			String label = "?";
-
-			//Compare new face with saved Faces.
-			if (registeredFace.size() > 0) {
-
-				final List<Pair<String, Float>> nearest = findNearest(embeddings[0]);//Find 2 closest matching face
-
-				if (nearest.get(0) != null) {
-
-					final String name = nearest.get(0).first; //get name and distance of closest matching face
-					// label = name;
-					distance_local = nearest.get(0).second;
-					if (distance_local < distance) {
-						if (name.equals("registeredFace"))
-							binding.faceRecognitionStatusTextView.setText("Face Matched");
-
-						isFaceMatched = true;
-
-					} else {
-						binding.faceRecognitionStatusTextView.setText("Unknown");
-						isFaceMatched = false;
-					}
-
-					Log.i(TAG, "recognizeImage - nearest: " + name + " - distance: " + distance_local);
-				}
-			}
-
-			final int numDetectionsOutput = 1;
-			final ArrayList<SimilarityClassifier.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
-			SimilarityClassifier.Recognition rec = new SimilarityClassifier.Recognition(
-					id,
-					label,
-					distance);
-
-			recognitions.add(rec);
 		}
 
+		//imgData is input to our model
+		Object[] inputArray = {imgData};
+		Map<Integer, Object> outputMap = new HashMap<>();
+
+		embeddings = new float[1][OUTPUT_SIZE]; //output of model will be stored in this variable
+		outputMap.put(0, embeddings);
+
+		tfLite.runForMultipleInputsOutputs(inputArray, outputMap); //Run model
+
+		float distance_local;
+		String id = "0";
+		String label = "?";
+
+		//Compare new face with saved Faces.
+		if (registeredFace.size() > 0) {
+			final List<Pair<String, Float>> nearest = findNearest(embeddings[0]);//Find 2 closest matching face
+			if (nearest.get(0) != null) {
+				final String name = nearest.get(0).first; //get name and distance of closest matching face
+				distance_local = nearest.get(0).second;
+				if (distance_local < distance) {
+					if (faceRecognizedThreshold < 6) {
+
+						faceRecognizedThreshold++;
+
+						binding.faceRecognitionStatusTextView.setText("Nearest: " + name + "\nDist: " +
+								String.format("%.3f", distance_local) +
+								"\n2nd Nearest: " + nearest.get(1).first +
+								"\nDist: " + String.format("%.3f", nearest.get(1).second));
+
+						binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.green));
+//					binding.faceRecognitionStatusTextView.setText(name);
+
+					} else {
+						isFaceMatched = true;
+						startFaceDetecting = false;
+
+						if (idPictureUri != null)
+							updateVerificationStatus(idPictureUri);
+
+					}
+				} else {
+					if (faceNotRecognizedThreshold < 6) {
+						faceNotRecognizedThreshold++;
+					} else {
+						binding.faceRecognitionStatusTextView.setText("Unknown " + "\nDist: " +
+								String.format("%.3f", distance_local) + "\nNearest: " + name +
+								"\nDist: " + String.format("%.3f", distance_local) + "\n2nd Nearest: "
+								+ nearest.get(1).first + "\nDist: " + String.format("%.3f", nearest.get(1).second));
+
+						binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.light_red));
+//					binding.faceRecognitionStatusTextView.setText("Unknown");
+					}
+				}
+
+				Log.i(TAG, "recognizeImage - nearest: " + name + " - distance: " + distance_local);
+			}
+		}
+
+//		final int numDetectionsOutput = 1;
+//		final ArrayList<SimilarityClassifier.Recognition> recognitions = new ArrayList<>(numDetectionsOutput);
+//		SimilarityClassifier.Recognition rec = new SimilarityClassifier.Recognition(
+//				id,
+//				label,
+//				distance);
+//
+//		recognitions.add(rec);
 	}
 
 	private void clearRegisteredFace() {
-		isFaceDetected = false;
 		registeredFace.clear();
 		insertToSP(registeredFace, 1);
 	}
@@ -795,7 +919,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		canvas.drawBitmap(source, matrix, paint);
 
-		if (source != null && !source.isRecycled()) {
+		if (!source.isRecycled()) {
 			source.recycle();
 		}
 
@@ -822,7 +946,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 	}
 
 	private List<Pair<String, Float>> findNearest(float[] emb) {
-		List<Pair<String, Float>> neighbour_list = new ArrayList<Pair<String, Float>>();
+		List<Pair<String, Float>> neighbour_list = new ArrayList<>();
 		Pair<String, Float> ret = null; //to get closest match
 		Pair<String, Float> prev_ret = null; //to get second closest match
 		for (Map.Entry<String, SimilarityClassifier.Recognition> entry : registeredFace.entrySet()) {
@@ -846,7 +970,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 		neighbour_list.add(prev_ret);
 
 		return neighbour_list;
-
 	}
 
 	//IMPORTANT. If conversion not done ,the toBitmap conversion does not work on some devices.
@@ -958,9 +1081,9 @@ public class ScanIDActivity extends AppCompatActivity implements
 			showPleaseWaitDialog();
 
 			String userID = FirebaseMain.getUser().getUid();
-
 			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(userID);
+					.collection(FirebaseMain.userCollection)
+					.document(userID);
 
 			Map<String, Object> updateUser = new HashMap<>();
 			updateUser.put("isVerified", true);
@@ -975,6 +1098,8 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 					});
 		} else {
+			closePleaseWaitDialog();
+
 			Log.e(TAG, "updateVerificationStatus: current user is null");
 
 			intent = new Intent(ScanIDActivity.this, LoginOrRegisterActivity.class);
@@ -1092,30 +1217,38 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.idVerifiedLayout.setVisibility(View.GONE);
 		binding.faceRecognitionLayout.setVisibility(View.GONE);
 
+		if (isUserVerified) {
+			binding.idAlreadyScannedLayout.setVisibility(View.VISIBLE);
+		}
+
 		idPictureUri = null;
 		showNotAnIDDialog();
 	}
 
 	private void showIDVerifiedLayout() {
-		binding.scanLaterBtn.setVisibility(View.GONE);
-
-		binding.doneBtn.setVisibility(View.VISIBLE);
-		binding.idVerifiedLayout.setVisibility(View.VISIBLE);
-		binding.matchYourFaceTextView.setVisibility(View.VISIBLE);
-		binding.faceRecognitionLayout.setVisibility(View.VISIBLE);
-		binding.addFaceBtn.setVisibility(View.VISIBLE);
-		binding.tryAgainBtn.setVisibility(View.VISIBLE);
-
+		fadeOutAnimation(binding.scanLaterBtn);
+		fadeInAnimation(binding.tryAgainBtn);
+		fadeInAnimation(binding.idVerifiedLayout);
 		fadeInAnimation(binding.matchYourFaceTextView);
 		fadeInAnimation(binding.faceRecognitionLayout);
+
+		binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN);
 	}
 
 	private void fadeInAnimation(final View view) {
 		AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
-		fadeIn.setDuration(1500);
+		fadeIn.setDuration(2000);
 
 		view.startAnimation(fadeIn);
 		view.setVisibility(View.VISIBLE);
+	}
+
+	private void fadeOutAnimation(final View view) {
+		AlphaAnimation fadeOut = new AlphaAnimation(1, 0);
+		fadeOut.setDuration(2000);
+
+		view.startAnimation(fadeOut);
+		view.setVisibility(View.GONE);
 	}
 
 	private void animateLayoutSize(final View view, final int targetWidth, final int targetHeight) {
@@ -1128,10 +1261,31 @@ public class ScanIDActivity extends AppCompatActivity implements
 			layoutParams.width = animatedValue;
 			layoutParams.height = targetHeight; // Set the desired height
 
-			// Set gravity to top-left
-			if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
-				((ViewGroup.MarginLayoutParams) layoutParams).setMargins(0, 0, 0, 0);
-			}
+			view.setLayoutParams(layoutParams);
+		});
+
+		animator.setDuration(1000); // You can customize the duration of the animation
+		animator.start();
+	}
+
+	private void reverseAnimateLayoutSize(final View view) {
+		// Measure the original dimensions
+		view.measure(
+				View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+				View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+		);
+
+		int originalWidth = view.getMeasuredWidth();
+		int originalHeight = view.getMeasuredHeight();
+
+		ValueAnimator animator = ValueAnimator.ofInt(view.getMeasuredWidth(), originalWidth);
+
+		animator.addUpdateListener(valueAnimator -> {
+			int animatedValue = (int) valueAnimator.getAnimatedValue();
+
+			ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+			layoutParams.width = animatedValue;
+			layoutParams.height = originalHeight; // Set the original height
 
 			view.setLayoutParams(layoutParams);
 		});
@@ -1227,10 +1381,10 @@ public class ScanIDActivity extends AppCompatActivity implements
 	}
 
 	private void openGallery() {
-		Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+		@SuppressLint("IntentReset") Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 		galleryIntent.setType("image/*");
 		if (galleryIntent.resolveActivity(getPackageManager()) != null) {
-			startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+			startActivityForResult(galleryIntent, STORAGE_REQUEST_CODE);
 			if (optionsDialog != null && optionsDialog.isShowing()) {
 				optionsDialog.dismiss();
 			}
@@ -1276,9 +1430,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.idVerifiedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.alignYourFaceTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.faceRecognitionStatusTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.addFaceBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.matchBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.tryAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.scanLaterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
@@ -1293,39 +1445,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		} else {
 			Toast.makeText(this, "No camera app found", Toast.LENGTH_SHORT).show();
-		}
-	}
-
-	private void showOptionsDialog() {
-		builder = new AlertDialog.Builder(this);
-
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_camera_gallery, null);
-
-		Button openCameraBtn = dialogView.findViewById(R.id.openCameraBtn);
-		Button openGalleryBtn = dialogView.findViewById(R.id.openGalleryBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-
-		openCameraBtn.setOnClickListener(v -> {
-			openCamera();
-		});
-
-		openGalleryBtn.setOnClickListener(v -> {
-			openGallery();
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeOptionsDialog();
-		});
-
-		builder.setView(dialogView);
-
-		optionsDialog = builder.create();
-		optionsDialog.show();
-	}
-
-	private void closeOptionsDialog() {
-		if (optionsDialog != null && optionsDialog.isShowing()) {
-			optionsDialog.dismiss();
 		}
 	}
 
@@ -1378,7 +1497,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 								closePleaseWaitDialog();
 
 								Toast.makeText(ScanIDActivity.this, "ID failed to add", Toast.LENGTH_SHORT).show();
-
 								Log.e(TAG, "uploadIDPictureToFirebaseStorage: " + e.getMessage());
 							});
 				})
@@ -1386,7 +1504,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 					closePleaseWaitDialog();
 
 					Toast.makeText(ScanIDActivity.this, "ID failed to add", Toast.LENGTH_SHORT).show();
-
 					Log.e(TAG, "uploadIDPictureToFirebaseStorage: " + e.getMessage());
 				});
 
@@ -1422,9 +1539,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-		tryAgainBtn.setOnClickListener(v -> {
-			closeNoInternetDialog();
-		});
+		tryAgainBtn.setOnClickListener(v -> closeNoInternetDialog());
 
 		builder.setView(dialogView);
 
@@ -1476,7 +1591,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 		try {
 			if (resultCode == Activity.RESULT_OK && data != null) {
 				if (requestCode == UPLOAD_ID_FROM_GALLERY) {
+
+					fadeInAnimation(binding.scanYourIDTypeTextView);
+					fadeOutAnimation(binding.idAlreadyScannedLayout);
 					idPictureUri = data.getData();
+					Uri selectedImageUri = data.getData();
+
 					binding.idImageView.setImageURI(idPictureUri);
 
 					Bitmap bitmap;
@@ -1489,64 +1609,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 					bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
 					bitmap = Bitmap.createScaledBitmap(bitmap, imageSize, imageSize, false);
 
-					classifyID(bitmap);
-
-				} else if (requestCode == RECOGNIZE_FACE_IN_ID) {
-					Uri selectedImageUri = data.getData();
-					try {
-						InputImage inputImage = InputImage
-								.fromBitmap(getBitmapFromUri(selectedImageUri), 0);
-						faceDetector.process(inputImage)
-								.addOnSuccessListener(faces -> {
-
-									if (faces.size() != 0) {
-										binding.idScanLayout.setVisibility(View.VISIBLE);
-										Face face = faces.get(0);
-
-										Log.i(TAG, "onActivityResult - onSuccess: " + face.toString());
-
-										//write code to recreate bitmap from source
-										//Write code to show bitmap to canvas
-										Bitmap frame_bmp = null;
-										try {
-											frame_bmp = getBitmapFromUri(selectedImageUri);
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-										Bitmap frame_bmp1 = rotateBitmap(frame_bmp, 0, flipX, false);
-
-										//face_preview.setImageBitmap(frame_bmp1);
-										RectF boundingBox = new RectF(face.getBoundingBox());
-
-										Bitmap cropped_face = getCropBitmapByCPU(frame_bmp1, boundingBox);
-
-										Bitmap scaled = getResizedBitmap(cropped_face, 112, 112);
-										// face_preview.setImageBitmap(scaled);
-
-										recognizeImage(scaled);
-										getDetectedFace();
-
-										try {
-											Thread.sleep(100);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-									}
-								})
-								.addOnFailureListener(e -> {
-									startFaceDetecting = true;
-									showToast("Image failed to add", 1);
-									Log.e(TAG, "onActivityResult: " + e.getMessage());
-								});
-						binding.facePreviewImageView.setImageBitmap(getBitmapFromUri(selectedImageUri));
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					//scan ID
+					classifyID(bitmap, selectedImageUri);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-
 			Log.e(TAG, "onActivityResult: " + e.getMessage());
 		}
 	}
@@ -1563,11 +1631,10 @@ public class ScanIDActivity extends AppCompatActivity implements
 			}
 		} else if (requestCode == STORAGE_PERMISSION_REQUEST) {
 			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.i(TAG, "Gallery Permission Granted");
+				Log.i(TAG, "Storage Permission Granted");
 			}
 		} else {
 			Log.e(TAG, "Permission Denied");
-
 		}
 	}
 }

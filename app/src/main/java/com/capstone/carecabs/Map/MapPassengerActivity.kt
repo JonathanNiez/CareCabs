@@ -705,9 +705,6 @@ class MapPassengerActivity : AppCompatActivity(),
         driverLongitude: Double,
         driverLatitude: Double,
     ) {
-
-        updateDriverPingAnnotationFromMap()
-
         bitmapFromDrawableRes(
             this@MapPassengerActivity,
             R.drawable.car_100_2

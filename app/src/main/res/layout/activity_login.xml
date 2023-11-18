@@ -90,7 +90,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="emailAddress"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/gabarito_medium"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="EMAIL"
 							android:inputType="textEmailAddress"
 							android:textColor="@color/black"
@@ -120,7 +120,7 @@
 							android:layout_height="wrap_content"
 							android:autofillHints="password"
 							android:background="@drawable/smooth_edit_text_2"
-							android:fontFamily="@font/gabarito_medium"
+							android:fontFamily="@font/gabarito_semibold"
 							android:hint="PASSWORD"
 							android:inputType="textPassword"
 							android:textColor="@color/black"
@@ -171,56 +171,36 @@
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
-			<androidx.appcompat.widget.LinearLayoutCompat
+			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/loginBtn"
-				style="@style/PrimaryLongButton"
-				android:layout_width="160dp"
-				android:layout_height="50dp"
+				style="@style/PrimaryButton"
+				android:layout_width="150dp"
+				android:layout_height="wrap_content"
 				android:layout_marginTop="20dp"
 				android:layout_marginBottom="20dp"
 				android:elevation="5dp"
-				android:gravity="center"
-				android:orientation="horizontal">
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/loginTextView2"
-					style="@style/PrimaryLongButtonTextColor"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:text="LOGIN"
-					android:textSize="17sp" />
-
-				<androidx.appcompat.widget.AppCompatImageView
-					style="@style/PrimaryLongButtonIconTint"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_margin="5dp"
-					android:src="@drawable/login_32_white" />
-
-			</androidx.appcompat.widget.LinearLayoutCompat>
+				android:padding="10dp"
+				android:text="Login"
+				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:id="@+id/googleLoginBtn"
-				android:layout_width="280dp"
-				android:layout_height="50dp"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:layout_marginBottom="30dp"
 				android:background="@drawable/smooth_edge_button"
 				android:backgroundTint="@color/white"
 				android:elevation="5dp"
 				android:gravity="center"
-				android:orientation="horizontal">
+				android:orientation="horizontal"
+				android:paddingStart="20dp"
+				android:paddingEnd="20dp">
 
 				<androidx.appcompat.widget.AppCompatTextView
 					android:id="@+id/loginWithGoogleTextView"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="start|center_vertical"
-					android:layout_marginStart="5dp"
-					android:layout_marginTop="5dp"
-					android:layout_marginEnd="5dp"
-					android:layout_marginBottom="5dp"
 					android:fontFamily="@font/gabarito_semibold"
 					android:text="LOGIN WITH GOOGLE"
 					android:textColor="@color/black"
@@ -230,11 +210,7 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="end|center_vertical"
-					android:layout_marginStart="5dp"
-					android:layout_marginTop="5dp"
-					android:layout_marginEnd="5dp"
-					android:layout_marginBottom="5dp"
-					android:src="@drawable/google_64" />
+					app:srcCompat="@drawable/google_48" />
 
 			</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -264,7 +240,8 @@
 					android:backgroundTint="@color/blue"
 					android:elevation="5dp"
 					android:fontFamily="@font/gabarito_semibold"
-					android:padding="15dp"
+					android:paddingStart="20dp"
+					android:paddingEnd="20dp"
 					android:text="Reset Password"
 					android:textAlignment="center"
 					android:textColor="@color/white"

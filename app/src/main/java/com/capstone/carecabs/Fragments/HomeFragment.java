@@ -1,5 +1,6 @@
 package com.capstone.carecabs.Fragments;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -16,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -45,7 +45,7 @@ import com.capstone.carecabs.Register.RegisterActivity;
 import com.capstone.carecabs.Register.RegisterDriverActivity;
 import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Register.RegisterSeniorActivity;
-import com.capstone.carecabs.RequestLocationPermissionActivity;
+import com.capstone.carecabs.RequestPermissionActivity;
 import com.capstone.carecabs.TripHistoryActivity;
 import com.capstone.carecabs.Utility.LocationPermissionChecker;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
@@ -63,9 +63,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -178,6 +175,16 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 //		slideFragments.add(new CarouselFragment3());
 //		slideFragments.add(new CarouselFragment4());
 
+		binding.homeTextView.setOnClickListener(v -> {
+
+			int scrollBottom = binding.scrollView.getChildAt(0).getHeight() - binding.scrollView.getHeight();
+
+			// Animate the scroll to the bottom position
+			ObjectAnimator.ofInt(binding.scrollView, "scrollY", scrollBottom)
+					.setDuration(1000) // You can customize the duration of the animation
+					.start();
+		});
+
 		binding.myProfileBtn.setOnClickListener(v -> goToAccountFragment());
 
 		binding.driverStatusSwitch.setOnCheckedChangeListener(
@@ -288,24 +295,17 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 		String greeting;
 		if (hour >= 0 && hour < 12) {
-			greeting = "Good Morning!";
+			greeting = "Good Morning";
 			binding.currentTimeImageView.setImageResource(R.drawable.morning_128);
 
 		} else if (hour >= 12 && hour < 18) {
-			greeting = "Good Afternoon!";
+			greeting = "Good Afternoon";
 			binding.currentTimeImageView.setImageResource(R.drawable.afternoon_128);
 
 		} else {
-			greeting = "Good Evening!";
+			greeting = "Good Evening";
 			binding.currentTimeImageView.setImageResource(R.drawable.evening_128);
 
-		}
-
-		String amPm = (hour < 12) ? "AM" : "PM";
-		if (hour > 12) {
-			hour -= 12;
-		} else if (hour == 0) {
-			hour = 12;
 		}
 
 		binding.greetTextView.setText(greeting);
@@ -532,7 +532,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								if (LocationPermissionChecker.isLocationPermissionGranted(context)) {
 									checkLocationService(userType);
 								} else {
-									intent = new Intent(getActivity(), RequestLocationPermissionActivity.class);
+									intent = new Intent(getActivity(), RequestPermissionActivity.class);
 									startActivity(intent);
 									Objects.requireNonNull(getActivity()).finish();
 								}
@@ -1050,7 +1050,8 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	}
 
 	private void checkLocationService(String userType) {
-		LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
+		LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity())
+				.getSystemService(Context.LOCATION_SERVICE);
 		boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 		boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 

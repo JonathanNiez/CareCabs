@@ -156,6 +156,7 @@ class MapDriverActivity : AppCompatActivity(),
     private lateinit var confirmPickupDialog: AlertDialog
     private lateinit var confirmDropOffDialog: AlertDialog
     private lateinit var passengerTransportedSuccessDialog: AlertDialog
+    private lateinit var pleaseWaitDialog: AlertDialog
     private lateinit var voiceAssistant: VoiceAssistant
     private var voiceAssistantState = StaticDataPasser.storeVoiceAssistantState
     private var fontSize = StaticDataPasser.storeFontSize
@@ -1176,6 +1177,7 @@ class MapDriverActivity : AppCompatActivity(),
             }
         }
     }
+
     private fun removeDestinationAnnotationFromMap() {
         pointAnnotation?.let { pointAnnotationManager.delete(it) }
     }
@@ -1417,7 +1419,6 @@ class MapDriverActivity : AppCompatActivity(),
         return currentTimeMillis + travelTimeMillis
     }
 
-    //TODO: handle arrival
     private fun handleDriverArrival() {
 
         val driverReference = FirebaseMain.getFireStoreInstance()
@@ -1588,6 +1589,7 @@ class MapDriverActivity : AppCompatActivity(),
                     driverReference.update(updateDriverStatus)
                         .addOnSuccessListener {
 
+                            closeConfirmDropOffDialog()
                             showPassengerTransportedSuccessDialog()
                             removeDestinationAnnotationFromMap()
                         }
@@ -1775,6 +1777,7 @@ class MapDriverActivity : AppCompatActivity(),
 
                 isNavigatingToDestination = true
 
+                closeConfirmPickupDialog()
                 createDestinationAnnotationToMap(destinationCoordinate)
                 findRoute(destinationCoordinate)
                 checkNavigationStatus()
@@ -1825,6 +1828,21 @@ class MapDriverActivity : AppCompatActivity(),
         }
     }
 
+    private fun showPleaseWaitDialog() {
+        builder = AlertDialog.Builder(this)
+        builder.setCancelable(false)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_please_wait, null)
+        builder.setView(dialogView)
+        pleaseWaitDialog = builder.create()
+        pleaseWaitDialog.show()
+    }
+
+    private fun closePleaseWaitDialog() {
+        if (pleaseWaitDialog != null && pleaseWaitDialog.isShowing()) {
+            pleaseWaitDialog.dismiss()
+        }
+    }
+
     private fun showUserNotVerifiedDialog() {
         builder = AlertDialog.Builder(this)
         builder.setCancelable(false)
@@ -1869,7 +1887,12 @@ class MapDriverActivity : AppCompatActivity(),
             DialogConfirmPickupBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
+        binding.loadingGif.visibility = View.GONE
+
         binding.confirmBtn.setOnClickListener {
+            binding.loadingGif.visibility = View.VISIBLE
+            binding.confirmBtn.visibility= View.GONE
+            binding.closeBtn.visibility= View.GONE
 
             storeTripToDatabase(
                 generateTripID,
@@ -1883,8 +1906,6 @@ class MapDriverActivity : AppCompatActivity(),
                 destination,
                 destinationCoordinates
             )
-
-            closeConfirmPickupDialog()
         }
 
         binding.closeBtn.setOnClickListener {
@@ -1913,16 +1934,20 @@ class MapDriverActivity : AppCompatActivity(),
             DialogConfirmDropoffBinding.inflate(layoutInflater)
         val dialogView = binding.root
 
+        binding.loadingGif.visibility = View.GONE
+
         Log.d(TAG, "showConfirmDropOffDialog: $passengerID")
 
         binding.confirmBtn.setOnClickListener {
+            binding.loadingGif.visibility = View.VISIBLE
+            binding.closeBtn.visibility = View.GONE
+            binding.confirmBtn.visibility = View.GONE
+
             setTripAsComplete(
                 tripID,
                 bookingID,
                 passengerID
             )
-
-            closeConfirmDropOffDialog()
         }
 
         binding.closeBtn.setOnClickListener {
@@ -2231,6 +2256,4 @@ class MapDriverActivity : AppCompatActivity(),
             }
         }
     }
-
-
 }

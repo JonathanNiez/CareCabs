@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,11 +36,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
@@ -71,7 +68,7 @@ public class RegisterActivity extends AppCompatActivity implements
 			prefixPhoneNumber, accountCreationDate;
 	private VoiceAssistant voiceAssistant;
 	private Intent intent;
-	private static final int GOOGLE_SIGNIN_REQUEST = 69;
+	private static final int GOOGLE_SIGN_IN = 69;
 	private AlertDialog.Builder builder;
 	private AlertDialog pleaseWaitDialog, noInternetDialog, userTypeImageDialog,
 			ageInfoDialog, registerFailedDialog, cancelRegisterDialog,
@@ -175,7 +172,8 @@ public class RegisterActivity extends AppCompatActivity implements
 			settingsBottomSheet.show(getSupportFragmentManager(), settingsBottomSheet.getTag());
 		});
 
-		GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+		GoogleSignInOptions googleSignInOptions = new
+				GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(getString(R.string.default_web_client_id))
 				.requestEmail()
 				.build();
@@ -210,7 +208,7 @@ public class RegisterActivity extends AppCompatActivity implements
 
 			if (registerType.equals("Google")) {
 				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, GOOGLE_SIGNIN_REQUEST);
+				startActivityForResult(intent, GOOGLE_SIGN_IN);
 
 			} else if (userType.equals("Senior Citizen")) {
 				showAgeRequiredDialog();
@@ -228,7 +226,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				setFontSize(fontSize);
 
 				intent = googleSignInClient.getSignInIntent();
-				startActivityForResult(intent, GOOGLE_SIGNIN_REQUEST);
+				startActivityForResult(intent, GOOGLE_SIGN_IN);
 
 			} else if (userType.equals("Person with Disabilities (PWD)")) {
 
@@ -247,7 +245,6 @@ public class RegisterActivity extends AppCompatActivity implements
 							voiceAssistant.speak("Phone number"));
 				}
 			}
-
 			binding.userTypeImageBtn.setOnClickListener(v -> showUserTypeImageDialog());
 
 			binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
@@ -678,6 +675,147 @@ public class RegisterActivity extends AppCompatActivity implements
 				});
 	}
 
+	//register using google
+	private void googleRegisterDriver(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
+
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+
+		}).addOnFailureListener(e -> {
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+
+			FirebaseMain.signOutUser();
+
+			showRegisterFailedDialog();
+
+			Log.e(TAG, "googleRegisterDriver: " + e.getMessage());
+		});
+	}
+
+	private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
+
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, "googleRegisterSenior: " + e.getMessage());
+
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+
+			FirebaseMain.signOutUser();
+
+			showRegisterFailedDialog();
+		});
+	}
+
+	private void googleRegisterPWD(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
+		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
+			getUserID = authResult.getUser().getUid();
+
+			documentReference = FirebaseMain.getFireStoreInstance()
+					.collection(FirebaseMain.userCollection).document(getUserID);
+			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
+
+		}).addOnFailureListener(e -> {
+			Log.e(TAG, "googleRegisterPWD: " + e.getMessage());
+
+			binding.progressBarLayout.setVisibility(View.GONE);
+			binding.nextBtn.setVisibility(View.VISIBLE);
+
+			FirebaseMain.signOutUser();
+
+			showRegisterFailedDialog();
+		});
+	}
+
+	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
+		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat =
+				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+		accountCreationDate = dateFormat.format(date);
+		theme = StaticDataPasser.storeTheme;
+
+		Map<String, Object> registerUser = new HashMap<>();
+		registerUser.put("userID", userID);
+		registerUser.put("email", googleEmail);
+		registerUser.put("userType", userType);
+		registerUser.put("profilePicture", profilePic);
+		registerUser.put("phoneNumber", prefixPhoneNumber);
+		registerUser.put("accountCreationDate", accountCreationDate);
+		registerUser.put("fontSize", fontSize);
+		registerUser.put("theme", theme);
+		registerUser.put("registerType", registerType);
+		registerUser.put("isVerified", false);
+		registerUser.put("isFirstTimeUser", true);
+
+		documentReference.set(registerUser)
+				.addOnSuccessListener(unused -> {
+					switch (userType) {
+						case "Driver":
+							intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
+							break;
+
+						case "Senior Citizen":
+							intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
+
+							break;
+
+						case "Person with Disabilities (PWD)":
+							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
+
+							break;
+					}
+					StaticDataPasser.storePhoneNumber = null;
+
+					startActivity(intent);
+					finish();
+				})
+				.addOnFailureListener(e -> {
+
+					Log.e(TAG, "storeGoogleUserDataToFireStore: " + e.getMessage());
+
+					binding.progressBarLayout.setVisibility(View.GONE);
+					binding.nextBtn.setVisibility(View.VISIBLE);
+					FirebaseMain.signOutUser();
+
+					showRegisterFailedDialog();
+				});
+	}
+
+	private void fireBaseAuthWithGoogle(String idToken) {
+
+		AuthCredential authCredential = GoogleAuthProvider.getCredential(idToken, null);
+		if (googleSignInAccount != null) {
+			googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+			String getGoogleEmail = googleSignInAccount.getEmail();
+			String getGoogleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
+
+			switch (userType) {
+				case "Driver":
+					googleRegisterDriver(authCredential, getGoogleEmail, getGoogleProfilePic);
+
+					break;
+
+				case "Person with Disabilities (PWD)":
+					googleRegisterPWD(authCredential, getGoogleEmail, getGoogleProfilePic);
+
+					break;
+
+				case "Senior Citizen":
+					googleRegisterSenior(authCredential, getGoogleEmail, getGoogleProfilePic);
+
+					break;
+			}
+		}
+	}
 	private void showToast(String message, int duration) {
 		Toast.makeText(this, message, duration).show();
 	}
@@ -1106,161 +1244,18 @@ public class RegisterActivity extends AppCompatActivity implements
 			emailAlreadyUsedDialog.dismiss();
 		}
 	}
-
-	private void googleRegisterDriver(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
-
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
-
-		}).addOnFailureListener(e -> {
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-
-			FirebaseMain.signOutUser();
-
-			showRegisterFailedDialog();
-
-			Log.e(TAG, "googleRegisterDriver: " + e.getMessage());
-		});
-	}
-
-	private void googleRegisterSenior(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-
-			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
-
-		}).addOnFailureListener(e -> {
-			Log.e(TAG, "googleRegisterSenior: " + e.getMessage());
-
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-
-			FirebaseMain.signOutUser();
-
-			showRegisterFailedDialog();
-		});
-	}
-
-	private void googleRegisterPWD(AuthCredential authCredential, String googleEmail, String googleProfilePicture) {
-		FirebaseMain.getAuth().signInWithCredential(authCredential).addOnSuccessListener(authResult -> {
-			getUserID = authResult.getUser().getUid();
-
-			documentReference = FirebaseMain.getFireStoreInstance()
-					.collection(FirebaseMain.userCollection).document(getUserID);
-			storeGoogleUserDataToFireStore(getUserID, googleEmail, googleProfilePicture);
-
-		}).addOnFailureListener(e -> {
-			Log.e(TAG, "googleRegisterPWD: " + e.getMessage());
-
-			binding.progressBarLayout.setVisibility(View.GONE);
-			binding.nextBtn.setVisibility(View.VISIBLE);
-
-			FirebaseMain.signOutUser();
-
-			showRegisterFailedDialog();
-		});
-	}
-
-	private void storeGoogleUserDataToFireStore(String userID, String googleEmail, String profilePic) {
-		@SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat =
-				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
-		accountCreationDate = dateFormat.format(date);
-		theme = StaticDataPasser.storeTheme;
-
-		Map<String, Object> registerUser = new HashMap<>();
-		registerUser.put("userID", userID);
-		registerUser.put("email", googleEmail);
-		registerUser.put("userType", userType);
-		registerUser.put("profilePicture", profilePic);
-		registerUser.put("phoneNumber", prefixPhoneNumber);
-		registerUser.put("accountCreationDate", accountCreationDate);
-		registerUser.put("fontSize", fontSize);
-		registerUser.put("theme", theme);
-		registerUser.put("registerType", registerType);
-		registerUser.put("isVerified", false);
-		registerUser.put("isFirstTimeUser", true);
-
-		documentReference.set(registerUser)
-				.addOnSuccessListener(unused -> {
-					switch (userType) {
-						case "Driver":
-							intent = new Intent(RegisterActivity.this, RegisterDriverActivity.class);
-							break;
-
-						case "Senior Citizen":
-							intent = new Intent(RegisterActivity.this, RegisterSeniorActivity.class);
-
-							break;
-
-						case "Person with Disabilities (PWD)":
-							intent = new Intent(RegisterActivity.this, RegisterPWDActivity.class);
-
-							break;
-					}
-					StaticDataPasser.storePhoneNumber = null;
-
-					startActivity(intent);
-					finish();
-				})
-				.addOnFailureListener(e -> {
-
-					Log.e(TAG, "storeGoogleUserDataToFireStore: " + e.getMessage());
-
-					binding.progressBarLayout.setVisibility(View.GONE);
-					binding.nextBtn.setVisibility(View.VISIBLE);
-					FirebaseMain.signOutUser();
-
-					showRegisterFailedDialog();
-				});
-	}
-
-	//register using google
-	private void fireBaseAuthWithGoogle(String idToken) {
-
-		AuthCredential authCredential = GoogleAuthProvider.getCredential(idToken, null);
-		if (googleSignInAccount != null) {
-			googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
-
-			String getGoogleEmail = googleSignInAccount.getEmail();
-			String getGoogleProfilePic = String.valueOf(googleSignInAccount.getPhotoUrl());
-
-			switch (userType) {
-				case "Driver":
-					googleRegisterDriver(authCredential, getGoogleEmail, getGoogleProfilePic);
-
-					break;
-
-				case "Person with Disabilities (PWD)":
-					googleRegisterPWD(authCredential, getGoogleEmail, getGoogleProfilePic);
-
-					break;
-
-				case "Senior Citizen":
-					googleRegisterSenior(authCredential, getGoogleEmail, getGoogleProfilePic);
-
-					break;
-			}
-		}
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == GOOGLE_SIGNIN_REQUEST) {
+		if (requestCode == GOOGLE_SIGN_IN) {
 			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
 			try {
 				googleSignInAccount = googleSignInAccountTask.getResult(ApiException.class);
 				fireBaseAuthWithGoogle(googleSignInAccount.getIdToken());
 			} catch (Exception e) {
 				Log.e(TAG, "onActivityResult: " + e.getMessage());
+				e.printStackTrace();
 			}
 		}
-
 	}
 }

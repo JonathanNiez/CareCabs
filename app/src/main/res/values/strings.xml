@@ -8,6 +8,8 @@
 
 	<string name="custom_map_style_url">mapbox://styles/jonathanniez/clkg9pvym005j01qy0im6hk22</string>
 
+	<string name="default_web_client_id" translatable="false">205073319244-lrk1l36m7kcnojhb8u4vpqq4sm5j04lm.apps.googleusercontent.com</string>
+
 	<string name="not_senior_citizen">Your age needs to meet the requirement
     </string>
 

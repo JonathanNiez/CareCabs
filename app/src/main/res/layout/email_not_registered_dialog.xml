@@ -1,55 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background">
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	style="@style/MainBackground"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:gravity="center"
+	android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/opensans_semibold"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        android:text="Email is not Registered \n Do you want to Register?"
-        android:textAlignment="center"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"/>
+	<androidx.cardview.widget.CardView
+		style="@style/BaseCardBackground"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		app:cardCornerRadius="10dp"
+		app:cardElevation="5dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
-        android:gravity="center">
+		<androidx.appcompat.widget.LinearLayoutCompat
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/yesBtn"
-            android:layout_width="185dp"
-            android:layout_height="78dp"
-            android:background="@drawable/custom_button"
-            android:text="Yes"
-            android:layout_marginEnd="2.5dp"
-            android:fontFamily="@font/opensans_bold"
-            android:textSize="24sp"
-            android:textColor="@color/white"
-           />
+			<androidx.appcompat.widget.AppCompatImageView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				app:srcCompat="@drawable/id_not_verified_96" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/noBtn"
-            android:layout_width="185dp"
-            android:layout_height="78dp"
-            android:background="@drawable/custom_button"
-            android:text="No"
-            android:layout_marginStart="2.5dp"
-            android:backgroundTint="@color/red"
-            android:fontFamily="@font/opensans_bold"
-            android:textSize="24sp"
-            android:textColor="@color/white"
-            />
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_margin="10dp"
+				android:fontFamily="@font/gabarito_bold"
+				android:text="GOOGLE ACCOUNT"
+				android:textAlignment="center"
+				android:textSize="20sp" />
 
-    </LinearLayout>
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Google Account not Registered"
+				android:textAlignment="center"
+				android:textSize="17sp" />
 
+			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:layout_margin="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="Would you like to register your Google Account?"
+				android:textAlignment="center"
+				android:textSize="17sp" />
 
-</LinearLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
+
+	</androidx.cardview.widget.CardView>
+
+	<androidx.appcompat.widget.LinearLayoutCompat
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
+		android:gravity="center"
+		android:orientation="horizontal">
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/noBtn"
+			style="@style/SecondaryButton"
+			android:layout_width="120dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="No"
+			android:textColor="@color/black"
+			android:textSize="17sp" />
+
+		<androidx.appcompat.widget.AppCompatButton
+			android:id="@+id/yesBtn"
+			style="@style/PrimaryButton"
+			android:layout_width="120dp"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:elevation="5dp"
+			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
+			android:text="Yes"
+			android:textColor="@color/white"
+			android:textSize="17sp" />
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

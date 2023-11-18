@@ -63,6 +63,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
+	private boolean isEditing = false;
 	private final String[] disabilityItem = {
 			"Communication Disability",
 			"Vision Impairment",
@@ -72,6 +73,20 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 			"Acquired brain injury",
 			"Autism spectrum disorder",
 			"Physical disability"
+	};
+	private final String[] monthItem = {
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"
 	};
 
 	private final String[] sexItem = {"Male", "Female"};
@@ -492,7 +507,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 		if (fontSize.equals("large")) {
 			float TEXT_SIZE = 20;
-			dialogEnterBirthdateBinding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogEnterBirthdateBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 			dialogEnterBirthdateBinding.dayEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
 			dialogEnterBirthdateBinding.yearEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
 			dialogEnterBirthdateBinding.monthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
@@ -516,65 +531,14 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 
 		}
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this,
-				R.array.month,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
-		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-				} else {
-					month = parent.getItemAtPosition(position).toString();
-					dialogEnterBirthdateBinding.monthTextView.setText(month);
-				}
-			}
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-			}
-		});
-
-		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
-		});
-
-		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
+		ArrayAdapter<String> monthAdapter =
+				new ArrayAdapter<>(this, R.layout.item_dropdown, monthItem);
+		dialogEnterBirthdateBinding.monthDropDownMenu.setAdapter(monthAdapter);
+		dialogEnterBirthdateBinding.monthDropDownMenu.setOnItemClickListener((parent, view, position, id)
+				-> {
+			month = parent.getItemAtPosition(position).toString();
+			dialogEnterBirthdateBinding.monthTextView.setText(month);
 		});
 
 		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
@@ -585,7 +549,7 @@ public class RegisterPWDActivity extends AppCompatActivity implements
 					|| year.isEmpty()
 					|| day.isEmpty()) {
 
-				Toast.makeText(RegisterPWDActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+				Toast.makeText(RegisterPWDActivity.this, "Please complete your Birthdate", Toast.LENGTH_SHORT).show();
 
 			} else {
 				birthDate = month + "-" + day + "-" + year;

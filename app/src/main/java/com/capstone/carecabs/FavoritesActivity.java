@@ -30,8 +30,6 @@ import java.util.UUID;
 public class FavoritesActivity extends AppCompatActivity {
 	private final String TAG = "FavoritesActivity";
 	private ActivityFavoritesBinding binding;
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +37,8 @@ public class FavoritesActivity extends AppCompatActivity {
 		setContentView(binding.getRoot());
 
 		binding.noFavoritesTextView.setVisibility(View.GONE);
+
+		binding.backFloatingBtn.setOnClickListener(v -> finish());
 
 		FirebaseApp.initializeApp(this);
 
@@ -81,9 +81,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
 								}
 							}
-
 							favoritesAdapter.notifyDataSetChanged();
-
 							if (hasFavorites){
 								binding.noFavoritesTextView.setVisibility(View.GONE);
 

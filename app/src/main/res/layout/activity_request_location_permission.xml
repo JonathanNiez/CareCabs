@@ -2,75 +2,181 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
+	style="@style/MainBackground"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/vermillion"
-	tools:context=".RequestLocationPermissionActivity">
+	tools:context=".RequestPermissionActivity">
 
-	<ImageView
-		android:id="@+id/logo"
-		android:layout_width="300dp"
-		android:layout_height="200dp"
+	<androidx.appcompat.widget.AppCompatImageView
+		android:id="@+id/imageView"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
-		android:layout_margin="20dp"
-		android:layout_marginStart="20dp"
-		android:layout_marginEnd="20dp"
-		android:layout_marginBottom="20dp"
-		android:src="@drawable/logo_2_v2" />
+		android:layout_marginTop="30dp"
+		android:src="@drawable/warning_96" />
 
-	<androidx.cardview.widget.CardView
-		android:id="@+id/cardView"
-		android:layout_centerInParent="true"
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/titleTextView"
+		style="@style/TextColor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/imageView"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="10dp"
+		android:fontFamily="@font/gabarito_bold"
+		android:text="Allow Permissions"
+		android:textAlignment="center"
+		android:textSize="25sp" />
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/bodyTextView1"
+		style="@style/TextColor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/titleTextView"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="5dp"
+		android:fontFamily="@font/gabarito_semibold"
+		android:text="Allow these Features to use the App"
+		android:textAlignment="center"
+		android:textSize="20sp" />
+
+	<androidx.appcompat.widget.AppCompatTextView
+		android:id="@+id/bodyTextView2"
+		style="@style/TextColor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/bodyTextView1"
+		android:layout_centerHorizontal="true"
+		android:layout_margin="5dp"
+		android:fontFamily="@font/gabarito_medium"
+		android:text="Click the buttons below to allow these Features"
+		android:textAlignment="center"
+		android:textSize="17sp" />
+
+	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="match_parent"
-		android:layout_margin="20dp"
-		app:cardBackgroundColor="@color/white"
-		app:cardCornerRadius="10dp"
-		app:cardElevation="5dp"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_below="@id/bodyTextView2"
+		android:gravity="center"
+		android:orientation="vertical">
 
-		<LinearLayout
+		<androidx.cardview.widget.CardView
+			android:id="@+id/allowLocationBtn"
+			style="@style/BaseCardBackground"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:gravity="center"
-			android:orientation="vertical"
-			android:padding="5dp">
+			android:layout_margin="10dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
 
-			<ImageView
-				android:id="@+id/imageView"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:src="@drawable/location_pin_128" />
-
-			<TextView
-				android:id="@+id/textView"
+			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				android:fontFamily="@font/opensans_semibold"
-				android:text="Please allow CareCabs to access your location"
-				android:textAlignment="center"
-				android:textColor="@color/black"
-				android:textSize="17sp" />
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
 
-		</LinearLayout>
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="1"
+					android:src="@drawable/location_64_2" />
 
-	</androidx.cardview.widget.CardView>
+				<androidx.appcompat.widget.AppCompatTextView
+					android:id="@+id/textView"
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="5"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="Allow Location Access"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
 
+			</androidx.appcompat.widget.LinearLayoutCompat>
 
-	<androidx.appcompat.widget.AppCompatButton
-		android:id="@+id/allowLocationBtn"
-		android:layout_width="220dp"
-		android:layout_height="50dp"
-		android:layout_below="@id/cardView"
-		android:layout_centerHorizontal="true"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/yinmn_blue"
-		android:elevation="5dp"
-		android:fontFamily="@font/opensans_bold"
-		android:text="Allow Location"
-		android:textColor="@color/white"
-		android:textSize="17sp" />
+		</androidx.cardview.widget.CardView>
+
+		<androidx.cardview.widget.CardView
+			android:id="@+id/allowCameraBtn"
+			style="@style/BaseCardBackground"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="1"
+					android:src="@drawable/camera_64" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="5"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="Allow Camera Access"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+		</androidx.cardview.widget.CardView>
+
+		<androidx.cardview.widget.CardView
+			android:id="@+id/allowStorageBtn"
+			style="@style/BaseCardBackground"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="10dp"
+			app:cardCornerRadius="10dp"
+			app:cardElevation="5dp">
+
+			<androidx.appcompat.widget.LinearLayoutCompat
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:gravity="center"
+				android:orientation="horizontal"
+				android:padding="5dp">
+
+				<androidx.appcompat.widget.AppCompatImageView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="1"
+					android:src="@drawable/folder_64" />
+
+				<androidx.appcompat.widget.AppCompatTextView
+					android:layout_width="0dp"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					android:layout_weight="5"
+					android:fontFamily="@font/gabarito_semibold"
+					android:text="Allow Storage Access"
+					android:textAlignment="center"
+					android:textColor="@color/black"
+					android:textSize="20sp" />
+
+			</androidx.appcompat.widget.LinearLayoutCompat>
+
+		</androidx.cardview.widget.CardView>
+
+	</androidx.appcompat.widget.LinearLayoutCompat>
 
 </RelativeLayout>

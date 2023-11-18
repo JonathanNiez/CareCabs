@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,18 +24,14 @@ import com.capstone.carecabs.databinding.DialogEmailNotVerifiedBinding;
 import com.capstone.carecabs.databinding.DialogEmailVerificationLinkSentBinding;
 import com.capstone.carecabs.databinding.DialogInvalidCredentialsBinding;
 import com.capstone.carecabs.databinding.DialogLoginUnknownErrorOccuredBinding;
-import com.capstone.carecabs.databinding.DialogVerifiedEmailBinding;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -53,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements
 	private Intent intent;
 	private GoogleSignInAccount googleSignInAccount;
 	private GoogleSignInClient googleSignInClient;
-	private static final int RC_SIGN_IN = 69;
+	private static final int GOOGLE_SIGN_IN = 69;
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, emailDialog,
 			emailNotRegisteredDialog, incorrectEmailOrPasswordDialog,
@@ -80,6 +74,7 @@ public class LoginActivity extends AppCompatActivity implements
 		closeNoInternetDialog();
 		closeUnknownOccurredDialog();
 		closeInvalidCredentialsDialog();
+		closeEmailNotRegisterDialog();
 	}
 
 	@Override
@@ -96,6 +91,7 @@ public class LoginActivity extends AppCompatActivity implements
 		closeNoInternetDialog();
 		closeUnknownOccurredDialog();
 		closeInvalidCredentialsDialog();
+		closeEmailNotRegisterDialog();
 	}
 
 	@Override
@@ -108,11 +104,11 @@ public class LoginActivity extends AppCompatActivity implements
 
 		FirebaseApp.initializeApp(this);
 
-		GoogleSignInOptions googleSignInOptions =
-				new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-						.requestIdToken(getString(R.string.default_web_client_id))
-						.requestEmail()
-						.build();
+		GoogleSignInOptions googleSignInOptions = new
+				GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+				.requestIdToken(getString(R.string.default_web_client_id))
+				.requestEmail()
+				.build();
 
 		googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -125,9 +121,11 @@ public class LoginActivity extends AppCompatActivity implements
 
 		binding.googleLoginBtn.setOnClickListener(v -> {
 			showPleaseWaitDialog();
+			binding.progressBarLayout.setVisibility(View.VISIBLE);
+			binding.googleLoginBtn.setVisibility(View.GONE);
 
 			intent = googleSignInClient.getSignInIntent();
-			startActivityForResult(intent, RC_SIGN_IN);
+			startActivityForResult(intent, GOOGLE_SIGN_IN);
 		});
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> {
@@ -199,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 		binding.neverShareYourPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.forgotPasswordTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.loginTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.loginBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.loginWithGoogleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.resetPasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
@@ -235,8 +233,13 @@ public class LoginActivity extends AppCompatActivity implements
 						Exception exception = task.getException();
 						if (exception instanceof FirebaseAuthInvalidCredentialsException) {
 							showInvalidCredentialsDialog();
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.loginBtn.setVisibility(View.VISIBLE);
+
 						} else {
 							showUnknownOccurredDialog();
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.loginBtn.setVisibility(View.VISIBLE);
 						}
 
 						Log.e(TAG, "loginUser: " + task.getException());
@@ -448,23 +451,19 @@ public class LoginActivity extends AppCompatActivity implements
 	private void showEmailNotRegisterDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.email_not_registered_dialog, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.email_not_registered_dialog, null);
 
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
 
 		noBtn.setOnClickListener(v -> {
-			if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
-				emailNotRegisteredDialog.dismiss();
-			}
+			closeEmailNotRegisterDialog();
 		});
 
 		yesBtn.setOnClickListener(v -> {
-			if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
-				emailNotRegisteredDialog.dismiss();
-			}
-
-			intent = new Intent(this, RegisterActivity.class);
+			intent = new Intent(this, RegisterUserTypeActivity.class);
+			intent.putExtra("registerType", "googleRegister");
 			startActivity(intent);
 			finish();
 		});
@@ -473,6 +472,12 @@ public class LoginActivity extends AppCompatActivity implements
 
 		emailNotRegisteredDialog = builder.create();
 		emailNotRegisteredDialog.show();
+	}
+
+	private void closeEmailNotRegisterDialog() {
+		if (emailNotRegisteredDialog != null && emailNotRegisteredDialog.isShowing()) {
+			emailNotRegisteredDialog.dismiss();
+		}
 	}
 
 	private void showIncorrectEmailOrPasswordDialog() {
@@ -614,8 +619,7 @@ public class LoginActivity extends AppCompatActivity implements
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		//TODO:google sign in
-		if (requestCode == RC_SIGN_IN) {
+		if (requestCode == GOOGLE_SIGN_IN) {
 
 			Task<GoogleSignInAccount> googleSignInAccountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
 
@@ -649,7 +653,6 @@ public class LoginActivity extends AppCompatActivity implements
 							FirebaseMain.getAuth().signInWithCredential(authCredential)
 									.addOnCompleteListener(task1 -> {
 										if (task1.isSuccessful()) {
-
 											closePleaseWaitDialog();
 
 											intent = new Intent(LoginActivity.this, LoggingInActivity.class);
@@ -658,6 +661,8 @@ public class LoginActivity extends AppCompatActivity implements
 
 										} else {
 											closePleaseWaitDialog();
+											binding.progressBarLayout.setVisibility(View.GONE);
+											binding.googleLoginBtn.setVisibility(View.VISIBLE);
 											showLoginFailedDialog();
 
 											Log.e(TAG, "firebaseAuthWithGoogle: " + task1.getException());
@@ -666,13 +671,9 @@ public class LoginActivity extends AppCompatActivity implements
 									});
 						} else {
 							closePleaseWaitDialog();
-
-							showEmailAlreadyRegisteredDialog();
-
-							intent = new Intent(this, RegisterUserTypeActivity.class);
-							intent.putExtra("registerType", "googleRegister");
-							startActivity(intent);
-							finish();
+							showEmailNotRegisterDialog();
+							binding.progressBarLayout.setVisibility(View.GONE);
+							binding.googleLoginBtn.setVisibility(View.VISIBLE);
 						}
 					});
 		}

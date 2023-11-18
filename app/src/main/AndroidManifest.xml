@@ -65,7 +65,7 @@
 			android:name=".Map.MapPassengerActivity"
 			android:exported="false" />
 		<activity
-			android:name=".RequestLocationPermissionActivity"
+			android:name=".RequestPermissionActivity"
 			android:exported="false" />
 		<activity
 			android:name=".ResetPasswordActivity"

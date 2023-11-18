@@ -37,7 +37,8 @@
 	<androidx.core.widget.NestedScrollView
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:layout_below="@id/customActionBarLayout">
+		android:layout_below="@id/customActionBarLayout"
+		android:layout_marginTop="-2dp">
 
 		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
@@ -109,295 +110,272 @@
 				android:textColor="@color/light_red"
 				android:textSize="17sp" />
 
-			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/guideTextView"
-				style="@style/RoundedTextColor"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:elevation="10dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:padding="10dp"
-				android:text="Flick the switch on the right to edit"
-				android:textAlignment="center"
-				android:textSize="17sp" />
-
 			<androidx.appcompat.widget.LinearLayoutCompat
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
 				android:gravity="center"
 				android:orientation="vertical">
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
 					android:gravity="center"
 					android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatEditText
-						android:id="@+id/editFirstnameEditText"
+					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/editFirstnameLayout"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:enabled="false"
-						android:fontFamily="@font/gabarito_semibold"
-						android:hint="Firstname"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:padding="5dp"
+						android:textColorHint="@color/black"
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/editFirstnameEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="name"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="FIRSTNAME"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
 
 					<androidx.appcompat.widget.AppCompatImageButton
 						android:id="@+id/editFirstnameImgBtn"
 						android:layout_width="0dp"
-						android:layout_height="50dp"
+						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
 						android:padding="10dp"
 						android:scaleType="center"
 						android:src="@drawable/edit_32" />
 
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editFirstnameSwitch"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="2"
-						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
 					android:gravity="center"
 					android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatEditText
-						android:id="@+id/editLastnameEditText"
+					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/lastnameLayout"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:enabled="false"
-						android:fontFamily="@font/gabarito_semibold"
-						android:hint="Lastname"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:padding="5dp"
+						android:textColorHint="@color/black"
+						app:endIconMode="clear_text"
+						app:endIconTint="@color/black">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/editLastnameEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="name"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="LASTNAME"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
 
 					<androidx.appcompat.widget.AppCompatImageButton
 						android:id="@+id/editLastnameImgBtn"
 						android:layout_width="0dp"
-						android:layout_height="50dp"
+						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
 						android:padding="10dp"
 						android:scaleType="center"
 						android:src="@drawable/edit_32" />
 
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editLastnameSwitch"
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="horizontal">
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/birthdateLayout"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:layout_weight="8"
+						android:background="@drawable/smooth_edit_text"
+						android:elevation="5dp"
+						android:padding="5dp"
+						app:hintTextColor="@color/black">
+
+						<androidx.appcompat.widget.AppCompatButton
+							android:id="@+id/editBirthdateBtn"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Birthdate"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<androidx.appcompat.widget.AppCompatImageButton
+						android:id="@+id/editBirthdateImgBtn"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
+						android:padding="10dp"
+						android:scaleType="center"
+						android:src="@drawable/edit_32" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
 					android:gravity="center"
 					android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatEditText
-						android:id="@+id/editAgeEditText"
+					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/ageLayout"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
 						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:enabled="false"
-						android:fontFamily="@font/gabarito_semibold"
-						android:hint="Age"
-						android:inputType="number"
-						android:maxLength="2"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
+						android:padding="5dp"
+						android:textColorHint="@color/black"
+						app:hintTextColor="@color/black">
+
+						<com.google.android.material.textfield.TextInputEditText
+							android:id="@+id/editAgeEditText"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:autofillHints="name"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:hint="AGE"
+							android:inputType="number"
+							android:maxLength="2"
+							android:textColor="@color/black"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
 
 					<androidx.appcompat.widget.AppCompatImageButton
 						android:id="@+id/editAgeImgBtn"
 						android:layout_width="0dp"
-						android:layout_height="50dp"
+						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
 						android:padding="10dp"
 						android:scaleType="center"
 						android:src="@drawable/edit_32" />
 
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editAgeSwitch"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="2"
-						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
-
 				</androidx.appcompat.widget.LinearLayoutCompat>
-
-				<androidx.appcompat.widget.LinearLayoutCompat
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
-					android:gravity="center"
-					android:orientation="horizontal">
-
-					<androidx.appcompat.widget.AppCompatButton
-						android:id="@+id/editBirthdateBtn"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
-						android:elevation="5dp"
-						android:enabled="false"
-						android:fontFamily="@font/gabarito_semibold"
-						android:padding="10dp"
-						android:text="Birthdate"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp" />
-
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editBirthdateSwitch"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="2"
-						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
-
-				</androidx.appcompat.widget.LinearLayoutCompat>
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/sexTextView"
-					style="@style/RoundedTextColor"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="5dp"
-					android:elevation="5dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
-					android:text="Sex"
-					android:textAlignment="center"
-					android:textSize="20sp" />
-
-				<androidx.appcompat.widget.LinearLayoutCompat
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
-					android:gravity="center"
-					android:orientation="horizontal">
-
-					<androidx.appcompat.widget.AppCompatSpinner
-						android:id="@+id/editSexSpinner"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
-						android:elevation="5dp"
-						android:enabled="false"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:theme="@style/SpinnerTextStyle" />
-
-					<androidx.appcompat.widget.AppCompatImageButton
-						android:id="@+id/editSexImgBtn"
-						android:layout_width="0dp"
-						android:layout_height="50dp"
-						android:layout_weight="2"
-						android:background="@drawable/stroke_button"
-						android:padding="10dp"
-						android:scaleType="center"
-						android:src="@drawable/edit_32" />
-
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editSexSwitch"
-						android:layout_width="0dp"
-						android:layout_height="wrap_content"
-						android:layout_weight="2"
-						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
-
-				</androidx.appcompat.widget.LinearLayoutCompat>
-
-				<androidx.appcompat.widget.AppCompatTextView
-					android:id="@+id/disabilityTextView"
-					style="@style/RoundedTextColor"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="5dp"
-					android:elevation="10dp"
-					android:fontFamily="@font/gabarito_semibold"
-					android:padding="10dp"
-					android:text="Disability"
-					android:textAlignment="center"
-					android:textSize="20sp" />
 
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:id="@+id/editDisabilityLayout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="10dp"
 					android:gravity="center"
 					android:orientation="horizontal">
 
-					<androidx.appcompat.widget.AppCompatSpinner
-						android:id="@+id/editDisabilitySpinner"
+					<com.google.android.material.textfield.TextInputLayout
+						style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
 						android:layout_width="0dp"
-						android:layout_height="50dp"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:layout_marginBottom="20dp"
 						android:layout_weight="8"
-						android:background="@drawable/stroke_button"
+						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
-						android:enabled="false"
-						android:padding="10dp"
-						android:textAlignment="center"
-						android:textSize="17sp"
-						android:theme="@style/SpinnerTextStyle" />
+						android:hint="SELECT DISABILITY"
+						android:padding="5dp"
+						android:textColorHint="@color/black"
+						app:hintTextColor="@color/black">
+
+						<AutoCompleteTextView
+							android:id="@+id/disabilityDropDownMenu"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:inputType="none"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
 
 					<androidx.appcompat.widget.AppCompatImageButton
 						android:id="@+id/editDisabilityImgBtn"
 						android:layout_width="0dp"
-						android:layout_height="50dp"
+						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
 						android:padding="10dp"
 						android:scaleType="center"
 						android:src="@drawable/edit_32" />
 
-					<androidx.appcompat.widget.SwitchCompat
-						android:id="@+id/editDisabilitySwitch"
+				</androidx.appcompat.widget.LinearLayoutCompat>
+
+				<androidx.appcompat.widget.LinearLayoutCompat
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:gravity="center"
+					android:orientation="horizontal">
+
+					<com.google.android.material.textfield.TextInputLayout
+						android:id="@+id/sexLayout"
+						style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+						android:layout_width="0dp"
+						android:layout_height="wrap_content"
+						android:layout_margin="5dp"
+						android:layout_marginBottom="10dp"
+						android:layout_weight="8"
+						android:background="@drawable/smooth_edit_text"
+						android:elevation="5dp"
+						android:hint="SELECT SEX"
+						android:padding="5dp"
+						android:textColorHint="@color/black"
+						app:hintTextColor="@color/black">
+
+						<AutoCompleteTextView
+							android:id="@+id/sexDropDownMenu"
+							android:layout_width="match_parent"
+							android:layout_height="wrap_content"
+							android:background="@drawable/smooth_edit_text_2"
+							android:fontFamily="@font/gabarito_semibold"
+							android:inputType="none"
+							android:textSize="17sp" />
+
+					</com.google.android.material.textfield.TextInputLayout>
+
+					<androidx.appcompat.widget.AppCompatImageButton
+						android:id="@+id/editSexImgBtn"
 						android:layout_width="0dp"
 						android:layout_height="wrap_content"
 						android:layout_weight="2"
 						android:background="@drawable/stroke_button"
-						android:checked="false"
-						android:padding="10dp" />
+						android:padding="10dp"
+						android:scaleType="center"
+						android:src="@drawable/edit_32" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -468,15 +446,6 @@
 							android:scaleType="center"
 							android:src="@drawable/edit_32" />
 
-						<androidx.appcompat.widget.SwitchCompat
-							android:id="@+id/vehicleColorSwitch"
-							android:layout_width="0dp"
-							android:layout_height="wrap_content"
-							android:layout_weight="2"
-							android:background="@drawable/stroke_button"
-							android:checked="false"
-							android:padding="10dp" />
-
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
@@ -511,15 +480,6 @@
 							android:scaleType="center"
 							android:src="@drawable/edit_32" />
 
-						<androidx.appcompat.widget.SwitchCompat
-							android:id="@+id/vehiclePlateNumberSwitch"
-							android:layout_width="0dp"
-							android:layout_height="wrap_content"
-							android:layout_weight="2"
-							android:background="@drawable/stroke_button"
-							android:checked="false"
-							android:padding="10dp" />
-
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
@@ -531,10 +491,11 @@
 				style="@style/PrimaryButton"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
+				android:layout_marginTop="30dp"
 				android:layout_marginBottom="100dp"
 				android:elevation="5dp"
 				android:fontFamily="@font/opensans_semibold"
-				android:padding="15dp"
+				android:padding="10dp"
 				android:text="Done"
 				android:textSize="17sp" />
 

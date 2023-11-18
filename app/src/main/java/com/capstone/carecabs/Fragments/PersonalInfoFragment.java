@@ -155,7 +155,6 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 							String getLastName = documentSnapshot.getString("lastname");
 							Long getAgeLong = documentSnapshot.getLong("age");
 							int getAge = getAgeLong.intValue();
-							String getEmail = documentSnapshot.getString("email");
 							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 							String getSex = documentSnapshot.getString("sex");
 							String getBirthdate = documentSnapshot.getString("birthdate");
@@ -218,7 +217,7 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 							binding.firstnameTextView.setText(getFirstName);
 							binding.lastnameTextView.setText(getLastName);
 							binding.userTypeTextView.setText(getUserType);
-							binding.emailTextView.setText("Email: " + getEmail);
+							binding.emailTextView.setText("Email: " + FirebaseMain.getUser().getEmail());
 							binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
 							binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
 							binding.ageTextView.setText("Age: " + getAge);

@@ -36,6 +36,7 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.core.widget.NestedScrollView
+		android:id="@+id/scrollView"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout">
@@ -149,8 +150,7 @@
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:gravity="center"
-					android:orientation="vertical"
-					>
+					android:orientation="vertical">
 
 					<pl.droidsonroids.gif.GifImageView
 						android:layout_width="wrap_content"

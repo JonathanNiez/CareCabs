@@ -61,7 +61,22 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 	private final String userType = "Senior Citizen";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
+	private boolean isEditing = false;
 	private final String[] sexItem = {"Male", "Female"};
+	private final String[] monthItem = {
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"
+	};
 	private String sex, birthDate, month;
 	private int age;
 	private Uri profilePictureUri;
@@ -423,76 +438,24 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this,
-				R.array.month,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
-		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-				} else {
-					month = parent.getItemAtPosition(position).toString();
-					dialogEnterBirthdateBinding.monthTextView.setText(month);
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-			}
-		});
-
-		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
-		});
-
-		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
+		ArrayAdapter<String> monthAdapter =
+				new ArrayAdapter<>(this, R.layout.item_dropdown, monthItem);
+		dialogEnterBirthdateBinding.monthDropDownMenu.setAdapter(monthAdapter);
+		dialogEnterBirthdateBinding.monthDropDownMenu.setOnItemClickListener((parent, view, position, id)
+				-> {
+			month = parent.getItemAtPosition(position).toString();
+			dialogEnterBirthdateBinding.monthTextView.setText(month);
 		});
 
 		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
 			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
 			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
-			if (month == null
-					|| year.isEmpty()
-					|| day.isEmpty()) {
+			if (month == null ||
+					year.isEmpty() ||
+					day.isEmpty()) {
 
-				Toast.makeText(RegisterSeniorActivity.this, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "Please complete your Birthdate", Toast.LENGTH_SHORT).show();
 
 			} else {
 				birthDate = month + "-" + day + "-" + year;
@@ -516,7 +479,6 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> closeEnterBirthdateDialog());
 
 		builder.setView(dialogView);
-
 		enterBirthdateDialog = builder.create();
 		enterBirthdateDialog.show();
 	}

@@ -45,6 +45,7 @@ import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
 import com.capstone.carecabs.LoginOrRegisterActivity;
 import com.capstone.carecabs.R;
+import com.capstone.carecabs.Register.RegisterPWDActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
@@ -70,10 +71,36 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private final String TAG = "EditAccountFragment";
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
-	private String birthDate, month;
+	private boolean isEditing = false;
+	private final String[] sexItem = {"Male", "Female"};
+	private final String[] disabilityItem = {
+			"Communication Disability",
+			"Vision Impairment",
+			"Deaf or hard of hearing",
+			"Mental health conditions",
+			"Intellectual disability",
+			"Acquired brain injury",
+			"Autism spectrum disorder",
+			"Physical disability"
+	};
+
+	private final String[] monthItem = {
+			"January",
+			"February",
+			"March",
+			"April",
+			"May",
+			"June",
+			"July",
+			"August",
+			"September",
+			"October",
+			"November",
+			"December"
+	};
+
+	private String birthDate, month, sex, disability;
 	private int age;
-	private float textSizeSP;
-	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
@@ -162,7 +189,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		View view = binding.getRoot();
 
 		binding.editDisabilityLayout.setVisibility(View.GONE);
-		binding.disabilityTextView.setVisibility(View.GONE);
 		binding.idNotScannedTextView.setVisibility(View.GONE);
 		binding.vehicleInfoLayout.setVisibility(View.GONE);
 
@@ -222,14 +248,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	@SuppressLint("ClickableViewAccessibility")
 	private void initializeEditTexts() {
 
-		binding.editFirstnameImgBtn.setVisibility(View.GONE);
-		binding.editLastnameImgBtn.setVisibility(View.GONE);
-		binding.editAgeImgBtn.setVisibility(View.GONE);
-		binding.editSexImgBtn.setVisibility(View.GONE);
-		binding.editDisabilityImgBtn.setVisibility(View.GONE);
-		binding.vehicleColorImgBtn.setVisibility(View.GONE);
-		binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
-
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 
@@ -237,8 +255,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			binding.editLastnameEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Lastname"));
 			binding.editAgeEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Age"));
 			binding.editBirthdateBtn.setOnClickListener(v -> voiceAssistant.speak("Birthdate"));
-			binding.editSexSpinner.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Sex"));
-			binding.editDisabilitySpinner.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Disability"));
+			binding.sexDropDownMenu.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Sex"));
+			binding.disabilityDropDownMenu.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Disability"));
 			binding.vehicleColorEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Color"));
 			binding.vehiclePlateNumberEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Plate Number"));
 		}
@@ -249,292 +267,190 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 		Map<String, Object> updateInfo = new HashMap<>();
 
-		binding.editFirstnameSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editFirstnameEditText.setEnabled(true);
-				binding.editFirstnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editFirstnameImgBtn.setVisibility(View.VISIBLE);
-				binding.editFirstnameImgBtn.setOnClickListener(v -> {
-					if (TextUtils.isEmpty(binding.editFirstnameEditText.getText().toString().trim())) {
-						Toast.makeText(context, "Firstname cannot be empty", Toast.LENGTH_SHORT).show();
-						return;
-					} else {
-						updateInfo.put("firstname", binding.editFirstnameEditText.getText().toString());
-
-						userReference.update(updateInfo)
-								.addOnSuccessListener(unused -> {
-									loadUserProfileInfo();
-
-									Toast.makeText(context, "Firstname updated", Toast.LENGTH_LONG).show();
-									binding.editFirstnameEditText.setEnabled(false);
-									binding.editFirstnameSwitch.setChecked(false);
-								})
-								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Firstname failed to update", Toast.LENGTH_LONG).show();
-
-									Log.e(TAG, e.getMessage());
-								});
-					}
-				});
+		binding.editFirstnameImgBtn.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(binding.editFirstnameEditText.getText().toString().trim())) {
+				Toast.makeText(context, "Firstname cannot be empty", Toast.LENGTH_SHORT).show();
+				return;
 			} else {
-				binding.editFirstnameEditText.setEnabled(false);
-				binding.editFirstnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.editFirstnameImgBtn.setVisibility(View.GONE);
+				updateInfo.put("firstname", binding.editFirstnameEditText.getText().toString());
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Firstname updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Firstname failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.editLastnameSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editLastnameEditText.setEnabled(true);
-				binding.editLastnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editLastnameImgBtn.setVisibility(View.VISIBLE);
-				binding.editLastnameImgBtn.setOnClickListener(v -> {
-					if (TextUtils.isEmpty(binding.editLastnameEditText.getText().toString().trim())) {
-						Toast.makeText(context, "Lastname cannot be empty", Toast.LENGTH_SHORT).show();
-						return;
-					} else {
-						updateInfo.put("lastname", binding.editLastnameEditText.getText().toString());
-
-						userReference.update(updateInfo)
-								.addOnSuccessListener(unused -> {
-									loadUserProfileInfo();
-
-									Toast.makeText(context, "Lastname updated", Toast.LENGTH_LONG).show();
-									binding.editLastnameEditText.setEnabled(false);
-									binding.editLastnameSwitch.setChecked(false);
-								})
-								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Lastname failed to update", Toast.LENGTH_LONG).show();
-
-									Log.e(TAG, e.getMessage());
-								});
-					}
-				});
+		binding.editLastnameImgBtn.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(binding.editLastnameEditText.getText().toString().trim())) {
+				Toast.makeText(context, "Lastname cannot be empty", Toast.LENGTH_SHORT).show();
+				return;
 			} else {
-				binding.editLastnameEditText.setEnabled(false);
-				binding.editLastnameEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.editLastnameImgBtn.setVisibility(View.GONE);
+				updateInfo.put("lastname", binding.editLastnameEditText.getText().toString());
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Lastname updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Lastname failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.editAgeSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editAgeEditText.setEnabled(true);
-				binding.editAgeEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editAgeImgBtn.setVisibility(View.VISIBLE);
-				binding.editAgeImgBtn.setOnClickListener(v -> {
-					if (TextUtils.isEmpty(binding.editAgeEditText.getText().toString())) {
-						Toast.makeText(context, "Age cannot be empty", Toast.LENGTH_SHORT).show();
-						return;
-					} else {
-						updateInfo.put("age", Integer.parseInt(binding.editAgeEditText.getText().toString()));
-
-						userReference.update(updateInfo)
-								.addOnSuccessListener(unused -> {
-									loadUserProfileInfo();
-
-									Toast.makeText(context, "Age updated", Toast.LENGTH_LONG).show();
-									binding.editAgeEditText.setEnabled(false);
-									binding.editAgeSwitch.setChecked(false);
-								})
-								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Age failed to update", Toast.LENGTH_LONG).show();
-
-									Log.e(TAG, e.getMessage());
-								});
-					}
-				});
+		binding.editAgeImgBtn.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(binding.editAgeEditText.getText().toString())) {
+				Toast.makeText(context, "Age cannot be empty", Toast.LENGTH_SHORT).show();
+				return;
 			} else {
-				binding.editAgeEditText.setEnabled(false);
-				binding.editAgeEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.editAgeImgBtn.setVisibility(View.GONE);
+				updateInfo.put("age", Integer.parseInt(binding.editAgeEditText.getText().toString()));
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Age updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Age failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.editBirthdateSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editBirthdateBtn.setEnabled(true);
-				binding.editBirthdateBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editBirthdateBtn.setOnClickListener(v -> {
+		binding.editBirthdateBtn.setOnClickListener(v -> showEnterBirthdateDialog());
 
-					showEnterBirthdateDialog();
-				});
-			} else {
-				binding.editBirthdateBtn.setEnabled(false);
-				binding.editBirthdateBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
+		binding.editBirthdateImgBtn.setOnClickListener(v -> {
+			if (birthDate != null) {
+
+				updateInfo.put("birthdate", birthDate);
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Birthdate updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Birthdate failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.editSexSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editSexSpinner.setEnabled(true);
-				binding.editSexSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editSexImgBtn.setVisibility(View.VISIBLE);
 
-				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-						context,
-						R.array.sex_options,
-						android.R.layout.simple_spinner_item
-				);
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				binding.editSexSpinner.setAdapter(adapter);
-				binding.editSexSpinner.setSelection(0);
-				binding.editSexSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-					@Override
-					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						if (position == 0) {
-							binding.editSexSpinner.setSelection(0);
-						} else {
-							binding.editSexImgBtn.setOnClickListener(v -> {
-								updateInfo.put("sex", parent.getItemAtPosition(position).toString());
-								userReference.update(updateInfo)
-										.addOnSuccessListener(unused -> {
-											loadUserProfileInfo();
+		ArrayAdapter<String> sexAdapter =
+				new ArrayAdapter<>(context, R.layout.item_dropdown, sexItem);
+		binding.sexDropDownMenu.setAdapter(sexAdapter);
 
-											Toast.makeText(context, "Sex updated", Toast.LENGTH_LONG).show();
-											binding.editSexSpinner.setEnabled(false);
-											binding.editSexSwitch.setChecked(false);
-										})
-										.addOnFailureListener(e -> {
-											Toast.makeText(context, "Sex failed to update", Toast.LENGTH_LONG).show();
+		binding.sexDropDownMenu.setOnItemClickListener((parent, view, position, id) -> {
+			sex = parent.getItemAtPosition(position).toString();
+		});
 
-											Log.e(TAG, e.getMessage());
-										});
-							});
-						}
-					}
+		binding.editSexImgBtn.setOnClickListener(v -> {
+			if (sex != null) {
 
-					@Override
-					public void onNothingSelected(AdapterView<?> parent) {
-						binding.editSexSpinner.setSelection(0);
-					}
-				});
-			} else {
-				binding.editSexSpinner.setEnabled(false);
-				binding.editSexSpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.editSexImgBtn.setVisibility(View.GONE);
+				updateInfo.put("sex", sex);
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Sex updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Sex failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.editDisabilitySwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.editDisabilitySpinner.setEnabled(true);
-				binding.editDisabilitySpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.editDisabilityImgBtn.setVisibility(View.VISIBLE);
+		ArrayAdapter<String> disabilityAdapter =
+				new ArrayAdapter<>(context, R.layout.item_dropdown, disabilityItem);
+		binding.disabilityDropDownMenu.setAdapter(disabilityAdapter);
 
-				ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-						context,
-						R.array.sex_options,
-						android.R.layout.simple_spinner_item
-				);
-				adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-				binding.editDisabilitySpinner.setAdapter(adapter);
-				binding.editDisabilitySpinner.setSelection(0);
-				binding.editDisabilitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-					@Override
-					public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-						if (position == 0) {
-							binding.editDisabilitySpinner.setSelection(0);
-						} else {
-							binding.editDisabilityImgBtn.setOnClickListener(v -> {
-								updateInfo.put("disability", parent.getItemAtPosition(position).toString());
-								userReference.update(updateInfo)
-										.addOnSuccessListener(unused -> {
-											loadUserProfileInfo();
+		binding.disabilityDropDownMenu.setOnItemClickListener((parent, view, position, id) -> {
+			disability = parent.getItemAtPosition(position).toString();
+		});
 
-											Toast.makeText(context, "Disability updated", Toast.LENGTH_LONG).show();
-											binding.editDisabilitySpinner.setEnabled(false);
-											binding.editDisabilitySwitch.setChecked(false);
-										})
-										.addOnFailureListener(e -> {
-											Toast.makeText(context, "Disability failed to update", Toast.LENGTH_LONG).show();
+		binding.editDisabilityImgBtn.setOnClickListener(v -> {
+			if (disability != null) {
 
-											Log.e(TAG, e.getMessage());
-										});
-							});
-						}
-					}
+				updateInfo.put("disability", disability);
 
-					@Override
-					public void onNothingSelected(AdapterView<?> parent) {
-						binding.editDisabilitySpinner.setSelection(0);
-					}
-				});
-			} else {
-				binding.editDisabilitySpinner.setEnabled(false);
-				binding.editDisabilitySpinner.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.editDisabilityImgBtn.setVisibility(View.GONE);
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Disability updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Disability failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.vehicleColorSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.vehicleColorEditText.setEnabled(true);
-				binding.vehicleColorEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.vehicleColorImgBtn.setVisibility(View.VISIBLE);
-				binding.vehicleColorImgBtn.setOnClickListener(v -> {
-					if (TextUtils.isEmpty(binding.vehicleColorEditText.getText().toString().trim())) {
-						Toast.makeText(context, "Vehicle color cannot be empty", Toast.LENGTH_SHORT).show();
-						return;
-					} else {
-						updateInfo.put("vehicleColor", binding.vehicleColorEditText.getText().toString());
-
-						userReference.update(updateInfo)
-								.addOnSuccessListener(unused -> {
-									loadUserProfileInfo();
-
-									Toast.makeText(context, "Vehicle color updated", Toast.LENGTH_LONG).show();
-									binding.vehicleColorEditText.setEnabled(false);
-									binding.vehicleColorSwitch.setChecked(false);
-								})
-								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Vehicle color failed to update", Toast.LENGTH_LONG).show();
-
-									Log.e(TAG, "initializeEditTexts: " + e.getMessage());
-								});
-					}
-				});
+		binding.vehicleColorImgBtn.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(binding.vehicleColorEditText.getText().toString().trim())) {
+				Toast.makeText(context, "Vehicle color cannot be empty", Toast.LENGTH_SHORT).show();
+				return;
 			} else {
-				binding.vehicleColorEditText.setEnabled(false);
-				binding.vehicleColorEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.vehicleColorImgBtn.setVisibility(View.GONE);
+				updateInfo.put("vehicleColor", binding.vehicleColorEditText.getText().toString());
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Vehicle color updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Vehicle color failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
-		binding.vehiclePlateNumberSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
-			if (b) {
-				binding.vehiclePlateNumberEditText.setEnabled(true);
-				binding.vehiclePlateNumberEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.white));
-				binding.vehiclePlateNumberImgBtn.setVisibility(View.VISIBLE);
-				binding.vehicleColorImgBtn.setOnClickListener(v -> {
-					if (TextUtils.isEmpty(binding.vehiclePlateNumberEditText.getText().toString().trim())) {
-						Toast.makeText(context, "Vehicle plate number cannot be empty", Toast.LENGTH_SHORT).show();
-						return;
-					} else {
-						updateInfo.put("vehiclePlateNumber", binding.vehiclePlateNumberEditText.getText().toString());
-
-						userReference.update(updateInfo)
-								.addOnSuccessListener(unused -> {
-									loadUserProfileInfo();
-
-									Toast.makeText(context, "Vehicle plate number updated", Toast.LENGTH_LONG).show();
-									binding.vehiclePlateNumberEditText.setEnabled(false);
-									binding.vehiclePlateNumberSwitch.setChecked(false);
-								})
-								.addOnFailureListener(e -> {
-									Toast.makeText(context, "Vehicle plate number failed to update", Toast.LENGTH_LONG).show();
-
-									Log.e(TAG, "initializeEditTexts: " + e.getMessage());
-								});
-					}
-				});
+		binding.vehicleColorImgBtn.setOnClickListener(v -> {
+			if (TextUtils.isEmpty(binding.vehiclePlateNumberEditText.getText().toString().trim())) {
+				Toast.makeText(context, "Vehicle plate number cannot be empty", Toast.LENGTH_SHORT).show();
+				return;
 			} else {
-				binding.vehiclePlateNumberEditText.setEnabled(false);
-				binding.vehiclePlateNumberEditText.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.light_gray));
-				binding.vehiclePlateNumberImgBtn.setVisibility(View.GONE);
+				updateInfo.put("vehiclePlateNumber", binding.vehiclePlateNumberEditText.getText().toString());
+
+				userReference.update(updateInfo)
+						.addOnSuccessListener(unused -> {
+							loadUserProfileInfo();
+
+							Toast.makeText(context, "Vehicle plate number updated", Toast.LENGTH_LONG).show();
+						})
+						.addOnFailureListener(e -> {
+							Toast.makeText(context, "Vehicle plate number failed to update", Toast.LENGTH_LONG).show();
+
+							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
+						});
 			}
 		});
 
+	}
+
+	private void showToast(String message) {
+		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 	}
 
 	private void showDatePickerDialog() {
@@ -579,7 +495,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							String getLastName = documentSnapshot.getString("lastname");
 							Long getAgeLong = documentSnapshot.getLong("age");
 							int getAge = getAgeLong.intValue();
-							String getEmail = documentSnapshot.getString("email");
 							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 							String getSex = documentSnapshot.getString("sex");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
@@ -607,9 +522,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 										break;
 
 									case "Person with Disabilities (PWD)":
-										String getDisability = documentSnapshot.getString("disability");
 										binding.editDisabilityLayout.setVisibility(View.VISIBLE);
-										binding.disabilityTextView.setText("Disability: " + getDisability);
+										String getDisability = documentSnapshot.getString("disability");
 
 										break;
 								}
@@ -618,11 +532,9 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							if (getSex != null) {
 								switch (getSex) {
 									case "Male":
-										binding.editSexSpinner.setSelection(1);
 										break;
 
 									case "Female":
-										binding.editSexSpinner.setSelection(2);
 										break;
 								}
 							}
@@ -644,7 +556,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							binding.editLastnameEditText.setText(getLastName);
 							binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
 							binding.editAgeEditText.setText(String.valueOf(getAge));
-							binding.sexTextView.setText("Sex: " + getSex);
 
 						} else {
 							closePleaseWaitDialog();
@@ -672,6 +583,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -684,14 +597,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 		binding.tapImageTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.idNotScannedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.guideTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-
 		binding.editFirstnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.editLastnameEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.sexTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.disabilityTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehicleInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -705,76 +614,26 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				DialogEnterBirthdateBinding.inflate(getLayoutInflater());
 		View dialogView = dialogEnterBirthdateBinding.getRoot();
 
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				context,
-				R.array.month,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		dialogEnterBirthdateBinding.spinnerMonth.setAdapter(adapter);
-		dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-		dialogEnterBirthdateBinding.spinnerMonth.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-				} else {
-					month = parent.getItemAtPosition(position).toString();
-					dialogEnterBirthdateBinding.monthTextView.setText(month);
-				}
-			}
+		ArrayAdapter<String> monthAdapter =
+				new ArrayAdapter<>(context, R.layout.item_dropdown, monthItem);
+		dialogEnterBirthdateBinding.monthDropDownMenu.setAdapter(monthAdapter);
 
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				dialogEnterBirthdateBinding.spinnerMonth.setSelection(0);
-			}
+		dialogEnterBirthdateBinding.monthDropDownMenu.setOnItemClickListener((parent, view, position, id)
+				-> {
+			month = parent.getItemAtPosition(position).toString();
+			dialogEnterBirthdateBinding.monthTextView.setText(month);
 		});
 
-		dialogEnterBirthdateBinding.dayEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.dayTextView.setText(enteredText);
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
-		});
-
-		dialogEnterBirthdateBinding.yearEditText.addTextChangedListener(new TextWatcher() {
-			@Override
-			public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-			}
-
-			@Override
-			public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-				String enteredText = charSequence.toString();
-				dialogEnterBirthdateBinding.yearTextView.setText(enteredText);
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable editable) {
-
-			}
-		});
 
 		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
 			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
 			String day = dialogEnterBirthdateBinding.dayEditText.getText().toString();
 
-			if (month == null
-					|| year.isEmpty()
-					|| day.isEmpty()) {
+			if (month == null ||
+					year.isEmpty() ||
+					day.isEmpty()) {
 
-				Toast.makeText(context, "Please enter your Date of Birth", Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, "Please complete your Birthdate", Toast.LENGTH_SHORT).show();
 
 			} else {
 				birthDate = month + "-" + day + "-" + year;
@@ -798,7 +657,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		dialogEnterBirthdateBinding.cancelBtn.setOnClickListener(v -> closeEnterBirthdateDialog());
 
 		builder.setView(dialogView);
-
 		enterBirthdateDialog = builder.create();
 		enterBirthdateDialog.show();
 	}
@@ -808,7 +666,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			enterBirthdateDialog.dismiss();
 		}
 	}
-
+	private String processText(String originalText) {
+		// Implement any text processing logic here
+		return originalText;
+	}
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
@@ -1330,7 +1191,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		}
 	}
 
-
 	private void showNoInternetDialog() {
 
 		builder = new AlertDialog.Builder(getContext());
@@ -1385,16 +1245,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			showNoInternetDialog();
 		}
 	}
-	//			int pixel = 0;
-//			for (int n = 0; n < imageSize; n++) {
-//				for (int i = 0; i < imageSize; i++) {
-//					int val = intValues[pixel++];
-//					byteBuffer.putFloat(((val >> 16) & 0xFF) * (1.f / 255.f));
-//					byteBuffer.putFloat(((val >> 8) & 0xFF) * (1.f / 255.f));
-//					byteBuffer.putFloat((val & 0xFF) * (1.f / 255.f));
-//				}
-
-//			}
 
 	private void identifyCar(Bitmap bitmap) {
 //		try {

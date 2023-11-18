@@ -38,6 +38,7 @@
 	</androidx.cardview.widget.CardView>
 
 	<androidx.core.widget.NestedScrollView
+		android:id="@+id/scrollView"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_below="@id/customActionBarLayout">
@@ -112,7 +113,6 @@
 						android:orientation="vertical">
 
 						<androidx.appcompat.widget.LinearLayoutCompat
-							style="@style/BaseCardBackground"
 							android:layout_width="match_parent"
 							android:layout_height="wrap_content"
 							android:layout_margin="10dp"
@@ -120,6 +120,12 @@
 							android:gravity="center"
 							android:orientation="vertical"
 							android:padding="10dp">
+
+							<androidx.appcompat.widget.AppCompatImageView
+								android:layout_width="wrap_content"
+								android:layout_height="wrap_content"
+								android:layout_margin="5dp"
+								app:srcCompat="@drawable/check_48" />
 
 							<androidx.appcompat.widget.AppCompatTextView
 								android:id="@+id/idAlreadyScannedTextView"
@@ -221,6 +227,7 @@
 					android:gravity="center"
 					android:orientation="vertical">
 
+
 					<FrameLayout
 						android:layout_width="match_parent"
 						android:layout_height="350dp"
@@ -251,6 +258,12 @@
 							app:civ_border_color="@color/white"
 							app:civ_border_width="2dp" />
 
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/idFaceImageView"
+							android:layout_width="100dp"
+							android:layout_height="100dp"
+							android:layout_gravity="top|start" />
+
 					</FrameLayout>
 
 					<androidx.appcompat.widget.AppCompatTextView
@@ -271,7 +284,6 @@
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:text="Face recognition status"
 						android:textAlignment="center"
 						android:textSize="20sp" />
 
@@ -307,37 +319,14 @@
 			<!--				android:textSize="20sp" />-->
 
 			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/addFaceBtn"
-				style="@style/SecondaryButton"
-				android:layout_width="150dp"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="50dp"
-				android:layout_marginBottom="10dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:padding="10dp"
-				android:text="Add Face"
-				android:textSize="17sp" />
-
-			<androidx.appcompat.widget.AppCompatButton
 				android:id="@+id/tryAgainBtn"
 				style="@style/SecondaryButton"
 				android:layout_width="150dp"
 				android:layout_height="wrap_content"
-				android:layout_marginBottom="10dp"
+				android:layout_marginBottom="50dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:padding="10dp"
 				android:text="Try Again"
-				android:textSize="17sp" />
-
-			<androidx.appcompat.widget.AppCompatButton
-				android:id="@+id/matchBtn"
-				style="@style/SecondaryButton"
-				android:layout_width="150dp"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="100dp"
-				android:fontFamily="@font/gabarito_semibold"
-				android:padding="10dp"
-				android:text="Match"
 				android:textSize="17sp" />
 
 			<androidx.appcompat.widget.AppCompatButton
