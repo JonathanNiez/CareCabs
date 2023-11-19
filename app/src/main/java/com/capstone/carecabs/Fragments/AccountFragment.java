@@ -40,6 +40,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
+import com.capstone.carecabs.databinding.DialogSignOutBinding;
 import com.capstone.carecabs.databinding.FragmentAccountBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
@@ -172,9 +173,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	private void getUserSettings() {
-
 		setFontSize(fontSize);
-
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("My Profile");
@@ -264,7 +263,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 
 										}
 
-										binding.driverRatingTextView.setText("Driver rating: " + getDriverRatings);
+										binding.driverRatingTextView.setText("Driver rating:\n" + getDriverRatings);
 										break;
 
 									case "Person with Disabilities (PWD)":
@@ -443,22 +442,29 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_sign_out, null);
+		DialogSignOutBinding dialogSignOutBinding =
+				DialogSignOutBinding.inflate(getLayoutInflater());
+		View dialogView = dialogSignOutBinding.getRoot();
 
-		Button signOutBtn = dialogView.findViewById(R.id.signOutBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
+		if (fontSize.equals("large")){
+			float textSize = 22;
+
+			dialogSignOutBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogSignOutBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogSignOutBinding.signOutBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogSignOutBinding.cancelBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Are you sure you want to Sign out?");
 		}
 
-		signOutBtn.setOnClickListener(v -> logoutUser());
+		dialogSignOutBinding.signOutBtn.setOnClickListener(v -> logoutUser());
 
-		cancelBtn.setOnClickListener(v -> closeSignOutDialog());
+		dialogSignOutBinding.cancelBtn.setOnClickListener(v -> closeSignOutDialog());
 
 		builder.setView(dialogView);
-
 		signOutDialog = builder.create();
 		signOutDialog.show();
 	}
@@ -572,12 +578,7 @@ public class AccountFragment extends Fragment implements SettingsBottomSheet.Fon
 	}
 
 	private void initializeNetworkChecker() {
-		networkChangeReceiver = new NetworkChangeReceiver(new NetworkChangeReceiver.NetworkChangeListener() {
-			@Override
-			public void onNetworkChanged(boolean isConnected) {
-				updateConnectionStatus(isConnected);
-			}
-		});
+		networkChangeReceiver = new NetworkChangeReceiver(isConnected -> updateConnectionStatus(isConnected));
 
 		IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 		Objects.requireNonNull(getContext()).registerReceiver(networkChangeReceiver, intentFilter);

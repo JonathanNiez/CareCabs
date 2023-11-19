@@ -243,35 +243,7 @@ class MapPassengerActivity : AppCompatActivity(),
             loadStyleUri(Style.MAPBOX_STREETS) {
 
                 initializeLocationComponent()
-//                initializeSearchEngine()
                 loadBookingsToMapFromDatabase()
-
-//                binding.searchDestinationEditText.addTextChangedListener(object : TextWatcher {
-//                    override fun beforeTextChanged(
-//                        s: CharSequence?,
-//                        start: Int,
-//                        count: Int,
-//                        after: Int
-//                    ) {
-//                    }
-//
-//                    override fun onTextChanged(
-//                        s: CharSequence?,
-//                        start: Int,
-//                        before: Int,
-//                        count: Int
-//                    ) {
-//                    }
-//
-//                    override fun afterTextChanged(s: Editable?) {
-//                        if (s.isNullOrEmpty()) {
-//                            binding.searchContainerView.visibility = View.GONE
-//                        } else {
-//                            binding.searchContainerView.visibility = View.VISIBLE
-//                        }
-//                    }
-//
-//                })
 
                 binding.mapView.camera.apply {
                     val bearing = createBearingAnimator(cameraAnimatorOptions(-45.0)) {
@@ -403,48 +375,8 @@ class MapPassengerActivity : AppCompatActivity(),
                 binding.mapView,
                 Point.fromLngLat(currentLongitude, currentLatitude)
             )
-
-//            val passengerBookingModel = PassengerBookingModel(
-//                pickupLatitude = it.latitude(),
-//                pickupLongitude = it.longitude()
-//            )
-
-//            val pickupLocationGeocode = MapboxGeocoding.builder()
-//                .accessToken(getString(R.string.mapbox_access_token))
-//                .query(
-//                    Point.fromLngLat(
-//                        StaticDataPasser.storeLongitude,
-//                        StaticDataPasser.storeLatitude
-//                    )
-//                )
-//                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-//                .build()
-//
-//            pickupLocationGeocode.enqueueCall(object : Callback<GeocodingResponse> {
-//                override fun onResponse(
-//                    call: Call<GeocodingResponse>,
-//                    response: Response<GeocodingResponse>
-//                ) {
-//                    if (response.body() != null && response.body()!!.features() != null) {
-//                        val feature: CarmenFeature = response.body()!!.features()!![0]
-//                        val locationName: String? = feature.placeName()
-//
-//                        // Display the location name in your TextView
-//                        binding.currentCoordinatesTextView.text = locationName
-//                    } else {
-//                        // Handle no results
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<GeocodingResponse>, t: Throwable) {
-//                    // Handle failure
-//                }
-//            })
-
         }
 
-//        binding.currentCoordinatesTextView.text =
-//            "${StaticDataPasser.storeLatitude}\n${StaticDataPasser.storeLongitude}"
 
         locationComponentPlugin.updateSettings {
             this.enabled = true
@@ -507,158 +439,6 @@ class MapPassengerActivity : AppCompatActivity(),
                 }
             }
             true
-        }
-    }
-
-//    private fun initializeSearchEngine() {
-//        binding.searchResultsView.initialize(
-//            SearchResultsView.Configuration(
-//                CommonSearchViewConfiguration(DistanceUnitType.IMPERIAL)
-//            )
-//        )
-//        val searchEngine = SearchEngine.createSearchEngineWithBuiltInDataProviders(
-//            SearchEngineSettings(getString(R.string.mapbox_access_token))
-//        )
-//
-//        val offlineSearchEngine = OfflineSearchEngine.create(
-//            OfflineSearchEngineSettings(getString(R.string.mapbox_access_token))
-//        )
-//
-//        val searchEngineUiAdapter = SearchEngineUiAdapter(
-//            view = binding.searchResultsView,
-//            searchEngine = searchEngine,
-//            offlineSearchEngine = offlineSearchEngine,
-//        )
-//
-//        searchEngineUiAdapter.addSearchListener(object : SearchEngineUiAdapter.SearchListener {
-//            override fun onError(e: Exception) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onFeedbackItemClick(responseInfo: ResponseInfo) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onHistoryItemClick(historyRecord: HistoryRecord) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onOfflineSearchResultSelected(
-//                searchResult: OfflineSearchResult,
-//                responseInfo: OfflineResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onOfflineSearchResultsShown(
-//                results: List<OfflineSearchResult>,
-//                responseInfo: OfflineResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onPopulateQueryClick(
-//                suggestion: SearchSuggestion,
-//                responseInfo: ResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onSearchResultSelected(
-//                searchResult: SearchResult,
-//                responseInfo: ResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onSearchResultsShown(
-//                suggestion: SearchSuggestion,
-//                results: List<SearchResult>,
-//                responseInfo: ResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onSuggestionSelected(searchSuggestion: SearchSuggestion): Boolean {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onSuggestionsShown(
-//                suggestions: List<SearchSuggestion>,
-//                responseInfo: ResponseInfo
-//            ) {
-//                TODO("Not yet implemented")
-//            }
-//        })
-//
-//        showSearchHistory()
-//    }
-
-    private fun showSearchHistory() {
-        val historyDataProvider = ServiceProvider.INSTANCE.historyDataProvider()
-
-        // Show `loading` item that indicates the progress of `search history` loading operation.
-        binding.searchResultsView.setAdapterItems(listOf(SearchResultAdapterItem.Loading))
-
-        // Load `search history`
-        var loadingTask =
-            historyDataProvider.getAll(object : CompletionCallback<List<HistoryRecord>> {
-                override fun onComplete(result: List<HistoryRecord>) {
-                    val viewItems = mutableListOf<SearchResultAdapterItem>().apply {
-                        // Add `Recent searches` header
-                        add(SearchResultAdapterItem.RecentSearchesHeader)
-
-                        // Add history record items
-                        addAll(result.map { history ->
-                            SearchResultAdapterItem.History(
-                                history,
-                                isFavorite = false
-                            )
-                        })
-                    }
-
-                    // Show prepared items
-                    binding.searchResultsView.setAdapterItems(viewItems)
-                }
-
-                override fun onError(e: Exception) {
-                    // Show error in case of failure
-                    val errorItem = SearchResultAdapterItem.Error(UiError.createFromException(e))
-                    binding.searchResultsView.setAdapterItems(listOf(errorItem))
-                }
-            })
-    }
-
-    private fun searchDestination(destination: String) {
-        val placeAutocomplete = PlaceAutocomplete
-            .create(getString(R.string.mapbox_access_token))
-
-        lifecycleScope.launchWhenCreated {
-            val response = placeAutocomplete.suggestions(
-                query = destination,
-            )
-
-            if (response.isValue) {
-                val suggestions = requireNotNull(response.value)
-
-                Log.i("SearchApiExample", "Place Autocomplete suggestions: $suggestions")
-
-                if (suggestions.isNotEmpty()) {
-                    // Supposing that a user has selected (clicked in UI) the first suggestion
-                    val selectedSuggestion = suggestions.first()
-
-                    Log.i("SearchApiExample", "Selecting first suggestion...")
-
-                    val selectionResponse = placeAutocomplete.select(selectedSuggestion)
-                    selectionResponse.onValue { result ->
-                        Log.i("SearchApiExample", "Place Autocomplete result: $result")
-                    }.onError { e ->
-                        Log.i("SearchApiExample", "An error occurred during selection", e)
-                    }
-                }
-            } else {
-                Log.i("SearchApiExample", "Place Autocomplete error", response.error)
-            }
         }
     }
 
@@ -808,7 +588,7 @@ class MapPassengerActivity : AppCompatActivity(),
                 showHasActiveBookingDialog()
 
                 Handler().postDelayed({
-                   closeHasActiveBookingDialog()
+                    closeHasActiveBookingDialog()
                 }, 2000)
 
                 false
@@ -832,7 +612,6 @@ class MapPassengerActivity : AppCompatActivity(),
         if (FirebaseMain.getUser() != null) {
 
             setupGesturesListener()
-//            checkBookingStatus()
 
             val bookingReference = FirebaseDatabase.getInstance()
                 .getReference(FirebaseMain.bookingCollection)
@@ -1161,7 +940,39 @@ class MapPassengerActivity : AppCompatActivity(),
             voiceAssistant.speak("Do you need help?")
         }
 
+        if (fontSize.equals("large")) {
+
+            binding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22F)
+            binding.dontShowAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22F)
+            binding.dontShowAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22F)
+        }
+
         binding.closeBtn.setOnClickListener {
+            closeMapInstructionsDialog()
+        }
+
+        binding.yesBtn.setOnClickListener {
+            intent = Intent(this@MapPassengerActivity, HelpActivity::class.java)
+            startActivity(intent)
+
+            closeMapInstructionsDialog()
+        }
+
+        binding.dontShowAgainBtn.setOnClickListener {
+            val userReference = FirebaseMain.getFireStoreInstance()
+                .collection(FirebaseMain.userCollection)
+                .document(FirebaseMain.getUser().uid)
+
+            val updateUser = HashMap<String, Any>()
+            updateUser["isFirstTimeUser"] = false
+
+            userReference.update(updateUser)
+                .addOnSuccessListener {
+                    Log.e(TAG, "showMapInstructionsDialog: isFirstTimeUser to false")
+                }
+                .addOnFailureListener {
+                    Log.e(TAG, "showMapInstructionsDialog: ${it.message}")
+                }
             closeMapInstructionsDialog()
         }
 

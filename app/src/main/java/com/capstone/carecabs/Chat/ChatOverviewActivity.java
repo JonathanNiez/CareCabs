@@ -41,11 +41,11 @@ import java.util.Objects;
 
 public class ChatOverviewActivity extends AppCompatActivity {
 	private final String TAG = "ChatOverviewActivity";
+	private ActivityChatOverviewBinding binding;
 	private List<String> stringUsersList;
 	private boolean hasAvailableChats = false;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
-	private ActivityChatOverviewBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -166,6 +166,7 @@ public class ChatOverviewActivity extends AppCompatActivity {
 						if (currentUserID.equals(userID) || chatOverviewModel.getUserID().equals(userID)) {
 							chatOverviewModelList.add(chatOverviewModel);
 							hasAvailableChats = true;
+
 							break;
 						}
 					}
@@ -178,6 +179,9 @@ public class ChatOverviewActivity extends AppCompatActivity {
 					binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
 					binding.loadingLayout.setVisibility(View.GONE);
 				}
+			}else {
+				binding.noAvailableChatsTextView.setVisibility(View.VISIBLE);
+				binding.loadingLayout.setVisibility(View.GONE);
 			}
 		});
 	}

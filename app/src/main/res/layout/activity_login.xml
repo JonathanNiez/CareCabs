@@ -179,7 +179,6 @@
 				android:layout_marginTop="20dp"
 				android:layout_marginBottom="20dp"
 				android:elevation="5dp"
-				android:padding="10dp"
 				android:text="Login"
 				android:textSize="17sp" />
 

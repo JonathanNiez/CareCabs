@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,17 +25,16 @@ import com.capstone.carecabs.databinding.FragmentContactUsBinding;
 
 import java.util.Objects;
 
-public class ContactUsFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
+public class ContactUsFragment extends Fragment implements
+		SettingsBottomSheet.FontSizeChangeListener {
+	private FragmentContactUsBinding binding;
 	private Context context;
-	private float textSizeSP;
-	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private VoiceAssistant voiceAssistant;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
-	private FragmentContactUsBinding binding;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,6 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 		binding.submitFeedBackBtn.setOnClickListener(v -> {
 			Intent intent = new Intent(context, FeedbackActivity.class);
 			startActivity(intent);
-			Objects.requireNonNull(getActivity()).finish();
 		});
 
 		return view;
@@ -94,6 +93,8 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -101,7 +102,16 @@ public class ContactUsFragment extends Fragment implements SettingsBottomSheet.F
 			textSizeSP = DEFAULT_TEXT_SIZE_SP;
 			textHeaderSizeSP = DEFAULT_HEADER_TEXT_SIZE_SP;
 		}
-	}
 
+		binding.textView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.textView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView3.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView4.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView5.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView6.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.textView7.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.textView8.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.submitFeedBackBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
 }
 

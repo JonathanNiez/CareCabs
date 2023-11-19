@@ -5,11 +5,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Model.TutorialsModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.databinding.ItemTutorialsBinding;
@@ -18,6 +20,7 @@ import java.util.List;
 
 public class TutorialsAdapter extends
 		RecyclerView.Adapter<TutorialsAdapter.TutorialsViewHolder> {
+
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private Context context;
 	private List<TutorialsModel> tutorialsModelList;
@@ -48,7 +51,15 @@ public class TutorialsAdapter extends
 	public void onBindViewHolder(@NonNull TutorialsViewHolder holder, int position) {
 		TutorialsModel tutorialsModel = tutorialsModelList.get(position);
 
-		if (fontSize.equals("large")) {
+		holder.binding.tutorialGif.setVisibility(View.GONE);
+
+		if (tutorialsModel.isGif()) {
+			holder.binding.tutorialImageView.setVisibility(View.GONE);
+			holder.binding.tutorialGif.setVisibility(View.VISIBLE);
+			holder.binding.tutorialGif.setImageResource(tutorialsModel.getTutorialImage());
+		}
+
+		if (fontSize.equals("large")){
 			holder.binding.tutorialTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 			holder.binding.tutorialBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
 		}

@@ -3,10 +3,7 @@ package com.capstone.carecabs.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -28,12 +25,7 @@ import com.capstone.carecabs.R;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.FragmentChangePasswordBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Objects;
 
@@ -59,7 +51,7 @@ public class ChangePasswordFragment extends Fragment implements
 		super.onPause();
 
 		closePasswordResetConfirmationDialog();
-		closePasswordWarningDialog();
+		closeChangePasswordWarningDialog();
 		closePasswordUpdateFailedDialog();
 		closePasswordUpdateSuccessDialog();
 		closeCancelPasswordResetDialog();
@@ -70,7 +62,7 @@ public class ChangePasswordFragment extends Fragment implements
 		super.onDestroy();
 
 		closePasswordResetConfirmationDialog();
-		closePasswordWarningDialog();
+		closeChangePasswordWarningDialog();
 		closePasswordUpdateFailedDialog();
 		closePasswordUpdateSuccessDialog();
 		closeCancelPasswordResetDialog();
@@ -97,9 +89,12 @@ public class ChangePasswordFragment extends Fragment implements
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 
-			binding.emailEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Email"));
-			binding.oldPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Old Password"));
-			binding.newPasswordEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("New Password"));
+			binding.emailEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Email"));
+			binding.oldPasswordEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("Old Password"));
+			binding.newPasswordEditText.setOnFocusChangeListener((v, hasFocus) ->
+					voiceAssistant.speak("New Password"));
 		}
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
@@ -156,7 +151,7 @@ public class ChangePasswordFragment extends Fragment implements
 								} else {
 									if (FirebaseMain.getUser().isEmailVerified()) {
 										if (isAdded()) {
-											showPasswordWarningDialog();
+											showChangePasswordWarningDialog();
 										}
 									} else {
 										binding.emailNotVerifiedLayout.setVisibility(View.VISIBLE);
@@ -212,10 +207,11 @@ public class ChangePasswordFragment extends Fragment implements
 
 	}
 
-	private void showPasswordWarningDialog() {
+	private void showChangePasswordWarningDialog() {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_reset_password_warning, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_change_password_warning, null);
 
 		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
 
@@ -226,17 +222,14 @@ public class ChangePasswordFragment extends Fragment implements
 			voiceAssistant.speak(changePasswordWarning);
 		}
 
-		okayBtn.setOnClickListener(v -> {
-			closePasswordWarningDialog();
-		});
+		okayBtn.setOnClickListener(v -> closeChangePasswordWarningDialog());
 
 		builder.setView(dialogView);
-
 		passwordWarningDialog = builder.create();
 		passwordWarningDialog.show();
 	}
 
-	private void closePasswordWarningDialog() {
+	private void closeChangePasswordWarningDialog() {
 		if (passwordWarningDialog != null && passwordWarningDialog.isShowing()) {
 			passwordWarningDialog.dismiss();
 		}
@@ -245,22 +238,18 @@ public class ChangePasswordFragment extends Fragment implements
 	private void showPasswordUpdateSuccessDialog(String email) {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_success, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_password_change_success, null);
 
 		Button okBtn = dialogView.findViewById(R.id.okBtn);
 		TextView emailTextView = dialogView.findViewById(R.id.emailTextView);
 
-		String text = email;
-		SpannableString underlinedText = new SpannableString(text);
-
-		underlinedText.setSpan(new UnderlineSpan(), 0, text.length(), 0);
-
-		emailTextView.setText(underlinedText);
+		emailTextView.setText(email);
 
 		okBtn.setOnClickListener(v -> {
 			intent = new Intent(getActivity(), LoginActivity.class);
 			startActivity(intent);
-			getActivity().finish();
+			Objects.requireNonNull(getActivity()).finish();
 		});
 
 		builder.setView(dialogView);
@@ -275,10 +264,6 @@ public class ChangePasswordFragment extends Fragment implements
 		}
 	}
 
-	public boolean isValidEmail(String email) {
-		String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}";
-		return email.matches(emailPattern);
-	}
 
 	private void resetPassword(String email) {
 		FirebaseMain.getAuth().sendPasswordResetEmail(email)
@@ -302,18 +287,14 @@ public class ChangePasswordFragment extends Fragment implements
 	private void showPasswordUpdateFailedDialog() {
 		builder = new AlertDialog.Builder(context);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_password_change_failed, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_password_change_failed, null);
 
 		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
 
-		okayBtn.setOnClickListener(v -> {
-			intent = new Intent(getActivity(), LoginActivity.class);
-			startActivity(intent);
-			Objects.requireNonNull(getActivity()).finish();
-		});
+		okayBtn.setOnClickListener(v -> closePasswordUpdateFailedDialog());
 
 		builder.setView(dialogView);
-
 		passwordUpdateFailedDialog = builder.create();
 		passwordUpdateFailedDialog.show();
 	}
@@ -369,16 +350,11 @@ public class ChangePasswordFragment extends Fragment implements
 		Button resetBtn = dialogView.findViewById(R.id.resetBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		resetBtn.setOnClickListener(v -> {
-			resetPassword(email);
-		});
+		resetBtn.setOnClickListener(v -> resetPassword(email));
 
-		cancelBtn.setOnClickListener(v -> {
-			closePasswordResetConfirmationDialog();
-		});
+		cancelBtn.setOnClickListener(v -> closePasswordResetConfirmationDialog());
 
 		builder.setView(dialogView);
-
 		passwordResetConfirmationDialog = builder.create();
 		passwordResetConfirmationDialog.show();
 	}

@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.capstone.carecabs.BottomSheetModal.SettingsBottomSheet;
 import com.capstone.carecabs.Firebase.FirebaseMain;
-import com.capstone.carecabs.Register.RegisterActivity;
 import com.capstone.carecabs.Register.RegisterUserTypeActivity;
 import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
@@ -114,7 +113,7 @@ public class LoginActivity extends AppCompatActivity implements
 		googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
 
 		binding.resetPasswordBtn.setOnClickListener(view -> {
-			intent = new Intent(LoginActivity.this, ResetPasswordActivity.class);
+			intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
 			startActivity(intent);
 			finish();
 		});
@@ -200,11 +199,6 @@ public class LoginActivity extends AppCompatActivity implements
 		binding.loginBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.loginWithGoogleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.resetPasswordBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-	}
-
-	public boolean isValidEmail(String email) {
-		String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}";
-		return email.matches(emailPattern);
 	}
 
 	private void loginUser(String email, String password) {
@@ -452,7 +446,7 @@ public class LoginActivity extends AppCompatActivity implements
 		builder = new AlertDialog.Builder(this);
 
 		View dialogView = getLayoutInflater()
-				.inflate(R.layout.email_not_registered_dialog, null);
+				.inflate(R.layout.dialog_email_not_registered, null);
 
 		Button noBtn = dialogView.findViewById(R.id.noBtn);
 		Button yesBtn = dialogView.findViewById(R.id.yesBtn);
@@ -516,7 +510,6 @@ public class LoginActivity extends AppCompatActivity implements
 		emailDialog = builder.create();
 		emailDialog.show();
 	}
-
 
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(this);
@@ -614,7 +607,6 @@ public class LoginActivity extends AppCompatActivity implements
 			loginFailedDialog.dismiss();
 		}
 	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

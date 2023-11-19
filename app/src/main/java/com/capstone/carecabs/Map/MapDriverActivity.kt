@@ -1167,9 +1167,7 @@ class MapDriverActivity : AppCompatActivity(),
                 pointAnnotationManager.apply {
                     addClickListener(
                         OnPointAnnotationClickListener {
-
                             findRoute(destination)
-
                             true
                         }
                     )

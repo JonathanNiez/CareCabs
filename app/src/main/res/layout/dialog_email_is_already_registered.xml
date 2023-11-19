@@ -29,12 +29,12 @@
 				android:src="@drawable/failed_64" />
 
 			<androidx.appcompat.widget.AppCompatTextView
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="10dp"
 				android:fontFamily="@font/gabarito_bold"
 				android:text="REGISTER"
-				style="@style/TextColor"
 				android:textSize="20sp" />
 
 			<androidx.appcompat.widget.AppCompatTextView
@@ -48,13 +48,13 @@
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/textView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
 				android:fontFamily="@font/gabarito_semibold"
 				android:text="The Email you entered is already Used"
 				android:textAlignment="center"
-				style="@style/TextColor"
 				android:textSize="17sp" />
 
 
@@ -65,10 +65,12 @@
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/okBtn"
 		style="@style/PrimaryButton"
-		android:layout_width="130dp"
+		android:layout_width="150dp"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
+		android:elevation="5dp"
 		android:fontFamily="@font/opensans_semibold"
+		android:padding="10dp"
 		android:text="Okay"
 		android:textSize="17sp" />
 

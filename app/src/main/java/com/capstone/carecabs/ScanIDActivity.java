@@ -1,6 +1,7 @@
 package com.capstone.carecabs;
 
 import android.Manifest;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -36,7 +37,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -96,8 +96,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ScanIDActivity extends AppCompatActivity implements
 		SettingsBottomSheet.FontSizeChangeListener {
@@ -113,13 +111,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private final int imageSize = 224;
 	private boolean isUserVerified = false;
 	private AlertDialog.Builder builder;
-	private AlertDialog optionsDialog, cancelScanIDDialog, notAnIDDialog,
-			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog;
+	private AlertDialog cancelScanIDDialog, notAnIDDialog,
+			noInternetDialog, uploadClearIDPictureDialog, pleaseWaitDialog,
+			verificationSuccessDialog;
 	private TextRecognizer textRecognizer;
-	private static final int CAMERA_REQUEST_CODE = 1;
-	private static final int STORAGE_REQUEST_CODE = 2;
-	private static final int CAMERA_PERMISSION_REQUEST = 101;
-	private static final int STORAGE_PERMISSION_REQUEST = 102;
+	private static final int CAMERA_PERMISSION_REQUEST_CODE = 69;
+	private static final int STORAGE_PERMISSION_REQUEST_CODE = 420;
 	private Intent intent;
 	private NetworkChangeReceiver networkChangeReceiver;
 	private DocumentReference documentReference;
@@ -129,7 +126,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 	private ProcessCameraProvider cameraProvider;
 	private int CAMERA_FACING = CameraSelector.LENS_FACING_FRONT; //default front cam
 	private int RECOGNIZE_FACE_IN_ID = 69;
-	private int UPLOAD_ID_FROM_GALLERY = 420;
+	private final int UPLOAD_ID_FROM_GALLERY = 420;
 	private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
 	private HashMap<String, SimilarityClassifier.Recognition> registeredFace = new HashMap<>(); //saved Faces
 	private boolean startFaceDetecting = true, flipX = false, isFaceMatched = false;
@@ -155,6 +152,7 @@ public class ScanIDActivity extends AppCompatActivity implements
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
 		closePleaseWaitDialog();
+		closeVerificationSuccessDialog();
 	}
 
 	@Override
@@ -168,13 +166,14 @@ public class ScanIDActivity extends AppCompatActivity implements
 		closeCancelScanIDDialog();
 		closeNoInternetDialog();
 		closePleaseWaitDialog();
+		closeVerificationSuccessDialog();
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		initializeNetworkChecker();
 
+		initializeNetworkChecker();
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -287,18 +286,14 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 		binding.settingsFloatingBtn.setOnClickListener(v -> showSettingsBottomSheet());
 
-		binding.facePreviewImageView.setOnClickListener(v -> getDetectedFace());
+		binding.scanIDTextView.setOnClickListener(v -> {
+			int scrollBottom = binding.scrollView.getChildAt(0).getHeight() - binding.scrollView.getHeight();
+			ObjectAnimator.ofInt(binding.scrollView, "scrollY", scrollBottom)
+					.setDuration(1500)
+					.start();
+		});
 
-//		if (isFaceMatched) {
-//			startFaceDetecting = false;
-//
-//			binding.doneBtn.setVisibility(View.VISIBLE);
-//			binding.doneBtn.setOnClickListener(v -> {
-//				if (idPictureUri != null) {
-//					updateVerificationStatus(idPictureUri);
-//				}
-//			});
-//		}
+//		binding.facePreviewImageView.setOnClickListener(v -> getDetectedFace());
 
 
 		binding.idScanLayout.setOnClickListener(v -> {
@@ -788,34 +783,43 @@ public class ScanIDActivity extends AppCompatActivity implements
 
 						faceRecognizedThreshold++;
 
-						binding.faceRecognitionStatusTextView.setText("Nearest: " + name + "\nDist: " +
-								String.format("%.3f", distance_local) +
-								"\n2nd Nearest: " + nearest.get(1).first +
-								"\nDist: " + String.format("%.3f", nearest.get(1).second));
+						if (faceRecognizedThreshold == 3) {
+							binding.faceRecognitionStatusTextView.setTextColor(Color.BLACK);
+							binding.faceRecognitionStatusTextView.setText("Face Matched\nPlease steady your Face");
+						}
 
 						binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.green));
-//					binding.faceRecognitionStatusTextView.setText(name);
-
+						binding.faceRecognitionStatusTextView.setText("Face Matched");
+//						binding.faceRecognitionStatusTextView.setText(name);
+//												binding.faceRecognitionStatusTextView.setText("Nearest: " + name + "\nDist: " +
+//								String.format("%.3f", distance_local) +
+//								"\n2nd Nearest: " + nearest.get(1).first +
+//								"\nDist: " + String.format("%.3f", nearest.get(1).second));
 					} else {
 						isFaceMatched = true;
 						startFaceDetecting = false;
+						binding.faceRecognitionStatusTextView.setTextColor(Color.BLACK);
+						binding.faceRecognitionStatusTextView.setText("Face Matched\nPlease wait...");
 
 						if (idPictureUri != null)
 							updateVerificationStatus(idPictureUri);
 
 					}
 				} else {
-					if (faceNotRecognizedThreshold < 6) {
-						faceNotRecognizedThreshold++;
-					} else {
-						binding.faceRecognitionStatusTextView.setText("Unknown " + "\nDist: " +
-								String.format("%.3f", distance_local) + "\nNearest: " + name +
-								"\nDist: " + String.format("%.3f", distance_local) + "\n2nd Nearest: "
-								+ nearest.get(1).first + "\nDist: " + String.format("%.3f", nearest.get(1).second));
+					binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.light_red));
+					binding.faceRecognitionStatusTextView.setText("Face Not Matched");
+//						binding.faceRecognitionStatusTextView.setText("Unknown " + "\nDist: " +
+//								String.format("%.3f", distance_local) + "\nNearest: " + name +
+//								"\nDist: " + String.format("%.3f", distance_local) + "\n2nd Nearest: "
+//								+ nearest.get(1).first + "\nDist: " + String.format("%.3f", nearest.get(1).second));
 
-						binding.faceRecognitionStatusTextView.setTextColor(ContextCompat.getColor(this, R.color.light_red));
-//					binding.faceRecognitionStatusTextView.setText("Unknown");
-					}
+//					if (faceNotRecognizedThreshold < 6) {
+//
+//						faceNotRecognizedThreshold++;
+//
+//					} else {
+//
+//					}
 				}
 
 				Log.i(TAG, "recognizeImage - nearest: " + name + " - distance: " + distance_local);
@@ -1187,21 +1191,28 @@ public class ScanIDActivity extends AppCompatActivity implements
 	}
 
 	private void checkCameraAndStoragePermission() {
-		// Check for camera permission
+
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
 				!= PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this,
 					new String[]{Manifest.permission.CAMERA},
-					CAMERA_PERMISSION_REQUEST);
+					CAMERA_PERMISSION_REQUEST_CODE);
+		} else {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					CAMERA_PERMISSION_REQUEST_CODE);
 		}
 
-		// Check for storage permission
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 				!= PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions(this,
 					new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
 							Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					STORAGE_PERMISSION_REQUEST);
+					STORAGE_PERMISSION_REQUEST_CODE);
+		} else {
+			ActivityCompat.requestPermissions(this,
+					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+					STORAGE_PERMISSION_REQUEST_CODE);
 		}
 	}
 
@@ -1232,7 +1243,15 @@ public class ScanIDActivity extends AppCompatActivity implements
 		fadeInAnimation(binding.matchYourFaceTextView);
 		fadeInAnimation(binding.faceRecognitionLayout);
 
-		binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN);
+		Handler handler = new Handler();
+		Runnable dismissRunnable = () -> {
+			int scrollBottom = binding.scrollView.getChildAt(0).getHeight() - binding.scrollView.getHeight();
+			ObjectAnimator.ofInt(binding.scrollView, "scrollY", scrollBottom)
+					.setDuration(1500)
+					.start();
+		};
+		handler.postDelayed(dismissRunnable, 2000);
+
 	}
 
 	private void fadeInAnimation(final View view) {
@@ -1299,6 +1318,35 @@ public class ScanIDActivity extends AppCompatActivity implements
 		intent.putExtra("activityData", "fromMyProfile");
 		startActivity(intent);
 		finish();
+	}
+
+	private void showVerificationSuccessDialog() {
+		builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_verification_success, null);
+
+
+		Button okayBtn = dialogView.findViewById(R.id.okayBtn);
+
+		okayBtn.setOnClickListener(v -> {
+			intent = new Intent(ScanIDActivity.this, MainActivity.class);
+			startActivity(intent);
+			finish();
+
+			closeVerificationSuccessDialog();
+		});
+
+		builder.setView(dialogView);
+		verificationSuccessDialog = builder.create();
+		verificationSuccessDialog.show();
+	}
+
+	private void closeVerificationSuccessDialog() {
+		if (verificationSuccessDialog != null && verificationSuccessDialog.isShowing()) {
+			verificationSuccessDialog.dismiss();
+		}
 	}
 
 	private void showCancelScanIDDialog() {
@@ -1380,20 +1428,6 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
-	private void openGallery() {
-		@SuppressLint("IntentReset") Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-		galleryIntent.setType("image/*");
-		if (galleryIntent.resolveActivity(getPackageManager()) != null) {
-			startActivityForResult(galleryIntent, STORAGE_REQUEST_CODE);
-			if (optionsDialog != null && optionsDialog.isShowing()) {
-				optionsDialog.dismiss();
-			}
-
-		} else {
-			Toast.makeText(this, "No gallery app found", Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	private void showToast(String message, int duration) {
 		Toast.makeText(this, message, duration).show();
 	}
@@ -1435,24 +1469,12 @@ public class ScanIDActivity extends AppCompatActivity implements
 		binding.scanLaterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 	}
 
-	private void openCamera() {
-		Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-		if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-			startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
-			if (optionsDialog != null && optionsDialog.isShowing()) {
-				optionsDialog.dismiss();
-			}
-
-		} else {
-			Toast.makeText(this, "No camera app found", Toast.LENGTH_SHORT).show();
-		}
-	}
-
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_please_wait, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_please_wait, null);
 
 		builder.setView(dialogView);
 
@@ -1466,16 +1488,11 @@ public class ScanIDActivity extends AppCompatActivity implements
 		}
 	}
 
-	private boolean matchesPattern(String text, String pattern) {
-		Pattern p = Pattern.compile(pattern);
-		Matcher m = p.matcher(text);
-		return m.find();
-	}
-
 	private void uploadIDPictureToFirebaseStorage(String userID, Uri idPictureUri) {
 
 		StorageReference idPictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
-		StorageReference idPicturePath = idPictureReference.child("images/idPictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		StorageReference idPicturePath = idPictureReference.child("images/idPictures/"
+				+ System.currentTimeMillis() + "_" + userID + ".jpg");
 
 		idPicturePath.putFile(idPictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
@@ -1483,14 +1500,10 @@ public class ScanIDActivity extends AppCompatActivity implements
 					idPicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
 
-								closePleaseWaitDialog();
+								showVerificationSuccessDialog();
 
 								idPictureURL = uri.toString();
 								storeIDPictureURLInFireStore(userID, idPictureURL);
-
-								intent = new Intent(ScanIDActivity.this, MainActivity.class);
-								startActivity(intent);
-								finish();
 
 							})
 							.addOnFailureListener(e -> {
@@ -1625,16 +1638,22 @@ public class ScanIDActivity extends AppCompatActivity implements
 	                                       @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-		if (requestCode == CAMERA_PERMISSION_REQUEST) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.i(TAG, "Camera Permission Granted");
-			}
-		} else if (requestCode == STORAGE_PERMISSION_REQUEST) {
-			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				Log.i(TAG, "Storage Permission Granted");
-			}
-		} else {
-			Log.e(TAG, "Permission Denied");
-		}
+		if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+				Log.i(TAG, "onRequestPermissionsResult: Camera Permission Granted");
+
+			else
+				Log.e(TAG, "onRequestPermissionsResult: Camera Permission Denied");
+
+		} else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+			if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+				Log.i(TAG, "onRequestPermissionsResult: Storage Permission Granted");
+
+			else
+				Log.e(TAG, "onRequestPermissionsResult: Storage Permission Denied");
+
+		} else
+			showToast("All Permissions Denied", 1);
+
 	}
 }

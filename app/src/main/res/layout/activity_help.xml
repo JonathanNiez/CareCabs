@@ -42,25 +42,8 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_below="@id/customActionBarLayout"
+		android:layout_marginBottom="100dp"
 		tools:listitem="@layout/item_tutorials" />
-
-	<com.google.android.material.floatingactionbutton.FloatingActionButton
-		android:id="@+id/settingsFloatingBtn"
-		style="@style/FloatingButtonBackground"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentStart="true"
-		android:layout_alignParentBottom="true"
-		android:layout_marginStart="10dp"
-		android:layout_marginTop="10dp"
-		android:layout_marginEnd="10dp"
-		android:layout_marginBottom="10dp"
-		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
-		android:importantForAccessibility="yes"
-		android:src="@drawable/settings_64"
-		app:fabSize="normal"
-		app:useCompatPadding="true" />
 
 	<com.google.android.material.floatingactionbutton.FloatingActionButton
 		android:id="@+id/backFloatingBtn"
@@ -74,9 +57,31 @@
 		android:layout_marginEnd="10dp"
 		android:layout_marginBottom="10dp"
 		android:contentDescription="@string/accessibility"
-		android:elevation="5dp"
+		android:elevation="10dp"
 		android:importantForAccessibility="yes"
 		android:src="@drawable/back"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
+		app:fabSize="normal"
+		app:useCompatPadding="true" />
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/settingsFloatingBtn"
+		style="@style/FloatingButtonBackground"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentStart="true"
+		android:layout_alignParentBottom="true"
+		android:layout_marginStart="10dp"
+		android:layout_marginTop="10dp"
+		android:layout_marginEnd="10dp"
+		android:layout_marginBottom="10dp"
+		android:contentDescription="@string/accessibility"
+		android:elevation="10dp"
+		android:importantForAccessibility="yes"
+		android:src="@drawable/settings_64"
+		app:borderWidth="2dp"
+		app:fabCustomSize="70dp"
 		app:fabSize="normal"
 		app:useCompatPadding="true" />
 

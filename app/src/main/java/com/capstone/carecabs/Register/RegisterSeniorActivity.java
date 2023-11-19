@@ -61,7 +61,6 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 	private final String userType = "Senior Citizen";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
-	private boolean isEditing = false;
 	private final String[] sexItem = {"Male", "Female"};
 	private final String[] monthItem = {
 			"January",
@@ -179,7 +178,7 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 				Toast.makeText(this, "Please enter your Info", Toast.LENGTH_LONG).show();
 				binding.progressBarLayout.setVisibility(View.GONE);
 
-			} else if (age <= 60) {
+			} else if (age < 60) {
 				showNotSeniorDialog();
 				closePleaseWaitDialog();
 
@@ -204,7 +203,6 @@ public class RegisterSeniorActivity extends AppCompatActivity implements
 	public void onFontSizeChanged(boolean isChecked) {
 		fontSize = isChecked ? "large" : "normal";
 		setFontSize(fontSize);
-
 	}
 
 	private void setFontSize(String fontSize) {

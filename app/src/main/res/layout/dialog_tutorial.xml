@@ -27,7 +27,14 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_margin="5dp"
-				android:src="@drawable/help_64_2" />
+				app:srcCompat="@drawable/help_64_2" />
+
+			<pl.droidsonroids.gif.GifImageView
+				android:id="@+id/tutorialGif"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:src="@drawable/gif_60" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/titleTextView"
@@ -55,39 +62,16 @@
 
 	</androidx.cardview.widget.CardView>
 
-	<androidx.appcompat.widget.LinearLayoutCompat
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="20dp"
-		android:gravity="center">
-
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/closeBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			style="@style/PrimaryButton"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/light_red"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Close"
-			android:textColor="@color/white"
 			android:textSize="17sp" />
-
-		<androidx.appcompat.widget.AppCompatButton
-			android:id="@+id/nextBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
-			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
-			android:elevation="5dp"
-			android:fontFamily="@font/gabarito_semibold"
-			android:text="Next"
-			android:textColor="@color/white"
-			android:textSize="17sp" />
-
-	</androidx.appcompat.widget.LinearLayoutCompat>
-
 
 </androidx.appcompat.widget.LinearLayoutCompat>

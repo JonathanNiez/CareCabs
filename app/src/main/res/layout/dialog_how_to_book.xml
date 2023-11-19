@@ -15,99 +15,117 @@
 		app:cardCornerRadius="10dp"
 		app:cardElevation="5dp">
 
-		<RelativeLayout
+		<androidx.appcompat.widget.LinearLayoutCompat
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content">
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			android:orientation="vertical">
 
 			<androidx.appcompat.widget.AppCompatImageView
-				android:id="@+id/closeImageView"
+				android:id="@+id/closeBtn"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_alignParentTop="true"
-				android:layout_alignParentEnd="true"
-				android:layout_margin="5dp"
+				android:layout_gravity="top|end"
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
 				app:srcCompat="@drawable/x_48" />
 
 			<androidx.appcompat.widget.AppCompatImageView
 				android:id="@+id/instructionImageView"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_centerHorizontal="true"
 				android:layout_marginStart="5dp"
 				android:layout_marginTop="5dp"
 				android:layout_marginEnd="5dp"
 				android:layout_marginBottom="5dp"
-				app:srcCompat="@drawable/help_64_2" />
+				android:src="@drawable/help_64_2" />
+
+			<pl.droidsonroids.gif.GifImageView
+				android:id="@+id/howToBookGif"
+				android:layout_width="wrap_content"
+				android:layout_height="300dp"
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
+				android:src="@drawable/ride_booking_gif" />
 
 			<androidx.appcompat.widget.AppCompatTextView
 				android:id="@+id/titleTextView"
 				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_centerHorizontal="true"
-				android:layout_margin="10dp"
-				android:layout_below="@id/instructionImageView"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="10dp"
 				android:fontFamily="@font/gabarito_bold"
-				android:text="HOW TO BOOK A RIDE?"
+				android:text="Do you need help how to Book a Ride?"
 				android:textAlignment="center"
 				android:textSize="20sp" />
 
-			<pl.droidsonroids.gif.GifImageView
+			<androidx.appcompat.widget.AppCompatTextView
+				android:id="@+id/bodyTextView"
+				style="@style/TextColor"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:layout_below="@id/howToBookGif"
 				android:layout_centerHorizontal="true"
-				android:layout_below="@id/titleTextView"
-				android:layout_margin="5dp"
-				android:src="@drawable/cat" />
+				android:layout_marginStart="5dp"
+				android:layout_marginTop="5dp"
+				android:layout_marginEnd="5dp"
+				android:layout_marginBottom="5dp"
+				android:fontFamily="@font/gabarito_medium"
+				android:text="@string/help_how_to_book"
+				android:textAlignment="center"
+				android:textSize="17sp" />
 
-		</RelativeLayout>
+		</androidx.appcompat.widget.LinearLayoutCompat>
 
 	</androidx.cardview.widget.CardView>
 
 	<androidx.appcompat.widget.LinearLayoutCompat
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
 		android:gravity="center">
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/nextBtn"
 			style="@style/PrimaryButton"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:layout_margin="5dp"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Next"
 			android:textSize="17sp" />
 
 		<androidx.appcompat.widget.AppCompatButton
 			android:id="@+id/previousBtn"
-			android:layout_width="130dp"
-			android:layout_height="50dp"
-			android:layout_margin="5dp"
-			android:background="@drawable/smooth_edge_button"
-			android:backgroundTint="@color/yinmn_blue"
+			style="@style/PrimaryButton"
+			android:layout_width="150dp"
+			android:layout_height="wrap_content"
 			android:elevation="5dp"
 			android:fontFamily="@font/gabarito_semibold"
+			android:padding="10dp"
 			android:text="Previous"
-			android:textColor="@color/white"
-			android:textSize="17sp"
-			android:visibility="gone" />
+			android:textSize="17sp" />
 
 	</androidx.appcompat.widget.LinearLayoutCompat>
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/dontShowAgainBtn"
+		style="@style/SecondaryButton"
 		android:layout_width="200dp"
-		android:layout_height="50dp"
-		android:layout_marginTop="5dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
-		android:background="@drawable/smooth_edge_button"
-		android:backgroundTint="@color/light_gray"
 		android:elevation="5dp"
 		android:fontFamily="@font/gabarito_semibold"
 		android:text="Don't show again"
-		android:textColor="@color/black"
 		android:textSize="17sp" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

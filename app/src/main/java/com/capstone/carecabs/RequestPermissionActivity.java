@@ -1,11 +1,6 @@
 package com.capstone.carecabs;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -13,7 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.capstone.carecabs.databinding.ActivityRequestLocationPermissionBinding;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.capstone.carecabs.databinding.ActivityRequestPermissionBinding;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -23,12 +22,12 @@ public class RequestPermissionActivity extends AppCompatActivity {
 	private static final int CAMERA_PERMISSION_REQUEST_CODE = 2;
 	private static final int STORAGE_PERMISSION_REQUEST_CODE = 3;
 	private int locationPermissionResult, cameraPermissionResult, storagePermissionResult;
-	private ActivityRequestLocationPermissionBinding binding;
+	private ActivityRequestPermissionBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		binding = ActivityRequestLocationPermissionBinding.inflate(getLayoutInflater());
+		binding = ActivityRequestPermissionBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
 		requestLocationPermission();

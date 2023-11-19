@@ -213,26 +213,6 @@
 						android:textAlignment="center"
 						android:textSize="27sp" />
 
-					<de.hdodenhof.circleimageview.CircleImageView
-						android:id="@+id/driverDropOffProfilePicture"
-						style="@style/ProfilePictureBorderColor"
-						android:layout_width="120dp"
-						android:layout_height="120dp"
-						android:layout_margin="5dp"
-						android:src="@drawable/profile_picture_100" />
-
-					<androidx.appcompat.widget.AppCompatTextView
-						android:id="@+id/driverDropOffNameTextView"
-						style="@style/TextColor"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_margin="5dp"
-						android:elevation="5dp"
-						android:fontFamily="@font/gabarito_bold"
-						android:text="Driver name"
-						android:textAlignment="center"
-						android:textSize="20sp" />
-
 					<androidx.cardview.widget.CardView
 						style="@style/BaseCardBackground"
 						android:layout_width="match_parent"
@@ -254,6 +234,26 @@
 								android:gravity="center"
 								android:orientation="vertical"
 								android:padding="5dp">
+
+								<de.hdodenhof.circleimageview.CircleImageView
+									android:id="@+id/driverDropOffProfilePicture"
+									style="@style/ProfilePictureBorderColor"
+									android:layout_width="120dp"
+									android:layout_height="120dp"
+									android:layout_margin="5dp"
+									android:src="@drawable/profile_picture_100" />
+
+								<androidx.appcompat.widget.AppCompatTextView
+									android:id="@+id/driverDropOffNameTextView"
+									style="@style/TextColor"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_margin="5dp"
+									android:elevation="5dp"
+									android:fontFamily="@font/gabarito_bold"
+									android:text="Driver name"
+									android:textAlignment="center"
+									android:textSize="20sp" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/rateDriverTextView"

@@ -68,7 +68,7 @@
 			android:name=".RequestPermissionActivity"
 			android:exported="false" />
 		<activity
-			android:name=".ResetPasswordActivity"
+			android:name=".ChangePasswordActivity"
 			android:exported="false" />
 		<activity
 			android:name=".BookingsActivity"

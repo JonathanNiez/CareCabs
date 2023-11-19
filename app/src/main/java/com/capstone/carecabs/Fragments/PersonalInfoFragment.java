@@ -12,6 +12,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,10 +40,10 @@ import com.google.firebase.firestore.DocumentReference;
 
 import java.util.Objects;
 
-public class PersonalInfoFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
+public class PersonalInfoFragment extends Fragment implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "FragmentPersonalInfo";
-	private float textSizeSP;
-	private float textHeaderSizeSP;
+	private FragmentPersonalInfoBinding binding;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
@@ -55,7 +56,6 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
-	private FragmentPersonalInfoBinding binding;
 
 	@Override
 	public void onStart() {
@@ -169,6 +169,21 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 										.into(binding.idImageView);
 							}
 
+							if (!FirebaseMain.getUser().isEmailVerified()) {
+								binding.emailTextView.setTextColor(ContextCompat.getColor(context, R.color.red));
+							}
+
+							binding.firstnameTextView.setText(getFirstName);
+							binding.lastnameTextView.setText(getLastName);
+							binding.userTypeTextView.setText(getUserType);
+							binding.emailTextView.setText("Email: " + FirebaseMain.getUser().getEmail());
+							binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
+							binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
+							binding.ageTextView.setText("Age: " + getAge);
+							binding.sexTextView.setText("Sex: " + getSex);
+							binding.accountCreationDateTextView.setText("Account creation date: " + getAccountCreationDate);
+							binding.registerTypeTextView.setText("Register Type: " + getRegisterType);
+
 							if (getUserType != null) {
 								switch (getUserType) {
 									case "Driver":
@@ -213,18 +228,6 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 										break;
 								}
 							}
-
-							binding.firstnameTextView.setText(getFirstName);
-							binding.lastnameTextView.setText(getLastName);
-							binding.userTypeTextView.setText(getUserType);
-							binding.emailTextView.setText("Email: " + FirebaseMain.getUser().getEmail());
-							binding.phoneTextView.setText("Phone No: " + getPhoneNumber);
-							binding.birthdateTextView.setText("Birthdate: " + getBirthdate);
-							binding.ageTextView.setText("Age: " + getAge);
-							binding.sexTextView.setText("Sex: " + getSex);
-							binding.accountCreationDateTextView.setText("Account creation date: " + getAccountCreationDate);
-							binding.registerTypeTextView.setText("Register Type: " + getRegisterType);
-
 						} else {
 							closePleaseWaitDialog();
 						}
@@ -266,6 +269,8 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -318,9 +323,7 @@ public class PersonalInfoFragment extends Fragment implements SettingsBottomShee
 
 		Button tryAgainBtn = dialogView.findViewById(R.id.tryAgainBtn);
 
-		tryAgainBtn.setOnClickListener(v -> {
-			closeNoInternetDialog();
-		});
+		tryAgainBtn.setOnClickListener(v -> closeNoInternetDialog());
 
 		builder.setView(dialogView);
 

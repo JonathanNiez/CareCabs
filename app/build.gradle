@@ -89,9 +89,9 @@ dependencies {
     implementation "com.mapbox.navigation:ui-dropin:2.10.3"
 
     //firebase
-    implementation 'com.google.firebase:firebase-crashlytics:18.5.1'
+    implementation 'com.google.firebase:firebase-crashlytics:18.6.0'
     implementation 'com.google.firebase:firebase-analytics:21.5.0'
-    implementation 'com.google.firebase:firebase-auth:22.2.0'
+    implementation 'com.google.firebase:firebase-auth:22.3.0'
     implementation 'com.google.firebase:firebase-storage:20.3.0'
     implementation platform('com.google.firebase:firebase-bom:32.2.3')
     implementation 'com.google.firebase:firebase-firestore:24.9.1'

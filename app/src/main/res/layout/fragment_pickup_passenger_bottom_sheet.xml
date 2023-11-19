@@ -231,7 +231,7 @@
 						android:layout_margin="5dp"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:padding="15dp"
+						android:padding="10dp"
 						android:text="Pickup"
 						android:textSize="17sp" />
 
@@ -244,7 +244,7 @@
 						android:backgroundTint="@color/light_red"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
-						android:padding="15dp"
+						android:padding="10dp"
 						android:text="Close"
 						android:textColor="@color/white"
 						android:textSize="17sp" />

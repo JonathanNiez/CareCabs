@@ -50,6 +50,7 @@ import com.capstone.carecabs.Utility.NetworkChangeReceiver;
 import com.capstone.carecabs.Utility.NetworkConnectivityChecker;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
+import com.capstone.carecabs.databinding.DialogEmailVerificationLinkSentBinding;
 import com.capstone.carecabs.databinding.DialogEnterBirthdateBinding;
 import com.capstone.carecabs.databinding.FragmentEditAccountBinding;
 import com.github.dhaval2404.imagepicker.ImagePicker;
@@ -67,11 +68,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-public class EditAccountFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
+public class EditAccountFragment extends Fragment implements
+		SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "EditAccountFragment";
+	private FragmentEditAccountBinding binding;
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
-	private boolean isEditing = false;
 	private final String[] sexItem = {"Male", "Female"};
 	private final String[] disabilityItem = {
 			"Communication Disability",
@@ -108,12 +110,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private Intent intent;
 	private Calendar selectedDate;
 	private AlertDialog.Builder builder;
-	private AlertDialog editFirstNameDialog, editLastNameDialog,
-			editDisabilityDialog, editSexDialog, editAgeDialog,
-			cameraGalleryOptionsDialog, noInternetDialog,
+	private AlertDialog cameraGalleryOptionsDialog, noInternetDialog,
 			profilePicUpdateSuccessDialog, profilePicUpdateFailedDialog,
 			profilePicUpdateSuccessConfirmation, pleaseWaitDialog,
-			enterBirthdateDialog, yourVehiclePictureDialog;
+			enterBirthdateDialog, yourVehiclePictureDialog, emailVerificationSentDialog;
 	private static final int CAMERA_REQUEST_CODE = 1;
 	private static final int GALLERY_REQUEST_CODE = 2;
 	private static final int CAMERA_PERMISSION_REQUEST = 101;
@@ -127,7 +127,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	private StorageReference vehiclePicturePath;
 	private RequestManager requestManager;
 	private VoiceAssistant voiceAssistant;
-	private FragmentEditAccountBinding binding;
 
 	@Override
 	public void onStart() {
@@ -150,11 +149,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		super.onDestroy();
 
 		closePleaseWaitDialog();
-		closeEditFirstNameDialog();
-		closeEditLastNameDialog();
-		closeEditAgeDialog();
-		closeEditSexDialog();
-		closeEditDisabilityDialog();
 		closeNoInternetDialog();
 		closeProfilePicUpdateFailed();
 		closeProfilePicUpdateSuccess();
@@ -166,11 +160,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		super.onPause();
 
 		closePleaseWaitDialog();
-		closeEditFirstNameDialog();
-		closeEditLastNameDialog();
-		closeEditAgeDialog();
-		closeEditSexDialog();
-		closeEditDisabilityDialog();
 		closeNoInternetDialog();
 		closeProfilePicUpdateFailed();
 		closeProfilePicUpdateSuccess();
@@ -191,6 +180,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		binding.editDisabilityLayout.setVisibility(View.GONE);
 		binding.idNotScannedTextView.setVisibility(View.GONE);
 		binding.vehicleInfoLayout.setVisibility(View.GONE);
+		binding.emailNotVerifiedLayout.setVisibility(View.GONE);
 
 		context = getContext();
 
@@ -199,23 +189,26 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 		binding.profilePicture.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
-					.crop()                    //Crop image(Optional), Check Customization for more option
-					.compress(1024)            //Final image size will be less than 1 MB(Optional)
-					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.crop()
+					.compress(1024)
+					.maxResultSize(1080, 1080)
 					.start(PROFILE_PICTURE_REQUEST_CODE);
 		});
 
 		binding.vehicleImageView.setOnClickListener(v -> {
 			ImagePicker.with(EditAccountFragment.this)
-					.crop()                    //Crop image(Optional), Check Customization for more option
-					.compress(1024)            //Final image size will be less than 1 MB(Optional)
-					.maxResultSize(1080, 1080)    //Final image resolution will be less than 1080 x 1080(Optional)
+					.crop()
+					.compress(1024)
+					.maxResultSize(1080, 1080)
 					.start(VEHICLE_PICTURE_REQUEST_CODE);
 		});
 
 		binding.doneBtn.setOnClickListener(v -> backToAccountFragment());
 
 		binding.backFloatingBtn.setOnClickListener(v -> backToAccountFragment());
+
+		binding.sendEmailVerificationLinkBtn.setOnClickListener(v ->
+				sendEmailVerificationLink(FirebaseMain.getUser().getEmail()));
 
 		return view;
 	}
@@ -236,9 +229,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 	}
 
 	private void getUserSettings() {
-
 		setFontSize(fontSize);
-
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Edit Profile");
@@ -257,8 +248,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			binding.editBirthdateBtn.setOnClickListener(v -> voiceAssistant.speak("Birthdate"));
 			binding.sexDropDownMenu.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Sex"));
 			binding.disabilityDropDownMenu.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Disability"));
-			binding.vehicleColorEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Color"));
-			binding.vehiclePlateNumberEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Plate Number"));
+			binding.editVehicleColorEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Color"));
+			binding.editVehiclePlateNumberEditText.setOnFocusChangeListener((v, hasFocus) -> voiceAssistant.speak("Vehicle Plate Number"));
 		}
 
 		userReference = FirebaseMain.getFireStoreInstance()
@@ -277,12 +268,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Firstname updated", Toast.LENGTH_LONG).show();
+							showToast("Firstname updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Firstname failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Firstname failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -298,12 +287,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Lastname updated", Toast.LENGTH_LONG).show();
+							showToast("Lastname updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Lastname failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Lastname failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -319,12 +306,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Age updated", Toast.LENGTH_LONG).show();
+							showToast("Age updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Age failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Age failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -339,12 +324,10 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Birthdate updated", Toast.LENGTH_LONG).show();
+							showToast("Birthdate updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Birthdate failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Birthdate failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -355,24 +338,20 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				new ArrayAdapter<>(context, R.layout.item_dropdown, sexItem);
 		binding.sexDropDownMenu.setAdapter(sexAdapter);
 
-		binding.sexDropDownMenu.setOnItemClickListener((parent, view, position, id) -> {
-			sex = parent.getItemAtPosition(position).toString();
-		});
+		binding.sexDropDownMenu.setOnItemClickListener((parent, view, position, id) ->
+				sex = parent.getItemAtPosition(position).toString());
 
 		binding.editSexImgBtn.setOnClickListener(v -> {
 			if (sex != null) {
-
 				updateInfo.put("sex", sex);
 
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Sex updated", Toast.LENGTH_LONG).show();
+							showToast("Sex updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Sex failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Sex failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -382,9 +361,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				new ArrayAdapter<>(context, R.layout.item_dropdown, disabilityItem);
 		binding.disabilityDropDownMenu.setAdapter(disabilityAdapter);
 
-		binding.disabilityDropDownMenu.setOnItemClickListener((parent, view, position, id) -> {
-			disability = parent.getItemAtPosition(position).toString();
-		});
+		binding.disabilityDropDownMenu.setOnItemClickListener((parent, view, position, id) ->
+				disability = parent.getItemAtPosition(position).toString());
 
 		binding.editDisabilityImgBtn.setOnClickListener(v -> {
 			if (disability != null) {
@@ -394,54 +372,48 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Disability updated", Toast.LENGTH_LONG).show();
+							showToast("Disability updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Disability failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Disability failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
 		});
 
 		binding.vehicleColorImgBtn.setOnClickListener(v -> {
-			if (TextUtils.isEmpty(binding.vehicleColorEditText.getText().toString().trim())) {
+			if (TextUtils.isEmpty(binding.editVehicleColorEditText.getText().toString().trim())) {
 				Toast.makeText(context, "Vehicle color cannot be empty", Toast.LENGTH_SHORT).show();
 				return;
 			} else {
-				updateInfo.put("vehicleColor", binding.vehicleColorEditText.getText().toString());
+				updateInfo.put("vehicleColor", binding.editVehicleColorEditText.getText().toString());
 
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Vehicle color updated", Toast.LENGTH_LONG).show();
+							showToast("Vehicle color updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Vehicle color failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Vehicle color failed to updated", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
 		});
 
 		binding.vehicleColorImgBtn.setOnClickListener(v -> {
-			if (TextUtils.isEmpty(binding.vehiclePlateNumberEditText.getText().toString().trim())) {
+			if (TextUtils.isEmpty(binding.editVehiclePlateNumberEditText.getText().toString().trim())) {
 				Toast.makeText(context, "Vehicle plate number cannot be empty", Toast.LENGTH_SHORT).show();
 				return;
 			} else {
-				updateInfo.put("vehiclePlateNumber", binding.vehiclePlateNumberEditText.getText().toString());
+				updateInfo.put("vehiclePlateNumber", binding.editVehiclePlateNumberEditText.getText().toString());
 
 				userReference.update(updateInfo)
 						.addOnSuccessListener(unused -> {
 							loadUserProfileInfo();
-
-							Toast.makeText(context, "Vehicle plate number updated", Toast.LENGTH_LONG).show();
+							showToast("Vehicle plate number updated", 0);
 						})
 						.addOnFailureListener(e -> {
-							Toast.makeText(context, "Vehicle plate number failed to update", Toast.LENGTH_LONG).show();
-
+							showToast("Vehicle plate number failed to update", 1);
 							Log.e(TAG, "initializeEditTexts: " + e.getMessage());
 						});
 			}
@@ -449,8 +421,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 	}
 
-	private void showToast(String message) {
-		Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+	private void showToast(String message, int duration) {
+		Toast.makeText(context, message, duration).show();
 	}
 
 	private void showDatePickerDialog() {
@@ -471,6 +443,26 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		datePickerDialog.show();
 	}
 
+	private void sendEmailVerificationLink(String email) {
+		if (FirebaseMain.getUser() != null) {
+			if (!FirebaseMain.getUser().isEmailVerified()) {
+
+				FirebaseMain.getUser().sendEmailVerification()
+						.addOnSuccessListener(unused -> {
+
+							showEmailVerificationSentDialog(email);
+						})
+						.addOnFailureListener(e -> {
+							showToast("Failed to send an Email Verification Link", 1);
+							Log.e(TAG, "sendEmailVerification - onFailure: " + e.getMessage());
+						});
+
+			}
+		} else {
+			showToast("Failed to send an Email Verification Link", 1);
+			Log.e(TAG, "sendEmailVerification: current user is null");
+		}
+	}
 	@SuppressLint("SetTextI18n")
 	private void loadUserProfileInfo() {
 		showPleaseWaitDialog();
@@ -495,10 +487,24 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 							String getLastName = documentSnapshot.getString("lastname");
 							Long getAgeLong = documentSnapshot.getLong("age");
 							int getAge = getAgeLong.intValue();
-							String getPhoneNumber = documentSnapshot.getString("phoneNumber");
 							String getSex = documentSnapshot.getString("sex");
 							boolean isVerified = documentSnapshot.getBoolean("isVerified");
 							String getBirthdate = documentSnapshot.getString("birthdate");
+
+							if (!isVerified) {
+								binding.idNotScannedTextView.setVisibility(View.VISIBLE);
+
+							}
+
+							binding.emailTextView.setText(FirebaseMain.getUser().getEmail());
+							binding.editFirstnameEditText.setText(getFirstName);
+							binding.editLastnameEditText.setText(getLastName);
+							binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
+							binding.editAgeEditText.setText(String.valueOf(getAge));
+
+							if (!FirebaseMain.getUser().isEmailVerified()) {
+								binding.emailNotVerifiedLayout.setVisibility(View.VISIBLE);
+							}
 
 							if (getUserType != null) {
 								switch (getUserType) {
@@ -516,8 +522,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 													.into(binding.vehicleImageView);
 										}
 
-										binding.vehicleColorEditText.setText("Vehicle Color: " + getVehicleColor);
-										binding.vehiclePlateNumberEditText.setText("Vehicle Plate Number: " + getVehiclePlateNumber);
+										binding.editVehicleColorEditText.setText(getVehicleColor);
+										binding.editVehiclePlateNumberEditText.setText(getVehiclePlateNumber);
 
 										break;
 
@@ -546,16 +552,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 										.placeholder(R.drawable.loading_gif)
 										.into(binding.profilePicture);
 							}
-
-							if (!isVerified) {
-								binding.idNotScannedTextView.setVisibility(View.VISIBLE);
-
-							}
-
-							binding.editFirstnameEditText.setText(getFirstName);
-							binding.editLastnameEditText.setText(getLastName);
-							binding.editBirthdateBtn.setText("Birthdate: " + getBirthdate);
-							binding.editAgeEditText.setText(String.valueOf(getAge));
 
 						} else {
 							closePleaseWaitDialog();
@@ -602,11 +598,43 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		binding.editAgeEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.editBirthdateBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.vehicleInfoTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.vehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editVehicleColorEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.editVehiclePlateNumberEditText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.doneBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.clickTheBtnTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+		binding.yourEmailNotVerifiedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
+	}
+	private void showEmailVerificationSentDialog(String email) {
+		builder = new AlertDialog.Builder(context);
+		builder.setCancelable(false);
+
+		DialogEmailVerificationLinkSentBinding sentBinding =
+				DialogEmailVerificationLinkSentBinding.inflate(getLayoutInflater());
+		View dialogView = sentBinding.getRoot();
+
+		sentBinding.emailTextView.setText(email);
+
+		if (fontSize.equals("large")) {
+			float textSize = 22;
+			sentBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			sentBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			sentBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			sentBinding.emailTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+		}
+
+		sentBinding.okayBtn.setOnClickListener(v -> closeEmailVerificationSentDialog());
+
+		builder.setView(dialogView);
+		emailVerificationSentDialog = builder.create();
+		emailVerificationSentDialog.show();
 	}
 
+	private void closeEmailVerificationSentDialog() {
+		if (emailVerificationSentDialog != null && emailVerificationSentDialog.isShowing()) {
+			emailVerificationSentDialog.dismiss();
+		}
+	}
 	private void showEnterBirthdateDialog() {
 		builder = new AlertDialog.Builder(context);
 
@@ -623,7 +651,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			month = parent.getItemAtPosition(position).toString();
 			dialogEnterBirthdateBinding.monthTextView.setText(month);
 		});
-
 
 		dialogEnterBirthdateBinding.doneBtn.setOnClickListener(view -> {
 			String year = dialogEnterBirthdateBinding.yearEditText.getText().toString();
@@ -666,10 +693,7 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 			enterBirthdateDialog.dismiss();
 		}
 	}
-	private String processText(String originalText) {
-		// Implement any text processing logic here
-		return originalText;
-	}
+
 	private void showPleaseWaitDialog() {
 		builder = new AlertDialog.Builder(context);
 		builder.setCancelable(false);
@@ -765,217 +789,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		}
 	}
 
-	private void showEditFirstNameDialog() {
-
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.edit_firstname_dialog, null);
-
-		Button editBtn = dialogView.findViewById(R.id.editBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		EditText editFirstName = dialogView.findViewById(R.id.editFirstname);
-
-		editFirstName.setText(StaticDataPasser.storeFirstName);
-
-		editBtn.setOnClickListener(v -> {
-
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeEditFirstNameDialog();
-		});
-
-		builder.setView(dialogView);
-
-		editFirstNameDialog = builder.create();
-		editFirstNameDialog.show();
-	}
-
-	private void closeEditFirstNameDialog() {
-		if (editFirstNameDialog != null && editFirstNameDialog.isShowing()) {
-			editFirstNameDialog.dismiss();
-		}
-	}
-
-	private void showEditLastNameDialog() {
-
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.edit_lastname_dialog, null);
-
-		Button editBtn = dialogView.findViewById(R.id.editBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		EditText editLastname = dialogView.findViewById(R.id.editLastname);
-
-		editLastname.setText(StaticDataPasser.storeLastName);
-
-		editBtn.setOnClickListener(v -> {
-
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeEditLastNameDialog();
-		});
-
-		builder.setView(dialogView);
-
-		editLastNameDialog = builder.create();
-		editLastNameDialog.show();
-	}
-
-	private void closeEditLastNameDialog() {
-		if (editLastNameDialog != null && editLastNameDialog.isShowing()) {
-			editLastNameDialog.dismiss();
-		}
-	}
-
-	private void showEditAgeDialog() {
-
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.edit_age_dialog, null);
-
-		Button editBtn = dialogView.findViewById(R.id.editBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		EditText editAge = dialogView.findViewById(R.id.editAge);
-
-		String ageToString = String.valueOf(StaticDataPasser.storeCurrentAge);
-		editAge.setText(ageToString);
-
-		editBtn.setOnClickListener(v -> {
-
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeEditAgeDialog();
-		});
-
-		builder.setView(dialogView);
-
-		editAgeDialog = builder.create();
-		editAgeDialog.show();
-	}
-
-	private void closeEditAgeDialog() {
-		if (editAgeDialog != null && editAgeDialog.isShowing()) {
-			editAgeDialog.dismiss();
-		}
-	}
-
-	private void showEditSexDialog() {
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.edit_sex_dialog, null);
-
-		Button editBtn = dialogView.findViewById(R.id.editBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		Spinner spinnerSexDialog = dialogView.findViewById(R.id.spinnerSex);
-
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				getContext(),
-				R.array.sex_options,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerSexDialog.setAdapter(adapter);
-		spinnerSexDialog.setSelection(0);
-		spinnerSexDialog.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					spinnerSexDialog.setSelection(0);
-				} else {
-					String selectedSex = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedSex = selectedSex;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
-		});
-
-		if (StaticDataPasser.storeSelectedSex.equals("Male")) {
-			spinnerSexDialog.setSelection(1);
-		} else {
-			spinnerSexDialog.setSelection(2);
-		}
-
-		editBtn.setOnClickListener(v -> {
-
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeEditSexDialog();
-		});
-
-		builder.setView(dialogView);
-
-		editSexDialog = builder.create();
-		editSexDialog.show();
-	}
-
-	private void closeEditSexDialog() {
-		if (editSexDialog != null && editSexDialog.isShowing()) {
-			editSexDialog.dismiss();
-		}
-	}
-
-	private void showEditDisabilityDialog() {
-		builder = new AlertDialog.Builder(getContext());
-
-		View dialogView = getLayoutInflater().inflate(R.layout.edit_disability_dialog, null);
-
-		Button editBtn = dialogView.findViewById(R.id.editBtn);
-		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
-		Spinner spinnerDisabilityDialog = dialogView.findViewById(R.id.spinnerDisabilityDialog);
-
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				getContext(),
-				R.array.disability_type,
-				android.R.layout.simple_spinner_item
-		);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerDisabilityDialog.setAdapter(adapter);
-		spinnerDisabilityDialog.setSelection(0);
-		spinnerDisabilityDialog.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					spinnerDisabilityDialog.setSelection(0);
-				} else {
-					String selectedDisability = parent.getItemAtPosition(position).toString();
-					StaticDataPasser.storeSelectedDisability = selectedDisability;
-				}
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-
-			}
-		});
-
-		editBtn.setOnClickListener(v -> {
-
-		});
-
-		cancelBtn.setOnClickListener(v -> {
-			closeEditDisabilityDialog();
-		});
-
-		builder.setView(dialogView);
-
-		editDisabilityDialog = builder.create();
-		editDisabilityDialog.show();
-	}
-
-	private void closeEditDisabilityDialog() {
-		if (editDisabilityDialog != null && editDisabilityDialog.isShowing()) {
-			editDisabilityDialog.dismiss();
-		}
-	}
-
 	private void backToAccountFragment() {
 		FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
 		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1049,56 +862,55 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		profilePicturePath.putFile(profilePictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
 
-					closePleaseWaitDialog();
-					showProfilePicUpdateSuccess();
-
 					profilePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
-
+								closePleaseWaitDialog();
+								showProfilePicUpdateSuccess();
 								binding.profilePicture.setImageURI(profilePictureUri);
 								String profilePictureURL = uri.toString();
 								storeProfileImageURLInFireStore(userID, profilePictureURL);
-
 							})
 							.addOnFailureListener(e -> {
-								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-
+								closePleaseWaitDialog();
+								showToast("Profile picture updated successfully", 0);
 								Log.e(TAG, "uploadProfileImageToFirebaseStorage: " + e.getMessage());
 							});
 				})
 				.addOnFailureListener(e -> {
 					closePleaseWaitDialog();
 					showProfilePicUpdateFailed();
-
+					showToast("Profile picture failed to add", 0);
 					Log.e(TAG, "uploadProfileImageToFirebaseStorage: " + e.getMessage());
 				});
 	}
 
-	private void uploadVehicleImageToFirebaseStorage(String userID, Bitmap bitmap) {
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-		byte[] data = baos.toByteArray();
+	private void uploadVehicleImageToFirebaseStorage(String userID, Uri vehiclePictureUri) {
 
 		StorageReference vehiclePictureReference = FirebaseMain.getFirebaseStorageInstance().getReference();
-		vehiclePicturePath = vehiclePictureReference.child("images/vehiclePictures/" + System.currentTimeMillis() + "_" + userID + ".jpg");
+		vehiclePicturePath = vehiclePictureReference.child("images/vehiclePictures/"
+				+ System.currentTimeMillis() + "_" + userID + ".jpg");
 
-		vehiclePicturePath.putBytes(data)
+		vehiclePicturePath.putFile(vehiclePictureUri)
 				.addOnSuccessListener(taskSnapshot -> {
 
 					vehiclePicturePath.getDownloadUrl()
 							.addOnSuccessListener(uri -> {
-
-								String imageUrl = uri.toString();
-								storeVehicleImageURLInFireStore(imageUrl, userID);
+								closePleaseWaitDialog();
+								binding.vehicleImageView.setImageURI(vehiclePictureUri);
+								String vehicleImageUrl = uri.toString();
+								storeVehicleImageURLInFireStore(vehicleImageUrl, userID);
 							})
 							.addOnFailureListener(e -> {
-								Toast.makeText(context, "Profile picture failed to add", Toast.LENGTH_SHORT).show();
-
-								Log.e(TAG, e.getMessage());
+								closePleaseWaitDialog();
+								showToast("Vehicle picture updated successfully", 0);
+								Log.e(TAG, "uploadVehicleImageToFirebaseStorage: " + e.getMessage());
 							});
 				})
-				.addOnFailureListener(e -> Log.e(TAG, e.getMessage()));
+				.addOnFailureListener(e -> {
+					closePleaseWaitDialog();
+					showToast("Vehicle picture failed to update", 1);
+					Log.e(TAG, "uploadVehicleImageToFirebaseStorage: " + e.getMessage());
+				});
 	}
 
 	private void storeProfileImageURLInFireStore(String userID, String profilePictureURL) {
@@ -1246,65 +1058,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 		}
 	}
 
-	private void identifyCar(Bitmap bitmap) {
-//		try {
-//			ModelUnquant model = ModelUnquant.newInstance(context);
-//
-//			// Creates inputs for reference.
-//			TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
-//			int imageSize = 224;
-//			ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * imageSize * imageSize * 3);
-//			byteBuffer.order(ByteOrder.nativeOrder());
-//
-//			int[] intValues = new int[bitmap.getWidth() * bitmap.getHeight()];
-//			bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-//			for (int pixelValue : intValues) {
-//				byteBuffer.putFloat(((pixelValue >> 16) & 0xFF) * (1.f / 255.f));
-//				byteBuffer.putFloat(((pixelValue >> 8) & 0xFF) * (1.f / 255.f));
-//				byteBuffer.putFloat((pixelValue & 0xFF) * (1.f / 255.f));
-//			}
-//			byteBuffer.rewind(); // Set the position back to 0
-//			inputFeature0.loadBuffer(byteBuffer);
-//
-//			// Runs model inference and gets result.
-//			ModelUnquant.Outputs outputs = model.process(inputFeature0);
-//			TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
-//			float[] confidences = outputFeature0.getFloatArray();
-//			int maxPos = 0;
-//			float maxConfidence = 0;
-//			for (int i = 0; i < confidences.length; i++) {
-//				if (confidences[i] > maxConfidence) {
-//					maxConfidence = confidences[i];
-//					maxPos = i;
-//				}
-//			}
-//
-//			String[] classes = {"Car", "Not Car"};
-//			String predictedClass;
-//			if (maxPos == 0) {
-//				binding.vehicleImageView.setImageBitmap(bitmap);
-//				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), bitmap);
-//			} else {
-//				showUploadYourVehiclePictureDialog();
-//			}
-//
-//			// Releases model resources if no longer used.
-//			model.close();
-//
-//		} catch (IOException e) {
-//			Log.e(TAG, e.getMessage());
-//		}
-	}
-
-	public Bitmap uriToBitmap(Context context, Uri uri) throws IOException {
-		InputStream inputStream = context.getContentResolver().openInputStream(uri);
-		Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-		if (inputStream != null) {
-			inputStream.close();
-		}
-		return bitmap;
-	}
-
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
@@ -1313,17 +1066,6 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 			showPleaseWaitDialog();
 
-			Uri imageUri = data.getData();
-
-			Bitmap bitmap = null;
-			try {
-				bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imageUri);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			int dimension = Math.min(bitmap.getWidth(), bitmap.getHeight());
-			bitmap = ThumbnailUtils.extractThumbnail(bitmap, dimension, dimension);
-
 			if (requestCode == PROFILE_PICTURE_REQUEST_CODE) {
 
 				Uri profilePictureUri = data.getData();
@@ -1331,7 +1073,8 @@ public class EditAccountFragment extends Fragment implements SettingsBottomSheet
 
 			} else if (requestCode == VEHICLE_PICTURE_REQUEST_CODE) {
 
-				identifyCar(bitmap);
+				Uri vehiclePictureUri = data.getData();
+				uploadVehicleImageToFirebaseStorage(FirebaseMain.getUser().getUid(), vehiclePictureUri);
 
 			}
 		}

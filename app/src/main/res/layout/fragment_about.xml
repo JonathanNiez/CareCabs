@@ -19,7 +19,7 @@
 			android:layout_height="wrap_content">
 
 			<androidx.appcompat.widget.AppCompatTextView
-				android:id="@+id/textView"
+				android:id="@+id/textView1"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:layout_centerInParent="true"
@@ -27,7 +27,7 @@
 				android:layout_marginTop="15dp"
 				android:layout_marginEnd="15dp"
 				android:layout_marginBottom="15dp"
-				android:fontFamily="@font/gabarito_medium"
+				android:fontFamily="@font/gabarito_bold"
 				android:text="ABOUT US"
 				android:textColor="@color/white"
 				android:textSize="20sp" />
@@ -73,42 +73,40 @@
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginBottom="20dp"
+					android:layout_marginBottom="100dp"
 					android:gravity="center"
 					android:orientation="vertical"
 					android:padding="5dp">
 
 					<androidx.appcompat.widget.AppCompatTextView
-						style="@style/TextColor"
+						android:id="@+id/textView2"
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="20dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/platinum"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="About Our Project"
-						android:textSize="22sp" />
+						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content"
-						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
-						android:text="@string/about_p1"
-						android:textAlignment="center"
-						android:textColor="@color/black"
-						android:textSize="17sp"
-						android:textStyle="bold" />
-
-					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView3"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
+						android:layout_margin="10dp"
+						android:fontFamily="@font/gabarito_medium"
+						android:text="@string/about_p1"
+						android:textAlignment="center"
+						android:textSize="17sp" />
+
+					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView4"
+						style="@style/RoundedTextColor"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/platinum"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
@@ -116,23 +114,22 @@
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView5"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/our_mission"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
-						style="@style/TextColor"
+						android:id="@+id/textView6"
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/platinum"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
@@ -140,23 +137,22 @@
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView7"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/what_set_us_apart"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
-						style="@style/TextColor"
+						android:id="@+id/textView8"
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/platinum"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
@@ -164,6 +160,7 @@
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView9"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -173,20 +170,21 @@
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Accessible Vehicles:"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView10"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/accessible_vehicles"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView11"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -195,20 +193,21 @@
 						android:layout_marginTop="10dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Personalized Assistance:"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView12"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/personalized_assistance"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView13"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
@@ -217,48 +216,48 @@
 						android:layout_marginTop="10dp"
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Safety First:"
-						android:textSize="18sp" />
+						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView14"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_semibold"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/safety_first"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 					<de.hdodenhof.circleimageview.CircleImageView
+						style="@style/ProfilePictureBorderColor"
 						android:layout_width="150dp"
 						android:layout_height="150dp"
 						android:layout_marginTop="10dp"
 						android:src="@drawable/hcdc_logo" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView15"
+						style="@style/RoundedTextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginTop="10dp"
-						android:background="@drawable/custom_card_view_1"
-						android:backgroundTint="@color/platinum"
 						android:elevation="5dp"
 						android:fontFamily="@font/gabarito_bold"
 						android:padding="5dp"
 						android:text="Acknowledgements"
-						android:textColor="@color/black"
 						android:textSize="25sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
+						android:id="@+id/textView16"
 						style="@style/TextColor"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_margin="10dp"
-						android:fontFamily="@font/gabarito_regular"
+						android:fontFamily="@font/gabarito_medium"
 						android:text="@string/acknowledgments"
 						android:textAlignment="center"
-						android:textSize="17sp"
-						android:textStyle="bold" />
+						android:textSize="17sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 

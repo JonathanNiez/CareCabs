@@ -76,27 +76,22 @@ public class LoginOrRegisterActivity extends AppCompatActivity {
 	@Override
 	public void onBackPressed() {
 		showExitConfirmationDialog();
-		super.onBackPressed();
 	}
 
 	private void showExitConfirmationDialog() {
 		builder = new AlertDialog.Builder(this);
 
-		View dialogView = getLayoutInflater().inflate(R.layout.dialog_exit_app, null);
+		View dialogView = getLayoutInflater()
+				.inflate(R.layout.dialog_exit_app, null);
 
 		Button exitBtn = dialogView.findViewById(R.id.exitBtn);
 		Button cancelBtn = dialogView.findViewById(R.id.cancelBtn);
 
-		exitBtn.setOnClickListener(v -> {
-			finish();
-		});
+		exitBtn.setOnClickListener(v -> finish());
 
-		cancelBtn.setOnClickListener(v -> {
-			closeExitConfirmationDialog();
-		});
+		cancelBtn.setOnClickListener(v -> closeExitConfirmationDialog());
 
 		builder.setView(dialogView);
-
 		exitAppDialog = builder.create();
 		exitAppDialog.show();
 	}

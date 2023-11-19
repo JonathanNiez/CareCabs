@@ -62,7 +62,6 @@ public class RegisterActivity extends AppCompatActivity implements
 	private String theme = StaticDataPasser.storeTheme;
 	private DocumentReference documentReference;
 	private GoogleSignInAccount googleSignInAccount;
-	private boolean isEmailVerified = false;
 	private Date date;
 	private String getUserID, registerType, userType,
 			prefixPhoneNumber, accountCreationDate;
@@ -136,20 +135,6 @@ public class RegisterActivity extends AppCompatActivity implements
 		setContentView(binding.getRoot());
 
 		binding.progressBarLayout.setVisibility(View.GONE);
-
-		FirebaseApp.initializeApp(this);
-		if (FirebaseMain.getUser() != null) {
-			FirebaseMain.getUser().reload()
-					.addOnCompleteListener(task -> {
-						if (task.isSuccessful()) {
-							if (FirebaseMain.getUser().isEmailVerified()) {
-								isEmailVerified = true;
-							}
-						} else {
-							Log.e(TAG, "onCreate: ", task.getException());
-						}
-					});
-		}
 
 		Calendar calendar = Calendar.getInstance();
 		date = calendar.getTime();
@@ -299,29 +284,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				} else {
 					closePleaseWaitDialog();
 					prefixPhoneNumber = "+63" + phoneNumber;
-
-					if (FirebaseMain.getUser() != null) {
-						FirebaseMain.getUser().reload()
-								.addOnCompleteListener(task -> {
-									if (task.isSuccessful()) {
-										if (FirebaseMain.getUser().isEmailVerified()) {
-											getUserID = FirebaseMain.getUser().getUid();
-											storeUserDataToFireStore(getUserID, email);
-										} else {
-											showToast("Your Email is not Verified", 0);
-											binding.progressBarLayout.setVisibility(View.GONE);
-											binding.nextBtn.setVisibility(View.VISIBLE);
-										}
-									} else {
-										showToast("Unknown error occurred", 1);
-
-										binding.progressBarLayout.setVisibility(View.GONE);
-										binding.nextBtn.setVisibility(View.VISIBLE);
-									}
-								});
-					} else {
-						showVerifiedEmailDialog(userType, email, password);
-					}
+					showVerifiedEmailDialog(userType, email, password);
 				}
 			});
 		}
@@ -333,7 +296,7 @@ public class RegisterActivity extends AppCompatActivity implements
 		checkEditTextIfNotEmpty();
 	}
 
-	private void sendEmailVerification(String userID, String email) {
+	private void sendEmailVerificationLink(String userID, String email) {
 		if (FirebaseMain.getUser() != null) {
 			if (FirebaseMain.getUser().isEmailVerified()) {
 				storeUserDataToFireStore(userID, email);
@@ -341,7 +304,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				FirebaseMain.getUser().sendEmailVerification()
 						.addOnSuccessListener(unused -> {
 							closeVerifiedEmailDialog();
-							showEmailVerificationSentDialog(userID, email);
+							showEmailVerificationSentDialog(email);
 						})
 						.addOnFailureListener(e -> {
 							showToast("Failed to send an Email Verification Link", 1);
@@ -426,7 +389,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				.addOnSuccessListener(authResult -> {
 
 					getUserID = authResult.getUser().getUid();
-					sendEmailVerification(getUserID, email);
+					sendEmailVerificationLink(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -456,7 +419,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				.addOnSuccessListener(authResult -> {
 
 					getUserID = authResult.getUser().getUid();
-					sendEmailVerification(getUserID, email);
+					sendEmailVerificationLink(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -489,7 +452,7 @@ public class RegisterActivity extends AppCompatActivity implements
 				.addOnSuccessListener(authResult -> {
 
 					getUserID = authResult.getUser().getUid();
-					sendEmailVerification(getUserID, email);
+					sendEmailVerificationLink(getUserID, email);
 				})
 				.addOnFailureListener(e -> {
 					try {
@@ -1000,15 +963,13 @@ public class RegisterActivity extends AppCompatActivity implements
 			dialogVerifiedEmailBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 			dialogVerifiedEmailBinding.bodyTextView1.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 			dialogVerifiedEmailBinding.bodyTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-			dialogVerifiedEmailBinding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+			dialogVerifiedEmailBinding.laterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 			dialogVerifiedEmailBinding.sendBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
-			dialogVerifiedEmailBinding.sendVerificationLaterBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
 		}
 
-		dialogVerifiedEmailBinding.sendVerificationLaterBtn.setOnClickListener(v -> {
-			dialogVerifiedEmailBinding.closeBtn.setVisibility(View.GONE);
+		dialogVerifiedEmailBinding.laterBtn.setOnClickListener(v -> {
+			dialogVerifiedEmailBinding.laterBtn.setVisibility(View.GONE);
 			dialogVerifiedEmailBinding.sendBtn.setVisibility(View.GONE);
-			dialogVerifiedEmailBinding.sendVerificationLaterBtn.setVisibility(View.GONE);
 			dialogVerifiedEmailBinding.loadingGif.setVisibility(View.VISIBLE);
 
 			switch (userType) {
@@ -1029,11 +990,9 @@ public class RegisterActivity extends AppCompatActivity implements
 			}
 		});
 
-		dialogVerifiedEmailBinding.sendBtn
-				.setOnClickListener(v -> {
-					dialogVerifiedEmailBinding.closeBtn.setVisibility(View.GONE);
+		dialogVerifiedEmailBinding.sendBtn.setOnClickListener(v -> {
+					dialogVerifiedEmailBinding.laterBtn.setVisibility(View.GONE);
 					dialogVerifiedEmailBinding.sendBtn.setVisibility(View.GONE);
-					dialogVerifiedEmailBinding.sendVerificationLaterBtn.setVisibility(View.GONE);
 					dialogVerifiedEmailBinding.loadingGif.setVisibility(View.VISIBLE);
 
 					switch (userType) {
@@ -1054,15 +1013,7 @@ public class RegisterActivity extends AppCompatActivity implements
 					}
 				});
 
-		dialogVerifiedEmailBinding.closeBtn
-				.setOnClickListener(v -> {
-					binding.progressBarLayout.setVisibility(View.GONE);
-					binding.nextBtn.setVisibility(View.VISIBLE);
-					closeVerifiedEmailDialog();
-				});
-
 		builder.setView(dialogView);
-
 		verifiedEmailDialog = builder.create();
 		verifiedEmailDialog.show();
 	}
@@ -1074,7 +1025,7 @@ public class RegisterActivity extends AppCompatActivity implements
 	}
 
 	@SuppressLint("SetTextI18n")
-	private void showEmailVerificationSentDialog(String userID, String email) {
+	private void showEmailVerificationSentDialog(String email) {
 		builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false);
 

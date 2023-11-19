@@ -108,8 +108,8 @@
 
 	<androidx.appcompat.widget.AppCompatButton
 		android:id="@+id/cancelBtn"
-		android:layout_width="130dp"
-		android:layout_height="50dp"
+		android:layout_width="150dp"
+		android:layout_height="wrap_content"
 		android:layout_marginBottom="20dp"
 		android:background="@drawable/smooth_edge_button"
 		android:backgroundTint="@color/red"

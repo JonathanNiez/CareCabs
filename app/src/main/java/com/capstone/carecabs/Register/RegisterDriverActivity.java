@@ -843,7 +843,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 
 	private void uploadVehiclePictureToFirebaseStorage(String userID, Uri vehiclePictureUri) {
 		StorageReference storageReference = FirebaseMain.getFirebaseStorageInstance().getReference();
-		StorageReference vehiclePicturePath = storageReference.child("images/vechiclePictures/"
+		StorageReference vehiclePicturePath = storageReference.child("images/vehiclePictures/"
 				+ System.currentTimeMillis() + "_" + userID + ".jpg");
 
 		vehiclePicturePath.putFile(vehiclePictureUri)

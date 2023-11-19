@@ -116,6 +116,63 @@
 				android:gravity="center"
 				android:orientation="vertical">
 
+				<androidx.cardview.widget.CardView
+					android:id="@+id/emailNotVerifiedLayout"
+					style="@style/BaseCardBackground"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_margin="10dp"
+					app:cardCornerRadius="10dp"
+					app:cardElevation="5dp">
+
+					<androidx.appcompat.widget.LinearLayoutCompat
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:orientation="vertical">
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/yourEmailNotVerifiedTextView"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Your Email is not Verified"
+							android:textColor="@color/red"
+							android:textSize="17sp" />
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/clickTheBtnTextView"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							android:fontFamily="@font/gabarito_medium"
+							android:text="Click the button to send an Email Verification link"
+							android:textSize="17sp" />
+
+						<androidx.appcompat.widget.AppCompatTextView
+							android:id="@+id/emailTextView"
+							style="@style/TextColor"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="10dp"
+							android:fontFamily="@font/gabarito_semibold"
+							android:text="Email"
+							android:textAlignment="center"
+							android:textSize="17sp" />
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/sendEmailVerificationLinkBtn"
+							android:layout_width="wrap_content"
+							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
+							app:srcCompat="@drawable/send_64" />
+
+					</androidx.appcompat.widget.LinearLayoutCompat>
+
+				</androidx.cardview.widget.CardView>
+
 				<androidx.appcompat.widget.LinearLayoutCompat
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
@@ -133,7 +190,9 @@
 						android:padding="5dp"
 						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
-						app:endIconTint="@color/black">
+						app:endIconTint="@color/black"
+						app:helperText="Firstname"
+						app:helperTextTextColor="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/editFirstnameEditText"
@@ -178,7 +237,9 @@
 						android:padding="5dp"
 						android:textColorHint="@color/black"
 						app:endIconMode="clear_text"
-						app:endIconTint="@color/black">
+						app:endIconTint="@color/black"
+						app:helperText="Lastname"
+						app:helperTextTextColor="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
 							android:id="@+id/editLastnameEditText"
@@ -220,6 +281,8 @@
 						android:background="@drawable/smooth_edit_text"
 						android:elevation="5dp"
 						android:padding="5dp"
+						app:helperText="Birthdate"
+						app:helperTextTextColor="@color/black"
 						app:hintTextColor="@color/black">
 
 						<androidx.appcompat.widget.AppCompatButton
@@ -262,6 +325,8 @@
 						android:elevation="5dp"
 						android:padding="5dp"
 						android:textColorHint="@color/black"
+						app:helperText="Age"
+						app:helperTextTextColor="@color/black"
 						app:hintTextColor="@color/black">
 
 						<com.google.android.material.textfield.TextInputEditText
@@ -310,6 +375,8 @@
 						android:hint="SELECT DISABILITY"
 						android:padding="5dp"
 						android:textColorHint="@color/black"
+						app:helperText="Disability"
+						app:helperTextTextColor="@color/black"
 						app:hintTextColor="@color/black">
 
 						<AutoCompleteTextView
@@ -354,6 +421,8 @@
 						android:hint="SELECT SEX"
 						android:padding="5dp"
 						android:textColorHint="@color/black"
+						app:helperText="Sex"
+						app:helperTextTextColor="@color/black"
 						app:hintTextColor="@color/black">
 
 						<AutoCompleteTextView
@@ -405,14 +474,23 @@
 						android:textAlignment="center"
 						android:textSize="17sp" />
 
-					<androidx.appcompat.widget.AppCompatImageView
-						android:id="@+id/vehicleImageView"
-						android:layout_width="150dp"
+					<androidx.cardview.widget.CardView
+						style="@style/BaseCardBackground"
+						android:layout_width="match_parent"
 						android:layout_height="150dp"
-						android:layout_marginBottom="10dp"
-						android:background="@drawable/custom_card_view_1"
-						android:elevation="5dp"
-						android:src="@drawable/car_100" />
+						android:layout_margin="10dp"
+						app:cardCornerRadius="10dp"
+						app:cardElevation="5dp">
+
+						<androidx.appcompat.widget.AppCompatImageView
+							android:id="@+id/vehicleImageView"
+							android:layout_width="match_parent"
+							android:layout_height="match_parent"
+							android:layout_gravity="center"
+							android:elevation="5dp"
+							android:src="@drawable/car_100" />
+
+					</androidx.cardview.widget.CardView>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
@@ -421,20 +499,31 @@
 						android:gravity="center"
 						android:orientation="horizontal">
 
-						<androidx.appcompat.widget.AppCompatEditText
-							android:id="@+id/vehicleColorEditText"
+						<com.google.android.material.textfield.TextInputLayout
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
 							android:layout_weight="8"
-							android:background="@drawable/stroke_button"
+							android:background="@drawable/smooth_edit_text"
 							android:elevation="5dp"
-							android:enabled="false"
-							android:fontFamily="@font/gabarito_semibold"
-							android:hint="Vehicle color"
-							android:padding="10dp"
-							android:textAlignment="center"
-							android:textColor="@color/black"
-							android:textSize="17sp" />
+							android:padding="5dp"
+							android:textColorHint="@color/black"
+							app:endIconMode="clear_text"
+							app:endIconTint="@color/black"
+							app:helperText="Vehicle Color"
+							app:helperTextTextColor="@color/black">
+
+							<com.google.android.material.textfield.TextInputEditText
+								android:id="@+id/editVehicleColorEditText"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:background="@drawable/smooth_edit_text_2"
+								android:fontFamily="@font/gabarito_semibold"
+								android:hint="VEHICLE COLOR"
+								android:textColor="@color/black"
+								android:textSize="17sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
 
 						<androidx.appcompat.widget.AppCompatImageButton
 							android:id="@+id/vehicleColorImgBtn"
@@ -455,20 +544,31 @@
 						android:gravity="center"
 						android:orientation="horizontal">
 
-						<androidx.appcompat.widget.AppCompatEditText
-							android:id="@+id/vehiclePlateNumberEditText"
+						<com.google.android.material.textfield.TextInputLayout
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
+							android:layout_margin="5dp"
 							android:layout_weight="8"
-							android:background="@drawable/stroke_button"
+							android:background="@drawable/smooth_edit_text"
 							android:elevation="5dp"
-							android:enabled="false"
-							android:fontFamily="@font/gabarito_semibold"
-							android:hint="Vehicle plate number"
-							android:padding="10dp"
-							android:textAlignment="center"
-							android:textColor="@color/black"
-							android:textSize="17sp" />
+							android:padding="5dp"
+							android:textColorHint="@color/black"
+							app:endIconMode="clear_text"
+							app:endIconTint="@color/black"
+							app:helperText="Vehicle plate number"
+							app:helperTextTextColor="@color/black">
+
+							<com.google.android.material.textfield.TextInputEditText
+								android:id="@+id/editVehiclePlateNumberEditText"
+								android:layout_width="match_parent"
+								android:layout_height="wrap_content"
+								android:background="@drawable/smooth_edit_text_2"
+								android:fontFamily="@font/gabarito_semibold"
+								android:hint="VEHICLE PLATE NUMBER"
+								android:textColor="@color/black"
+								android:textSize="17sp" />
+
+						</com.google.android.material.textfield.TextInputLayout>
 
 						<androidx.appcompat.widget.AppCompatImageButton
 							android:id="@+id/vehiclePlateNumberImgBtn"

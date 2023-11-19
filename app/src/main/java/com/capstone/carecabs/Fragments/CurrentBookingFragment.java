@@ -45,7 +45,6 @@ public class CurrentBookingFragment extends Fragment {
 	private final String TAG = "CurrentBookingFragment";
 	private static final int REQUEST_ENABLE_LOCATION = 1;
 	private Context context;
-	private final String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private AlertDialog cancelBookingDialog, enableLocationServiceDialog;
 	private AlertDialog.Builder builder;
 	private Intent intent;
@@ -275,16 +274,13 @@ public class CurrentBookingFragment extends Fragment {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == REQUEST_ENABLE_LOCATION) {
-			// Check if the user enabled location services after going to settings.
 			LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
 			boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 			boolean isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
 			if (isGpsEnabled || isNetworkEnabled) {
-				// Location services are now enabled, open your desired activity.
 				goToMap();
 			} else {
-				// Location services are still not enabled, you can show a message to the user.
 				Toast.makeText(context, "Location services are still disabled.", Toast.LENGTH_SHORT).show();
 			}
 		}

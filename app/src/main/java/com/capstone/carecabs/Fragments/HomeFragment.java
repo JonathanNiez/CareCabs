@@ -73,20 +73,14 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSizeChangeListener {
 	private final String TAG = "HomeFragment";
+	private FragmentHomeBinding binding;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private String fontSize = StaticDataPasser.storeFontSize;
-	private float textSizeSP;
-	private float textHeaderSizeSP;
 	private static final float DEFAULT_TEXT_SIZE_SP = 17;
 	private static final float DEFAULT_HEADER_TEXT_SIZE_SP = 20;
 	private static final float INCREASED_TEXT_SIZE_SP = DEFAULT_TEXT_SIZE_SP + 5;
 	private static final float INCREASED_TEXT_HEADER_SIZE_SP = DEFAULT_HEADER_TEXT_SIZE_SP + 5;
 	private static final int REQUEST_ENABLE_LOCATION = 1;
-	private int currentPage = 0;
-	private final long AUTOSLIDE_DELAY = 3000;
-	private Handler handler;
-	private Runnable runnable;
-	private List<Fragment> slideFragments = new ArrayList<>();
 	private AlertDialog.Builder builder;
 	private AlertDialog noInternetDialog, registerNotCompleteDialog,
 			enableLocationServiceDialog, howToBookDialog, howToUseAppDialog;
@@ -99,13 +93,11 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	private FragmentManager fragmentManager;
 	private FragmentTransaction fragmentTransaction;
 	private RequestManager requestManager;
-	private FragmentHomeBinding binding;
 
 	@Override
 	public void onPause() {
 		super.onPause();
 
-		stopAutoSlide();
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
@@ -117,7 +109,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	public void onDestroy() {
 		super.onDestroy();
 
-		stopAutoSlide();
 		closeNoInternetDialog();
 		closeRegisterNotCompleteDialog();
 		closeEnableLocationServiceDialog();
@@ -170,18 +161,11 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		FirebaseApp.initializeApp(context);
 		requestManager = Glide.with(this);
 
-//		slideFragments.add(new CarouselFragment1());
-//		slideFragments.add(new CarouselFragment2());
-//		slideFragments.add(new CarouselFragment3());
-//		slideFragments.add(new CarouselFragment4());
 
 		binding.homeTextView.setOnClickListener(v -> {
-
 			int scrollBottom = binding.scrollView.getChildAt(0).getHeight() - binding.scrollView.getHeight();
-
-			// Animate the scroll to the bottom position
 			ObjectAnimator.ofInt(binding.scrollView, "scrollY", scrollBottom)
-					.setDuration(1000) // You can customize the duration of the animation
+					.setDuration(1000)
 					.start();
 		});
 
@@ -201,11 +185,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 			startActivity(intent);
 		});
 
-//		CarouselPagerAdapter adapter = new CarouselPagerAdapter(getChildFragmentManager(), slideFragments);
-//		binding.viewPager.setAdapter(adapter);
-//
-//		startAutoSlide();
-
 		return view;
 	}
 
@@ -221,9 +200,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	}
 
 	private void getUserSettings() {
-
 		setFontSize(fontSize);
-
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
 			voiceAssistant.speak("Home");
@@ -238,6 +215,8 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 	private void setFontSize(String fontSize) {
 
+		float textSizeSP;
+		float textHeaderSizeSP;
 		if (fontSize.equals("large")) {
 			textSizeSP = INCREASED_TEXT_SIZE_SP;
 			textHeaderSizeSP = INCREASED_TEXT_HEADER_SIZE_SP;
@@ -311,33 +290,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.greetTextView.setText(greeting);
 	}
 
-//	private void startAutoSlide() {
-//
-//		if (handler == null) {
-//			handler = new Handler();
-//		}
-//
-//		if (runnable == null) {
-//			runnable = new Runnable() {
-//				@Override
-//				public void run() {
-//					currentPage = (currentPage + 1) % slideFragments.size();
-//					binding.viewPager.setCurrentItem(currentPage, true);
-//					handler.postDelayed(this, AUTOSLIDE_DELAY);
-//				}
-//			};
-//		}
-//
-//		handler.removeCallbacks(runnable);
-//		handler.postDelayed(runnable, AUTOSLIDE_DELAY);
-//	}
-
-	private void stopAutoSlide() {
-		if (handler != null && runnable != null) {
-			handler.removeCallbacks(runnable);
-		}
-	}
-
 	@SuppressLint("SetTextI18n")
 	private void updateDriverAvailability(boolean isAvailable) {
 		if (FirebaseMain.getUser() != null) {
@@ -359,14 +311,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 							Log.e(TAG, "updateDriverStatus: " + e.getMessage()));
 
 		}
-	}
-
-	private void goToEditAccountFragment(Context context) {
-		fragmentManager = requireActivity().getSupportFragmentManager();
-		fragmentTransaction = fragmentManager.beginTransaction();
-		fragmentTransaction.replace(R.id.fragmentContainer, new EditAccountFragment());
-		fragmentTransaction.addToBackStack(null);
-		fragmentTransaction.commit();
 	}
 
 	private void goToAccountFragment() {
@@ -567,7 +511,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 	private void fadeInAnimation(final View view) {
 		AlphaAnimation fadeIn = new AlphaAnimation(0, 1);
-		fadeIn.setDuration(2000);
+		fadeIn.setDuration(1500);
 
 		view.startAnimation(fadeIn);
 		view.setVisibility(View.VISIBLE);
@@ -575,7 +519,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 	private void fadeOutAnimation(final View view) {
 		AlphaAnimation fadeOut = new AlphaAnimation(1, 0);
-		fadeOut.setDuration(2000);
+		fadeOut.setDuration(1500);
 
 		view.startAnimation(fadeOut);
 		view.setVisibility(View.GONE);
@@ -876,11 +820,16 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 				DialogHowToBookBinding.inflate(getLayoutInflater());
 		View dialogView = dialogHowToBookBinding.getRoot();
 
+		dialogHowToBookBinding.bodyTextView.setVisibility(View.GONE);
+		dialogHowToBookBinding.previousBtn.setVisibility(View.GONE);
+		dialogHowToBookBinding.howToBookGif.setVisibility(View.GONE);
+
 		if (fontSize.equals("large")) {
-			float TEXT_SIZE = 23;
+			float TEXT_SIZE = 22;
 
 			dialogHowToBookBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 
+			dialogHowToBookBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
 			dialogHowToBookBinding.nextBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
 			dialogHowToBookBinding.previousBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
 			dialogHowToBookBinding.dontShowAgainBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, TEXT_SIZE);
@@ -888,18 +837,28 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 		if (voiceAssistantState.equals("enabled")) {
 			voiceAssistant = VoiceAssistant.getInstance(context);
-			voiceAssistant.speak("How to book a ride?");
+			voiceAssistant.speak("Do you need help how to Book a Ride?");
 		}
-		dialogHowToBookBinding.closeImageView.setOnClickListener(v -> closeHowToBookDialog());
+		dialogHowToBookBinding.closeBtn.setOnClickListener(v -> closeHowToBookDialog());
 
 		dialogHowToBookBinding.nextBtn.setOnClickListener(v -> {
+			dialogHowToBookBinding.titleTextView.setVisibility(View.GONE);
+			dialogHowToBookBinding.bodyTextView.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.instructionImageView.setVisibility(View.GONE);
+			dialogHowToBookBinding.howToBookGif.setVisibility(View.VISIBLE);
 			dialogHowToBookBinding.previousBtn.setVisibility(View.VISIBLE);
 			dialogHowToBookBinding.nextBtn.setVisibility(View.GONE);
+			dialogHowToBookBinding.dontShowAgainBtn.setVisibility(View.GONE);
 		});
 
 		dialogHowToBookBinding.previousBtn.setOnClickListener(v -> {
+			dialogHowToBookBinding.instructionImageView.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.titleTextView.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.bodyTextView.setVisibility(View.GONE);
 			dialogHowToBookBinding.previousBtn.setVisibility(View.GONE);
 			dialogHowToBookBinding.nextBtn.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.dontShowAgainBtn.setVisibility(View.VISIBLE);
+			dialogHowToBookBinding.howToBookGif.setVisibility(View.GONE);
 		});
 
 		dialogHowToBookBinding.dontShowAgainBtn.setOnClickListener(v -> {

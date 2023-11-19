@@ -39,7 +39,7 @@
 
 	<string name="text_preview_desc">The text preview below shows what will be the font size look like on most of the App</string>
 
-	<string name="password_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
+	<string name="password_change_warning_string">Once you changed your Password You won\'t be able to change it for 30 days</string>
 
 	<string name="pwd_id_required_string">PWD ID is Required to be scanned for Verification</string>
 
@@ -60,6 +60,18 @@
 	<string name="change_password_warning">Once you change your password\nYou won\'t be able to change it in 30 days</string>
 
 	<string name="tap_to_upload_profile_picture">Tap/Click on the picture icon to upload your profile picture</string>
+
 	<string name="accessibility">accessibility</string>
+
+	<string name="help_accessibility">The floating button below provides a quick settings
+		for changing the App Theme, Text size and Voice Assistant</string>
+	<string name="help_chat">Located at the bottom of the screen.
+		Only available when a Driver is on way to pickup a Passenger</string>
+	<string name="help_how_to_book">Go to Book a Ride then when the Map is loaded,
+		Zoom-in and long press on the Location you want to go</string>
+	<string name="help_map_style">Change the Map Style by flicking the Switch on the right of your screen to your like</string>
+	<string name="help_zoom_map">Zoom-in or Zoom-in the Map in one tap</string>
+	<string name="help_fullscreen_map">Toggle Map Fullscreen if you don\'t want distractions. Tap again to return the screen to normal</string>
+	<string name="help_recenter_location">If you can\'t see your current location on the Map, tap the button to recenter the Camera to your current Location</string>
 
 </resources>

@@ -14,7 +14,6 @@ import com.capstone.carecabs.Model.TutorialsModel;
 import com.capstone.carecabs.Utility.StaticDataPasser;
 import com.capstone.carecabs.Utility.VoiceAssistant;
 import com.capstone.carecabs.databinding.ActivityHelpBinding;
-import com.capstone.carecabs.databinding.DialogExitAppBinding;
 import com.capstone.carecabs.databinding.DialogTutorialBinding;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ public class HelpActivity extends AppCompatActivity implements SettingsBottomShe
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private AlertDialog tutorialDialog;
+	private SettingsBottomSheet.FontSizeChangeListener fontSizeChangeListener;
 	private ActivityHelpBinding binding;
 
 	@Override
@@ -48,7 +48,7 @@ public class HelpActivity extends AppCompatActivity implements SettingsBottomShe
 		binding = ActivityHelpBinding.inflate(getLayoutInflater());
 		setContentView(binding.getRoot());
 
-		if (fontSize.equals("large")){
+		if (fontSize.equals("large")) {
 			binding.helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 		}
 
@@ -87,50 +87,72 @@ public class HelpActivity extends AppCompatActivity implements SettingsBottomShe
 		TutorialsAdapter tutorialsAdapter = new TutorialsAdapter(this,
 				tutorialsModelList,
 				tutorialsModel ->
-						showTutorialDialog(tutorialsModel.getTutorialImage(),
+						showTutorialDialog(
+								tutorialsModel.getTutorialImage(),
+								tutorialsModel.isGif(),
 								tutorialsModel.getTutorialTitle(),
 								tutorialsModel.getTutorialBody()));
 
 		binding.tutorialsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 		binding.tutorialsRecyclerView.setAdapter(tutorialsAdapter);
 
-		TutorialsModel tutorial1 = new TutorialsModel(R.drawable.car_64_2, "Ride Booking", "body");
-		TutorialsModel tutorial2 = new TutorialsModel(R.drawable.mar, "Edit Account", "body");
-		TutorialsModel tutorial3 = new TutorialsModel(R.drawable.chat_50, "Chat", "body");
+		TutorialsModel tutorial1 = new TutorialsModel(R.drawable.ride_booking_gif, true, "Ride Booking",
+				getString(R.string.help_how_to_book));
+		TutorialsModel tutorial2 = new TutorialsModel(R.drawable.ss_accessibility, false, "Quick Accessibility Settings",
+				getString(R.string.help_accessibility));
+		TutorialsModel tutorial3 = new TutorialsModel(R.drawable.ss_chat, false, "Chat",
+				getString(R.string.help_chat));
+		TutorialsModel tutorial4 = new TutorialsModel(R.drawable.recenter_location_gif, true, "Recenter the Camera to you Current Location",
+				getString(R.string.help_recenter_location));
+		TutorialsModel tutorial5 = new TutorialsModel(R.drawable.toggle_fullscreen_gif, true, "Toggle Map Fullscreen",
+				getString(R.string.help_fullscreen_map));
+		TutorialsModel tutorial6 = new TutorialsModel(R.drawable.zoom_map_gif, true, "Zoom Map",
+				getString(R.string.help_zoom_map));
+		TutorialsModel tutorial7 = new TutorialsModel(R.drawable.change_map_style_gif, true, "Change Map Style",
+				getString(R.string.help_map_style));
 
 		tutorialsModelList.add(tutorial1);
 		tutorialsModelList.add(tutorial2);
 		tutorialsModelList.add(tutorial3);
+		tutorialsModelList.add(tutorial4);
+		tutorialsModelList.add(tutorial5);
+		tutorialsModelList.add(tutorial6);
+		tutorialsModelList.add(tutorial7);
 	}
 
 	private void showTutorialDialog(int tutorialImage,
+	                                boolean isGif,
 	                                String tutorialTitle,
 	                                String tutorialBody) {
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		DialogTutorialBinding dialogTutorialBinding = DialogTutorialBinding.inflate(getLayoutInflater());
+		DialogTutorialBinding dialogTutorialBinding =
+				DialogTutorialBinding.inflate(getLayoutInflater());
 		View dialogView = dialogTutorialBinding.getRoot();
 
-		if (fontSize.equals("large")) {
-			dialogTutorialBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
-			dialogTutorialBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			dialogTutorialBinding.nextBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-			dialogTutorialBinding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-		}
-
-		if (voiceAssistantState.equals("enabled")) {
-			voiceAssistant = VoiceAssistant.getInstance(this);
-			voiceAssistant.speak("Nigga");
+		dialogTutorialBinding.tutorialGif.setVisibility(View.GONE);
+		if (isGif) {
+			dialogTutorialBinding.tutorialImageView.setVisibility(View.GONE);
+			dialogTutorialBinding.tutorialGif.setVisibility(View.VISIBLE);
+			dialogTutorialBinding.tutorialGif.setImageResource(tutorialImage);
 		}
 
 		dialogTutorialBinding.tutorialImageView.setImageResource(tutorialImage);
 		dialogTutorialBinding.titleTextView.setText(tutorialTitle);
 		dialogTutorialBinding.bodyTextView.setText(tutorialBody);
 
-		dialogTutorialBinding.nextBtn.setOnClickListener(v -> {
+		if (fontSize.equals("large")) {
+			dialogTutorialBinding.bodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+			dialogTutorialBinding.titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+			dialogTutorialBinding.closeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+		}
 
-		});
+		if (voiceAssistantState.equals("enabled")) {
+			voiceAssistant = VoiceAssistant.getInstance(this);
+			voiceAssistant.speak(tutorialBody);
+		}
+
 
 		dialogTutorialBinding.closeBtn.setOnClickListener(v -> closeTutorialDialog());
 
