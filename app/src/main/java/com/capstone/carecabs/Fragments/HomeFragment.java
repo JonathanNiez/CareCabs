@@ -156,6 +156,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.toDestinationLayout.setVisibility(View.GONE);
 		binding.myProfileBadge.setVisibility(View.GONE);
 		binding.pickupPassengerBadge.setVisibility(View.GONE);
+		binding.bookingsBadge.setVisibility(View.GONE);
 
 		context = getContext();
 		FirebaseApp.initializeApp(context);
@@ -232,6 +233,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.totalTripsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.driverDropOffNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 		binding.driverDashBoardTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
+		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textHeaderSizeSP);
 
 		binding.hiTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.rateDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -254,7 +256,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		binding.driverStatusTextView2.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.passengerTransportedTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.yourTripOverviewTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
-		binding.onBoardDestinationTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.viewOnMapTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.chatDriverTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
 		binding.helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSP);
@@ -635,6 +636,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									}
 								}
 
+								binding.bookingsBadge.setVisibility(View.VISIBLE);
 								fadeOutAnimation(binding.toDestinationLayout);
 								fadeInAnimation(binding.driverOnTheWayLayout);
 								fadeOutAnimation(binding.bookARideBtn);
@@ -664,6 +666,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
 									&& passengerBookingModel.getBookingStatus().equals("Passenger Onboard")) {
 
+								binding.bookingsBadge.setVisibility(View.VISIBLE);
 								fadeOutAnimation(binding.toDestinationLayout);
 								fadeInAnimation(binding.driverOnTheWayLayout);
 								fadeOutAnimation(binding.bookARideBtn);
@@ -674,6 +677,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 									&& passengerBookingModel.getRatingStatus().equals("Driver not rated")
 									&& passengerBookingModel.getBookingStatus().equals("Transported to destination")) {
 
+								binding.bookingsBadge.setVisibility(View.VISIBLE);
 								fadeOutAnimation(binding.driverOnTheWayLayout);
 								fadeOutAnimation(binding.toDestinationLayout);
 								fadeOutAnimation(binding.driverOnTheWayLayout);

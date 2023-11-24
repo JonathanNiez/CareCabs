@@ -17,7 +17,7 @@ import com.google.firebase.FirebaseApp;
 
 public class GetStartedActivity extends AppCompatActivity {
 	private Intent intent;
-	private boolean isLocationPermissionGranted, sCameraPermissionGranted, isStoragePermissionGranted;
+	private boolean isLocationPermissionGranted, isCameraPermissionGranted, isStoragePermissionGranted;
 	private AlertDialog exitAppDialog;
 	private AlertDialog.Builder builder;
 	private ActivityGetStartedBinding binding;
@@ -55,7 +55,7 @@ public class GetStartedActivity extends AppCompatActivity {
 		}
 
 		binding.getStartedBtn.setOnClickListener(v -> {
-			if (isLocationPermissionGranted && isStoragePermissionGranted && sCameraPermissionGranted) {
+			if (isLocationPermissionGranted && isStoragePermissionGranted && isCameraPermissionGranted) {
 				intent = new Intent(this, LoginOrRegisterActivity.class);
 			} else {
 				intent = new Intent(this, RequestPermissionActivity.class);
@@ -64,7 +64,6 @@ public class GetStartedActivity extends AppCompatActivity {
 			finish();
 		});
 	}
-
 
 	@Override
 	public void onBackPressed() {
@@ -81,7 +80,7 @@ public class GetStartedActivity extends AppCompatActivity {
 	private void checkCameraPermission() {
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
 				== PackageManager.PERMISSION_GRANTED)
-			sCameraPermissionGranted = true;
+			isCameraPermissionGranted = true;
 
 	}
 

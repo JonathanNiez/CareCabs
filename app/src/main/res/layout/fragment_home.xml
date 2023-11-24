@@ -771,7 +771,7 @@
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Destination"
 						android:textAlignment="center"
-						android:textSize="17sp" />
+						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
 						style="@style/CareTextColor"
@@ -787,7 +787,6 @@
 
 			</androidx.cardview.widget.CardView>
 
-
 			<androidx.cardview.widget.CardView
 				android:id="@+id/quickButtonsLayout"
 				style="@style/BaseCardBackground"
@@ -801,61 +800,82 @@
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:gravity="center"
-					android:orientation="vertical">
+					android:orientation="vertical"
+					android:padding="5dp">
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
-						android:orientation="horizontal"
-						android:padding="5dp">
+						android:orientation="horizontal">
 
-						<androidx.cardview.widget.CardView
+						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/bookingsBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/blue"
+							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							app:cardElevation="5dp"
+							app:strokeColor="@color/cheese"
+							app:strokeWidth="2dp">
 
-							<androidx.appcompat.widget.LinearLayoutCompat
+							<RelativeLayout
 								android:layout_width="match_parent"
-								android:layout_height="wrap_content"
-								android:gravity="center"
-								android:orientation="vertical">
+								android:layout_height="wrap_content">
 
 								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/bookingsBadge"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
-									android:layout_margin="5dp"
+									android:layout_alignParentTop="true"
+									android:layout_alignParentEnd="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
+									app:srcCompat="@drawable/exclamation_24" />
+
+								<androidx.appcompat.widget.AppCompatImageView
+									android:id="@+id/bookingsIcon"
+									android:layout_width="wrap_content"
+									android:layout_height="wrap_content"
+									android:layout_centerHorizontal="true"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
 									app:srcCompat="@drawable/calendar_64" />
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/bookingsTextView"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
+									android:layout_below="@id/bookingsIcon"
+									android:layout_centerHorizontal="true"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Bookings"
 									android:textAlignment="center"
-									android:textColor="@color/white"
+									android:textColor="@color/black"
 									android:textSize="17sp" />
 
-							</androidx.appcompat.widget.LinearLayoutCompat>
+							</RelativeLayout>
 
-						</androidx.cardview.widget.CardView>
+						</com.google.android.material.card.MaterialCardView>
 
-						<androidx.cardview.widget.CardView
+						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/bookARideBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/cheese"
+							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							app:cardElevation="5dp"
+							app:strokeColor="@color/cheese"
+							app:strokeWidth="2dp">
 
 							<RelativeLayout
 								android:layout_width="match_parent"
@@ -899,7 +919,7 @@
 
 							</RelativeLayout>
 
-						</androidx.cardview.widget.CardView>
+						</com.google.android.material.card.MaterialCardView>
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -907,18 +927,19 @@
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:gravity="center"
-						android:orientation="horizontal"
-						android:padding="5dp">
+						android:orientation="horizontal">
 
-						<androidx.cardview.widget.CardView
+						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/myProfileBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/wisteria"
+							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							app:cardElevation="5dp"
+							app:strokeColor="@color/wisteria"
+							app:strokeWidth="2dp">
 
 							<RelativeLayout
 								android:layout_width="match_parent"
@@ -961,17 +982,19 @@
 
 							</RelativeLayout>
 
-						</androidx.cardview.widget.CardView>
+						</com.google.android.material.card.MaterialCardView>
 
-						<androidx.cardview.widget.CardView
+						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/tripHistoryBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/tomato"
+							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							app:cardElevation="5dp"
+							app:strokeColor="@color/tomato"
+							app:strokeWidth="2dp">
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="match_parent"
@@ -992,30 +1015,31 @@
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Trip History"
-									android:textColor="@color/white"
+									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
-						</androidx.cardview.widget.CardView>
+						</com.google.android.material.card.MaterialCardView>
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
 					<androidx.appcompat.widget.LinearLayoutCompat
 						android:layout_width="match_parent"
 						android:layout_height="match_parent"
-						android:orientation="horizontal"
-						android:padding="5dp">
+						android:orientation="horizontal">
 
-						<androidx.cardview.widget.CardView
+						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/helpBtn"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/light_green"
+							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
-							app:cardElevation="5dp">
+							app:cardElevation="5dp"
+							app:strokeColor="@color/light_green"
+							app:strokeWidth="2dp">
 
 							<androidx.appcompat.widget.LinearLayoutCompat
 								android:layout_width="match_parent"
@@ -1042,7 +1066,7 @@
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
-						</androidx.cardview.widget.CardView>
+						</com.google.android.material.card.MaterialCardView>
 
 					</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1154,13 +1178,15 @@
 						android:textAlignment="center"
 						android:textSize="17sp" />
 
-					<androidx.cardview.widget.CardView
+					<com.google.android.material.card.MaterialCardView
 						android:layout_width="match_parent"
 						android:layout_height="wrap_content"
 						android:layout_margin="5dp"
-						app:cardBackgroundColor="@color/cheese"
+						app:cardBackgroundColor="@color/white"
 						app:cardCornerRadius="10dp"
-						app:cardElevation="5dp">
+						app:cardElevation="5dp"
+						app:strokeColor="@color/cheese"
+						app:strokeWidth="2dp">
 
 						<androidx.appcompat.widget.LinearLayoutCompat
 							android:layout_width="match_parent"
@@ -1188,7 +1214,7 @@
 
 						</androidx.appcompat.widget.LinearLayoutCompat>
 
-					</androidx.cardview.widget.CardView>
+					</com.google.android.material.card.MaterialCardView>
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -1199,8 +1225,10 @@
 				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:layout_margin="10dp"
-				app:cardCornerRadius="10dp"
+				android:layout_marginStart="10dp"
+				android:layout_marginTop="10dp"
+				android:layout_marginEnd="10dp"
+				android:layout_marginBottom="50dp"
 				app:cardElevation="5dp">
 
 				<androidx.appcompat.widget.LinearLayoutCompat

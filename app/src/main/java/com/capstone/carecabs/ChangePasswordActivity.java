@@ -44,7 +44,6 @@ public class ChangePasswordActivity extends AppCompatActivity implements
 	private String fontSize = StaticDataPasser.storeFontSize;
 	private String voiceAssistantState = StaticDataPasser.storeVoiceAssistantState;
 	private VoiceAssistant voiceAssistant;
-
 	private Intent intent;
 	private Calendar calendar;
 	private Date date;

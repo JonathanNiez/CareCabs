@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -18,11 +19,11 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 public class RequestPermissionActivity extends AppCompatActivity {
 	private final String TAG = "RequestPermissionActivity";
+	private ActivityRequestPermissionBinding binding;
 	private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 	private static final int CAMERA_PERMISSION_REQUEST_CODE = 2;
 	private static final int STORAGE_PERMISSION_REQUEST_CODE = 3;
 	private int locationPermissionResult, cameraPermissionResult, storagePermissionResult;
-	private ActivityRequestPermissionBinding binding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,9 +82,11 @@ public class RequestPermissionActivity extends AppCompatActivity {
 			storagePermissionResult = 1;
 
 		else {
-			ActivityCompat.requestPermissions(this,
-					new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-					STORAGE_PERMISSION_REQUEST_CODE);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+				ActivityCompat.requestPermissions(this,
+						new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+						STORAGE_PERMISSION_REQUEST_CODE);
+			}
 		}
 	}
 
