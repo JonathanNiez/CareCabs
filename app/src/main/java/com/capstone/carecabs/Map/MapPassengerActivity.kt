@@ -77,29 +77,11 @@ import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListene
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
 import com.mapbox.maps.viewannotation.viewAnnotationOptions
-import com.mapbox.search.ResponseInfo
-import com.mapbox.search.SearchEngine
-import com.mapbox.search.SearchEngineSettings
-import com.mapbox.search.ServiceProvider
 import com.mapbox.search.autocomplete.PlaceAutocomplete
 import com.mapbox.search.autocomplete.PlaceAutocompleteOptions
 import com.mapbox.search.autocomplete.PlaceAutocompleteSuggestion
 import com.mapbox.search.autocomplete.PlaceAutocompleteType
-import com.mapbox.search.common.CompletionCallback
-import com.mapbox.search.offline.OfflineResponseInfo
-import com.mapbox.search.offline.OfflineSearchEngine
-import com.mapbox.search.offline.OfflineSearchEngineSettings
-import com.mapbox.search.offline.OfflineSearchResult
-import com.mapbox.search.record.HistoryRecord
-import com.mapbox.search.result.SearchResult
-import com.mapbox.search.result.SearchSuggestion
 import com.mapbox.search.ui.adapter.autocomplete.PlaceAutocompleteUiAdapter
-import com.mapbox.search.ui.adapter.engines.SearchEngineUiAdapter
-import com.mapbox.search.ui.view.CommonSearchViewConfiguration
-import com.mapbox.search.ui.view.DistanceUnitType
-import com.mapbox.search.ui.view.SearchResultAdapterItem
-import com.mapbox.search.ui.view.SearchResultsView
-import com.mapbox.search.ui.view.UiError
 import com.mapbox.search.ui.view.place.SearchPlace
 import java.util.Calendar
 import java.util.UUID
@@ -288,7 +270,7 @@ class MapPassengerActivity : AppCompatActivity(),
         binding.zoomOutImgBtn.visibility = View.GONE
         binding.mapView.getMapboxMap().setCamera(
             CameraOptions.Builder()
-                .zoom(9.0)
+                .zoom(10.0)
                 .center(coordinate)
                 .build()
         )
@@ -803,12 +785,12 @@ class MapPassengerActivity : AppCompatActivity(),
                             "Senior Citizen" -> {
 
                                 storeSeniorCitizenBookingToDatabase(
-                                    fcmToken,
-                                    point,
-                                    fullName,
-                                    getUserType,
-                                    getProfilePicture,
-                                    generateRandomBookingID()
+                                    fcmToken = fcmToken,
+                                    pickupLocation = point,
+                                    fullName = fullName,
+                                    userType = getUserType,
+                                    profilePicture = getProfilePicture,
+                                    bookingID = generateRandomBookingID()
                                 )
                             }
 
@@ -816,13 +798,13 @@ class MapPassengerActivity : AppCompatActivity(),
                                 val getDisability = it.getString("disability")!!
 
                                 storePWDBookingToDatabase(
-                                    fcmToken,
-                                    point,
-                                    fullName,
-                                    getUserType,
-                                    getProfilePicture,
-                                    getDisability,
-                                    generateRandomBookingID()
+                                    fcmToken = fcmToken,
+                                    pickupLocation = point,
+                                    fullName = fullName,
+                                    userType = getUserType,
+                                    profilePicture = getProfilePicture,
+                                    disability = getDisability,
+                                    bookingID = generateRandomBookingID()
                                 )
                             }
                         }
@@ -841,33 +823,34 @@ class MapPassengerActivity : AppCompatActivity(),
 
     private fun storePWDBookingToDatabase(
         fcmToken: String,
-        point: Point,
+        pickupLocation: Point,
         fullName: String,
         userType: String,
         profilePicture: String,
         disability: String,
-        generateBookingID: String
+        bookingID: String
     ) {
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(FirebaseMain.tripCollection)
-            .child(generateBookingID)
+
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(FirebaseMain.bookingCollection)
+            .child(bookingID)
 
         val passengerBookingModel = PassengerBookingModel(
             fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
-            bookingID = generateBookingID,
+            bookingID = bookingID,
             bookingStatus = "Waiting",
             pickupLongitude = StaticDataPasser.storePickupLongitude,
             pickupLatitude = StaticDataPasser.storePickupLatitude,
-            destinationLongitude = point.longitude(),
-            destinationLatitude = point.latitude(),
+            destinationLongitude = pickupLocation.longitude(),
+            destinationLatitude = pickupLocation.latitude(),
             bookingDate = getCurrentTimeAndDate(),
             passengerName = fullName,
             passengerProfilePicture = profilePicture,
             passengerType = userType,
             passengerDisability = disability,
         )
-        locationReference.setValue(passengerBookingModel)
+        bookingReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
 
                 showToast("Booking success", 1)
@@ -881,33 +864,33 @@ class MapPassengerActivity : AppCompatActivity(),
 
     private fun storeSeniorCitizenBookingToDatabase(
         fcmToken: String,
-        point: Point,
+        pickupLocation: Point,
         fullName: String,
         userType: String,
         profilePicture: String,
-        generateBookingID: String
+        bookingID: String
     ) {
 
-        val database = FirebaseDatabase.getInstance()
-        val locationReference = database.getReference(FirebaseMain.bookingCollection)
-            .child(generateBookingID)
+        val bookingReference = FirebaseDatabase.getInstance()
+            .getReference(FirebaseMain.bookingCollection)
+            .child(bookingID)
 
         val passengerBookingModel = PassengerBookingModel(
             fcmToken = fcmToken,
             passengerUserID = FirebaseMain.getUser().uid,
-            bookingID = generateBookingID,
+            bookingID = bookingID,
             bookingStatus = "Waiting",
             pickupLongitude = StaticDataPasser.storePickupLongitude,
             pickupLatitude = StaticDataPasser.storePickupLatitude,
-            destinationLongitude = point.longitude(),
-            destinationLatitude = point.latitude(),
+            destinationLongitude = pickupLocation.longitude(),
+            destinationLatitude = pickupLocation.latitude(),
             bookingDate = getCurrentTimeAndDate(),
             passengerName = fullName,
             passengerProfilePicture = profilePicture,
             passengerType = userType,
         )
 
-        locationReference.setValue(passengerBookingModel)
+        bookingReference.setValue(passengerBookingModel)
             .addOnSuccessListener {
 
 //                showToast("Booking success")

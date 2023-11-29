@@ -64,7 +64,6 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 	private final String userType = "Driver";
 	private String profilePictureURL = "default";
 	private String fontSize = StaticDataPasser.storeFontSize;
-	private boolean isEditing = false;
 	private final String[] sexItem = {"Male", "Female"};
 	private final String[] monthItem = {
 			"January",
@@ -284,6 +283,7 @@ public class RegisterDriverActivity extends AppCompatActivity implements
 			registerUser.put("destinationLongitude", 0.0);
 			registerUser.put("bookingID", "none");
 			registerUser.put("tripID", "none");
+			registerUser.put("usersRated", 0);
 
 			documentReference.update(registerUser)
 					.addOnSuccessListener(unused -> {

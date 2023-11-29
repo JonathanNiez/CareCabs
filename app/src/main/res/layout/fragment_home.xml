@@ -287,6 +287,13 @@
 									android:text="Rate Driver"
 									android:textSize="17sp" />
 
+								<pl.droidsonroids.gif.GifImageView
+									android:id="@+id/loadingGIf"
+									android:layout_width="50dp"
+									android:layout_height="50dp"
+									android:layout_margin="5dp"
+									android:src="@drawable/loading_gif"/>
+
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
 							<androidx.appcompat.widget.LinearLayoutCompat

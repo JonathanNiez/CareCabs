@@ -311,7 +311,8 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 
 		firebaseDatabase = FirebaseDatabase.getInstance();
 		bookingReference = firebaseDatabase
-				.getReference(FirebaseMain.bookingCollection).child(generateBookingID);
+				.getReference(FirebaseMain.bookingCollection)
+				.child(generateBookingID);
 
 		Map<String, Object> booking = new HashMap<>();
 		booking.put("fcmToken", StaticDataPasser.storeFCMToken);
@@ -379,7 +380,9 @@ public class ConfirmBookingBottomSheet extends BottomSheetDialogFragment {
 				.addOnSuccessListener(aVoid -> {
 					showToast(context, "Booking success");
 
-					openBookingsActivity();
+					if (!isDetached()) {
+						openBookingsActivity();
+					}
 				})
 				.addOnFailureListener(e -> {
 					showToast(context, "Booking failed");

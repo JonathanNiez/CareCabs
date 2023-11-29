@@ -64,6 +64,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -458,7 +459,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 										binding.hiTextView.setText("Welcome back!");
 									}
 
-									checkBookingStatus();
+									checkCurrentBookingStatus();
 
 									Long getTotalTrips = documentSnapshot.getLong("totalTrips");
 									fadeInAnimation(binding.passengerStatsLayout);
@@ -603,7 +604,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		});
 	}
 
-	private void checkBookingStatus() {
+	private void checkCurrentBookingStatus() {
 		databaseReference = FirebaseDatabase.getInstance()
 				.getReference(FirebaseMain.bookingCollection);
 
@@ -619,6 +620,7 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 					for (DataSnapshot bookingSnapshot : snapshot.getChildren()) {
 						PassengerBookingModel passengerBookingModel =
 								bookingSnapshot.getValue(PassengerBookingModel.class);
+
 						if (passengerBookingModel != null) {
 
 							if (passengerBookingModel.getPassengerUserID().equals(userID) &&
@@ -663,21 +665,22 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 								binding.viewOnMapBtn.setOnClickListener(v ->
 										checkLocationService(passengerBookingModel.getPassengerType()));
 
-							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
-									&& passengerBookingModel.getBookingStatus().equals("Passenger Onboard")) {
+							} else if (passengerBookingModel.getPassengerUserID().equals(userID) &&
+									passengerBookingModel.getBookingStatus().equals("Passenger Onboard")) {
 
 								binding.bookingsBadge.setVisibility(View.VISIBLE);
-								fadeOutAnimation(binding.toDestinationLayout);
-								fadeInAnimation(binding.driverOnTheWayLayout);
+								fadeInAnimation(binding.toDestinationLayout);
+								fadeOutAnimation(binding.driverOnTheWayLayout);
 								fadeOutAnimation(binding.bookARideBtn);
 
 								binding.onBoardDestinationTextView.setText(passengerBookingModel.getDestination());
 
-							} else if (passengerBookingModel.getPassengerUserID().equals(userID)
-									&& passengerBookingModel.getRatingStatus().equals("Driver not rated")
-									&& passengerBookingModel.getBookingStatus().equals("Transported to destination")) {
+							} else if (passengerBookingModel.getPassengerUserID().equals(userID) &&
+									passengerBookingModel.getRatingStatus().equals("Driver not rated") &&
+									passengerBookingModel.getBookingStatus().equals("Transported to destination")) {
 
 								binding.bookingsBadge.setVisibility(View.VISIBLE);
+								binding.loadingGIf.setVisibility(View.GONE);
 								fadeOutAnimation(binding.driverOnTheWayLayout);
 								fadeOutAnimation(binding.toDestinationLayout);
 								fadeOutAnimation(binding.driverOnTheWayLayout);
@@ -703,7 +706,6 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 												passengerBookingModel.getBookingID());
 									}
 								});
-
 							}
 						}
 					}
@@ -718,6 +720,8 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 	}
 
 	private void rateDriver(String driverID, String bookingID) {
+		binding.rateDriverBtn.setVisibility(View.GONE);
+		binding.loadingGIf.setVisibility(View.VISIBLE);
 
 		//update current booking
 		DatabaseReference bookingReference = FirebaseDatabase.getInstance()
@@ -738,15 +742,35 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 		driverReference.get()
 				.addOnSuccessListener(documentSnapshot -> {
 					if (documentSnapshot.exists()) {
-						double currentRatings = documentSnapshot.getDouble("driverRatings");
+						double getCurrentRatings = documentSnapshot.getDouble("driverRatings");
 						float newRating = binding.driverRatingBar.getRating();
-						double totalRatings = currentRatings + newRating;
+						double totalRatings = getCurrentRatings + newRating;
+						long getUsersRated = documentSnapshot.getLong("usersRated");
+						long addUsersRated = getUsersRated + 1;
 
-						Map<String, Object> updatedData = new HashMap<>();
-						updatedData.put("driverRatings", totalRatings);
+						Map<String, Object> updateDriverInfo = new HashMap<>();
 
-						driverReference.update(updatedData)
+						if (getUsersRated <= 0) {
+							updateDriverInfo.put("driverRatings", totalRatings);
+							updateDriverInfo.put("usersRated", addUsersRated);
+
+						} else {
+							//calculate ratings
+							double calculatedRatings = newRating + .5 / getUsersRated;
+
+							DecimalFormat decimalFormat = new DecimalFormat("#.##");
+							double formattedRatings = Double.parseDouble(decimalFormat.format(calculatedRatings));
+
+							updateDriverInfo.put("driverRatings", formattedRatings);
+							updateDriverInfo.put("usersRated", addUsersRated);
+						}
+						driverReference.update(updateDriverInfo)
 								.addOnSuccessListener(unused -> {
+
+									binding.rateDriverBtn.setVisibility(View.GONE);
+									binding.loadingGIf.setVisibility(View.GONE);
+									binding.bookingsBadge.setVisibility(View.GONE);
+
 									fadeInAnimation(binding.driverRatedLayout);
 									fadeOutAnimation(binding.rateDriverLayout);
 
@@ -756,9 +780,13 @@ public class HomeFragment extends Fragment implements SettingsBottomSheet.FontSi
 
 								})
 								.addOnFailureListener(e -> {
+									binding.rateDriverBtn.setVisibility(View.VISIBLE);
+									binding.loadingGIf.setVisibility(View.GONE);
+
 									showToast("Failed to rate Driver");
 									Log.e(TAG, "rateDriver: " + e.getMessage());
 								});
+
 					} else {
 						showToast("Driver document does not exist");
 					}
