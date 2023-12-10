@@ -47,9 +47,9 @@
 			android:gravity="center"
 			android:orientation="vertical">
 
-			<androidx.cardview.widget.CardView
+			<com.google.android.material.card.MaterialCardView
 				android:id="@+id/greetingLayout"
-				style="@style/GreetingCardBackground"
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:layout_margin="10dp"
@@ -71,7 +71,7 @@
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="Hi and Welcome to CareCabs"
 						android:textAlignment="center"
-						android:textColor="@color/white"
+						style="@style/TextColor"
 						android:textSize="17sp" />
 
 					<androidx.appcompat.widget.AppCompatImageView
@@ -88,7 +88,7 @@
 						android:fontFamily="@font/gabarito_semibold"
 						android:text="The Time is:"
 						android:textAlignment="center"
-						android:textColor="@color/white"
+						style="@style/TextColor"
 						android:textSize="20sp" />
 
 					<androidx.cardview.widget.CardView
@@ -118,7 +118,7 @@
 						android:fontFamily="@font/gabarito_medium"
 						android:text="Good Morning"
 						android:textAlignment="center"
-						android:textColor="@color/white"
+						style="@style/TextColor"
 						android:textSize="20sp" />
 
 					<androidx.appcompat.widget.AppCompatTextView
@@ -129,16 +129,16 @@
 						android:fontFamily="@font/gabarito_bold"
 						android:text="Name"
 						android:textAlignment="center"
-						android:textColor="@color/white"
+						style="@style/TextColor"
 						android:textSize="20sp" />
 
 				</androidx.appcompat.widget.LinearLayoutCompat>
 
-			</androidx.cardview.widget.CardView>
+			</com.google.android.material.card.MaterialCardView>
 
 			<androidx.cardview.widget.CardView
 				android:id="@+id/progressBarLayout1"
-				style="@style/GreetingCardBackground"
+				style="@style/BaseCardBackground"
 				android:layout_width="match_parent"
 				android:layout_height="400dp"
 				android:layout_margin="10dp"
@@ -146,7 +146,6 @@
 				app:cardElevation="5dp">
 
 				<androidx.appcompat.widget.LinearLayoutCompat
-					style="@style/LoadingGreetingCardBackground"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:gravity="center"
@@ -292,7 +291,7 @@
 									android:layout_width="50dp"
 									android:layout_height="50dp"
 									android:layout_margin="5dp"
-									android:src="@drawable/loading_gif"/>
+									android:src="@drawable/loading_gif" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -818,11 +817,11 @@
 
 						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/bookingsBtn"
+							style="@style/BaseCardBackground"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp"
 							app:strokeColor="@color/cheese"
@@ -857,15 +856,18 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/bookingsTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_below="@id/bookingsIcon"
 									android:layout_centerHorizontal="true"
-									android:layout_margin="5dp"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Bookings"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</RelativeLayout>
@@ -874,11 +876,11 @@
 
 						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/bookARideBtn"
+							style="@style/BaseCardBackground"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp"
 							app:strokeColor="@color/cheese"
@@ -910,6 +912,7 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/bookARideTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_below="@id/rideImageView"
@@ -921,7 +924,6 @@
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Book a Ride"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</RelativeLayout>
@@ -938,11 +940,11 @@
 
 						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/myProfileBtn"
+							style="@style/BaseCardBackground"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp"
 							app:strokeColor="@color/wisteria"
@@ -977,14 +979,17 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/myProfileTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_below="@id/myProfileImageView"
 									android:layout_centerHorizontal="true"
-									android:layout_margin="5dp"
+									android:layout_marginStart="5dp"
+									android:layout_marginTop="5dp"
+									android:layout_marginEnd="5dp"
+									android:layout_marginBottom="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="My Profile"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</RelativeLayout>
@@ -993,11 +998,11 @@
 
 						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/tripHistoryBtn"
+							style="@style/BaseCardBackground"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp"
 							app:strokeColor="@color/tomato"
@@ -1017,12 +1022,12 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/tripHistoryTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Trip History"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
@@ -1038,11 +1043,11 @@
 
 						<com.google.android.material.card.MaterialCardView
 							android:id="@+id/helpBtn"
+							style="@style/BaseCardBackground"
 							android:layout_width="0dp"
 							android:layout_height="wrap_content"
 							android:layout_margin="5dp"
 							android:layout_weight="1"
-							app:cardBackgroundColor="@color/white"
 							app:cardCornerRadius="10dp"
 							app:cardElevation="5dp"
 							app:strokeColor="@color/light_green"
@@ -1062,13 +1067,13 @@
 
 								<androidx.appcompat.widget.AppCompatTextView
 									android:id="@+id/helpTextView"
+									style="@style/TextColor"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_margin="5dp"
 									android:fontFamily="@font/gabarito_semibold"
 									android:text="Help"
 									android:textAlignment="center"
-									android:textColor="@color/black"
 									android:textSize="17sp" />
 
 							</androidx.appcompat.widget.LinearLayoutCompat>
